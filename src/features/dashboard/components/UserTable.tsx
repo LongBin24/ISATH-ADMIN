@@ -8,10 +8,21 @@ import {
 } from "./ui/table";
 import { Badge } from "@/features/dashboard/components/ui/badge";
 import { Eye, Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
+import UserDetailModal from "./UserDetailModal";
 
 export default function UserTable({ users }: { users: any[] }) {
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [open, setOpen] = useState(false);
+
+  function openUser(user: any) {
+    setSelectedUser(user);
+    setOpen(true);
+  }
+
   return (
-    <Table className="font-google-sans">
+    <>
+      <Table className="font-google-sans">
       <TableHeader className="bg-slate-50 dark:bg-slate-800/50">
         <TableRow>
           <TableHead>អ្នកប្រើប្រាស់</TableHead>
@@ -24,7 +35,8 @@ export default function UserTable({ users }: { users: any[] }) {
         {users.map((user) => (
           <TableRow
             key={user.id}
-            className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30"
+            onClick={() => openUser(user)}
+            className="cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-800/30"
           >
             <TableCell className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#003377] text-white flex items-center justify-center font-bold">
@@ -61,13 +73,13 @@ export default function UserTable({ users }: { users: any[] }) {
               </Badge>
             </TableCell>
             <TableCell className="text-right space-x-2">
-              <button className="text-slate-400 hover:text-[#003377]">
+              <button onClick={(e) => e.stopPropagation()} className="text-slate-400 hover:text-[#003377]">
                 <Eye size={18} />
               </button>
-              <button className="text-slate-400 hover:text-blue-500">
+              <button onClick={(e) => e.stopPropagation()} className="text-slate-400 hover:text-blue-500">
                 <Pencil size={18} />
               </button>
-              <button className="text-slate-400 hover:text-red-500">
+              <button onClick={(e) => e.stopPropagation()} className="text-slate-400 hover:text-red-500">
                 <Trash2 size={18} />
               </button>
             </TableCell>
@@ -75,5 +87,7 @@ export default function UserTable({ users }: { users: any[] }) {
         ))}
       </TableBody>
     </Table>
+      <UserDetailModal open={open} onOpenChange={setOpen} user={selectedUser} />
+    </>
   );
 }
