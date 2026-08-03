@@ -17,7 +17,7 @@ export default function StatsCard({
      return (
     <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm flex items-center justify-between border border-slate-100 dark:border-slate-800 hover:shadow-md transition-shadow">
       <div className="space-y-1">
-        <p className="text-slate-500 dark:text-slate-400 text-sm font-hanuman">{title}</p>
+        <p className="text-slate-500 dark:text-slate-400 text-sm font-google-sans">{title}</p>
         <h3 className="text-3xl font-bold font-google-sans" style={{ color: color }}>
           {value.toLocaleString()}
         </h3>

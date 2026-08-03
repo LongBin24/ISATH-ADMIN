@@ -6,11 +6,11 @@ const aiMetrics = [
 export default function AIStatus(){
     return (
     <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-      <h3 className="text-lg font-bold mb-6 font-hanuman text-[#003377] dark:text-white">ស្ថានភាព AI</h3>
+      <h3 className="text-lg font-bold mb-6 font-google-sans text-[#003377] dark:text-white">ស្ថានភាព AI</h3>
       <div className="space-y-6">
         {aiMetrics.map((item) => (
           <div key={item.label} className="space-y-2">
-            <div className="flex justify-between items-center text-sm font-hanuman">
+            <div className="flex justify-between items-center text-sm font-google-sans">
               <span className="text-slate-600 dark:text-slate-400">{item.label}</span>
               <span className="font-google-sans font-bold text-green-600">{item.value}%</span>
             </div>
