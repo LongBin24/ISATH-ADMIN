@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { User, DashboardStats, UserSummary ,ProcessSummary} from './type';
+import { User, DashboardStats, UserSummary ,ProcessSummary,InActiveSummary} from './type';
 
 export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: fetchBaseQuery({ baseUrl: '/api/v1' }),
-  tagTypes: ['User','Process'],
+  tagTypes: ['User','Process','InActive'],
   endpoints: (builder) => ({
     getStats: builder.query<DashboardStats, void>({
       query: () => 'admin/stats',
@@ -24,8 +24,13 @@ export const adminApi = createApi({
     getProcessSummary: builder.query<ProcessSummary, void>({
       query: ( )=> 'admin/process/summary',
       providesTags:['Process'],
+    }),
+    getInActiveSummary: builder.query<InActiveSummary,void>({
+      query: ()=>  'admin/process/summary',
+      providesTags:['InActive'],
     })
-  }),
+  
+  })
 });
 
-export const { useGetStatsQuery, useGetUsersQuery, useCreateUserMutation, useGetUserSummaryQuery ,useGetProcessSummaryQuery} = adminApi;
+export const { useGetStatsQuery, useGetUsersQuery, useCreateUserMutation, useGetUserSummaryQuery ,useGetProcessSummaryQuery,useGetInActiveSummaryQuery} = adminApi;

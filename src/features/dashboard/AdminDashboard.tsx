@@ -5,12 +5,13 @@ import StatsCard from "./components/StatsCard";
 import UserTable from "./components/UserTable";
 import QuickMenu from "./components/QuickMenu";
 import AIStatus from "./components/AIStatus";
-import { useGetProcessSummaryQuery, useGetStatsQuery, useGetUserSummaryQuery } from "./api";
+import { useGetProcessSummaryQuery, useGetStatsQuery, useGetUserSummaryQuery,useGetInActiveSummaryQuery } from "./api";
 import { useState } from "react";
 import Createuser from "./components/Createuser";
 import { SuccessModal } from "./components/UserModals";
 import UserStatsModal from "./components/UserTotal";
 import ProcessStatsModal from "./components/ProcessTotal";
+import InActiveStatsModal from "./components/InActiveTotal";
 
 const sampleUsers = [
   {
@@ -35,8 +36,10 @@ export default function AdminDashboard() {
   const [openCreate, setOpenCreate] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
+  const [isInActiveModalOpen, setInActiveModalOpen] = useState(false);
   const { data: userStats, isLoading:isUserStatsLoading } = useGetUserSummaryQuery();
   const { data: processStats, isLoading: isProcessStatsLoading } = useGetProcessSummaryQuery();
+  const { data: inActiveStats, isLoading: isInActiveStatsLoading} = useGetInActiveSummaryQuery();
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 font-google-sans">
@@ -77,6 +80,7 @@ export default function AdminDashboard() {
           value={stats?.inActiveUsers || 1}
           icon={CircleAlert}
           color="#ef4444"
+          onClick={() => setInActiveModalOpen(true)}
         />
       </div>
 
@@ -93,6 +97,12 @@ export default function AdminDashboard() {
           <AIStatus />
         </div>
       </div>
+      <InActiveStatsModal
+        open = {isInActiveModalOpen}
+        onOpenChange={setInActiveModalOpen}
+        data={inActiveStats}
+        isLoading = {isInActiveStatsLoading}
+        />
       <ProcessStatsModal
         open= {isProcessModalOpen}
         onOpenChange={setIsProcessModalOpen}

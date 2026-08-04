@@ -26,7 +26,7 @@ export default function UserStatsModal({
         <button onClick={() => onOpenChange(false)} aria-label="close" className="mb-8 rounded-full p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
               <X />
             </button>
-        </div> 
+        </div>
 
         <div className="space-y-4 mb-10">
           {isLoading ? (

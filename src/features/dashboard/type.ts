@@ -30,3 +30,9 @@ export interface ProcessSummary{
     totalIncome:number;
     totalExpenses :number;
 }
+export interface InActiveSummary{
+    totalInActive: number;
+    moreThan30Days: number;
+    moreThan90Days: number;
+    pendingClose : number;
+}
