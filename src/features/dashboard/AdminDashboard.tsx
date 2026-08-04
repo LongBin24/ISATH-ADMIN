@@ -1,11 +1,15 @@
-"use client"
+"use client";
 
-import { Users,  CreditCard, CircleAlert } from "lucide-react";
+import { Users, CreditCard, CircleAlert } from "lucide-react";
 import StatsCard from "./components/StatsCard";
 import UserTable from "./components/UserTable";
 import QuickMenu from "./components/QuickMenu";
 import AIStatus from "./components/AIStatus";
-import { useGetStatsQuery } from "./api";
+import { useGetStatsQuery, useGetUserSummaryQuery } from "./api";
+import { useState } from "react";
+import Createuser from "./components/Createuser";
+import { SuccessModal } from "./components/UserModals";
+import UserStatsModal from "./components/UserTotal";
 
 const sampleUsers = [
   {
@@ -26,15 +30,26 @@ const sampleUsers = [
 
 export default function AdminDashboard() {
   const { data: stats } = useGetStatsQuery();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const { data: userStats, isLoading } = useGetUserSummaryQuery();
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 font-google-sans">
       <div className="rounded-3xle dark:bg-slate-900 dark:border dark:border-slate-800 sm:flex sm:items-center sm:justify-between sm:gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#003377] dark:text-white">ផ្ទាំងគ្រប់គ្រង</h1>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">គ្រប់គ្រងប្រព័ន្ធ iStash</p>
+          <h1 className="text-2xl font-bold text-[#003377] dark:text-white">
+            ផ្ទាំងគ្រប់គ្រង
+          </h1>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+            គ្រប់គ្រងប្រព័ន្ធ iStash
+          </p>
         </div>
-        <button className="inline-flex items-center justify-center rounded-full bg-[#FFC83D] px-7 py-3 text-sm font-semibold text-[#003377] shadow-sm transition hover:bg-[#f7c948] dark:bg-[#FFC83D] dark:text-slate-950">
+        <button
+          onClick={() => setOpenCreate(true)}
+          className="inline-flex items-center justify-center rounded-full bg-[#FFC83D] px-7 py-3 text-sm font-semibold text-[#003377] shadow-sm transition hover:bg-[#f7c948] dark:bg-[#FFC83D] dark:text-slate-950"
+        >
           + បង្កើតថ្មី
         </button>
       </div>
@@ -45,6 +60,7 @@ export default function AdminDashboard() {
           value={stats?.totalUsers || 2}
           icon={Users}
           color="#FFC83D"
+          onClick={() => setIsModalOpen(true)}
         />
         <StatsCard
           title="ប្រតិបត្តិការសរុប"
@@ -63,7 +79,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[2fr_1fr]">
         <div className="overflow-hidden rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900 sm:p-6">
           <h2 className="mb-6 text-xl font-bold text-[#003377] dark:text-white">
-            អ្នកប្រើប្រាស់ថ្មី  
+            អ្នកប្រើប្រាស់ថ្មី
           </h2>
           <UserTable users={sampleUsers} />
         </div>
@@ -73,6 +89,21 @@ export default function AdminDashboard() {
           <AIStatus />
         </div>
       </div>
+      <UserStatsModal 
+        open={isModalOpen} 
+        onOpenChange={setIsModalOpen} 
+        data={userStats} 
+        isLoading={isLoading} 
+      />
+      <Createuser
+        open={openCreate}
+        onOpenChange={setOpenCreate}
+        onSuccess={() => setSuccessOpen(true)}
+      />
+      <SuccessModal
+        isOpen={successOpen}
+        onClose={() => setSuccessOpen(false)}
+      />
     </div>
   );
 }

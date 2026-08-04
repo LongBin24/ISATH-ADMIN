@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { User, DashboardStats } from './type';
+import { User, DashboardStats, UserSummary } from './type';
 
 export const adminApi = createApi({
   reducerPath: 'adminApi',
@@ -17,7 +17,11 @@ export const adminApi = createApi({
       query: (body) => ({ url: 'users', method: 'POST', body }),
       invalidatesTags: ['User'],
     }),
+    getUserSummary: builder.query<UserSummary, void>({
+      query: () => 'admin/user/summary',
+      providesTags: ['User'],
+    }),
   }),
 });
 
-export const { useGetStatsQuery, useGetUsersQuery, useCreateUserMutation } = adminApi;
+export const { useGetStatsQuery, useGetUsersQuery, useCreateUserMutation, useGetUserSummaryQuery } = adminApi;
