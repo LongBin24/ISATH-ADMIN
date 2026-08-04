@@ -5,11 +5,12 @@ import StatsCard from "./components/StatsCard";
 import UserTable from "./components/UserTable";
 import QuickMenu from "./components/QuickMenu";
 import AIStatus from "./components/AIStatus";
-import { useGetStatsQuery, useGetUserSummaryQuery } from "./api";
+import { useGetProcessSummaryQuery, useGetStatsQuery, useGetUserSummaryQuery } from "./api";
 import { useState } from "react";
 import Createuser from "./components/Createuser";
 import { SuccessModal } from "./components/UserModals";
 import UserStatsModal from "./components/UserTotal";
+import ProcessStatsModal from "./components/ProcessTotal";
 
 const sampleUsers = [
   {
@@ -33,7 +34,9 @@ export default function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
-  const { data: userStats, isLoading } = useGetUserSummaryQuery();
+  const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
+  const { data: userStats, isLoading:isUserStatsLoading } = useGetUserSummaryQuery();
+  const { data: processStats, isLoading: isProcessStatsLoading } = useGetProcessSummaryQuery();
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 font-google-sans">
@@ -67,6 +70,7 @@ export default function AdminDashboard() {
           value={stats?.totalProcess || 48.291}
           icon={CreditCard}
           color="#003377"
+          onClick={() =>setIsProcessModalOpen(true)}
         />
         <StatsCard
           title="មិនសកម្ម"
@@ -89,11 +93,17 @@ export default function AdminDashboard() {
           <AIStatus />
         </div>
       </div>
+      <ProcessStatsModal
+        open= {isProcessModalOpen}
+        onOpenChange={setIsProcessModalOpen}
+        data={processStats}
+        isLoading={isProcessStatsLoading} 
+        />
       <UserStatsModal 
         open={isModalOpen} 
         onOpenChange={setIsModalOpen} 
         data={userStats} 
-        isLoading={isLoading} 
+        isLoading={isUserStatsLoading} 
       />
       <Createuser
         open={openCreate}

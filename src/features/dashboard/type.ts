@@ -24,3 +24,9 @@ export interface UserSummary{
     totalActiveUsers:number;
     newUsersToday:number;
 }
+export interface ProcessSummary{
+    totalProcesses:number;
+    totalCompleted:number;
+    totalIncome:number;
+    totalExpenses :number;
+}
