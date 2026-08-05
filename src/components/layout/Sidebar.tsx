@@ -3,14 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Tags, Globe, Bot, Settings, MessageSquare, Bell, X } from "lucide-react";
+import { LayoutDashboard, Tags, Globe, Bot, Settings, MessageSquare, Bell, UserCog, X } from "lucide-react";
 
 const navItems = [
   { label: "ផ្ទាំងគ្រប់គ្រង", icon: LayoutDashboard, href: "/dashboard" },
   { label: "ប្រភេទ", icon: Tags, href: "/categories" },
   { label: "រូបិយបណ្ណ", icon: Globe, href: "/currencies" },
   { label: "ជំនួយ AI", icon: Bot, href: "/ai-config" },
-  { label: "ការកំណត់", icon: Settings, href: "/settings" },
+  { label: "អ្នកប្រើប្រាស់", icon: UserCog, href: "/user-manager" },
   { label: "មតិ", icon: MessageSquare, href: "/feedback" },
   { label: "ការជូនដំណឹង", icon: Bell, href: "/notifications" },
 ];

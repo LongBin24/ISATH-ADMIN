@@ -1,9 +1,11 @@
-export interface SavingGoal {
+export type UserRole = 'admin' | 'user';
+
+export interface User {
   id: string;
-  title: string;
-  targetAmount: number;
-  currentAmount: number;
-  deadline: string;
-  name: string
+  name: string;
+  email: string;
+  role: UserRole;
+  status: 'active' | 'inactive';
+  lastActive: string;
 }
 
