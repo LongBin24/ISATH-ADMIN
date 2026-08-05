@@ -90,7 +90,7 @@ export default function UserManagerPage() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center text-[#003377]">
             
             <button 
               type="button"
@@ -110,7 +110,7 @@ export default function UserManagerPage() {
         </div>
       </div>
 
-      <div className="rounded-4xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+      <div className="rounded-4xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950 text-[#003377]">
         <UserTable users={filteredUsers} />
       </div>
 
