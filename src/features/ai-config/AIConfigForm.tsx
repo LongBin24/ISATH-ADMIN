@@ -74,7 +74,7 @@ export default function AIConfigForm() {
                 setEnabled: setVoiceEnabled,
               },
               {
-                label: "Tag ស៊ម៉ាត",
+                label: "Tag ស្វ័យប្រវត្តិ",
                 description: "បង្កើតស្លាកដោយស្វ័យប្រវត្តិ",
                 enabled: smartTagEnabled,
                 setEnabled: setSmartTagEnabled,
