@@ -1,14 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { adminApi } from "../features/dashboard/api";
-import { userManagerApi } from "../features/user-manager/api";
+import { baseApi } from "../api/baseApi";
 
 export const store = configureStore({
   reducer: {
-    [adminApi.reducerPath]: adminApi.reducer,
-    [userManagerApi.reducerPath]: userManagerApi.reducer,
+    [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(adminApi.middleware, userManagerApi.middleware),
+    getDefaultMiddleware().concat(baseApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -1,10 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/api/baseApi";
 import { User } from "./types";
 
-export const userManagerApi = createApi({
-  reducerPath: "userManagerApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/v1" }),
-  tagTypes: ["User"],
+export const userManagerApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query<User[], void>({
       query: () => "users",
@@ -15,6 +12,7 @@ export const userManagerApi = createApi({
       invalidatesTags: ["User"],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const { useGetUsersQuery, useCreateUserMutation } = userManagerApi;
