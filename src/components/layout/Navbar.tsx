@@ -2,6 +2,7 @@
 
 import { Search, Moon, Sun, Bell, User, Menu, X } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
+import NotificationBellDropdown from "@/features/notifications/components/NotificationBellDropdown";
 
 interface NavbarProps {
   onMenuToggle?: () => void;
@@ -44,12 +45,7 @@ export default function Navbar({ onMenuToggle, isSidebarOpen = false }: NavbarPr
             {mounted && theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
-          <button className="relative rounded-xl border border-slate-200 bg-white p-2 text-slate-600 transition hover:text-[#003377] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-            <Bell size={20} />
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
-              2
-            </span>
-          </button>
+          <NotificationBellDropdown />
 
           <div className="flex items-center gap-3 border-l border-slate-200 pl-2 sm:pl-4 dark:border-slate-800">
             <div className="hidden text-right sm:block">
