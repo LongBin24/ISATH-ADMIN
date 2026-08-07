@@ -52,8 +52,8 @@ export default function AIConfigForm() {
         onSubmit={handleSubmit}
         className="grid gap-6 xl:grid-cols-[1.4fr_1fr]"
       >
-        <div className="rounded-4xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-          <div className="space-y-4​ text-[#003377]">
+        <div className="rounded-4xl border  border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950 ">
+          <div className="space-y-4 mb-2​ text-[#003377]">
             {[
               {
                 label: "AI សកម្ម",
