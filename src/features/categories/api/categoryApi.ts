@@ -16,7 +16,8 @@ export const categoryApi = createApi({
     getCategories: builder.query<Category[], void>({
       queryFn: async () => {
         await new Promise((resolve) => setTimeout(resolve, 300));
-        return { data: MOCK_CATEGORIES };
+        // Return a copy to avoid freeze reference issues
+        return { data: [...MOCK_CATEGORIES] };
       },
       providesTags: ['Category'],
     }),
@@ -28,7 +29,8 @@ export const categoryApi = createApi({
           id: Date.now().toString(),
           transactionCount: 0,
         };
-        MOCK_CATEGORIES.unshift(newCategory);
+        // ប្រើប្រាស់ Immutable approach ໂດຍการสร้าง Array ថ្មី
+        MOCK_CATEGORIES = [newCategory, ...MOCK_CATEGORIES];
         return { data: newCategory };
       },
       invalidatesTags: ['Category'],
@@ -36,10 +38,19 @@ export const categoryApi = createApi({
     updateCategory: builder.mutation<Category, { id: string; data: Partial<Category> }>({
       queryFn: async ({ id, data }) => {
         await new Promise((resolve) => setTimeout(resolve, 300));
-        const index = MOCK_CATEGORIES.findIndex((c) => c.id === id);
-        if (index !== -1) {
-          MOCK_CATEGORIES[index] = { ...MOCK_CATEGORIES[index], ...data };
-          return { data: MOCK_CATEGORIES[index] };
+        let updatedCategory: Category | null = null;
+
+        // ប្រើ .map() ជំនួសការ Assign ផ្ទាល់ ដើម្បីជៀសវាង Read-only error
+        MOCK_CATEGORIES = MOCK_CATEGORIES.map((c) => {
+          if (c.id === id) {
+            updatedCategory = { ...c, ...data };
+            return updatedCategory;
+          }
+          return c;
+        });
+
+        if (updatedCategory) {
+          return { data: updatedCategory };
         }
         return { error: { status: 404, error: 'Category not found' } };
       },
@@ -48,6 +59,7 @@ export const categoryApi = createApi({
     deleteCategory: builder.mutation<string, string>({
       queryFn: async (id) => {
         await new Promise((resolve) => setTimeout(resolve, 300));
+        // ប្រើ .filter() បង្កើត Array ថ្មី
         MOCK_CATEGORIES = MOCK_CATEGORIES.filter((c) => c.id !== id);
         return { data: id };
       },
