@@ -1,24 +1,21 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { baseApi } from "@/api/baseApi";
-import { adminApi } from "../features/dashboard/api";
-import { userManagerApi } from "../features/user-manager/api";
-import { categoryApi } from "@/features/categories/api/categoryApi";
 import notificationReducer from "../features/notifications/slice";
+import { baseApi } from "../api/baseApi";
+import { categoryApi } from "@/features/categories/api/categoryApi";
+
+// រាល់ api ទាំងអស់ (adminApi, userManagerApi, categoryApi) 
+// ត្រូវបាន inject เข้า baseApi រួចហើយ ដូច្នេះមិនចាំបាច់ import មកដាក់ទីនេះទេ។
 
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
-    [adminApi.reducerPath]: adminApi.reducer,
-    [userManagerApi.reducerPath]: userManagerApi.reducer,
     [categoryApi.reducerPath]: categoryApi.reducer,
     notificationsUI: notificationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
-      adminApi.middleware,
-      userManagerApi.middleware,
+      baseApi.middleware,
       categoryApi.middleware,
-      baseApi.middleware
     ),
 });
 

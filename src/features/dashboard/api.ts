@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/api/baseApi";
 import {
   User,
   DashboardStats,
@@ -7,10 +7,7 @@ import {
   InActiveSummary,
 } from "./type";
 
-export const adminApi = createApi({
-  reducerPath: "adminApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/v1" }),
-  tagTypes: ["User", "Process", "InActive"],
+export const adminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getStats: builder.query<DashboardStats, void>({
       query: () => "admin/stats",
@@ -36,6 +33,7 @@ export const adminApi = createApi({
       providesTags: ["InActive"],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

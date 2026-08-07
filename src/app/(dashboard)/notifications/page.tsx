@@ -70,6 +70,7 @@ export default function NotificationsPage() {
       {/* 4. Popups & Dialog Modals */}
       <NotificationDetailModal />
       <SendNotificationDialog />
+
     </div>
   );
 }

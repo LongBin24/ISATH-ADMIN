@@ -1,6 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { API_TAGS } from "./tags";
-import { INITIAL_NOTIFICATIONS, INITIAL_PREFERENCES } from "@/features/notifications/constants";
+import {
+  INITIAL_NOTIFICATIONS,
+  INITIAL_PREFERENCES,
+} from "@/features/notifications/constants";
 import {
   NotificationItem,
   UserNotificationPreferences,
@@ -9,7 +12,6 @@ import {
   TriggerNotificationFormData,
 } from "@/features/notifications/types";
 
-// In-memory store for client-side state interactive persistence
 let mockNotificationsState: NotificationItem[] = [...INITIAL_NOTIFICATIONS];
 let mockPreferencesState: UserNotificationPreferences = { ...INITIAL_PREFERENCES };
 
@@ -21,7 +23,6 @@ export const baseApi = createApi({
       const urlStr = typeof input === "string" ? input : input.url;
       const method = init?.method || "GET";
 
-      // Subtle latency simulation
       await new Promise((resolve) => setTimeout(resolve, 250));
 
       if (urlStr.includes("notifications/stats")) {
