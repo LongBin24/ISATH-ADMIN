@@ -25,10 +25,10 @@ return (
           <Globe className="w-6 h-6" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[#003377] font-[var(--font-sans)]">
+          <h2 className="text-xl font-bold text-[#003377] font-google-sans">
             Exchange Rates
           </h2>
-          <p className="text-sm text-slate-500 font-['Hanuman']">
+          <p className="text-sm text-slate-500 font-google-sans">
             តារាងអត្រាប្តូរប្រាក់បច្ចុប្បន្ន
           </p>
         </div>
@@ -46,17 +46,17 @@ return (
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{item.flag}</span>
                 <div>
-                  <div className="font-bold text-slate-800 font-[var(--font-sans)]">
+                  <div className="font-bold text-slate-800 font-google-sans">
                     {item.code}
                   </div>
-                  <div className="text-xs text-slate-500 font-['Hanuman']">
+                  <div className="text-xs text-slate-500 font-google-sans">
                     {item.name}
                   </div>
                 </div>
               </div>
 
               <div className="text-right">
-                <div className="font-semibold text-slate-900 font-[var(--font-sans)]">
+                <div className="font-semibold text-slate-900 font-google-sans">
                   {item.rate.toLocaleString()}
                 </div>
                 <div

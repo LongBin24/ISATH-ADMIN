@@ -36,10 +36,10 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit, on
           <DynamicIcon name={category.icon} className="w-6 h-6" />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-[#003377] font-['Hanuman']">
+          <h3 className="text-lg font-bold text-[#003377] font-google-sans">
             {category.name}
           </h3>
-          <p className="text-xs text-slate-500 font-[var(--font-sans)] mt-0.5">
+          <p className="text-xs text-slate-500 font-google-sans mt-0.5">
             {category.transactionCount} ប្រតិបត្តិការ
           </p>
         </div>
@@ -47,8 +47,8 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit, on
 
       {/* Card Footer Budget info */}
       <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-        <span className="text-xs font-['Hanuman'] text-slate-400">ថវិកាកំណត់</span>
-        <span className="text-base font-bold text-slate-800 font-[var(--font-sans)]">
+        <span className="text-xs font-google-sans text-slate-400">ថវិកាកំណត់</span>
+        <span className="text-base font-bold text-slate-800 font-google-sans">
           ${category.totalBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}
         </span>
       </div>

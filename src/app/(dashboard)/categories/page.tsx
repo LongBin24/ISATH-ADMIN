@@ -53,17 +53,17 @@ export default function CategoryManagementPage() {
       {/* Top Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-[#003377] font-['Hanuman']">
+          <h1 className="text-3xl font-extrabold text-[#003377] font-google-sans">
             ប្រភេទ
           </h1>
-          <p className="text-slate-500 font-['Hanuman'] mt-1">
+          <p className="text-slate-500 font-google-sans mt-1">
             គ្រប់គ្រងប្រភេទចំណាយ
           </p>
         </div>
 
         <button
           onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#FFC83D] hover:bg-[#f6bd30] text-[#003377] font-bold font-['Hanuman'] shadow-sm transition-all"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#FFC83D] hover:bg-[#f6bd30] text-[#003377] font-bold font-google-sans shadow-sm transition-all"
         >
           <Plus className="w-5 h-5" />
           <span>ប្រភេទថ្មី</span>
