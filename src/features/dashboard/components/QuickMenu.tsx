@@ -11,8 +11,8 @@ const menuItems = [
 export default function QuickMenu() {
   return (
     <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-      <h3 className="text-lg font-bold mb-4 font-hanuman text-[#003377] dark:text-white">
-        ម៉ឺនុយរហ័ស
+      <h3 className="text-lg font-bold mb-4 font-google-sans text-[#003377] dark:text-white">
+        Quick Module
       </h3>
       <div className="space-y-2">
         {menuItems.map((item) => (
@@ -28,7 +28,7 @@ export default function QuickMenu() {
                   className="text-slate-600 dark:text-slate-400 group-hover:text-[#003377]"
                 />
               </div>
-              <span className="text-sm font-hanuman text-slate-700 dark:text-slate-300">
+              <span className="text-sm font-google-sans text-slate-700 dark:text-slate-300">
                 {item.label}
               </span>
             </div>

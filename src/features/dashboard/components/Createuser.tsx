@@ -1,0 +1,125 @@
+"use client";
+
+import { useState } from "react";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
+import { X } from "lucide-react";
+import { useCreateUserMutation } from "../api";
+
+export default function Createuser({
+  open,
+  onOpenChange,
+  onSuccess,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState<"user" | "admin">("user");
+  const [creating, setCreating] = useState(false);
+
+  const [createUser] = useCreateUserMutation();
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!name.trim() || !email.trim()) return;
+
+    setCreating(true);
+    try {
+      await createUser({ name, email, role } as any).unwrap();
+      setName("");
+      setEmail("");
+      setRole("user");
+      onOpenChange(false);
+      onSuccess?.();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md w-full rounded-3xl p-0 overflow-hidden">
+        <div className="bg-white dark:bg-slate-900">
+          <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+            <DialogTitle className="text-lg font-bold text-[#003377]">
+              បង្កើតអ្នកប្រើប្រាស់
+            </DialogTitle>
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="rounded-full p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              <X />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4 px-6 py-6">
+            <div>
+              <label className="block text-sm text-slate-500 mb-2">ឈ្មោះ</label>
+              <input
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                placeholder="ឈ្មោះ"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-slate-500 mb-2">
+                អ៊ីម៉ែល
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="user@gmail.com"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20"
+              />
+            </div>
+
+            <div>
+              <p className="mb-2 text-sm text-slate-500">តួនាទី</p>
+              <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 p-1">
+                {(["user", "admin"] as const).map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setRole(item)}
+                    className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
+                      role === item
+                        ? "bg-[#FFC83D] text-[#003377]"
+                        : "bg-white text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button
+                type="button"
+                onClick={() => onOpenChange(false)}
+                className="flex-1 rounded-full border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                បិទ
+              </button>
+              <button
+                type="submit"
+                disabled={creating}
+                className="flex-1 rounded-full bg-[#FFC83D] py-3 text-sm font-semibold text-[#003377] hover:bg-[#f7c948] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {creating ? "កំពុងបង្កើត..." : "+ បង្កើត"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

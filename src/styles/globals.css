@@ -121,9 +121,13 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground transition-colors duration-300;
+    @apply bg-background text-foreground transition-colors duration-300 font-google-sans;
   }
   html {
     @apply font-sans;
   }
+}
+
+.font-google-sans {
+  font-family: 'Google Sans', sans-serif;
 }
