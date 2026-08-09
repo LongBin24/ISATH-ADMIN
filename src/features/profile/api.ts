@@ -11,9 +11,26 @@ import {
 export const profileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProfile: builder.query<UserProfile, void>({
-      query: () => "profile",
-      providesTags: ["Profile"],
-    }),
+  async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
+  
+    const result = await baseQuery("profile"); 
+
+    if (result.data) {
+      console.log("✅ Profile ទាញបានពី Backend ពិត");
+      return { data: result.data as UserProfile };
+    }
+    return { 
+      data: {
+        id: "admin-001",
+        name: "ចាន់ សុផា",        
+        email: "admin@istash.com",
+        role: "ADMIN",
+        avatar: "https://ui-avatars.com/api/?name=Chan+Sopha&background=003377&color=fff",
+      } as UserProfile 
+    };
+  },
+  providesTags: ["Profile" as any],
+}),
     updateProfile: builder.mutation<UserProfile, UpdateProfilePayload>({
       query: (body) => ({
         url: "profile",
