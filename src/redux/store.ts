@@ -4,21 +4,19 @@ import { baseApi } from "../api/baseApi";
 import { categoryApi } from "@/features/categories/api/categoryApi";
 import { currencyApi } from "@/features/currencies/CurrencyApi";
 
-
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
-    [categoryApi.reducerPath]: categoryApi.reducer,
-    [currencyApi.reducerPath]: currencyApi.reducer,
+    // [categoryApi.reducerPath]: categoryApi.reducer,
+    // [currencyApi.reducerPath]: currencyApi.reducer,
     notificationsUI: notificationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       baseApi.middleware,
-      categoryApi.middleware,
-      currencyApi.middleware,
+      // categoryApi.middleware,
+      // currencyApi.middleware,
     ),
-
 });
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -151,6 +151,7 @@ export const CATEGORY_CONFIGS: Record<string, NotificationCategoryConfig> = {
 //   },
 // ];
 
+
 export const INITIAL_PREFERENCES: UserNotificationPreferences = {
   email: "user.khmer@istash.com",
   quietHoursEnabled: true,

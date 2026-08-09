@@ -1,6 +1,6 @@
 import React  from "react";
 import { TrendingUp, TrendingDown, Globe } from "lucide-react";
-import { ExchangeRate } from "../CurrencyApi";
+import { ExchangeRate  } from "../CurrencyApi";
 
 interface ExchangeRateListProps{
     rates: ExchangeRate[] | undefined
@@ -37,7 +37,10 @@ return (
       {/* Rate Items List */}
       <div className="space-y-4 flex-1">
         {rates?.map((item) => {
-          const isPositive = item.change >= 0;
+          const isPositive = item.change ?? 0;
+          const changeValue = item.change ?? 0;
+          const rateValue = item.rate ?? 0;
+
           return (
             <div
               key={item.code}
@@ -57,7 +60,7 @@ return (
 
               <div className="text-right">
                 <div className="font-semibold text-slate-900 font-google-sans">
-                  {item.rate.toLocaleString()}
+                  {(item.rate ?? 0).toLocaleString()}
                 </div>
                 <div
                   className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full mt-1 ${

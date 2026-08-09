@@ -29,7 +29,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
 
   // Automatic calculation logic
   const convertedAmount = useMemo(() => {
-    if (!rates) return 0;
+    if (!rates||rates.length===0) return 0;
     const fromRate = rates.find((r) => r.code === fromCurrency)?.rate || 1;
     const toRate = rates.find((r) => r.code === toCurrency)?.rate || 1;
     

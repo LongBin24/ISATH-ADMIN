@@ -6,6 +6,7 @@ export const API_TAGS = {
   PROCESS: "Process",
   INACTIVE: "InActive",
   PROFILE: 'Profile',
+  CURRENCY: 'Currency',
 } as const;
 
 export type ApiTagType = (typeof API_TAGS)[keyof typeof API_TAGS];
