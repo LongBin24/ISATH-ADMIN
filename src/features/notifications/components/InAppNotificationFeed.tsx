@@ -31,7 +31,7 @@ export default function InAppNotificationFeed() {
     selectNotification,
   } = useNotificationUI();
 
-  const { data: notifications = [], isLoading } = useGetNotificationsQuery();
+  const { data: notifications = [], isLoading } = useGetNotificationsQuery(undefined);
   const [markAsRead] = useMarkAsReadMutation();
   const [deleteNotification] = useDeleteNotificationMutation();
 

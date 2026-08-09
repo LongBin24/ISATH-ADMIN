@@ -69,12 +69,11 @@ import {
 
 export const notificationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getNotifications: builder.query<NotificationItem[], any>({
+    getNotifications: builder.query<NotificationItem[], void>({
       async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
         const result = await baseQuery(`${ENDPOINTS.NOTIFICATIONS}?pageNumber=0&pageSize=20`);
         const content = (result.data as any)?.content || [];
         
-        // Mapping ឱ្យគ្រប់គ្រប់ Key ទាំងចាស់ទាំងថ្មី
         const mapped = content.map((item: any) => ({
           ...item,
           isRead: item.read,
@@ -98,7 +97,6 @@ export const notificationApi = baseApi.injectEndpoints({
       async queryFn() { return { data: { email: "", quietHoursEnabled: false, categories: [] } as any }; }
     }),
 
-    // --- Mutations ត្រូវដាក់ឈ្មោះឱ្យត្រូវតាម UI បងប្អូន ---
     markAsRead: builder.mutation<any, string>({
       query: (id) => ({ url: `${ENDPOINTS.NOTIFICATIONS}/${id}`, method: "PATCH" })
     }),
@@ -120,7 +118,6 @@ export const notificationApi = baseApi.injectEndpoints({
   }),
 });
 
-// Export ឱ្យគ្រប់ឈ្មោះដែល UI ចង់បាន
 export const {
   useGetNotificationsQuery,
   useGetNotificationStatsQuery,
@@ -129,6 +126,6 @@ export const {
   useMarkAllAsReadMutation,
   useDeleteNotificationMutation,
   useUpdatePreferencesMutation,
-  useTriggerNotificationMutation, // ឈ្មោះនេះហើយដែលបាត់មិញ
+  useTriggerNotificationMutation, 
   useResetNotificationsMutation,
 } = notificationApi;
