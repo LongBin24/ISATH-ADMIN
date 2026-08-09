@@ -1,16 +1,22 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { adminApi } from "../features/dashboard/api";
-import { userManagerApi } from "../features/user-manager/api";
+import notificationReducer from "../features/notifications/slice";
+import { baseApi } from "../api/baseApi";
 import { categoryApi } from "@/features/categories/api/categoryApi";
+import { currencyApi } from "@/features/currencies/CurrencyApi";
 
 export const store = configureStore({
   reducer: {
-    [adminApi.reducerPath]: adminApi.reducer,
-    [userManagerApi.reducerPath]: userManagerApi.reducer,
-    [categoryApi.reducerPath]: categoryApi.reducer,
+    [baseApi.reducerPath]: baseApi.reducer,
+    // [categoryApi.reducerPath]: categoryApi.reducer,
+    // [currencyApi.reducerPath]: currencyApi.reducer,
+    notificationsUI: notificationReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(adminApi.middleware, userManagerApi.middleware,categoryApi.middleware),
+    getDefaultMiddleware().concat(
+      baseApi.middleware,
+      // categoryApi.middleware,
+      // currencyApi.middleware,
+    ),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

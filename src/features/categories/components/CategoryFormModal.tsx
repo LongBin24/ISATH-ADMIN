@@ -69,7 +69,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
       <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-slate-100 animate-in fade-in zoom-in duration-200">
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-          <h2 className="text-xl font-bold text-[#003377] font-['Hanuman']">
+          <h2 className="text-xl font-bold text-[#003377] font-google-sans">
             {initialData ? 'កែសម្រួលប្រភេទ (Edit Category)' : 'បង្កើតប្រភេទថ្មី (New Category)'}
           </h2>
           <button
@@ -84,21 +84,21 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 pt-4">
           {/* Category Name */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5 font-['Hanuman']">
+            <label className="block text-sm font-medium text-slate-700 mb-1.5 font-google-sans">
               ឈ្មោះប្រភេទ (Name)
             </label>
             <input
               type="text"
               {...register('name')}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFC83D] font-['Hanuman'] text-slate-800"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFC83D] font-google-sans text-slate-800"
               placeholder="ឧ. អាហារ"
             />
-            {errors.name && <p className="text-xs text-rose-500 mt-1 font-['Hanuman']">{errors.name.message}</p>}
+            {errors.name && <p className="text-xs text-rose-500 mt-1 font-google-sans">{errors.name.message}</p>}
           </div>
 
           {/* Icon Selector */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5 font-['Hanuman']">
+            <label className="block text-sm font-medium text-slate-700 mb-1.5 font-google-sans">
               ជ្រើសរើសរូបតំណាង (Icon)
             </label>
             <div className="grid grid-cols-4 gap-2.5 max-h-40 overflow-y-auto p-1">
@@ -117,22 +117,22 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                 </button>
               ))}
             </div>
-            {errors.icon && <p className="text-xs text-rose-500 mt-1 font-['Hanuman']">{errors.icon.message}</p>}
+            {errors.icon && <p className="text-xs text-rose-500 mt-1 font-google-sans">{errors.icon.message}</p>}
           </div>
 
           {/* Total Budget */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5 font-['Hanuman']">
+            <label className="block text-sm font-medium text-slate-700 mb-1.5 font-google-sans">
               ថវិកាកំណត់ ($ Budget)
             </label>
             <input
               type="number"
               step="any"
               {...register('totalBudget', { valueAsNumber: true })}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFC83D] font-[var(--font-sans)] text-slate-800"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFC83D] font-google-sans text-slate-800"
               placeholder="0.00"
             />
-            {errors.totalBudget && <p className="text-xs text-rose-500 mt-1 font-['Hanuman']">{errors.totalBudget.message}</p>}
+            {errors.totalBudget && <p className="text-xs text-rose-500 mt-1 font-google-sans">{errors.totalBudget.message}</p>}
           </div>
 
           {/* Action Buttons */}
@@ -140,14 +140,14 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-['Hanuman'] text-sm font-medium transition-colors"
+              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-google-sans text-sm font-medium transition-colors"
             >
               បោះបង់
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-2.5 rounded-xl bg-[#FFC83D] hover:bg-[#f6bd30] text-[#003377] font-bold font-['Hanuman'] text-sm shadow-sm transition-all disabled:opacity-50"
+              className="px-6 py-2.5 rounded-xl bg-[#FFC83D] hover:bg-[#f6bd30] text-[#003377] font-google-sans text-sm shadow-sm transition-all disabled:opacity-50"
             >
               {isLoading ? 'កំពុងរក្សាទុក...' : 'រក្សាទុក'}
             </button>

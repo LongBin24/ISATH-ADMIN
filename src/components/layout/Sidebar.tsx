@@ -35,7 +35,7 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-2xl font-bold text-[#003377] dark:text-[#FFC83D]">
-            <Image src="/logo.png" alt="Logo" width={44} height={44} />
+            <Image src="/logo.png" alt="Logo" width={44} height={42}/>
             <span>iStash</span>
           </div>
           <button

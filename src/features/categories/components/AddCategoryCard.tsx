@@ -15,10 +15,10 @@ export const AddCategoryCard: React.FC<AddCategoryCardProps> = ({ onClick }) => 
         <Plus className="w-6 h-6" />
       </div>
       <div className="text-center">
-        <span className="block font-bold text-[#003377] font-['Hanuman'] text-sm">
+        <span className="block font-bold text-[#003377] font-google-sans text-sm">
           ប្រភេទថ្មី
         </span>
-        <span className="text-xs text-slate-400 font-[var(--font-sans)]">
+        <span className="text-xs text-slate-400 font-google-sans">
           Add New Category
         </span>
       </div>
