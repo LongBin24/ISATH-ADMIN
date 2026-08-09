@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useRef, useEffect } from "react";
 import { Bell, ExternalLink, CheckCheck } from "lucide-react";
 import {
@@ -22,7 +21,10 @@ export default function NotificationBellDropdown() {
   // Close dropdown on click outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -78,7 +80,6 @@ export default function NotificationBellDropdown() {
             )}
           </div>
 
-          {/* Notification Quick Items */}
           <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
             {recentNotifications.length === 0 ? (
               <div className="p-8 text-center text-xs text-slate-400">
@@ -115,7 +116,6 @@ export default function NotificationBellDropdown() {
             )}
           </div>
 
-          {/* Dropdown Footer Link */}
           <div className="border-t border-slate-100 bg-slate-50/50 p-3 text-center dark:border-slate-800 dark:bg-slate-850">
             <Link
               href="/notifications"

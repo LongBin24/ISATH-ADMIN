@@ -4,8 +4,6 @@ import { baseApi } from "../api/baseApi";
 import { categoryApi } from "@/features/categories/api/categoryApi";
 import { currencyApi } from "@/features/currencies/CurrencyApi";
 
-// រាល់ api ទាំងអស់ (adminApi, userManagerApi, categoryApi) 
-// ត្រូវបាន inject เข้า baseApi រួចហើយ ដូច្នេះមិនចាំបាច់ import មកដាក់ទីនេះទេ។
 
 export const store = configureStore({
   reducer: {

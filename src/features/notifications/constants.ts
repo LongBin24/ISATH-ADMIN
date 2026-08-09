@@ -38,7 +38,7 @@ export const CATEGORY_CONFIGS: Record<string, NotificationCategoryConfig> = {
   RECURRING_TX: {
     id: "RECURRING_TX",
     nameKh: "ការរំលឹកប្រតិបត្តិការថេរ",
-    nameEn: "Recurring Transaction Reminder",
+    nameEn: "Recurrin g Transaction Reminder",
     descriptionKh: "រំលឹកការទូទាត់វិក្កយបត្រ សេវាកម្មប្រចាំខែ ឬការបង់រំលស់",
     descriptionEn: "Upcoming recurring payment and monthly bill reminders",
     iconName: "Repeat",
@@ -57,99 +57,99 @@ export const CATEGORY_CONFIGS: Record<string, NotificationCategoryConfig> = {
   },
 };
 
-export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: "notif-001",
-    titleKh: "ដល់ម៉ោងកត់ត្រាការចំណាយប្រចាំថ្ងៃ!",
-    titleEn: "Daily Expense Reminder",
-    messageKh: "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រាប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ។ ការធ្វើបច្ចុប្បន្នភាពទៀងទាត់ជួយរក្សាស្ថេរភាពហិរញ្ញវត្ថុ។",
-    messageEn: "Please take 1 minute to log today's expenses. Keeping tracking updated leads to better budgeting.",
-    category: "DAILY_EXPENSE",
-    channels: ["IN_APP", "EMAIL"],
-    priority: "MEDIUM",
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 mins ago
-    actionUrl: "/expenses/new",
-    metadata: {
-      periodMonth: "សីហា ២០២៦",
-    },
-  },
-  {
-    id: "notif-002",
-    titleKh: "ការព្រមាន៖ ការចំណាយលើ «អាហារ និងភេសជ្ជៈ» ជិតដល់កម្រិតកំណត់!",
-    titleEn: "Budget Warning Alert",
-    messageKh: "អ្នកបានចំណាយអស់ $340.00 (85%) នៃថវិកាសរុប $400.00 សម្រាប់ប្រភេទ «អាហារ និងភេសជ្ជៈ» ក្នុងខែនេះហើយ។",
-    messageEn: "You have spent $340.00 (85%) of your $400.00 monthly budget for Food & Beverage.",
-    category: "BUDGET_WARNING",
-    channels: ["IN_APP", "EMAIL"],
-    priority: "HIGH",
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 180).toISOString(), // 3 hours ago
-    actionUrl: "/budgets",
-    metadata: {
-      amount: 340,
-      currency: "USD",
-      budgetCategory: "អាហារ និងភេសជ្ជៈ",
-      budgetLimit: 400,
-      budgetUsedPercent: 85,
-    },
-  },
-  {
-    id: "notif-003",
-    titleKh: "អបអរសាទរ! គោលដៅ «មូលនិធិអាសន្ន» សម្រេចបាន 75% ហើយ",
-    titleEn: "Savings Goal Update",
-    messageKh: "អ្នកបានសន្សំប្រាក់បាន $750.00 នៃគោលដៅសរុប $1,000.00។ ខ្វះតែ $250.00 ទៀតប៉ុណ្ណោះដើម្បីសម្រេចគោលដៅទាំងស្រុង!",
-    messageEn: "Great progress! You reached 75% ($750 / $1,000) of Emergency Fund target.",
-    category: "SAVINGS_GOAL",
-    channels: ["IN_APP"],
-    priority: "MEDIUM",
-    isRead: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-    actionUrl: "/savings",
-    metadata: {
-      savingsGoalName: "មូលនិធិអាសន្ន (Emergency Fund)",
-      savingsCurrent: 750,
-      savingsTarget: 1000,
-    },
-  },
-  {
-    id: "notif-004",
-    titleKh: "ការរំលឹកបង់ប្រាក់៖ វិក្កយបត្រ «សេវាអ៊ីនធឺណិត» ត្រូវបង់នៅថ្ងៃស្អែក",
-    titleEn: "Upcoming Bill Payment",
-    messageKh: "វិក្កយបត្រប្រចាំខែសេវាអ៊ីនធឺណិតចំនួន $35.00 នឹងត្រូវកាត់ប្រាក់ ឬបង់នៅថ្ងៃទី 08 សីហា ២០២៦។",
-    messageEn: "Internet subscription payment of $35.00 is due tomorrow.",
-    category: "RECURRING_TX",
-    channels: ["IN_APP", "EMAIL"],
-    priority: "HIGH",
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 36).toISOString(), // 36 hours ago
-    actionUrl: "/recurring",
-    metadata: {
-      amount: 35,
-      currency: "USD",
-      dueDate: "2026-08-08",
-    },
-  },
-  {
-    id: "notif-005",
-    titleKh: "របាយការណ៍ហិរញ្ញវត្ថុសង្ខេបប្រចាំខែកក្កដា ២០២៦ ត្រូវបានចេញផ្សាយ",
-    titleEn: "Monthly Summary Report",
-    messageKh: "ក្នុងខែកក្កដា អ្នកទទួលបានប្រាក់ចំណូលសរុប $2,450.00, ចំណាយសរុប $1,280.00, និងរក្សាបានការសន្សំសុទ្ធចំនួន $1,170.00 (កំណើន +12% ធៀបនឹងខែមិថុនា)។",
-    messageEn: "July financial summary: Total Income $2,450, Expenses $1,280, Net Savings $1,170 (+12% vs June).",
-    category: "MONTHLY_SUMMARY",
-    channels: ["IN_APP", "EMAIL"],
-    priority: "LOW",
-    isRead: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 days ago
-    actionUrl: "/reports/monthly",
-    metadata: {
-      incomeTotal: 2450,
-      expenseTotal: 1280,
-      netSavings: 1170,
-      periodMonth: "កក្កដា ២០២៦",
-    },
-  },
-];
+// export const INITIAL_NOTIFICATIONS: NotificationItem[] = [ 
+//   {
+//     id: "notif-001",
+//     titleKh: "ដល់ម៉ោងកត់ត្រាការចំណាយប្រចាំថ្ងៃ!",
+//     titleEn: "Daily Expense Reminder",
+//     messageKh: "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រាប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ។ ការធ្វើបច្ចុប្បន្នភាពទៀងទាត់ជួយរក្សាស្ថេរភាពហិរញ្ញវត្ថុ។",
+//     messageEn: "Please take 1 minute to log today's expenses. Keeping tracking updated leads to better budgeting.",
+//     category: "DAILY_EXPENSE",
+//     channels: ["IN_APP", "EMAIL"],
+//     priority: "MEDIUM",
+//     isRead: false,
+//     createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 mins ago
+//     actionUrl: "/expenses/new",
+//     metadata: {
+//       periodMonth: "សីហា ២០២៦",
+//     },
+//   },
+//   {
+//     id: "notif-002",
+//     titleKh: "ការព្រមាន៖ ការចំណាយលើ «អាហារ និងភេសជ្ជៈ» ជិតដល់កម្រិតកំណត់!",
+//     titleEn: "Budget Warning Alert",
+//     messageKh: "អ្នកបានចំណាយអស់ $340.00 (85%) នៃថវិកាសរុប $400.00 សម្រាប់ប្រភេទ «អាហារ និងភេសជ្ជៈ» ក្នុងខែនេះហើយ។",
+//     messageEn: "You have spent $340.00 (85%) of your $400.00 monthly budget for Food & Beverage.",
+//     category: "BUDGET_WARNING",
+//     channels: ["IN_APP", "EMAIL"],
+//     priority: "HIGH",
+//     isRead: false,
+//     createdAt: new Date(Date.now() - 1000 * 60 * 180).toISOString(), // 3 hours ago
+//     actionUrl: "/budgets",
+//     metadata: {
+//       amount: 340,
+//       currency: "USD",
+//       budgetCategory: "អាហារ និងភេសជ្ជៈ",
+//       budgetLimit: 400,
+//       budgetUsedPercent: 85,
+//     },
+//   },
+//   {
+//     id: "notif-003",
+//     titleKh: "អបអរសាទរ! គោលដៅ «មូលនិធិអាសន្ន» សម្រេចបាន 75% ហើយ",
+//     titleEn: "Savings Goal Update",
+//     messageKh: "អ្នកបានសន្សំប្រាក់បាន $750.00 នៃគោលដៅសរុប $1,000.00។ ខ្វះតែ $250.00 ទៀតប៉ុណ្ណោះដើម្បីសម្រេចគោលដៅទាំងស្រុង!",
+//     messageEn: "Great progress! You reached 75% ($750 / $1,000) of Emergency Fund target.",
+//     category: "SAVINGS_GOAL",
+//     channels: ["IN_APP"],
+//     priority: "MEDIUM",
+//     isRead: true,
+//     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
+//     actionUrl: "/savings",
+//     metadata: {
+//       savingsGoalName: "មូលនិធិអាសន្ន (Emergency Fund)",
+//       savingsCurrent: 750,
+//       savingsTarget: 1000,
+//     },
+//   },
+//   {
+//     id: "notif-004",
+//     titleKh: "ការរំលឹកបង់ប្រាក់៖ វិក្កយបត្រ «សេវាអ៊ីនធឺណិត» ត្រូវបង់នៅថ្ងៃស្អែក",
+//     titleEn: "Upcoming Bill Payment",
+//     messageKh: "វិក្កយបត្រប្រចាំខែសេវាអ៊ីនធឺណិតចំនួន $35.00 នឹងត្រូវកាត់ប្រាក់ ឬបង់នៅថ្ងៃទី 08 សីហា ២០២៦។",
+//     messageEn: "Internet subscription payment of $35.00 is due tomorrow.",
+//     category: "RECURRING_TX",
+//     channels: ["IN_APP", "EMAIL"],
+//     priority: "HIGH",
+//     isRead: false,
+//     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 36).toISOString(), // 36 hours ago
+//     actionUrl: "/recurring",
+//     metadata: {
+//       amount: 35,
+//       currency: "USD",
+//       dueDate: "2026-08-08",
+//     },
+//   },
+//   {
+//     id: "notif-005",
+//     titleKh: "របាយការណ៍ហិរញ្ញវត្ថុសង្ខេបប្រចាំខែកក្កដា ២០២៦ ត្រូវបានចេញផ្សាយ",
+//     titleEn: "Monthly Summary Report",
+//     messageKh: "ក្នុងខែកក្កដា អ្នកទទួលបានប្រាក់ចំណូលសរុប $2,450.00, ចំណាយសរុប $1,280.00, និងរក្សាបានការសន្សំសុទ្ធចំនួន $1,170.00 (កំណើន +12% ធៀបនឹងខែមិថុនា)។",
+//     messageEn: "July financial summary: Total Income $2,450, Expenses $1,280, Net Savings $1,170 (+12% vs June).",
+//     category: "MONTHLY_SUMMARY",
+//     channels: ["IN_APP", "EMAIL"],
+//     priority: "LOW",
+//     isRead: true,
+//     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 days ago
+//     actionUrl: "/reports/monthly",
+//     metadata: {
+//       incomeTotal: 2450,
+//       expenseTotal: 1280,
+//       netSavings: 1170,
+//       periodMonth: "កក្កដា ២០២៦",
+//     },
+//   },
+// ];
 
 export const INITIAL_PREFERENCES: UserNotificationPreferences = {
   email: "user.khmer@istash.com",

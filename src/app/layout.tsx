@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReduxProvider } from "../redux/provider";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,7 +24,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "iStash - ប្រព័ន្ធគ្រប់គ្រងហិរញ្ញវត្ថុ និងការជូនដំណឹង",
-  description: "iStash Financial Management System & Automated Khmer Notifications",
+  description:
+    "iStash Financial Management System & Automated Khmer Notifications",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -51,13 +53,28 @@ export default function RootLayout({
     >
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
         <meta name="mobile-web-app-capable" content="yes" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
       </head>
       <body className="min-h-full flex flex-col font-google-sans">
         <ReduxProvider>{children}</ReduxProvider>
+
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: "#363636",
+              color: "#fff",
+            },
+          }}
+        />
       </body>
     </html>
   );

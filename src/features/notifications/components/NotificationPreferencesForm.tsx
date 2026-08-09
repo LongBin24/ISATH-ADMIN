@@ -29,8 +29,10 @@ import {
 import { CATEGORY_CONFIGS } from "../constants";
 
 export default function NotificationPreferencesForm() {
-  const { data: initialPrefs, isLoading } = useGetNotificationPreferencesQuery();
-  const [updatePreferences, { isLoading: isSaving }] = useUpdatePreferencesMutation();
+  const { data: initialPrefs, isLoading } =
+    useGetNotificationPreferencesQuery();
+  const [updatePreferences, { isLoading: isSaving }] =
+    useUpdatePreferencesMutation();
   const [successToast, setSuccessToast] = useState(false);
 
   const {
@@ -51,7 +53,7 @@ export default function NotificationPreferencesForm() {
     },
   });
 
-  const { fields } = useFieldArray({
+  const { fields } = useFieldArray<PreferencesFormData>({
     control,
     name: "categories",
   });
@@ -88,7 +90,9 @@ export default function NotificationPreferencesForm() {
       case "SAVINGS_GOAL":
         return <Target className="text-emerald-500" size={20} />;
       case "RECURRING_TX":
-        return <Repeat className="text-[#003377] dark:text-sky-400" size={20} />;
+        return (
+          <Repeat className="text-[#003377] dark:text-sky-400" size={20} />
+        );
       case "MONTHLY_SUMMARY":
         return <BarChart3 className="text-indigo-500" size={20} />;
       default:
@@ -100,13 +104,18 @@ export default function NotificationPreferencesForm() {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-3 font-google-sans">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#FFC83D] border-t-transparent" />
-        <p className="text-sm font-semibold text-slate-500">កំពុងផ្ទុកការកំណត់...</p>
+        <p className="text-sm font-semibold text-slate-500">
+          កំពុងផ្ទុកការកំណត់...
+        </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl font-google-sans">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-8 max-w-4xl font-google-sans"
+    >
       {/* Toast Banner */}
       {successToast && (
         <div className="flex items-center gap-3 rounded-2xl bg-emerald-500/10 p-4 text-sm font-bold text-emerald-600 border border-emerald-500/30 animate-in fade-in">
@@ -143,10 +152,10 @@ export default function NotificationPreferencesForm() {
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#FFC83D] focus:ring-2 focus:ring-[#FFC83D]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               placeholder="user@example.com"
             />
-            {errors.email && (
+            {errors.email?.message && (
               <p className="text-xs font-bold text-red-500 flex items-center gap-1">
                 <AlertCircle size={12} />
-                {errors.email.message}
+                {String(errors.email.message)}
               </p>
             )}
           </div>
@@ -180,7 +189,8 @@ export default function NotificationPreferencesForm() {
                 ការរៀបចំប៉ុស្តិ៍ជូនដំណឹងតាមប្រភេទ
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                បើក ឬបិទ ការជូនដំណឹងក្នុងកម្មវិធី និងតាមអ៊ីមែល សម្រាប់មុខងារទាំង 5
+                បើក ឬបិទ ការជូនដំណឹងក្នុងកម្មវិធី និងតាមអ៊ីមែល សម្រាប់មុខងារទាំង
+                5
               </p>
             </div>
           </div>
@@ -240,7 +250,9 @@ export default function NotificationPreferencesForm() {
                           })}
                           className="w-16 rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                         />
-                        <span className="text-xs text-slate-400">% នៃថវិកា</span>
+                        <span className="text-xs text-slate-400">
+                          % នៃថវិកា
+                        </span>
                       </div>
                     )}
                   </div>
@@ -256,7 +268,10 @@ export default function NotificationPreferencesForm() {
                       className="h-4 w-4 rounded border-slate-300 text-[#003377] focus:ring-[#FFC83D]"
                     />
                     <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
-                      <Bell size={14} className="text-[#003377] dark:text-[#FFC83D]" />
+                      <Bell
+                        size={14}
+                        className="text-[#003377] dark:text-[#FFC83D]"
+                      />
                       ក្នុងកម្មវិធី
                     </span>
                   </label>
