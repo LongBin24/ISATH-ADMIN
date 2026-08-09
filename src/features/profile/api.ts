@@ -26,7 +26,7 @@ export const profileApi = baseApi.injectEndpoints({
         email: "admin@istash.com",
         role: "ADMIN",
         avatar: "https://ui-avatars.com/api/?name=Chan+Sopha&background=003377&color=fff",
-      } as UserProfile 
+      } as any
     };
   },
   providesTags: ["Profile" as any],
