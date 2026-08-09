@@ -30,10 +30,8 @@ export default function SendNotificationDialog() {
       category: "DAILY_REMINDER",
       channel: "BOTH",
       customTitleKh: "ដល់ម៉ោងកត់ត្រាការចំណាយប្រចាំថ្ងៃ!",
-      customMessageKh: "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រាប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ។",
+      customMessageKh: "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រาប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ।",
       priority: "MEDIUM",
-      amount: 50,
-      targetName: "",
     },
   });
 
@@ -42,11 +40,11 @@ export default function SendNotificationDialog() {
   // Auto-fill template suggestion on category change
   useEffect(() => {
     switch (selectedCategory) {
-      case "DAILY_EXPENSE":
+      case "DAILY_REMINDER":
         setValue("customTitleKh", "ដល់ម៉ោងកត់ត្រាការចំណាយប្រចាំថ្ងៃ!");
         setValue(
           "customMessageKh",
-          "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រាប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ។"
+          "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រาប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ।"
         );
         setValue("priority", "MEDIUM");
         break;
@@ -57,34 +55,30 @@ export default function SendNotificationDialog() {
           "អ្នកបានចំណាយ 85% នៃថវិកាប្រចាំខែដែលបានកំណត់ចំនួន $400.00 ក្នុងខែនេះហើយ។"
         );
         setValue("priority", "HIGH");
-        setValue("amount", 340);
         break;
-      case "SAVINGS_GOAL":
+      case "SAVINGS_REMINDER":
         setValue("customTitleKh", "អបអរសាទរ! គោលដៅសន្សំសម្រេចបាន 75%");
         setValue(
           "customMessageKh",
           "អ្នកបានសន្សំប្រាក់បាន $750.00 នៃគោលដៅសរុប $1,000.00។"
         );
         setValue("priority", "MEDIUM");
-        setValue("targetName", "មូលនិធិអាសន្ន");
         break;
-      case "RECURRING_TX":
+      case "RECURRING_REMINDER":
         setValue("customTitleKh", "ការរំលឹកបង់ប្រាក់៖ វិក្កយបត្រត្រូវបង់នៅថ្ងៃស្អែក");
         setValue(
           "customMessageKh",
           "វិក្កយបត្រប្រចាំខែសេវាអ៊ីនធឺណិតចំនួន $35.00 នឹងត្រូវទូទាត់នៅថ្ងៃស្អែក។"
         );
         setValue("priority", "HIGH");
-        setValue("amount", 35);
         break;
       case "MONTHLY_SUMMARY":
         setValue("customTitleKh", "របាយការណ៍ហិរញ្ញវត្ថុសង្ខេបប្រចាំខែកក្កដា");
         setValue(
           "customMessageKh",
-          "ចំណូលសរុប $2,450.00, ចំណាយសរុប $1,280.00, សន្សំសុទ្ធ $1,170.00។"
+          "ចំណូលសរុប $2,450.00, ចំណាយសរុប $1,280.00, សន្សំសុទ្ធ $1,170.00।"
         );
         setValue("priority", "LOW");
-        setValue("amount", 1170);
         break;
     }
   }, [selectedCategory, setValue]);
@@ -94,11 +88,7 @@ export default function SendNotificationDialog() {
   const onSubmit = async (data: TriggerNotificationFormData) => {
     setSubmitError(null);
     try {
-      const payload: TriggerNotificationFormData = {
-        ...data,
-        amount: typeof data.amount === "number" && !isNaN(data.amount) ? data.amount : undefined,
-      };
-      await triggerNotification(payload).unwrap();
+      await triggerNotification(data).unwrap();
       toggleTriggerModal(false);
       reset();
     } catch (e: any) {
@@ -152,7 +142,6 @@ export default function SendNotificationDialog() {
             </select>
           </div>
 
-          {/* Channel Select */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
@@ -184,7 +173,6 @@ export default function SendNotificationDialog() {
             </div>
           </div>
 
-          {/* Title Input */}
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
               ចំណងជើង
@@ -200,7 +188,6 @@ export default function SendNotificationDialog() {
             )}
           </div>
 
-          {/* Message Input */}
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
               ខ្លឹមសារសារ
@@ -214,22 +201,6 @@ export default function SendNotificationDialog() {
             {errors.customMessageKh && (
               <p className="text-[11px] font-bold text-red-500">{errors.customMessageKh.message}</p>
             )}
-          </div>
-
-          {/* Optional Amount */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              ចំនួនទឹកប្រាក់ ($) - បើមាន
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              {...register("amount", {
-                setValueAs: (v) => (v === "" || v === null || isNaN(Number(v)) ? undefined : Number(v)),
-              })}
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              placeholder="0.00"
-            />
           </div>
 
           {/* Footer Actions */}
