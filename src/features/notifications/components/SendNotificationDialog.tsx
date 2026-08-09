@@ -27,7 +27,7 @@ export default function SendNotificationDialog() {
   } = useForm<TriggerNotificationFormData>({
     resolver: zodResolver(triggerNotificationSchema),
     defaultValues: {
-      category: "DAILY_EXPENSE",
+      category: "DAILY_REMINDER",
       channel: "BOTH",
       customTitleKh: "ដល់ម៉ោងកត់ត្រាការចំណាយប្រចាំថ្ងៃ!",
       customMessageKh: "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រាប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ។",
