@@ -61,19 +61,20 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 sm:gap-6">
+        
+        <StatsCard
+          title="ប្រតិបត្តិការសរុប"
+          value={stats?.totalProcess || 489}
+          icon={CreditCard}
+          color="#003377"
+          onClick={() =>setIsProcessModalOpen(true)}
+        />
         <StatsCard
           title="អ្នកប្រើប្រាស់សរុប"
           value={stats?.totalUsers || 2}
           icon={Users}
           color="#FFC83D"
           onClick={() => setIsModalOpen(true)}
-        />
-        <StatsCard
-          title="ប្រតិបត្តិការសរុប"
-          value={stats?.totalProcess || 48.291}
-          icon={CreditCard}
-          color="#003377"
-          onClick={() =>setIsProcessModalOpen(true)}
         />
         <StatsCard
           title="មិនសកម្ម"
