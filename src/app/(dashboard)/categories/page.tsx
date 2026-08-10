@@ -1,27 +1,31 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Plus, FolderTree } from 'lucide-react';
+import React, { useState } from "react";
+import { Plus, FolderTree } from "lucide-react";
 import {
   useGetCategoriesQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
-} from '@/features/categories/api/categoryApi';
-import { Category } from '@/features/categories/types';
-import { CategoryFormValues } from '@/features/categories/schema';
-import { CategoryCard } from '@/features/categories/components/CategoryCard';
-import { AddCategoryCard } from '@/features/categories/components/AddCategoryCard';
-import { CategoryFormModal } from '@/features/categories/components/CategoryFormModal';
+} from "@/features/categories/categoryApi";
+import { Category } from "@/features/categories/types";
+import { CategoryFormValues } from "@/features/categories/schema";
+import { CategoryCard } from "@/features/categories/components/CategoryCard";
+import { AddCategoryCard } from "@/features/categories/components/AddCategoryCard";
+import { CategoryFormModal } from "@/features/categories/components/CategoryFormModal";
 
 export default function CategoryManagementPage() {
   const { data: categories, isLoading } = useGetCategoriesQuery();
-  const [createCategory, { isLoading: isCreating }] = useCreateCategoryMutation();
-  const [updateCategory, { isLoading: isUpdating }] = useUpdateCategoryMutation();
+  const [createCategory, { isLoading: isCreating }] =
+    useCreateCategoryMutation();
+  const [updateCategory, { isLoading: isUpdating }] =
+    useUpdateCategoryMutation();
   const [deleteCategory] = useDeleteCategoryMutation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null,
+  );
 
   const handleOpenAdd = () => {
     setSelectedCategory(null);
@@ -43,13 +47,13 @@ export default function CategoryManagementPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('តើអ្នកពិតជាចង់លុបប្រភេទនេះមែនទេ?')) {
+    if (confirm("តើអ្នកពិតជាចង់លុបប្រភេទនេះមែនទេ?")) {
       await deleteCategory(id);
     }
   };
 
   return (
-    <div className="w-full space-y-8 bg-[#F8F9FA] min-h-screen">
+    <div className="w-full space-y-8 bg-[#F8F9FA] min-h-screen dark:bg-slate-900 dark:border-slate-800">
       {/* Top Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

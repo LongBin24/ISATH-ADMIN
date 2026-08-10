@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import notificationReducer from "../features/notifications/slice";
 import { baseApi } from "../api/baseApi";
-import { categoryApi } from "@/features/categories/api/categoryApi";
+import { categoryApi } from "@/features/categories/categoryApi";
 import { currencyApi } from "@/features/currencies/CurrencyApi";
 
 export const store = configureStore({

@@ -17,7 +17,7 @@ export default function Navbar({ onMenuToggle, isSidebarOpen = false }: NavbarPr
   const { data: profile } = useGetProfileQuery();
 
   return (
-    <header className="sticky top-0 z-20 h-22 sm:h-27 w-full border-b border-slate-200/80 bg-white/80 px-4 py-3 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-20 h-22 sm:h-27 w-full border-b border-slate-200/80 bg-white/80 px-4 py-3 backdrop-blur-md dark:bg-slate-900 dark:border-slate-800 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 lg:hidden">
           <button
