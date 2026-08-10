@@ -10,7 +10,7 @@ interface ExchangeRateListProps{
 export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoading }) => {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 h-full flex items-center justify-center">
+      <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 h-full flex items-center justify-center dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
         <div className="animate-spin text-[#003377]">
           <Globe className="w-8 h-8" />
         </div>
@@ -18,24 +18,24 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
     );
   }
 return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 flex flex-col h-full">
+    <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 flex flex-col h-full dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="p-3 bg-[#003377]/10 rounded-xl text-[#003377]">
           <Globe className="w-6 h-6" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[#003377] font-google-sans">
+          <h2 className="text-xl font-bold text-[#003377] font-google-sans dark:text-slate-300">
             Exchange Rates
           </h2>
-          <p className="text-sm text-slate-500 font-google-sans">
+          <p className="text-sm text-slate-500 font-google-sans dark:text-slate-300">
             តារាងអត្រាប្តូរប្រាក់បច្ចុប្បន្ន
           </p>
         </div>
       </div>
 
       {/* Rate Items List */}
-      <div className="space-y-4 flex-1">
+      <div className="space-y-4 flex-1 ">
         {rates?.map((item) => {
           const isPositive = item.change ?? 0;
           const changeValue = item.change ?? 0;
@@ -44,7 +44,7 @@ return (
           return (
             <div
               key={item.code}
-              className="flex items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-slate-200 transition-all bg-slate-50/50"
+              className="flex items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-slate-200 transition-all bg-slate-50/50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
             >
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{item.flag}</span>

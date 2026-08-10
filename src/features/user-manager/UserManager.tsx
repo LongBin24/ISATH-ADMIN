@@ -95,7 +95,7 @@ export default function UserManagerPage() {
             <button 
               type="button"
               onClick={() => router.push('/dashboard')}
-              className="inline-flex items-center justify-center gap-2 rounded-full  px-5 py-3 text-sm font-semibold text-[#003377] transition hover:bg-[#f7c948]"
+              className="inline-flex items-center justify-center gap-2 rounded-full  px-5 py-3 text-sm font-semibold text-[#003377] transition hover:bg-[#f7c948] dark:bg-[#003377] dark:text-slate-300"
             >
               <ChevronLeft  size={18} /> Admin </button>
 

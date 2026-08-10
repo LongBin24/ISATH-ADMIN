@@ -66,10 +66,10 @@ export default function CurrencyManagementPage() {
 };
 
   return (
-    <div className="w-full space-y-8 bg-slate-50/50 min-h-screen">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="w-full space-y-8  min-h-screen">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 dark:bg-slate-950 dark:text-slate-100">
         <div>
-          <h1 className="text-3xl font-extrabold text-[#003377] font-google-sans">រូបិយប័ណ្ណ</h1>
+          <h1 className="text-3xl font-extrabold text-[#003377] font-google-sans dark:text-slate-300">រូបិយប័ណ្ណ</h1>
           <p className="text-slate-500 font-google-sans mt-1">គ្រប់គ្រងរូបិយប័ណ្ណ</p>
         </div>
 
@@ -83,7 +83,7 @@ export default function CurrencyManagementPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-8 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-8 items-stretch dark:bg-slate-950 dark:text-slate-100">
         <CurrencyConverter rates={rates} />
         <ExchangeRateList rates={rates} isLoading={isLoading} />
       </div>

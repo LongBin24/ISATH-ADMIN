@@ -53,14 +53,14 @@ export default function CategoryManagementPage() {
   };
 
   return (
-    <div className="w-full space-y-8 bg-[#F8F9FA] min-h-screen dark:bg-slate-900 dark:border-slate-800">
+    <div className="w-full space-y-8 bg-[#F8F9FA] min-h-screen dark:bg-slate-950 dark:text-slate-100">
       {/* Top Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-[#003377] font-google-sans">
+          <h1 className="text-3xl font-extrabold text-[#003377] font-google-sans dark:text-slate-300">
             ប្រភេទ
           </h1>
-          <p className="text-slate-500 font-google-sans mt-1">
+          <p className="text-slate-500 font-google-sans mt-1 dark:text-slate-300">
             គ្រប់គ្រងប្រភេទចំណាយ
           </p>
         </div>
@@ -77,12 +77,12 @@ export default function CategoryManagementPage() {
       {/* Main Grid Layout (grid-cols-1 to grid-cols-4) */}
       {isLoading ? (
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin text-[#003377]">
+          <div className="animate-spin text-[#003377] dark:text-slate-300">
             <FolderTree className="w-8 h-8" />
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch dark:text-slate-300">
           {/* Add Category Trigger Card */}
           <AddCategoryCard onClick={handleOpenAdd} />
 

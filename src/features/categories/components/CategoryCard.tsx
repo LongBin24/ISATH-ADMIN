@@ -11,7 +11,7 @@ interface CategoryCardProps {
 
 export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit, onDelete }) => {
   return (
-    <div className="group relative bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-48">
+    <div className="group relative bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-48 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
       {/* Absolute Edit/Delete Action Icons on Hover (Top Right) */}
       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 bg-white/90 backdrop-blur-sm p-1 rounded-xl shadow-sm border border-slate-100">
         <button
@@ -32,11 +32,11 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit, on
 
       {/* Card Header with Icon Container */}
       <div className="flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${category.color || 'bg-[#003377]/10 text-[#003377]'}`}>
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${category.color || 'bg-[#003377]/10 text-[#003377] dark:text-slate-300'}`}>
           <DynamicIcon name={category.icon} className="w-6 h-6" />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-[#003377] font-google-sans">
+          <h3 className="text-lg font-bold text-[#003377] font-google-sans dark:text-slate-300">
             {category.name}
           </h3>
           <p className="text-xs text-slate-500 font-google-sans mt-0.5">

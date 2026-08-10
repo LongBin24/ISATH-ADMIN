@@ -45,7 +45,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
   };
 
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 flex flex-col justify-between h-full">
+    <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 flex flex-col justify-between h-full  dark:bg-slate-900 dark:border-slate-800">
       <div>
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
@@ -53,7 +53,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
             <Calculator className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-[#003377] font-google-sans">
+            <h2 className="text-xl text-[#003377] font-bold font-google-sans dark:text-slate-300">
               Currency Converter
             </h2>
             <p className="text-sm text-slate-500 font-google-sans">
@@ -77,7 +77,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
                   type="number"
                   {...field}
                   onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFC83D] font-google-sans text-lg text-slate-800"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFC83D] font-google-sans text-lg dark:text-slate-300"
                   placeholder="Enter amount"
                 />
               )}
@@ -96,7 +96,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
                 render={({ field }) => (
                   <select
                     {...field}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white font-google-sans text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#FFC83D]"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white font-google-sans text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#FFC83D]  dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300"
                   >
                     {rates?.map((r) => (
                       <option key={`from-${r.code}`} value={r.code}>
@@ -111,8 +111,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
             <button
               type="button"
               onClick={handleSwap}
-              className="mt-5 p-2.5 rounded-xl bg-slate-50 hover:bg-[#FFC83D]/20 text-[#003377] transition-colors border border-slate-200"
-              title="Swap currencies"
+              className="mt-5 p-2.5 rounded-xl bg-slate-50 hover:bg-[#FFC83D]/20 text-[#003377] transition-colors border border-slate-200  dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300 "
             >
               <ArrowDownUp className="w-5 h-5" />
             </button>
@@ -127,7 +126,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
                 render={({ field }) => (
                   <select
                     {...field}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white font-google-sans text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#FFC83D]"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white font-google-sans text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#FFC83D] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
                   >
                     {rates?.map((r) => (
                       <option key={`to-${r.code}`} value={r.code}>
@@ -143,7 +142,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
       </div>
 
       {/* Result Display Box */}
-      <div className="mt-8 p-6 bg-[#003377] rounded-2xl text-white shadow-md">
+      <div className="mt-8 p-6 bg-[#003377] rounded-2xl text-white shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
         <div className="text-xs font-google-sans text-[#FFC83D] mb-1">
           លទ្ធផលគណនា (Converted Result)
         </div>
