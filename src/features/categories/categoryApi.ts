@@ -67,7 +67,7 @@ let MOCK_CATEGORIES: Category[] = [
     transactionCount: 4,
     spentAmount: 40,
     totalBudget: 100,
-    type: "expense",
+    type: "income",
     color: "bg-emerald-100 text-emerald-500",
   },
   {
