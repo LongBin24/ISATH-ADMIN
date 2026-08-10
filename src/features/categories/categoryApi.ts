@@ -1,4 +1,4 @@
-import { baseApi } from "@/api/baseApi"; // Import ពី baseApi រួម
+import { baseApi } from "@/api/baseApi";
 import { Category } from "./types";
 
 let MOCK_CATEGORIES: Category[] = [
@@ -38,17 +38,16 @@ let MOCK_CATEGORIES: Category[] = [
 
 export const categoryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // ប្រើ queryFn ដើម្បីធ្វើ Hybrid (ព្យាយាមហៅ API ពិត បើមិនបានប្រើ Mock)
+
     getCategories: builder.query<Category[], void>({
       async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
-        // ១. ព្យាយាមហៅ API ពិត (ឧទាហរណ៍៖ categories)
+
         const result = await baseQuery("categories");
         
         if (result.data) {
           return { data: result.data as Category[] };
         }
 
-        // ២. បើ Backend គ្មាន API ទេ ឱ្យបញ្ចេញ Mock ភ្លាម (បាត់ Loading ភ្លាម)
         return { data: MOCK_CATEGORIES };
       },
       providesTags: ["Category" as any],
