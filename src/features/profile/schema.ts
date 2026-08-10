@@ -54,9 +54,7 @@ export const changePasswordSchema = z
 export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
 
 export const currencySchema = z.object({
-  currency: z.enum(["KHR", "USD", "EUR", "THB", "JPY"], {
-    message: "សូមជ្រើសរើសរូបិយប័ណ្ណដែលត្រឹមត្រូវ",
-  }),
+  currency: z.string().min(1, { message: "សូមជ្រើសរើសរូបិយប័ណ្ណដែលត្រឹមត្រូវ" }),
 });
 
 export type CurrencyFormValues = z.infer<typeof currencySchema>;
