@@ -7,10 +7,12 @@ export const baseApi = createApi({
     baseUrl: process.env.NEXT_PUBLIC_API_URL,
 
     prepareHeaders: (headers) => {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("better-auth.session_token="))
-        ?.split("=")[1];
+      const token =
+        process.env.NEXT_PUBLIC_ACCESS_TOKEN ??
+        document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("better-auth.session_token="))
+          ?.split("=")[1];
 
       if (token) {
         headers.set("authorization", `Bearer ${token}`);

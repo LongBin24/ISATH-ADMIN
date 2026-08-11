@@ -109,7 +109,7 @@ Create `.env.local`
 
 ```env
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-BACKEND_URL=http://localhost:8080/api
+BACKEND_URL=https://ite-api.istashkh.com
 BETTER_AUTH_SECRET=your-secret
 ```
 

@@ -1,144 +1,268 @@
+import { ENDPOINTS_CATEGORY } from "@/api/endpoints";
 import { baseApi } from "@/api/baseApi";
 import { API_TAGS } from "@/api/tags";
-import { Category } from "./types";
+import { Category, CategoryTransaction } from "./types";
 
-let MOCK_CATEGORIES: Category[] = [
-  {
-    id: "1",
-    name: "អាហារ",
-    icon: "Utensils",
-    transactionCount: 45,
-    spentAmount: 53.98,
-    totalBudget: 450,
-    type: "expense",
-    color: "bg-amber-100 text-amber-700",
-    recentTransactions: [
-      { id: "food-1", title: "ទូទាត់", date: "20/07/2026", amount: 5.82 },
-      { id: "food-2", title: "ទូទាត់", date: "19/07/2026", amount: 17.2 },
-      { id: "food-3", title: "ទូទាត់", date: "18/07/2026", amount: 11.03 },
-      { id: "food-4", title: "ទូទាត់", date: "17/07/2026", amount: 11.71 },
-      { id: "food-5", title: "ទូទាត់", date: "16/07/2026", amount: 8.22 },
-    ],
-  },
-  {
-    id: "2",
-    name: "លំនៅដ្ឋាន",
-    icon: "House",
-    transactionCount: 12,
-    spentAmount: 900,
-    totalBudget: 900,
-    type: "expense",
-    color: "bg-cyan-100 text-cyan-600",
-  },
-  {
-    id: "3",
-    name: "ការដឹកជញ្ជូន",
-    icon: "Truck",
-    transactionCount: 28,
-    spentAmount: 145,
-    totalBudget: 200,
-    type: "income",
-    color: "bg-green-100 text-green-600",
-  },
-  {
-    id: "4",
-    name: "កម្សាន្ត",
-    icon: "Film",
-    transactionCount: 15,
-    spentAmount: 180,
-    totalBudget: 150,
-    type: "income",
-    color: "bg-red-100 text-red-500",
-  },
-  {
-    id: "5",
-    name: "សុខភាព",
-    icon: "Heart",
-    transactionCount: 8,
-    spentAmount: 60,
-    totalBudget: 200,
-    type: "expense",
-    color: "bg-red-100 text-red-500",
-  },
-  {
-    id: "6",
-    name: "កីឡា",
-    icon: "Tickets",
-    transactionCount: 4,
-    spentAmount: 40,
-    totalBudget: 100,
-    type: "income",
-    color: "bg-emerald-100 text-emerald-500",
-  },
-  {
-    id: "7",
-    name: "ដំណើរ",
-    icon: "Plane",
-    transactionCount: 3,
-    spentAmount: 320,
-    totalBudget: 400,
-    type: "income",
-    color: "bg-blue-100 text-blue-500",
-  },
-  {
-    id: "8",
-    name: "ការអប់រំ",
-    icon: "GraduationCap",
-    transactionCount: 6,
-    spentAmount: 210,
-    totalBudget: 300,
-    type: "income",
-    color: "bg-orange-100 text-orange-500",
-  },
-];
+type CategoryFields = Pick<
+  Category,
+  "name" | "icon" | "totalBudget" | "color" | "type"
+>;
+
+export type CreateCategoryPayload = CategoryFields;
+export type UpdateCategoryPayload = {
+  name: string;
+  categoryType: "INCOME" | "EXPENSE";
+  parentId: string;
+  moveToRoot: boolean;
+  icon: string;
+  color: string;
+  defaultCategory: boolean;
+  status: "ACTIVE" | "INACTIVE";
+};
+export type UpdateCategoryPreferencePayload = Pick<
+  Category,
+  "icon" | "totalBudget" | "color"
+>;
+
+type CreateCategoryRequest = {
+  name: string;
+  categoryType: "INCOME" | "EXPENSE";
+  icon: string;
+  color: string;
+  systemCategory: false;
+  categoryKey: string;
+  defaultCategory: true;
+};
+
+type RecordValue = Record<string, unknown>;
+
+type CategoryPage = {
+  content: Category[];
+  pageNumber: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+};
+
+const asRecord = (value: unknown): RecordValue =>
+  typeof value === "object" && value !== null ? (value as RecordValue) : {};
+
+const asNumber = (value: unknown, fallback = 0) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const unwrapData = (response: unknown): unknown => {
+  const record = asRecord(response);
+  return "data" in record ? record.data : response;
+};
+
+const createCategoryKey = () => {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const randomValues = new Uint8Array(12);
+  globalThis.crypto.getRandomValues(randomValues);
+
+  const suffix = Array.from(
+    randomValues,
+    (value) => alphabet[value % alphabet.length],
+  ).join("");
+
+  return `CAT_${suffix}`;
+};
+
+const toCreateCategoryRequest = (
+  payload: CreateCategoryPayload,
+): CreateCategoryRequest => ({
+  name: payload.name,
+  categoryType: payload.type === "income" ? "INCOME" : "EXPENSE",
+  icon: payload.icon,
+  color: payload.color ?? "#3b82f6",
+  systemCategory: false,
+  categoryKey: createCategoryKey(),
+  defaultCategory: true,
+});
+
+const normalizeTransaction = (
+  value: unknown,
+  index: number,
+): CategoryTransaction => {
+  const record = asRecord(value);
+
+  return {
+    id: String(record.id ?? record.transactionId ?? index),
+    title: String(record.title ?? record.description ?? record.name ?? "ប្រតិបត្តិការ"),
+    date: String(record.date ?? record.transactionDate ?? record.createdAt ?? ""),
+    amount: asNumber(record.amount ?? record.totalAmount),
+  };
+};
+
+const normalizeCategory = (value: unknown): Category => {
+  const record = asRecord(value);
+  const preference = asRecord(record.preference ?? record.categoryPreference);
+  const rawType = String(record.type ?? record.categoryType ?? "expense").toLowerCase();
+  const rawTransactions =
+    record.recentTransactions ?? record.transactions ?? preference.recentTransactions;
+
+  return {
+    id: String(record.id ?? record.categoryId ?? ""),
+    name: String(record.name ?? record.categoryName ?? ""),
+    icon: String(record.icon ?? preference.icon ?? "Box"),
+    transactionCount: asNumber(
+      record.transactionCount ?? record.totalTransactions ?? record.transaction_count,
+    ),
+    totalBudget: asNumber(
+      record.totalBudget ?? record.budget ?? preference.totalBudget ?? preference.budget,
+    ),
+    spentAmount: asNumber(
+      record.spentAmount ?? record.totalSpent ?? record.totalAmount ?? record.amount,
+    ),
+    type: rawType === "income" ? "income" : "expense",
+    color: String(record.color ?? preference.color ?? "#3b82f6"),
+    parentId:
+      typeof record.parentId === "string" ? record.parentId : null,
+    defaultCategory: Boolean(record.defaultCategory),
+    status: record.status === "INACTIVE" ? "INACTIVE" : "ACTIVE",
+    systemCategory: Boolean(record.systemCategory),
+    ownedByCurrentUser:
+      typeof record.ownedByCurrentUser === "boolean"
+        ? record.ownedByCurrentUser
+        : undefined,
+    recentTransactions: Array.isArray(rawTransactions)
+      ? rawTransactions.map(normalizeTransaction)
+      : undefined,
+  };
+};
+
+const normalizeCategoryList = (response: unknown): Category[] => {
+  const payload = unwrapData(response);
+
+  if (Array.isArray(payload)) return payload.map(normalizeCategory);
+
+  const record = asRecord(payload);
+  const categories = record.content ?? record.items ?? record.categories;
+
+  return Array.isArray(categories) ? categories.map(normalizeCategory) : [];
+};
+
+const normalizeCategoryPage = (response: unknown): CategoryPage => {
+  const record = asRecord(unwrapData(response));
+  const content = Array.isArray(record.content)
+    ? record.content.map(normalizeCategory)
+    : [];
+
+  return {
+    content,
+    pageNumber: asNumber(record.pageNumber),
+    pageSize: asNumber(record.pageSize, content.length),
+    totalElements: asNumber(record.totalElements, content.length),
+    totalPages: asNumber(record.totalPages, 1),
+    first: Boolean(record.first),
+    last: Boolean(record.last),
+  };
+};
 
 export const categoryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-
     getCategories: builder.query<Category[], void>({
-      async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
-
-        const result = await baseQuery("categories");
-        
-        if (result.data) {
-          return { data: result.data as Category[] };
-        }
-
-        return { data: MOCK_CATEGORIES };
-      },
-      providesTags: [API_TAGS.CATEGORY],
+      query: () => ({
+        url: ENDPOINTS_CATEGORY.GET_CATEGORIES,
+        method: "GET",
+      }),
+      transformResponse: normalizeCategoryList,
+      providesTags: (result) => [
+        { type: API_TAGS.CATEGORY, id: "LIST" },
+        ...(result?.map((category) => ({
+          type: API_TAGS.CATEGORY,
+          id: category.id,
+        })) ?? []),
+      ],
     }),
 
-    createCategory: builder.mutation<Category, Omit<Category, "id" | "transactionCount">>({
-      async queryFn(newCategoryData) {
-        await new Promise((res) => setTimeout(res, 300));
-        const newCategory = {
-          ...newCategoryData,
-          id: Date.now().toString(),
-          transactionCount: 0,
-          spentAmount: 0,
-          type: newCategoryData.type ?? "expense",
-        };
-        MOCK_CATEGORIES = [newCategory, ...MOCK_CATEGORIES];
-        return { data: newCategory as Category };
+    getCategoriesPaginated: builder.infiniteQuery<
+      CategoryPage,
+      void,
+      number
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) =>
+          lastPage.last ? undefined : lastPage.pageNumber + 1,
       },
-      invalidatesTags: [API_TAGS.CATEGORY],
+      query: ({ pageParam }) => ({
+        url: ENDPOINTS_CATEGORY.GET_CATEGORIES,
+        method: "GET",
+        params: {
+          pageNumber: pageParam,
+          pageSize: 12,
+        },
+      }),
+      transformResponse: normalizeCategoryPage,
+      providesTags: (result) => [
+        { type: API_TAGS.CATEGORY, id: "LIST" },
+        ...(result?.pages.flatMap((page) =>
+          page.content.map((category) => ({
+            type: API_TAGS.CATEGORY,
+            id: category.id,
+          })),
+        ) ?? []),
+      ],
     }),
 
-    updateCategory: builder.mutation<Category, { id: string; data: Partial<Category> }>({
-      async queryFn({ id, data }) {
-        MOCK_CATEGORIES = MOCK_CATEGORIES.map(c => c.id === id ? { ...c, ...data } : c);
-        return { data: MOCK_CATEGORIES.find(c => c.id === id) as Category };
-      },
-      invalidatesTags: [API_TAGS.CATEGORY],
+    createCategory: builder.mutation<Category, CreateCategoryPayload>({
+      query: (payload) => ({
+        url: ENDPOINTS_CATEGORY.CREATE_CATEGORY,
+        method: "POST",
+        body: toCreateCategoryRequest(payload),
+      }),
+      transformResponse: (response: unknown) =>
+        normalizeCategory(unwrapData(response)),
+      invalidatesTags: [{ type: API_TAGS.CATEGORY, id: "LIST" }],
     }),
 
-    deleteCategory: builder.mutation<string, string>({
-      async queryFn(id) {
-        MOCK_CATEGORIES = MOCK_CATEGORIES.filter(c => c.id !== id);
-        return { data: id };
-      },
-      invalidatesTags: [API_TAGS.CATEGORY],
+    updateCategory: builder.mutation<
+      Category,
+      { id: string; data: UpdateCategoryPayload }
+    >({
+      query: ({ id, data }) => ({
+        url: ENDPOINTS_CATEGORY.UPDATE_CATEGORY(id),
+        method: "PATCH",
+        body: data,
+      }),
+      transformResponse: (response: unknown) =>
+        normalizeCategory(unwrapData(response)),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: API_TAGS.CATEGORY, id },
+        { type: API_TAGS.CATEGORY, id: "LIST" },
+      ],
+    }),
+
+    updateCategoryPreference: builder.mutation<
+      Category,
+      { id: string; data: UpdateCategoryPreferencePayload }
+    >({
+      query: ({ id, data }) => ({
+        url: ENDPOINTS_CATEGORY.UPDATE_CATEGORY_PREFERENCE(id),
+        method: "PATCH",
+        body: data,
+      }),
+      transformResponse: (response: unknown) =>
+        normalizeCategory(unwrapData(response)),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: API_TAGS.CATEGORY, id },
+        { type: API_TAGS.CATEGORY, id: "LIST" },
+      ],
+    }),
+    deleteCategory: builder.mutation<void, string>({
+      query: (id) => ({
+        url: ENDPOINTS_CATEGORY.DELETE_CATEGORY(id),
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: API_TAGS.CATEGORY, id },
+        { type: API_TAGS.CATEGORY, id: "LIST" },
+      ],
     }),
   }),
   overrideExisting: true,
@@ -146,7 +270,9 @@ export const categoryApi = baseApi.injectEndpoints({
 
 export const {
   useGetCategoriesQuery,
+  useGetCategoriesPaginatedInfiniteQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
+  useUpdateCategoryPreferenceMutation,
   useDeleteCategoryMutation,
 } = categoryApi;
