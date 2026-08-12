@@ -35,7 +35,7 @@
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-2xl font-bold text-[#003377] dark:text-[#FFC83D]">
-              <Image src="/iStash-logo.png" alt="Logo" width={44} height={44} className="h-auto w-auto" priority/>
+              <Image src="/iStash-logo (3).png" alt="Logo" width={44} height={44} className="h-auto w-auto" priority/>
               <span>iStash</span>
             </div>
             <button
