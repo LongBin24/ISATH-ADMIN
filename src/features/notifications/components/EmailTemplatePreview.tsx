@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  Mail,
   Send,
   CheckCircle2,
   Wallet,
@@ -10,8 +9,6 @@ import {
   Target,
   Repeat,
   BarChart3,
-  Sun,
-  Moon,
 } from "lucide-react";
 import { useNotificationUI } from "../hook";
 import { useTriggerNotificationMutation } from "../api";
@@ -20,7 +17,6 @@ import { NotificationCategory } from "../types";
 
 export default function EmailTemplatePreview() {
   const { emailPreviewCategory, changeEmailPreviewCategory } = useNotificationUI();
-  const [emailMode, setEmailMode] = useState<"light" | "dark">("light");
   const [testSentToast, setTestSentToast] = useState(false);
   const [triggerNotification, { isLoading: isSending }] = useTriggerNotificationMutation();
 
@@ -70,7 +66,7 @@ export default function EmailTemplatePreview() {
 
       setTestSentToast(true);
       setTimeout(() => setTestSentToast(false), 4000);
-    } catch (e) {
+    } catch {
       // Graceful error handling
     }
   };
@@ -97,32 +93,6 @@ export default function EmailTemplatePreview() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Mode Switcher */}
-          <div className="flex items-center rounded-2xl bg-slate-100 p-1 dark:bg-slate-800">
-            <button
-              type="button"
-              onClick={() => setEmailMode("light")}
-              className={`flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-                emailMode === "light"
-                  ? "bg-white text-slate-800 shadow-xs"
-                  : "text-slate-500 hover:text-slate-700 dark:text-slate-400"
-              }`}
-            >
-              <Sun size={14} /> ភ្លឺ
-            </button>
-            <button
-              type="button"
-              onClick={() => setEmailMode("dark")}
-              className={`flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-                emailMode === "dark"
-                  ? "bg-slate-950 text-white shadow-xs"
-                  : "text-slate-500 hover:text-slate-700 dark:text-slate-400"
-              }`}
-            >
-              <Moon size={14} /> ងងឹត
-            </button>
-          </div>
-
           {/* Test Send Button */}
           <button
             type="button"
@@ -155,29 +125,23 @@ export default function EmailTemplatePreview() {
       </div>
 
       {/* Mock Client Email Window Container */}
-      <div className="overflow-hidden rounded-3xl border border-slate-300/80 shadow-xl dark:border-slate-800 bg-slate-200 dark:bg-slate-950">
+      <div className="overflow-hidden rounded-3xl border border-slate-300/80 shadow-xl dark:border-slate-800 bg-slate-100 dark:bg-slate-950">
         {/* Email App Toolbar Mock */}
-        <div className="flex items-center justify-between border-b border-slate-300 bg-slate-100 px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center justify-between border-b border-slate-300 bg-slate-200/60 px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center gap-2">
             <span className="h-3 w-3 rounded-full bg-red-400" />
             <span className="h-3 w-3 rounded-full bg-amber-400" />
             <span className="h-3 w-3 rounded-full bg-emerald-400" />
-            <span className="ml-2 text-xs font-semibold text-slate-500">iStash អ៊ីមែល</span>
+            <span className="ml-2 text-xs font-semibold text-slate-500 dark:text-slate-400">iStash អ៊ីមែល</span>
           </div>
           <div className="text-xs text-slate-400 font-mono">
             ផ្ញើទៅកាន់៖ user.khmer@istash.com
           </div>
         </div>
 
-        {/* Email Rendered Canvas */}
-        <div className="p-4 sm:p-8 flex justify-center">
-          <div
-            className={`w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl transition-colors ${
-              emailMode === "dark"
-                ? "bg-[#0B1329] text-slate-100 border border-slate-800"
-                : "bg-white text-slate-800 border border-slate-100"
-            }`}
-          >
+        {/* Email Rendered Canvas - Reacts to global app theme */}
+        <div className="p-4 sm:p-8 flex justify-center bg-slate-100 dark:bg-slate-950">
+          <div className="w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl bg-white dark:bg-[#0B1329] text-slate-800 dark:text-slate-100 border border-slate-200/80 dark:border-slate-800 transition-colors">
             {/* Email Banner Header */}
             <div className="bg-[#003377] p-6 sm:p-8 text-white relative overflow-hidden">
               <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-[#FFC83D]/20 blur-2xl pointer-events-none" />
@@ -206,7 +170,7 @@ export default function EmailTemplatePreview() {
               </div>
 
               {/* Greeting */}
-              <p className="text-sm font-semibold">ជំរាបសួរ អ្នកប្រើប្រាស់ iStash,</p>
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">ជំរាបសួរ អ្នកប្រើប្រាស់ iStash,</p>
 
               {/* Dynamic Category Specific Content */}
               {emailPreviewCategory === "DAILY_EXPENSE" && (
@@ -234,11 +198,11 @@ export default function EmailTemplatePreview() {
                       ការចំណាយលើប្រភេទ «អាហារ និងភេសជ្ជៈ» របស់អ្នកបានឈានដល់ $340.00 នៃថវិកាដែលបានកំណត់ចំនួន $400.00 ក្នុងខែនេះហើយ។
                     </p>
                     <div className="space-y-1 pt-1">
-                      <div className="flex justify-between text-xs font-bold">
+                      <div className="flex justify-between text-xs font-bold text-slate-800 dark:text-slate-200">
                         <span>ប្រកាសអាសន្ន៖ 85%</span>
                         <span>$340 / $400</span>
                       </div>
-                      <div className="h-2.5 w-full bg-slate-200 rounded-full dark:bg-slate-700 overflow-hidden">
+                      <div className="h-2.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
                         <div className="h-full bg-red-500 rounded-full w-[85%]" />
                       </div>
                     </div>
@@ -262,17 +226,17 @@ export default function EmailTemplatePreview() {
 
               {emailPreviewCategory === "RECURRING_TX" && (
                 <div className="space-y-4">
-                  <div className="rounded-2xl bg-[#003377]/10 p-5 border border-[#003377]/30 dark:border-slate-700 space-y-3">
+                  <div className="rounded-2xl bg-[#003377]/10 dark:bg-slate-800/70 p-5 border border-[#003377]/20 dark:border-slate-700/80 space-y-3">
                     <div className="flex items-center gap-2 text-[#003377] dark:text-[#FFC83D] font-bold text-sm">
                       <Repeat size={18} />
                       <span>ការរំលឹកបង់ប្រាក់៖ វិក្កយបត្រត្រូវបង់នៅថ្ងៃស្អែក</span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs pt-1">
-                      <div className="bg-white p-2.5 rounded-xl dark:bg-slate-800">
+                      <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
                         <span className="text-slate-400">វិក្កយបត្រ៖</span>
-                        <p className="font-bold">សេវាអ៊ីនធឺណិត</p>
+                        <p className="font-bold text-slate-800 dark:text-white">សេវាអ៊ីនធឺណិត</p>
                       </div>
-                      <div className="bg-white p-2.5 rounded-xl dark:bg-slate-800">
+                      <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
                         <span className="text-slate-400">ចំនួនទឹកប្រាក់៖</span>
                         <p className="font-bold text-emerald-600 dark:text-emerald-400">$35.00 USD</p>
                       </div>
@@ -289,15 +253,15 @@ export default function EmailTemplatePreview() {
                       <span>សេចក្តីសង្ខេបហិរញ្ញវត្ថុខែកក្កដា ២០២៦</span>
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                      <div className="bg-white p-2.5 rounded-xl dark:bg-slate-800">
+                      <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
                         <span className="text-slate-400">ចំណូល</span>
-                        <p className="font-bold text-emerald-600">$2,450</p>
+                        <p className="font-bold text-emerald-600 dark:text-emerald-400">$2,450</p>
                       </div>
-                      <div className="bg-white p-2.5 rounded-xl dark:bg-slate-800">
+                      <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
                         <span className="text-slate-400">ចំណាយ</span>
-                        <p className="font-bold text-red-500">$1,280</p>
+                        <p className="font-bold text-red-500 dark:text-red-400">$1,280</p>
                       </div>
-                      <div className="bg-white p-2.5 rounded-xl dark:bg-slate-800">
+                      <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-800">
                         <span className="text-slate-400">សន្សំ</span>
                         <p className="font-bold text-[#003377] dark:text-[#FFC83D]">$1,170</p>
                       </div>
@@ -310,7 +274,7 @@ export default function EmailTemplatePreview() {
               <div className="pt-2">
                 <a
                   href="#check-app"
-                  className="block w-full rounded-2xl bg-[#003377] py-3 text-center text-xs font-bold text-white shadow-md hover:bg-[#002255] transition"
+                  className="block w-full rounded-2xl bg-[#003377] dark:bg-[#FFC83D] dark:text-[#003377] py-3 text-center text-xs font-bold text-white shadow-md hover:bg-[#002255] dark:hover:bg-[#e6b437] transition"
                 >
                   ចូលទៅកាន់កម្មវិធី iStash
                 </a>
@@ -318,7 +282,7 @@ export default function EmailTemplatePreview() {
 
               {/* Footer */}
               <div className="border-t pt-4 border-slate-200 dark:border-slate-800 text-[11px] text-slate-400 text-center space-y-1">
-                <p>© 2026 iStash. រក្សាសិទ្ធិគ្រប់យ៉ាង។</p>
+                <p>© 2026 iStash. រក្សាសិទ្ធិគ្រប់យ៉ាង severe.</p>
                 <p>ប្រសិនបើអ្នកមិនចង់ទទួលបានអ៊ីមែលនេះទេ សូមចូលទៅកាន់ការកំណត់ប្រព័ន្ធជូនដំណឹងដើម្បីបិទ។</p>
               </div>
             </div>

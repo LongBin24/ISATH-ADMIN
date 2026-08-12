@@ -13,7 +13,7 @@ export interface CurrencyOption {
   code: CurrencyCode;
   nameKhmer: string;
   symbol: string;
-  rateVsUsd: number; // For demo preview calculation
+  rateVsUsd: number; 
   exampleAmount: number;
 }
 
