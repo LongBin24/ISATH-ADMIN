@@ -1,80 +1,74 @@
-// import { baseApi } from "@/api/baseApi";
-// import { ENDPOINTS } from "@/api/endpoints";
-// import { API_TAGS } from "@/api/tags";
-// import { NotificationItem, NotificationResponse, NotificationStats, UserNotificationPreferences } from "./types";
-
-// export const notificationApi = baseApi.injectEndpoints({
-//   endpoints: (builder) => ({
-//     getNotifications: builder.query<NotificationItem[], any>({
-//       query: () => "/admin/notifications?pageNumber=0&pageSize=20",
-//       transformResponse: (res: NotificationResponse) => {
-//         return res.content.map(item => ({
-//           ...item,
-//           isRead: item.read,
-//           titleKh: item.title,
-//           messageKh: item.message
-//         }));
-//       },
-//       providesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
-//     }),
-
-//     getNotificationStats: builder.query<NotificationStats, void>({
-//       async queryFn() {
-//         return { data: { total: 5, unreadCount: 2, byCategory: {} as any, byChannel: {} as any } };
-//       },
-//       providesTags: [{ type: API_TAGS.STATS as any, id: "CURRENT" }],
-//     }),
-
-//     getNotificationPreferences: builder.query<UserNotificationPreferences, void>({
-//       async queryFn() {
-//         return { data: { email: "user@example.com", quietHoursEnabled: false, digestFrequency: "DAILY", categories: [] } as any };
-//       },
-//     }),
-
-//     // Mutations
-//     markAsRead: builder.mutation<any, string>({
-//       query: (id) => ({ url: `/admin/notifications/${id}`, method: "PATCH" }),
-//       invalidatesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
-//     }),
-    
-//     markAllAsRead: builder.mutation<any, void>({
-//       query: () => ({ url: "/admin/notifications/mark-all-read", method: "PUT" }),
-//       invalidatesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
-//     }),
-
-//     deleteNotification: builder.mutation<any, string>({
-//       query: (id) => ({ url: `/admin/notifications/${id}`, method: "DELETE" }),
-//       invalidatesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
-//     }),
-//   }),
-// });
-
-// export const {
-//   useGetNotificationsQuery,
-//   useGetNotificationStatsQuery,
-//   useGetNotificationPreferencesQuery,
-//   useMarkAsReadMutation,
-//   useMarkAllAsReadMutation,
-//   useDeleteNotificationMutation,
-// } = notificationApi;
-
-
 import { baseApi } from "@/api/baseApi";
 import { ENDPOINTS } from "@/api/endpoints";
+import { API_TAGS } from "@/api/tags";
 import { 
   NotificationItem, 
   NotificationStats, 
-  UserNotificationPreferences 
+  UserNotificationPreferences,
+  AdminNotificationItem,
+  AdminNotificationPageResponse,
+  CreateAdminNotificationPayload,
+  AdminAlertRuleItem,
+  AdminAlertRulePageResponse,
 } from "./types";
 
 export const notificationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getNotifications: builder.query<NotificationItem[], any>({
+    // 1. GET /api/v1/admin/notifications
+    getAdminNotifications: builder.query<AdminNotificationPageResponse, { page?: number; size?: number } | void>({
+      query: (params) => {
+        const pageNumber = params?.page ?? 0;
+        const pageSize = params?.size ?? 20;
+        return `${ENDPOINTS.NOTIFICATIONS}?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+      },
+      providesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
+    }),
+
+    // 2. POST /api/v1/admin/notifications
+    createAdminNotification: builder.mutation<AdminNotificationItem, CreateAdminNotificationPayload>({
+      query: (body) => ({
+        url: ENDPOINTS.NOTIFICATIONS,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
+    }),
+
+    // 3. POST /api/v1/admin/notifications/{notificationId}/deliveries/retry
+    retryNotificationDelivery: builder.mutation<any, string>({
+      query: (notificationId) => ({
+        url: `${ENDPOINTS.NOTIFICATIONS}/${notificationId}/deliveries/retry`,
+        method: "POST",
+      }),
+      invalidatesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
+    }),
+
+    // 4. GET /api/v1/admin/notifications/{notificationId}
+    getAdminNotificationById: builder.query<AdminNotificationItem, string>({
+      query: (notificationId) => `${ENDPOINTS.NOTIFICATIONS}/${notificationId}`,
+    }),
+
+    // 5. GET /api/v1/admin/alert-rules
+    getAdminAlertRules: builder.query<AdminAlertRulePageResponse, { page?: number; size?: number } | void>({
+      query: (params) => {
+        const pageNumber = params?.page ?? 0;
+        const pageSize = params?.size ?? 20;
+        return `admin/alert-rules?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+      },
+      providesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "RULES" }],
+    }),
+
+    // 6. GET /api/v1/admin/alert-rules/{ruleId}
+    getAdminAlertRuleById: builder.query<AdminAlertRuleItem, string>({
+      query: (ruleId) => `admin/alert-rules/${ruleId}`,
+    }),
+
+    // --- Compatible existing hooks for UI components ---
+    getNotifications: builder.query<NotificationItem[], void>({
       async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
         const result = await baseQuery(`${ENDPOINTS.NOTIFICATIONS}?pageNumber=0&pageSize=20`);
         const content = (result.data as any)?.content || [];
         
-        // Mapping ឱ្យគ្រប់គ្រប់ Key ទាំងចាស់ទាំងថ្មី
         const mapped = content.map((item: any) => ({
           ...item,
           isRead: item.read,
@@ -88,6 +82,7 @@ export const notificationApi = baseApi.injectEndpoints({
         }));
         return { data: mapped };
       },
+      providesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
     }),
 
     getNotificationStats: builder.query<NotificationStats, void>({
@@ -98,30 +93,53 @@ export const notificationApi = baseApi.injectEndpoints({
       async queryFn() { return { data: { email: "", quietHoursEnabled: false, categories: [] } as any }; }
     }),
 
-    // --- Mutations ត្រូវដាក់ឈ្មោះឱ្យត្រូវតាម UI បងប្អូន ---
     markAsRead: builder.mutation<any, string>({
-      query: (id) => ({ url: `${ENDPOINTS.NOTIFICATIONS}/${id}`, method: "PATCH" })
+      query: (id) => ({ url: `${ENDPOINTS.NOTIFICATIONS}/${id}`, method: "PATCH" }),
+      invalidatesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
     }),
     markAllAsRead: builder.mutation<any, void>({
-      query: () => ({ url: "/api/v1/admin/notifications/mark-all-read", method: "PUT" })
+      query: () => ({ url: `${ENDPOINTS.NOTIFICATIONS}/mark-all-read`, method: "PUT" }),
+      invalidatesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
     }),
     deleteNotification: builder.mutation<any, string>({
-      query: (id) => ({ url: `${ENDPOINTS.NOTIFICATIONS}/${id}`, method: "DELETE" })
+      query: (id) => ({ url: `${ENDPOINTS.NOTIFICATIONS}/${id}`, method: "DELETE" }),
+      invalidatesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
     }),
     updatePreferences: builder.mutation<any, any>({
       async queryFn() { return { data: {} }; }
     }),
     triggerNotification: builder.mutation<any, any>({
-      async queryFn() { return { data: {} }; }
+      query: (data) => ({
+        url: ENDPOINTS.NOTIFICATIONS,
+        method: "POST",
+        body: {
+          title: data.customTitleKh || data.title || "Notification",
+          message: data.customMessageKh || data.message || "",
+          notificationType: data.category || data.notificationType || "DAILY_REMINDER",
+          referenceType: data.referenceType || "BUDGET",
+          referenceId: data.referenceId || "",
+          actionUrl: data.actionUrl || "",
+          metadata: data.metadata || { amount: data.amount },
+          expiresAt: data.expiresAt || "",
+          channels: data.channel === "BOTH" ? ["IN_APP", "EMAIL"] : [data.channel || "IN_APP"],
+        },
+      }),
+      invalidatesTags: [{ type: API_TAGS.NOTIFICATION as any, id: "LIST" }],
     }),
     resetNotifications: builder.mutation<any, void>({
       async queryFn() { return { data: {} }; }
     }),
   }),
+  overrideExisting: true,
 });
 
-// Export ឱ្យគ្រប់ឈ្មោះដែល UI ចង់បាន
 export const {
+  useGetAdminNotificationsQuery,
+  useCreateAdminNotificationMutation,
+  useRetryNotificationDeliveryMutation,
+  useGetAdminNotificationByIdQuery,
+  useGetAdminAlertRulesQuery,
+  useGetAdminAlertRuleByIdQuery,
   useGetNotificationsQuery,
   useGetNotificationStatsQuery,
   useGetNotificationPreferencesQuery,
@@ -129,6 +147,6 @@ export const {
   useMarkAllAsReadMutation,
   useDeleteNotificationMutation,
   useUpdatePreferencesMutation,
-  useTriggerNotificationMutation, // ឈ្មោះនេះហើយដែលបាត់មិញ
+  useTriggerNotificationMutation,
   useResetNotificationsMutation,
 } = notificationApi;

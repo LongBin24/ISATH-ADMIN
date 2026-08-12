@@ -5,7 +5,13 @@ import StatsCard from "./components/StatsCard";
 import UserTable from "./components/UserTable";
 import QuickMenu from "./components/QuickMenu";
 import AIStatus from "./components/AIStatus";
-import { useGetProcessSummaryQuery, useGetStatsQuery, useGetUserSummaryQuery,useGetInActiveSummaryQuery } from "./api";
+import {
+  useGetProcessSummaryQuery,
+  useGetStatsQuery,
+  useGetUserSummaryQuery,
+  useGetInActiveSummaryQuery,
+  useGetUsersQuery,
+} from "./api";
 import { useState } from "react";
 import Createuser from "./components/Createuser";
 import { SuccessModal } from "./components/UserModals";
@@ -13,33 +19,17 @@ import UserStatsModal from "./components/UserTotal";
 import ProcessStatsModal from "./components/ProcessTotal";
 import InActiveStatsModal from "./components/InActiveTotal";
 
-const sampleUsers = [
-  {
-    id: "1",
-    name: "Sokha",
-    email: "sokha@example.com",
-    role: "admin",
-    status: "active",
-  },
-  {
-    id: "2",
-    name: "Mina",
-    email: "mina@example.com",
-    role: "user",
-    status: "inactive",
-  },
-];
-
 export default function AdminDashboard() {
   const { data: stats } = useGetStatsQuery();
+  const { data: realUsers = [] } = useGetUsersQuery();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
   const [isInActiveModalOpen, setInActiveModalOpen] = useState(false);
-  const { data: userStats, isLoading:isUserStatsLoading } = useGetUserSummaryQuery();
+  const { data: userStats, isLoading: isUserStatsLoading } = useGetUserSummaryQuery();
   const { data: processStats, isLoading: isProcessStatsLoading } = useGetProcessSummaryQuery();
-  const { data: inActiveStats, isLoading: isInActiveStatsLoading} = useGetInActiveSummaryQuery();
+  const { data: inActiveStats, isLoading: isInActiveStatsLoading } = useGetInActiveSummaryQuery();
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 font-google-sans">
@@ -63,21 +53,21 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 sm:gap-6">
         <StatsCard
           title="អ្នកប្រើប្រាស់សរុប"
-          value={stats?.totalUsers || 2}
+          value={stats?.totalUsers ?? 0}
           icon={Users}
           color="#FFC83D"
           onClick={() => setIsModalOpen(true)}
         />
         <StatsCard
           title="ប្រតិបត្តិការសរុប"
-          value={stats?.totalProcess || 48.291}
+          value={stats?.totalProcess ?? 0}
           icon={CreditCard}
           color="#003377"
           onClick={() =>setIsProcessModalOpen(true)}
         />
         <StatsCard
           title="មិនសកម្ម"
-          value={stats?.inActiveUsers || 1}
+          value={stats?.inActiveUsers ?? 0}
           icon={CircleAlert}
           color="#ef4444"
           onClick={() => setInActiveModalOpen(true)}
@@ -89,7 +79,7 @@ export default function AdminDashboard() {
           <h2 className="mb-6 text-xl font-bold text-[#003377] dark:text-white">
             អ្នកប្រើប្រាស់ថ្មី
           </h2>
-          <UserTable users={sampleUsers} />
+          <UserTable users={realUsers} />
         </div>
 
         <div className="flex flex-col gap-6">

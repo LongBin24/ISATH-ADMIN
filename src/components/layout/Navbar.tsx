@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Moon, Sun, Bell, User, Menu, X } from "lucide-react";
+import { Search, Moon, Sun, Bell, User, Menu, X, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "@/hooks/use-theme";
 import NotificationBellDropdown from "@/features/notifications/components/NotificationBellDropdown";
@@ -15,6 +15,17 @@ interface NavbarProps {
 export default function Navbar({ onMenuToggle, isSidebarOpen = false }: NavbarProps) {
   const { theme, mounted, toggleTheme } = useTheme();
   const { data: profile } = useGetProfileQuery();
+
+  function handleSignOut() {
+    window.localStorage.removeItem("accessToken");
+    window.localStorage.removeItem("token");
+    window.localStorage.removeItem("refreshToken");
+    window.localStorage.removeItem("idToken");
+    window.sessionStorage.removeItem("accessToken");
+    window.sessionStorage.removeItem("token");
+    document.cookie = "accessToken=; Max-Age=0; path=/";
+    window.location.assign("/api/keycloak/logout");
+  }
 
   return (
     <header className="sticky top-0 z-20 h-22 sm:h-27 w-full border-b border-slate-200/80 bg-white/80 px-4 py-3 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 sm:px-6 lg:px-8">
@@ -75,6 +86,15 @@ export default function Navbar({ onMenuToggle, isSidebarOpen = false }: NavbarPr
               )}
             </div>
           </Link>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="rounded-xl border border-slate-200 bg-white p-2 text-slate-600 transition hover:text-[#003377] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+            aria-label="Sign out"
+            title="Sign out"
+          >
+            <LogOut size={18} />
+          </button>
         </div>
       </div>
     </header>

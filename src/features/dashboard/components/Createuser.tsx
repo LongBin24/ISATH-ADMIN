@@ -18,6 +18,7 @@ export default function Createuser({
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"user" | "admin">("user");
   const [creating, setCreating] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [createUser] = useCreateUserMutation();
 
@@ -26,15 +27,21 @@ export default function Createuser({
     if (!name.trim() || !email.trim()) return;
 
     setCreating(true);
+    setErrorMessage("");
     try {
-      await createUser({ name, email, role } as any).unwrap();
+      await createUser({ name, email, role }).unwrap();
       setName("");
       setEmail("");
       setRole("user");
       onOpenChange(false);
       onSuccess?.();
-    } catch (error) {
-      console.error(error);
+    } catch (error: unknown) {
+      const apiError = error as { data?: unknown; error?: string; status?: number };
+      const message =
+        typeof apiError.data === "string"
+          ? apiError.data
+          : apiError.error || `Unable to create user${apiError.status ? ` (HTTP ${apiError.status})` : ""}.`;
+      setErrorMessage(message);
     } finally {
       setCreating(false);
     }
@@ -58,6 +65,11 @@ export default function Createuser({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 px-6 py-6">
+            {errorMessage && (
+              <p role="alert" className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">
+                {errorMessage}
+              </p>
+            )}
             <div>
               <label className="block text-sm text-slate-500 mb-2">ឈ្មោះ</label>
               <input

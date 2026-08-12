@@ -60,8 +60,9 @@ export default function ChangePasswordTab({
       const res = await changePassword(values).unwrap();
       onSuccess(res.message || "បានផ្លាស់ប្តូរពាក្យសម្ងាត់បានជោគជ័យ!");
       reset();
-    } catch (err) {
-      onError("មិនអាចផ្លាស់ប្តូរពាក្យសម្ងាត់បានទេ សូមពិនិត្យពាក្យសម្ងាត់បច្ចុប្បន្ន");
+    } catch (err: any) {
+      const msg = err?.data?.message || err?.data?.error || "មិនអាចផ្លាស់ប្តូរពាក្យសម្ងាត់បានទេ (សូមពិនិត្យពាក្យសម្ងាត់បច្ចុប្បន្ន)";
+      onError(msg);
     }
   };
 

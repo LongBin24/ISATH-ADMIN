@@ -7,73 +7,24 @@ import UserTable from "@/features/dashboard/components/UserTable";
 import { useRouter } from "next/navigation";
 
 
-const sampleUsers = [
-  {
-    id: "1",
-    name: "ចន អតិ",
-    email: "chdara@gmail.com",
-    role: "user",
-    status: "active",
-    lastActive: "2026-07-14",
-  },
-  {
-    id: "2",
-    name: "រដ្ឋា កា",
-    email: "himnara@gmail.com",
-    role: "user",
-    status: "active",
-    lastActive: "2026-07-13",
-  },
-  {
-    id: "3",
-    name: "សុវត្ថិ",
-    email: "suvry@gmail.com",
-    role: "admin",
-    status: "active",
-    lastActive: "2026-07-12",
-  },
-  {
-    id: "4",
-    name: "ឡេង កិច្ឆ"
-    ,
-    email: "markpio@gmail.com",
-    role: "user",
-    status: "inactive",
-    lastActive: "2026-07-11",
-  },
-  {
-    id: "5",
-    name: "ឡៅ ថ៊ីដា",
-    email: "lao.thida@gmail.com",
-    role: "user",
-    status: "active",
-    lastActive: "2026-07-10",
-  },
-  {
-    id: "6",
-    name: "ពេជ្រ ចាន់",
-    email: "pejr.chan@gmail.com",
-    role: "user",
-    status: "inactive",
-    lastActive: "2026-07-09",
-  },
-];
+import { useGetUsersQuery } from "@/features/dashboard/api";
 
 export default function UserManagerPage() {
   const [search, setSearch] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
   const router = useRouter();
 
+  const { data: realUsers = [] } = useGetUsersQuery();
 
   const filteredUsers = useMemo(
     () =>
-      sampleUsers.filter((user) =>
+      realUsers.filter((user) =>
         [user.name, user.email, user.role, user.status]
           .join(" ")
           .toLowerCase()
           .includes(search.toLowerCase()),
       ),
-    [search],
+    [realUsers, search],
   );
 
   return (
@@ -86,7 +37,7 @@ export default function UserManagerPage() {
               គ្រប់គ្រងអ្នកប្រើ
             </h1>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-              6 នាក់
+              {filteredUsers.length} នាក់
             </p>
           </div>
 
