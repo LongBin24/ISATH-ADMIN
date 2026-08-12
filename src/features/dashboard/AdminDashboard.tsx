@@ -51,13 +51,12 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 sm:gap-6">
-        
         <StatsCard
           title="ប្រតិបត្តិការសរុប"
-          value={stats?.totalProcess || 489}
+          value={stats?.totalProcess ?? 0}
           icon={CreditCard}
           color="#003377"
-          onClick={() =>setIsProcessModalOpen(true)}
+          onClick={() => setIsProcessModalOpen(true)}
         />
         <StatsCard
           title="អ្នកប្រើប្រាស់សរុប"
@@ -67,16 +66,6 @@ export default function AdminDashboard() {
           onClick={() => setIsModalOpen(true)}
         />
         <StatsCard
-<<<<<<< HEAD
-=======
-          title="ប្រតិបត្តិការសរុប"
-          value={stats?.totalProcess ?? 0}
-          icon={CreditCard}
-          color="#003377"
-          onClick={() =>setIsProcessModalOpen(true)}
-        />
-        <StatsCard
->>>>>>> feature/admin-api-integration
           title="មិនសកម្ម"
           value={stats?.inActiveUsers ?? 0}
           icon={CircleAlert}
@@ -99,17 +88,17 @@ export default function AdminDashboard() {
         </div>
       </div>
       <InActiveStatsModal
-        open = {isInActiveModalOpen}
+        open={isInActiveModalOpen}
         onOpenChange={setInActiveModalOpen}
         data={inActiveStats}
-        isLoading = {isInActiveStatsLoading}
-        />
+        isLoading={isInActiveStatsLoading}
+      />
       <ProcessStatsModal
-        open= {isProcessModalOpen}
+        open={isProcessModalOpen}
         onOpenChange={setIsProcessModalOpen}
         data={processStats}
-        isLoading={isProcessStatsLoading} 
-        />
+        isLoading={isProcessStatsLoading}
+      />
       <UserStatsModal 
         open={isModalOpen} 
         onOpenChange={setIsModalOpen} 

@@ -14,8 +14,6 @@ import {
 
 export const notificationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-<<<<<<< HEAD
-=======
     // 1. GET /api/v1/admin/notifications
     getAdminNotifications: builder.query<AdminNotificationPageResponse, { page?: number; size?: number } | void>({
       query: (params) => {
@@ -66,7 +64,6 @@ export const notificationApi = baseApi.injectEndpoints({
     }),
 
     // --- Compatible existing hooks for UI components ---
->>>>>>> feature/admin-api-integration
     getNotifications: builder.query<NotificationItem[], void>({
       async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
         const result = await baseQuery(`${ENDPOINTS.NOTIFICATIONS}?pageNumber=0&pageSize=20`);
@@ -150,10 +147,6 @@ export const {
   useMarkAllAsReadMutation,
   useDeleteNotificationMutation,
   useUpdatePreferencesMutation,
-<<<<<<< HEAD
-  useTriggerNotificationMutation, 
-=======
   useTriggerNotificationMutation,
->>>>>>> feature/admin-api-integration
   useResetNotificationsMutation,
 } = notificationApi;

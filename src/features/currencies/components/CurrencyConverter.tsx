@@ -11,7 +11,6 @@ interface CurrencyConverterProps {
   rates: ExchangeRate[] | undefined;
 }
 
-<<<<<<< HEAD
 const DEFAULT_CURRENCIES: ExchangeRate[] = [
   { code: "USD", name: "US Dollar", symbol: "$", flag: "🇺🇸", rate: 1, active: true },
   { code: "KHR", name: "Cambodian Riel", symbol: "៛", flag: "🇰🇭", rate: 4050, active: true },
@@ -26,9 +25,6 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
     return rates && rates.length > 0 ? rates : DEFAULT_CURRENCIES;
   }, [rates]);
 
-=======
-export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) => {
->>>>>>> feature/admin-api-integration
   const {
     control,
     watch,
@@ -49,7 +45,6 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
 
   // Automatic calculation logic
   const convertedAmount = useMemo(() => {
-<<<<<<< HEAD
     const numAmount = Number(amount) || 0;
     const fromRate = activeRates.find((r) => r.code === fromCurrency)?.rate || 1;
     const toRate = activeRates.find((r) => r.code === toCurrency)?.rate || 1;
@@ -57,16 +52,6 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
     const amountInUsd = numAmount / fromRate;
     return amountInUsd * toRate;
   }, [amount, fromCurrency, toCurrency, activeRates]);
-=======
-    if (!rates || rates.length === 0) return 0;
-    const numAmount = Number(amount) || 0;
-    const fromRate = rates.find((r) => r.code === fromCurrency)?.rate || 1;
-    const toRate = rates.find((r) => r.code === toCurrency)?.rate || 1;
-
-    const amountInUsd = numAmount / fromRate;
-    return amountInUsd * toRate;
-  }, [amount, fromCurrency, toCurrency, rates]);
->>>>>>> feature/admin-api-integration
 
   const handleSwap = () => {
     setValue("fromCurrency", toCurrency);

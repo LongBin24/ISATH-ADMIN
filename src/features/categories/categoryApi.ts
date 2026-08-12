@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { ENDPOINTS_CATEGORY } from "@/api/endpoints";
 import { baseApi } from "@/api/baseApi";
 import { API_TAGS } from "@/api/tags";
@@ -277,6 +276,3 @@ export const {
   useUpdateCategoryPreferenceMutation,
   useDeleteCategoryMutation,
 } = categoryApi;
-=======
-export * from "./api/categoryApi";
->>>>>>> feature/admin-api-integration

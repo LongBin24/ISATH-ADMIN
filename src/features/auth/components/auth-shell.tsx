@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, Moon, ShieldCheck, Sparkles, Sun, TrendingUp, Wallet } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/hooks/use-theme';
 import type { ReactNode } from 'react';
 
 const highlights = [
@@ -14,7 +14,7 @@ const highlights = [
 ];
 
 export function AuthShell({ children }: { children: ReactNode }) {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const reduceMotion = useReducedMotion();
 
   return (
@@ -22,20 +22,12 @@ export function AuthShell({ children }: { children: ReactNode }) {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-20 opacity-70 bg-[linear-gradient(to_right,#00337707_1px,transparent_1px),linear-gradient(to_bottom,#00337707_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_85%)] dark:bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)]" />
       <motion.div aria-hidden="true" animate={reduceMotion ? undefined : { x: [0, 45, 0], y: [0, -25, 0], scale: [1, 1.1, 1] }} transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }} className="pointer-events-none absolute -left-52 -top-48 -z-10 size-[42rem] rounded-full bg-[#FFC83D]/18 blur-[120px] dark:bg-[#FFC83D]/9" />
       <motion.div aria-hidden="true" animate={reduceMotion ? undefined : { x: [0, -35, 0], y: [0, 32, 0] }} transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }} className="pointer-events-none absolute -bottom-64 right-[18%] -z-10 size-[46rem] rounded-full bg-[#2769ad]/12 blur-[140px] dark:bg-[#1d5c9e]/14" />
-      {/* <Link
-        href="/"
-        className="group absolute left-4 top-4 z-30 inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/80 px-4 text-sm font-bold text-[#003377] shadow-sm backdrop-blur transition hover:-translate-x-0.5 hover:border-[#FFC83D]/60 hover:bg-[#FFC83D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFC83D] focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/80 dark:text-white dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D] dark:hover:text-[#003377] sm:left-7 sm:top-7"
-        aria-label="ចាកចេញ និងត្រឡប់ទៅទំព័រដើម"
-      >
-        <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
-        <span>ចាកចេញ</span>
-      </Link> */}
       <button
-        onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+        onClick={toggleTheme}
         className="absolute right-4 top-4 z-30 grid size-11 place-items-center rounded-2xl border border-slate-200/70 bg-white/80 text-[#003377] shadow-sm backdrop-blur transition hover:rotate-6 hover:bg-[#FFC83D] dark:border-slate-700 dark:bg-slate-900/80 dark:text-[#FFC83D] sm:right-7 sm:top-7"
         aria-label="ប្តូររូបរាងភ្លឺ ឬ ងងឹត"
       >
-        {resolvedTheme === 'dark' ? <Sun className="size-5" /> : <Moon className="size-5" />}
+        {theme === 'dark' ? <Sun className="size-5" /> : <Moon className="size-5" />}
       </button>
 
       <div className="relative mx-auto grid min-h-[100dvh] max-w-[1440px] lg:grid-cols-[1.05fr_0.95fr]">
@@ -70,7 +62,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
                 whileHover={reduceMotion ? undefined : { scale: 1.04, rotate: 2 }}
                 className="relative z-10 grid size-[clamp(7rem,17dvh,10rem)] place-items-center rounded-[2.25rem] border border-white/80 bg-white/90 p-[clamp(1rem,2.2dvh,1.25rem)] shadow-[0_28px_70px_-20px_rgba(0,51,119,0.35)] backdrop-blur-xl dark:border-white/15 dark:bg-white/95"
               >
-                <Image src="/iStash-logo (3).png" alt="iStash" width={112} height={112} priority className="size-full object-contain" />
+                <Image src="/logo.png" alt="iStash" width={112} height={112} priority className="size-full object-contain" />
                 <motion.span aria-hidden="true" animate={reduceMotion ? undefined : { rotate: 360 }} transition={{ duration: 8, repeat: Infinity, ease: 'linear' }} className="absolute -right-3 -top-3 grid size-9 place-items-center rounded-full bg-[#FFC83D] text-[#003377] shadow-lg"><Sparkles className="size-4" /></motion.span>
               </motion.div>
             </div>

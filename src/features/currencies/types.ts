@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-export interface ProviderStatus {
-  provider: string;
-  status: string;
-  lastAttemptAt?: string;
-  lastSuccessfulSyncAt: string;
-  currenciesReceived?: number;
-  ratesUpdated?: number;
-  stale: boolean;
-  lastError?: string | null;
-  message: string;
-=======
 export interface CurrencySynchronizationResponse {
   synchronizationId: string;
   provider: string;
@@ -21,7 +9,6 @@ export interface CurrencySynchronizationResponse {
   startedAt: string;
   completedAt?: string;
   errorMessage?: string;
->>>>>>> feature/admin-api-integration
 }
 
 export interface ApiResponseCurrencySynchronizationResponse {
@@ -38,34 +25,14 @@ export interface CurrencyResponse {
   symbol: string;
   decimalPlaces?: number;
   provider?: string;
-<<<<<<< HEAD
-=======
   lastSyncedAt?: string;
   createdAt?: string;
   updatedAt?: string;
->>>>>>> feature/admin-api-integration
   rate?: number;
   change?: number;
   flag?: string;
 }
 
-<<<<<<< HEAD
-export type ExchangeRate = CurrencyItem;
-
-export interface SyncResponse {
-  synchronizationId: string;
-  provider: string;
-  status: string;
-  currenciesReceived: number;
-  currenciesUpdated: number;
-  ratesReceived: number;
-  ratesUpdated: number;
-  startedAt: string;
-  completedAt: string;
-  errorMessage?: string | null;
-}
-
-=======
 export interface ApiResponseCurrencyResponse {
   success: boolean;
   message?: string;
@@ -92,8 +59,6 @@ export interface ApiResponseCurrencyProviderStatusResponse {
   timestamp?: string;
 }
 
-// Common generic ApiResponse
->>>>>>> feature/admin-api-integration
 export interface ApiResponse<T> {
   success: boolean;
   message?: string;
@@ -101,15 +66,11 @@ export interface ApiResponse<T> {
   timestamp?: string;
 }
 
-<<<<<<< HEAD
-=======
-// Aliases for backward compatibility
 export type CurrencyItem = CurrencyResponse;
 export type ExchangeRate = CurrencyResponse;
 export type ProviderStatus = CurrencyProviderStatusResponse;
 export type SyncResponse = CurrencySynchronizationResponse;
 
->>>>>>> feature/admin-api-integration
 export interface TransactionRecord {
   id: string;
   title: string;

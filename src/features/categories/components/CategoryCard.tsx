@@ -30,11 +30,6 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
   const styles =
     categoryColorStyles[category.color ?? ""] ?? defaultCategoryStyle;
   const iconAsset = categoryIconAssets[category.icon];
-<<<<<<< HEAD
-  const canModify =
-    !category.systemCategory && category.ownedByCurrentUser !== false;
-=======
->>>>>>> feature/admin-api-integration
 
   return (
     <article
@@ -51,12 +46,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
       }}
       className="group relative flex h-[217px] cursor-pointer flex-col rounded-[20px] border border-slate-900/10 bg-white p-5 shadow-[0_2px_3px_rgba(0,0,0,0.12)] transition duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003377] focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900"
     >
-<<<<<<< HEAD
-      {canModify && (
-        <div className="absolute right-4 top-4 z-10 flex items-center gap-1 rounded-xl border border-slate-100 bg-white/95 p-1 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 dark:border-slate-700 dark:bg-slate-800/95">
-=======
       <div className="absolute right-4 top-4 z-10 flex items-center gap-1 rounded-xl border border-slate-100 bg-white/95 p-1 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 dark:border-slate-700 dark:bg-slate-800/95">
->>>>>>> feature/admin-api-integration
         <button
           type="button"
           onClick={(event) => {
@@ -79,12 +69,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
         >
           <Trash2 className="w-4 h-4" />
         </button>
-<<<<<<< HEAD
-        </div>
-      )}
-=======
       </div>
->>>>>>> feature/admin-api-integration
 
       <div className={`flex size-14 shrink-0 items-center justify-center rounded-[20px] ${styles.icon}`}>
         <div className="relative size-6">

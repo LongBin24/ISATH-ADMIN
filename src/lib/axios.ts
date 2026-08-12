@@ -1,44 +1,30 @@
 import axios from "axios";
-import { createAuthClient } from "better-auth/react";
-import { toast } from "react-hot-toast"; 
-
-const authClient = createAuthClient();
+import { toast } from "react-hot-toast";
 
 const axiosInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-axiosInstance.interceptors.request.use(async (config) => {
-    try {
-        const session = await authClient.getSession();
-        const token = session?.data?.session?.token; 
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token =
+      typeof window === "undefined"
+        ? null
+        : window.localStorage.getItem("accessToken") ||
+          window.localStorage.getItem("token") ||
+          window.sessionStorage.getItem("accessToken") ||
+          window.sessionStorage.getItem("token") ||
+          document.cookie.match(/(?:^|; )accessToken=([^;]+)/)?.[1];
 
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-    } catch (error) {
-        console.error("Axios interceptor token error:", error);
-// =======
-// axiosInstance.interceptors.request.use(
-//   async (config) => {
-//     const token =
-//       typeof window === "undefined"
-//         ? null
-//         : window.localStorage.getItem("accessToken") ||
-//           window.localStorage.getItem("token") ||
-//           window.sessionStorage.getItem("accessToken") ||
-//           window.sessionStorage.getItem("token") ||
-//           document.cookie.match(/(?:^|; )accessToken=([^;]+)/)?.[1];
-
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-// >>>>>>> feature/admin-api-integration
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    
     return config;
-}, (error) => {
+  },
+  (error) => {
     return Promise.reject(error);
-});
+  }
+);
 
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -56,7 +42,7 @@ axiosInstance.interceptors.response.use(
       toast.error(message);
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export default axiosInstance;

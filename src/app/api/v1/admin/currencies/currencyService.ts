@@ -1,4 +1,8 @@
-import { CurrencyItem, ProviderStatus, SyncResponse } from "@/features/currencies/types";
+import {
+  CurrencyItem,
+  ProviderStatus,
+  SyncResponse,
+} from "@/features/currencies/types";
 
 // Metadata dictionary for currency symbols, flags, and names
 export const CURRENCY_METADATA: Record<
@@ -65,7 +69,10 @@ export async function fetchLiveExchangeRates(): Promise<CurrencyItem[]> {
         };
         const currentRate = rates[code];
         const previousRate = lastFetchedRates[code] || currentRate;
-        const diff = previousRate !== 0 ? ((currentRate - previousRate) / previousRate) * 100 : 0;
+        const diff =
+          previousRate !== 0
+            ? ((currentRate - previousRate) / previousRate) * 100
+            : 0;
 
         items.push({
           code,
@@ -83,8 +90,11 @@ export async function fetchLiveExchangeRates(): Promise<CurrencyItem[]> {
     lastFetchedRates = rates;
     return items;
   } catch (error) {
-    console.error("Error fetching live exchange rates, using resilient fallback:", error);
-    
+    console.error(
+      "Error fetching live exchange rates, using resilient fallback:",
+      error,
+    );
+
     // Fallback default rates if network is offline/unreachable
     const fallbackRates: Record<string, number> = {
       USD: 1,
@@ -94,10 +104,14 @@ export async function fetchLiveExchangeRates(): Promise<CurrencyItem[]> {
       JPY: 158.5,
       GBP: 0.74,
     };
-    
+
     const priorityCodes = ["USD", "KHR", "THB", "EUR", "JPY", "GBP"];
     const items: CurrencyItem[] = priorityCodes.map((code) => {
-      const meta = CURRENCY_METADATA[code] || { name: code, symbol: code, flag: "🌐" };
+      const meta = CURRENCY_METADATA[code] || {
+        name: code,
+        symbol: code,
+        flag: "🌐",
+      };
       return {
         code,
         name: meta.name,
@@ -127,7 +141,7 @@ export async function getLiveProviderStatus(): Promise<ProviderStatus> {
     currenciesReceived: totalCurrenciesReceived || 162,
     ratesUpdated: totalCurrenciesReceived || 162,
     stale: false,
-    lastError: null,
+    lastError: undefined,
     message: "Live currency exchange rates are active and up to date.",
   };
 }
@@ -147,11 +161,14 @@ export async function synchronizeLiveCurrencies(): Promise<SyncResponse> {
     ratesUpdated: totalCurrenciesReceived,
     startedAt,
     completedAt,
-    errorMessage: null,
+    errorMessage: undefined,
   };
 }
 
-export function setCurrencyActiveState(code: string, active: boolean): CurrencyItem | null {
+export function setCurrencyActiveState(
+  code: string,
+  active: boolean,
+): CurrencyItem | null {
   const upperCode = code.toUpperCase();
   if (active) {
     inactiveCurrencies.delete(upperCode);

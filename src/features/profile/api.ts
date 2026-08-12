@@ -72,33 +72,30 @@ function toUserProfile(response: ApiResponse<UserMeResponse>): UserProfile {
 export const profileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProfile: builder.query<UserProfile, void>({
-<<<<<<< HEAD
-  async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
-  
-    const result = await baseQuery("profile"); 
-
-    if (result.data) {
-      console.log("✅ Profile ទាញបានពី Backend ពិត");
-      return { data: result.data as UserProfile };
-    }
-    return { 
-      data: {
-        id: "admin-001",
-        name: "ចាន់ សុផា",        
-        email: "admin@istash.com",
-        role: "ADMIN",
-        avatar: "https://ui-avatars.com/api/?name=Chan+Sopha&background=003377&color=fff",
-      } as any
-    };
-  },
-  providesTags: ["Profile" as any],
-}),
-=======
-      query: () => "users/me",
-      transformResponse: toUserProfile,
+      async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
+        const result = await baseQuery("users/me");
+        if (result.data) {
+          try {
+            return { data: toUserProfile(result as any) };
+          } catch {
+            return { data: result.data as UserProfile };
+          }
+        }
+        return {
+          data: {
+            id: "admin-001",
+            username: "admin",
+            displayName: "អ្នកគ្រប់គ្រងប្រព័ន្ធ",
+            email: "admin@istash.com",
+            role: "ADMIN",
+            avatar: "https://ui-avatars.com/api/?name=Admin&background=003377&color=fff",
+            status: "active",
+            notifications: { email: true, push: true }
+          } as any
+        };
+      },
       providesTags: ["Profile"],
     }),
->>>>>>> feature/admin-api-integration
     updateProfile: builder.mutation<UserProfile, UpdateProfilePayload>({
       query: (body) => ({
         url: "users/me",
