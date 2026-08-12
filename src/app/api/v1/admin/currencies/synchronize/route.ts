@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { synchronizeLiveCurrencies } from "../currencyService";
 
-export async function POST() {
+async function handleSync() {
   try {
     const syncData = await synchronizeLiveCurrencies();
     return NextResponse.json({
@@ -23,3 +23,10 @@ export async function POST() {
   }
 }
 
+export async function POST() {
+  return handleSync();
+}
+
+export async function GET() {
+  return handleSync();
+}

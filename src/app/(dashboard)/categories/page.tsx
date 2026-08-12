@@ -73,8 +73,7 @@ export default function CategoryManagementPage() {
   } = useGetCategoriesPaginatedInfiniteQuery();
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const categories = useMemo(
-    () =>
-      categoryPages?.pages.flatMap((page) => page.content) ?? [],
+    () => categoryPages?.pages.flatMap((page) => page.content) ?? [],
     [categoryPages],
   );
   const [createCategory, { isLoading: isCreating }] =
@@ -91,9 +90,7 @@ export default function CategoryManagementPage() {
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
     null,
   );
-  const [activeType, setActiveType] = useState<"expense" | "income">(
-    "expense",
-  );
+  const [activeType, setActiveType] = useState<"expense" | "income">("expense");
 
   useEffect(() => {
     const target = loadMoreRef.current;
@@ -124,6 +121,9 @@ export default function CategoryManagementPage() {
   };
 
   const handleOpenEdit = (category: Category) => {
+
+    if (category.systemCategory || category.ownedByCurrentUser === false)
+      return;
     setSelectedCategory(category);
     setIsModalOpen(true);
   };
@@ -216,10 +216,12 @@ export default function CategoryManagementPage() {
         role="tablist"
         aria-label="ប្រភេទប្រតិបត្តិការ"
       >
-        {([
-          ["expense", "ប្រភេទចំណាយ"],
-          ["income", "ប្រភេទចំណូល"],
-        ] as const).map(([value, label]) => {
+        {(
+          [
+            ["expense", "ប្រភេទចំណាយ"],
+            ["income", "ប្រភេទចំណូល"],
+          ] as const
+        ).map(([value, label]) => {
           const isActive = activeType === value;
 
           return (
