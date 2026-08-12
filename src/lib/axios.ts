@@ -1,32 +1,29 @@
 import axios from "axios";
 import { createAuthClient } from "better-auth/react";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast"; 
 
 const authClient = createAuthClient();
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-axiosInstance.interceptors.request.use(
-  async (config) => {
+axiosInstance.interceptors.request.use(async (config) => {
     try {
-      const session = await authClient.getSession();
-      const token = session?.data?.session?.token;
+        const session = await authClient.getSession();
+        const token = session?.data?.session?.token; 
 
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
     } catch (error) {
-      console.error("Axios interceptor token error:", error);
+        console.error("Axios interceptor token error:", error);
     }
-
+    
     return config;
-  },
-  (error) => {
+}, (error) => {
     return Promise.reject(error);
-  },
-);
+});
 
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -40,8 +37,7 @@ axiosInstance.interceptors.response.use(
     } else if (status === 500) {
       toast.error("មានបញ្ហាបច្ចេកទេសនៅខាង Server");
     } else {
-      const message =
-        error.response?.data?.message || "មានបញ្ហាអ្វីមួយបានកើតឡើង!";
+      const message = error.response?.data?.message || "មានបញ្ហាអ្វីមួយបានកើតឡើង!";
       toast.error(message);
     }
     return Promise.reject(error);

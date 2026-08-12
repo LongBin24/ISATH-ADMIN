@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { FolderTree } from "lucide-react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import {
-  useGetCategoriesQuery,
+  useGetCategoriesPaginatedInfiniteQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
+  useUpdateCategoryPreferenceMutation,
   useDeleteCategoryMutation,
 } from "@/features/categories/categoryApi";
 import { Category } from "@/features/categories/types";
@@ -16,13 +18,41 @@ import { CategoryCard } from "@/features/categories/components/CategoryCard";
 import { CategoryFormModal } from "@/features/categories/components/CategoryFormModal";
 import { DeleteCategoryDialog } from "@/features/categories/components/DeleteCategoryDialog";
 
+const getApiErrorMessage = (error: unknown) => {
+  if (typeof error !== "object" || error === null || !("data" in error)) {
+    return "Unable to complete the request.";
+  }
+
+  const data = error.data;
+
+  if (typeof data === "object" && data !== null && "message" in data) {
+    return String(data.message);
+  }
+
+  return "Unable to complete the request.";
+};
+
 export default function CategoryManagementPage() {
   const router = useRouter();
-  const { data: categories, isLoading } = useGetCategoriesQuery();
+  const {
+    data: categoryPages,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useGetCategoriesPaginatedInfiniteQuery();
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const categories = useMemo(
+    () =>
+      categoryPages?.pages.flatMap((page) => page.content) ?? [],
+    [categoryPages],
+  );
   const [createCategory, { isLoading: isCreating }] =
     useCreateCategoryMutation();
   const [updateCategory, { isLoading: isUpdating }] =
     useUpdateCategoryMutation();
+  const [updateCategoryPreference, { isLoading: isUpdatingPreference }] =
+    useUpdateCategoryPreferenceMutation();
   const [deleteCategory, { isLoading: isDeleting }] =
     useDeleteCategoryMutation();
 
@@ -37,6 +67,23 @@ export default function CategoryManagementPage() {
     "expense",
   );
 
+  useEffect(() => {
+    const target = loadMoreRef.current;
+    if (!target || !hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingNextPage) {
+          void fetchNextPage();
+        }
+      },
+      { rootMargin: "240px" },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
   const visibleCategories = categories?.filter((category) => {
     const categoryType = (category.type ?? "expense").toLowerCase();
 
@@ -49,29 +96,68 @@ export default function CategoryManagementPage() {
   };
 
   const handleOpenEdit = (category: Category) => {
+    if (category.systemCategory || category.ownedByCurrentUser === false) return;
+
     setSelectedCategory(category);
     setIsModalOpen(true);
   };
 
   const handleFormSubmit = async (data: CategoryFormValues) => {
-    if (selectedCategory) {
-      await updateCategory({ id: selectedCategory.id, data });
-    } else {
-      await createCategory({ ...data, type: activeType });
+    try {
+      if (selectedCategory) {
+        await Promise.all([
+          updateCategory({
+            id: selectedCategory.id,
+            data: {
+              name: data.name,
+              categoryType:
+                selectedCategory.type === "income" ? "INCOME" : "EXPENSE",
+              parentId: selectedCategory.parentId ?? "",
+              moveToRoot: !selectedCategory.parentId,
+              icon: data.icon,
+              color: data.color ?? selectedCategory.color ?? "#3b82f6",
+              defaultCategory: selectedCategory.defaultCategory ?? true,
+              status: selectedCategory.status ?? "ACTIVE",
+            },
+          }).unwrap(),
+          updateCategoryPreference({
+            id: selectedCategory.id,
+            data: {
+              icon: data.icon,
+              totalBudget: data.totalBudget,
+              color: data.color,
+            },
+          }).unwrap(),
+        ]);
+      } else {
+        await createCategory({ ...data, type: activeType }).unwrap();
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
     }
-    setIsModalOpen(false);
   };
 
   const handleOpenDelete = (id: string) => {
     const category = categories?.find((item) => item.id === id);
-    if (category) setCategoryToDelete(category);
+    if (
+      category &&
+      !category.systemCategory &&
+      category.ownedByCurrentUser !== false
+    ) {
+      setCategoryToDelete(category);
+    }
   };
 
   const handleConfirmDelete = async () => {
     if (!categoryToDelete) return;
 
-    await deleteCategory(categoryToDelete.id);
-    setCategoryToDelete(null);
+    try {
+      await deleteCategory(categoryToDelete.id).unwrap();
+      setCategoryToDelete(null);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    }
   };
 
   return (
@@ -158,12 +244,18 @@ export default function CategoryManagementPage() {
         </div>
       )}
 
+      <div ref={loadMoreRef} className="flex h-16 items-center justify-center">
+        {isFetchingNextPage && (
+          <FolderTree className="size-6 animate-spin text-[#003377] dark:text-slate-300" />
+        )}
+      </div>
+
       <CategoryFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleFormSubmit}
         initialData={selectedCategory}
-        isLoading={isCreating || isUpdating}
+        isLoading={isCreating || isUpdating || isUpdatingPreference}
       />
       <DeleteCategoryDialog
         category={categoryToDelete}

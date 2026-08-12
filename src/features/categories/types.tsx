@@ -14,5 +14,10 @@ export interface Category {
   spentAmount?: number;
   type?: "expense" | "income";
   color?: string;
+  parentId?: string | null;
+  defaultCategory?: boolean;
+  status?: "ACTIVE" | "INACTIVE";
+  systemCategory?: boolean;
+  ownedByCurrentUser?: boolean;
   recentTransactions?: CategoryTransaction[];
 }
