@@ -1,8 +1,12 @@
 export interface ProviderStatus {
   provider: string;
   status: string;
+  lastAttemptAt?: string;
   lastSuccessfulSyncAt: string;
+  currenciesReceived?: number;
+  ratesUpdated?: number;
   stale: boolean;
+  lastError?: string | null;
   message: string;
 }
 
@@ -22,8 +26,15 @@ export type ExchangeRate = CurrencyItem;
 
 export interface SyncResponse {
   synchronizationId: string;
+  provider: string;
   status: string;
+  currenciesReceived: number;
+  currenciesUpdated: number;
+  ratesReceived: number;
+  ratesUpdated: number;
   startedAt: string;
+  completedAt: string;
+  errorMessage?: string | null;
 }
 
 export interface ApiResponse<T> {

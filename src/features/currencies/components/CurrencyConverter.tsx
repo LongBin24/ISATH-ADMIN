@@ -11,7 +11,20 @@ interface CurrencyConverterProps {
   rates: ExchangeRate[] | undefined;
 }
 
+const DEFAULT_CURRENCIES: ExchangeRate[] = [
+  { code: "USD", name: "US Dollar", symbol: "$", flag: "🇺🇸", rate: 1, active: true },
+  { code: "KHR", name: "Cambodian Riel", symbol: "៛", flag: "🇰🇭", rate: 4050, active: true },
+  { code: "THB", name: "Thai Baht", symbol: "฿", flag: "🇹🇭", rate: 33.5, active: true },
+  { code: "EUR", name: "Euro", symbol: "€", flag: "🇪🇺", rate: 0.87, active: true },
+  { code: "JPY", name: "Japanese Yen", symbol: "¥", flag: "🇯🇵", rate: 158.5, active: true },
+  { code: "GBP", name: "British Pound", symbol: "£", flag: "🇬🇧", rate: 0.74, active: true },
+];
+
 export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) => {
+  const activeRates = useMemo(() => {
+    return rates && rates.length > 0 ? rates : DEFAULT_CURRENCIES;
+  }, [rates]);
+
   const {
     control,
     watch,
@@ -32,14 +45,13 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
 
   // Automatic calculation logic
   const convertedAmount = useMemo(() => {
-    if (!rates || rates.length === 0) return 0;
     const numAmount = Number(amount) || 0;
-    const fromRate = rates.find((r) => r.code === fromCurrency)?.rate || 1;
-    const toRate = rates.find((r) => r.code === toCurrency)?.rate || 1;
+    const fromRate = activeRates.find((r) => r.code === fromCurrency)?.rate || 1;
+    const toRate = activeRates.find((r) => r.code === toCurrency)?.rate || 1;
 
     const amountInUsd = numAmount / fromRate;
     return amountInUsd * toRate;
-  }, [amount, fromCurrency, toCurrency, rates]);
+  }, [amount, fromCurrency, toCurrency, activeRates]);
 
   const handleSwap = () => {
     setValue("fromCurrency", toCurrency);
@@ -107,7 +119,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
                     {...field}
                     className="w-full px-3 py-2.5 rounded-2xl border border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFC83D]"
                   >
-                    {rates?.map((r) => (
+                    {activeRates?.map((r) => (
                       <option key={`from-${r.code}`} value={r.code}>
                         {r.flag} {r.code}
                       </option>
@@ -137,7 +149,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
                     {...field}
                     className="w-full px-3 py-2.5 rounded-2xl border border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FFC83D]"
                   >
-                    {rates?.map((r) => (
+                    {activeRates?.map((r) => (
                       <option key={`to-${r.code}`} value={r.code}>
                         {r.flag} {r.code}
                       </option>

@@ -1,4 +1,5 @@
 import { baseApi } from "@/api/baseApi";
+import { ENDPOINTS } from "@/api/endpoints";
 import {
   CurrencyItem,
   ApiResponse,
@@ -6,126 +7,175 @@ import {
   ProviderStatus,
   ExchangeRate,
 } from "./types";
-
-const MOCK_CURRENCIES: CurrencyItem[] = [
-  {
-    code: "USD",
-    name: "US Dollar",
-    rate: 1,
-    change: 0.0,
-    flag: "🇺🇸",
-    active: true,
-    symbol: "$",
-  },
-  {
-    code: "KHR",
-    name: "Cambodian Riel",
-    rate: 4100,
-    change: 0.15,
-    flag: "🇰🇭",
-    active: true,
-    symbol: "៛",
-  },
-  {
-    code: "THB",
-    name: "Thai Baht",
-    rate: 35.5,
-    change: -0.05,
-    flag: "🇹🇭",
-    active: true,
-    symbol: "฿",
-  },
-  {
-    code: "EUR",
-    name: "Euro",
-    rate: 0.92,
-    change: 0.02,
-    flag: "🇪🇺",
-    active: true,
-    symbol: "€",
-  },
-  {
-    code: "JPY",
-    name: "Japanese Yen",
-    rate: 152.0,
-    change: -0.12,
-    flag: "🇯🇵",
-    active: true,
-    symbol: "¥",
-  },
-  {
-    code: "GBP",
-    name: "British Pound",
-    rate: 0.78,
-    change: 0.05,
-    flag: "🇬🇧",
-    active: true,
-    symbol: "£",
-  },
-];
+import { CURRENCY_METADATA } from "@/app/api/v1/admin/currencies/currencyService";
+import {
+  getActiveCurrenciesMap,
+  setCurrencyActiveInStorage,
+} from "./activeCurrencyStorage";
 
 export type { ExchangeRate };
+
 export const currencyApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCurrencies: builder.query<CurrencyItem[], void>({
-      async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
-        try {
-          const result = await baseQuery("/admin/currencies");
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBq) {
+        const activeMap = getActiveCurrenciesMap();
+        let items: CurrencyItem[] = [];
 
-          if (result.data) {
-            const realData = (result.data as ApiResponse<CurrencyItem[]>).data;
-            if (Array.isArray(realData) && realData.length > 0) {
-              return {
-                data: realData.map((c) => ({
-                  ...c,
-                  rate: c.rate || (c.code === "KHR" ? 4100 : c.code === "THB" ? 35.5 : c.code === "EUR" ? 0.92 : 1),
-                  change: c.change ?? 0.1,
-                  flag: c.flag || (c.code === "KHR" ? "🇰🇭" : c.code === "THB" ? "🇹🇭" : c.code === "EUR" ? "🇪🇺" : "🇺🇸"),
-                })),
-              };
+        // 1. Try Next.js local route handler first
+        try {
+          const localRes = await fetch("/api/v1/admin/currencies");
+          if (localRes.ok) {
+            const json = await localRes.json();
+            if (json.success && Array.isArray(json.data)) {
+              items = json.data;
             }
           }
         } catch {
-          // Fallback to mock data if endpoint fails or returns empty
+          // Continue to next fallback
         }
 
-        return { data: MOCK_CURRENCIES };
+        // 2. Try configured base query endpoint if local fetch returned empty
+        if (items.length === 0) {
+          const result = await fetchWithBq(ENDPOINTS.ADMIN_CURRENCIES);
+          if (result.data) {
+            const apiRes = result.data as ApiResponse<CurrencyItem[]>;
+            if (apiRes && apiRes.success && Array.isArray(apiRes.data)) {
+              items = apiRes.data;
+            }
+          }
+        }
+
+        // 3. Fallback direct live fetch from Open Exchange Rates API
+        if (items.length === 0) {
+          try {
+            const openRes = await fetch("https://open.er-api.com/v6/latest/USD");
+            if (openRes.ok) {
+              const openData = await openRes.json();
+              const rates: Record<string, number> = openData.rates || {};
+              const priorityCodes = ["USD", "KHR", "THB", "EUR", "JPY", "GBP"];
+              items = priorityCodes
+                .filter((code) => rates[code] !== undefined)
+                .map((code) => {
+                  const meta = CURRENCY_METADATA[code] || {
+                    name: code,
+                    symbol: code,
+                    flag: "🌐",
+                  };
+                  return {
+                    code,
+                    name: meta.name,
+                    symbol: meta.symbol,
+                    flag: meta.flag,
+                    rate: rates[code],
+                    change: 0,
+                    active: true,
+                    provider: "Open Exchange Rates API",
+                  };
+                });
+            }
+          } catch (err) {
+            return { error: { status: "FETCH_ERROR", error: String(err) } };
+          }
+        }
+
+        // Merge persistent active state choices
+        const mergedItems = items.map((item) => ({
+          ...item,
+          active: activeMap[item.code] ?? item.active ?? true,
+        }));
+
+        return { data: mergedItems };
       },
       providesTags: ["Currency"],
     }),
 
     getProviderStatus: builder.query<ApiResponse<ProviderStatus>, void>({
-      query: () => "/admin/currencies/provider-status",
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBq) {
+        try {
+          const res = await fetch("/api/v1/admin/currencies/provider-status");
+          if (res.ok) {
+            const data = await res.json();
+            return { data };
+          }
+        } catch {
+          // ignore
+        }
+        const result = await fetchWithBq(ENDPOINTS.ADMIN_CURRENCIES_PROVIDER_STATUS);
+        if (result.error) return { error: result.error };
+        return { data: result.data as ApiResponse<ProviderStatus> };
+      },
       providesTags: ["Currency"],
     }),
 
     synchronizeCurrencies: builder.mutation<ApiResponse<SyncResponse>, void>({
-      async queryFn() {
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        return {
-          data: {
-            success: true,
-            message: "ធ្វើសមកាលកម្មអត្រាប្តូរប្រាក់ជោគជ័យ",
-            data: { synchronizationId: `sync-${Date.now()}`, status: "COMPLETED", startedAt: new Date().toISOString() },
-          },
-        };
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBq) {
+        try {
+          const res = await fetch("/api/v1/admin/currencies/synchronize", {
+            method: "POST",
+          });
+          if (res.ok) {
+            const data = await res.json();
+            return { data };
+          }
+        } catch {
+          // ignore
+        }
+        const result = await fetchWithBq({
+          url: ENDPOINTS.ADMIN_CURRENCIES_SYNCHRONIZE,
+          method: "POST",
+        });
+        if (result.error) return { error: result.error };
+        return { data: result.data as ApiResponse<SyncResponse> };
       },
       invalidatesTags: ["Currency"],
     }),
 
     activateCurrency: builder.mutation<ApiResponse<CurrencyItem>, string>({
-      query: (code) => ({
-        url: `/admin/currencies/${code}/activate`,
-        method: "PATCH",
-      }),
+      async queryFn(code, _queryApi, _extraOptions, fetchWithBq) {
+        setCurrencyActiveInStorage(code, true);
+        try {
+          const res = await fetch(`/api/v1/admin/currencies/${code}/activate`, {
+            method: "PATCH",
+          });
+          if (res.ok) {
+            const data = await res.json();
+            return { data };
+          }
+        } catch {
+          // ignore
+        }
+        const result = await fetchWithBq({
+          url: ENDPOINTS.ADMIN_CURRENCIES_ACTIVATE(code),
+          method: "PATCH",
+        });
+        if (result.error) return { error: result.error };
+        return { data: result.data as ApiResponse<CurrencyItem> };
+      },
       invalidatesTags: ["Currency"],
     }),
 
     deactivateCurrency: builder.mutation<ApiResponse<CurrencyItem>, string>({
-      query: (code) => ({
-        url: `/admin/currencies/${code}/deactivate`,
-        method: "PATCH",
-      }),
+      async queryFn(code, _queryApi, _extraOptions, fetchWithBq) {
+        setCurrencyActiveInStorage(code, false);
+        try {
+          const res = await fetch(`/api/v1/admin/currencies/${code}/deactivate`, {
+            method: "PATCH",
+          });
+          if (res.ok) {
+            const data = await res.json();
+            return { data };
+          }
+        } catch {
+          // ignore
+        }
+        const result = await fetchWithBq({
+          url: ENDPOINTS.ADMIN_CURRENCIES_DEACTIVATE(code),
+          method: "PATCH",
+        });
+        if (result.error) return { error: result.error };
+        return { data: result.data as ApiResponse<CurrencyItem> };
+      },
       invalidatesTags: ["Currency"],
     }),
   }),
@@ -134,6 +184,7 @@ export const currencyApi = baseApi.injectEndpoints({
 
 export const {
   useGetCurrenciesQuery,
+  useGetProviderStatusQuery,
   useSynchronizeCurrenciesMutation,
   useActivateCurrencyMutation,
   useDeactivateCurrencyMutation,
