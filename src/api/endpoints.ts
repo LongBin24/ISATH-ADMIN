@@ -18,3 +18,9 @@ export const ENDPOINTS_CATEGORY = {
   UPDATE_CATEGORY_PREFERENCE: (id: string) =>
     `/api/v1/categories/${id}/preference`,
 } as const;
+
+export const ENDPOINTS_ALERT_RULES = {
+  GET_ALL: "/api/v1/admin/alert-rules",
+  GET_BY_ID: (ruleId: string) =>
+    `/api/v1/admin/alert-rules/${ruleId}`,
+} as const;
