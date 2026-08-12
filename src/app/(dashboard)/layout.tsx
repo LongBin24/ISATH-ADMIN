@@ -4,9 +4,9 @@ import React, { useState } from "react";
 import "@fontsource/google-sans/400.css";
 import Sidebar from "@/components/layout/Sidebar";
 import Navbar from "@/components/layout/Navbar";
-// import MobileBottomNav from "@/components/layout/MobileBottomNav";
-// import PWAInstallPrompt from"@/components/pwa/PWAInstallPrompt";
-// import PWARegister from "@/components/pwa/PWARegister";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
+import PWAInstallPrompt from"@/components/pwa/PWAInstallPrompt";
+import PWARegister from "@/components/pwa/PWARegister";
 
 export default function DashboardLayout({
   children,
@@ -29,8 +29,8 @@ export default function DashboardLayout({
         <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
 
-      {/* <MobileBottomNav /> */}
-      {/* <PWAInstallPrompt /> */}
+      <MobileBottomNav />
+      <PWAInstallPrompt />
     </div>
   );
 }
