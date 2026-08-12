@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { setCurrencyActiveState } from "../../currencyService";
 
-export async function PATCH(
-  _request: Request,
-  { params }: { params: Promise<{ code: string }> }
-) {
+async function handleActivate(request: Request, params: Promise<{ code: string }>) {
   try {
     const { code } = await params;
     const updatedCurrency = setCurrencyActiveState(code, true);
@@ -38,4 +35,16 @@ export async function PATCH(
       { status: 500 }
     );
   }
+}
+
+export async function PATCH(request: Request, context: { params: Promise<{ code: string }> }) {
+  return handleActivate(request, context.params);
+}
+
+export async function POST(request: Request, context: { params: Promise<{ code: string }> }) {
+  return handleActivate(request, context.params);
+}
+
+export async function GET(request: Request, context: { params: Promise<{ code: string }> }) {
+  return handleActivate(request, context.params);
 }

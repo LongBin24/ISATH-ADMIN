@@ -15,6 +15,24 @@ import {
 
 export type { ExchangeRate };
 
+function getAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (typeof window !== "undefined") {
+    const token =
+      window.localStorage.getItem("accessToken") ||
+      window.localStorage.getItem("token") ||
+      window.sessionStorage.getItem("accessToken") ||
+      window.sessionStorage.getItem("token") ||
+      document.cookie.match(/(?:^|; )accessToken=([^;]+)/)?.[1];
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+  }
+  return headers;
+}
+
 export const currencyApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCurrencies: builder.query<CurrencyItem[], void>({
@@ -23,7 +41,9 @@ export const currencyApi = baseApi.injectEndpoints({
         let items: CurrencyItem[] = [];
 
         try {
-          const localRes = await fetch("/api/v1/admin/currencies");
+          const localRes = await fetch("/api/v1/admin/currencies", {
+            headers: getAuthHeaders(),
+          });
           if (localRes.ok) {
             const json = await localRes.json();
             if (json.success && Array.isArray(json.data)) {
@@ -36,7 +56,9 @@ export const currencyApi = baseApi.injectEndpoints({
 
         if (items.length === 0) {
           try {
-            const result = await fetchWithBq(ENDPOINTS.ADMIN_CURRENCIES || "admin/currencies");
+            const result = await fetchWithBq(
+              ENDPOINTS.ADMIN_CURRENCIES || "admin/currencies",
+            );
             if (result.data) {
               const apiRes = result.data as ApiResponse<CurrencyItem[]>;
               if (apiRes && apiRes.success && Array.isArray(apiRes.data)) {
@@ -52,7 +74,9 @@ export const currencyApi = baseApi.injectEndpoints({
 
         if (items.length === 0) {
           try {
-            const openRes = await fetch("https://open.er-api.com/v6/latest/USD");
+            const openRes = await fetch(
+              "https://open.er-api.com/v6/latest/USD",
+            );
             if (openRes.ok) {
               const openData = await openRes.json();
               const rates: Record<string, number> = openData.rates || {};
@@ -79,9 +103,33 @@ export const currencyApi = baseApi.injectEndpoints({
             }
           } catch (err) {
             items = [
-              { code: "USD", name: "US Dollar", symbol: "$", active: true, rate: 1, change: 0, flag: "🇺🇸" },
-              { code: "KHR", name: "Cambodian Riel", symbol: "៛", active: true, rate: 4100, change: 0.15, flag: "🇰🇭" },
-              { code: "THB", name: "Thai Baht", symbol: "฿", active: true, rate: 35, change: -0.05, flag: "🇹🇭" },
+              {
+                code: "USD",
+                name: "US Dollar",
+                symbol: "$",
+                active: true,
+                rate: 1,
+                change: 0,
+                flag: "🇺🇸",
+              },
+              {
+                code: "KHR",
+                name: "Cambodian Riel",
+                symbol: "៛",
+                active: true,
+                rate: 4100,
+                change: 0.15,
+                flag: "🇰🇭",
+              },
+              {
+                code: "THB",
+                name: "Thai Baht",
+                symbol: "฿",
+                active: true,
+                rate: 35,
+                change: -0.05,
+                flag: "🇹🇭",
+              },
             ];
           }
         }
@@ -99,7 +147,9 @@ export const currencyApi = baseApi.injectEndpoints({
     getProviderStatus: builder.query<ApiResponse<ProviderStatus>, void>({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBq) {
         try {
-          const res = await fetch("/api/v1/admin/currencies/provider-status");
+          const res = await fetch("/api/v1/admin/currencies/provider-status", {
+            headers: getAuthHeaders(),
+          });
           if (res.ok) {
             const data = await res.json();
             return { data };
@@ -108,8 +158,12 @@ export const currencyApi = baseApi.injectEndpoints({
           // ignore
         }
         try {
-          const result = await fetchWithBq(ENDPOINTS.ADMIN_CURRENCIES_PROVIDER_STATUS || "admin/currencies/provider-status");
-          if (result.data) return { data: result.data as ApiResponse<ProviderStatus> };
+          const result = await fetchWithBq(
+            ENDPOINTS.ADMIN_CURRENCIES_PROVIDER_STATUS ||
+              "admin/currencies/provider-status",
+          );
+          if (result.data)
+            return { data: result.data as ApiResponse<ProviderStatus> };
         } catch {
           // ignore
         }
@@ -134,6 +188,7 @@ export const currencyApi = baseApi.injectEndpoints({
         try {
           const res = await fetch("/api/v1/admin/currencies/synchronize", {
             method: "POST",
+            headers: getAuthHeaders(),
           });
           if (res.ok) {
             const data = await res.json();
@@ -144,10 +199,13 @@ export const currencyApi = baseApi.injectEndpoints({
         }
         try {
           const result = await fetchWithBq({
-            url: ENDPOINTS.ADMIN_CURRENCIES_SYNCHRONIZE || "admin/currencies/synchronize",
+            url:
+              ENDPOINTS.ADMIN_CURRENCIES_SYNCHRONIZE ||
+              "admin/currencies/synchronize",
             method: "POST",
           });
-          if (result.data) return { data: result.data as ApiResponse<SyncResponse> };
+          if (result.data)
+            return { data: result.data as ApiResponse<SyncResponse> };
         } catch {
           // ignore
         }
@@ -178,6 +236,7 @@ export const currencyApi = baseApi.injectEndpoints({
         try {
           const res = await fetch(`/api/v1/admin/currencies/${code}/activate`, {
             method: "PATCH",
+            headers: getAuthHeaders(),
           });
           if (res.ok) {
             const data = await res.json();
@@ -188,10 +247,13 @@ export const currencyApi = baseApi.injectEndpoints({
         }
         try {
           const result = await fetchWithBq({
-            url: ENDPOINTS.ADMIN_CURRENCIES_ACTIVATE ? ENDPOINTS.ADMIN_CURRENCIES_ACTIVATE(code) : `admin/currencies/${code}/activate`,
+            url: ENDPOINTS.ADMIN_CURRENCIES_ACTIVATE
+              ? ENDPOINTS.ADMIN_CURRENCIES_ACTIVATE(code)
+              : `admin/currencies/${code}/activate`,
             method: "PATCH",
           });
-          if (result.data) return { data: result.data as ApiResponse<CurrencyItem> };
+          if (result.data)
+            return { data: result.data as ApiResponse<CurrencyItem> };
         } catch {
           // ignore
         }
@@ -215,9 +277,13 @@ export const currencyApi = baseApi.injectEndpoints({
       async queryFn(code, _queryApi, _extraOptions, fetchWithBq) {
         setCurrencyActiveInStorage(code, false);
         try {
-          const res = await fetch(`/api/v1/admin/currencies/${code}/deactivate`, {
-            method: "PATCH",
-          });
+          const res = await fetch(
+            `/api/v1/admin/currencies/${code}/deactivate`,
+            {
+              method: "PATCH",
+              headers: getAuthHeaders(),
+            },
+          );
           if (res.ok) {
             const data = await res.json();
             return { data };
@@ -227,10 +293,13 @@ export const currencyApi = baseApi.injectEndpoints({
         }
         try {
           const result = await fetchWithBq({
-            url: ENDPOINTS.ADMIN_CURRENCIES_DEACTIVATE ? ENDPOINTS.ADMIN_CURRENCIES_DEACTIVATE(code) : `admin/currencies/${code}/deactivate`,
+            url: ENDPOINTS.ADMIN_CURRENCIES_DEACTIVATE
+              ? ENDPOINTS.ADMIN_CURRENCIES_DEACTIVATE(code)
+              : `admin/currencies/${code}/deactivate`,
             method: "PATCH",
           });
-          if (result.data) return { data: result.data as ApiResponse<CurrencyItem> };
+          if (result.data)
+            return { data: result.data as ApiResponse<CurrencyItem> };
         } catch {
           // ignore
         }
