@@ -29,33 +29,10 @@ export default function ProfileBanner({
 
   return (
     <>
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900 transition-all duration-300">
-        {/* Banner Cover background */}
-        <div className="h-44 w-full bg-gradient-to-r from-[#003377] via-[#002255] to-[#334155] relative p-6 flex justify-between items-start">
-          <div className="absolute right-0 top-0 h-full w-1/2 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#FFC83D]/30 via-transparent to-transparent opacity-70 pointer-events-none" />
-          <div className="absolute -left-12 -bottom-12 h-36 w-36 rounded-full bg-[#FFC83D]/10 blur-2xl pointer-events-none" />
-
-          {/* Top Info Tags */}
-          <div className="flex flex-wrap items-center gap-2 z-10">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FFC83D] px-3 py-1 text-xs font-bold text-[#003377] shadow font-google-sans">
-              <Sparkles className="h-3.5 w-3.5 fill-[#003377]" />
-              {profile.role}
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-400/30 px-3 py-1 text-xs font-semibold text-emerald-300 font-google-sans">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              គណនីសកម្ម
-            </span>
-          </div>
-
-          <div className="hidden sm:flex items-center gap-2 z-10 rounded-xl bg-white/10 backdrop-blur-md px-3 py-1.5 text-xs text-white/90 border border-white/20 font-google-sans">
-            <Coins className="h-4 w-4 text-[#FFC83D]" />
-            <span>រូបិយប័ណ្ណ៖ <strong className="text-[#FFC83D]">{profile.preferredCurrency}</strong></span>
-          </div>
-        </div>
-
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900 transition-all duration-300">
         {/* Profile Content Container */}
-        <div className="relative px-6 pb-6 pt-0">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 -mt-16 sm:-mt-20 mb-6">
+        <div className="relative">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
             {/* Avatar & Main Info */}
             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-5">
               {/* Avatar Frame */}

@@ -1,7 +1,7 @@
 export interface User {
     id: string;
     name: string;
-    emainl: string;
+    email: string;
     role: 'admin'|'user';
     status: 'active'|'inactive';
     lastActive: string; 

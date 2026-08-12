@@ -1,11 +1,15 @@
 import React from "react";
 import { TrendingUp, TrendingDown, Globe } from "lucide-react";
+<<<<<<< HEAD
 import {
   ExchangeRate,
   useActivateCurrencyMutation,
   useDeactivateCurrencyMutation,
 } from "../CurrencyApi";
 import toast from "react-hot-toast";
+=======
+import { ExchangeRate } from "../CurrencyApi";
+>>>>>>> feature/admin-api-integration
 
 interface ExchangeRateListProps {
   rates: ExchangeRate[] | undefined;
@@ -19,12 +23,15 @@ const KHMER_CURRENCY_NAMES: Record<string, string> = {
   EUR: "អឺរ៉ូ",
   JPY: "យ៉េនជប៉ុន",
   GBP: "ផោនអង់គ្លេស",
+<<<<<<< HEAD
   AUD: "ដុល្លារអូស្ត្រាលី",
   CAD: "ដុល្លារកាណាដា",
   CNY: "យ័នចិន",
   SGD: "ដុល្លារសិង្ហបុរី",
   KRW: "វ៉ុនកូរ៉េខាងត្បូង",
   VND: "ដុងវៀតណាម",
+=======
+>>>>>>> feature/admin-api-integration
 };
 
 export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoading }) => {
@@ -60,7 +67,11 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
     <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200/80 flex flex-col h-full dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 font-google-sans">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
+<<<<<<< HEAD
         <div className="p-3 bg-[#003377]/10 rounded-2xl text-[#003377] dark:bg-[#FFC83D]/10 dark:text-[#FFC83D]">
+=======
+        <div className="p-3 bg-[#003377]/10 rounded-2xl text-[#003377] dark:text-[#FFC83D]">
+>>>>>>> feature/admin-api-integration
           <Globe className="w-6 h-6" />
         </div>
         <div>
@@ -83,15 +94,20 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
           return (
             <div
               key={item.code}
+<<<<<<< HEAD
               className={`flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 ${
                 item.active
                   ? "bg-slate-50/60 dark:bg-slate-800/40 border-slate-200/80 hover:border-[#003377]/30 dark:border-slate-700 dark:hover:border-[#FFC83D]/40 hover:shadow-sm"
                   : "bg-slate-100/40 dark:bg-slate-850/20 border-slate-200/40 opacity-70 dark:border-slate-800"
               }`}
+=======
+              className="flex items-center justify-between p-4 rounded-2xl border border-slate-200/60 hover:border-slate-300 transition-all bg-slate-50/50 dark:border-slate-750 dark:bg-slate-800/50"
+>>>>>>> feature/admin-api-integration
             >
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{item.flag}</span>
                 <div>
+<<<<<<< HEAD
                   <div className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                     <span>{item.code}</span>
                     <span
@@ -103,6 +119,10 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                     >
                       {item.active ? "សកម្ម" : "អសកម្ម"}
                     </span>
+=======
+                  <div className="font-bold text-slate-900 dark:text-white text-sm">
+                    {item.code}
+>>>>>>> feature/admin-api-integration
                   </div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">
                     {khmerName}
@@ -110,6 +130,7 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                 </div>
               </div>
 
+<<<<<<< HEAD
               <div className="flex items-center gap-4">
                 <div className="text-right">
                   <div className="font-extrabold text-slate-900 dark:text-white text-sm">
@@ -142,11 +163,23 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                     item.active
                       ? "bg-[#003377] dark:bg-[#FFC83D] shadow-sm"
                       : "bg-slate-200 dark:bg-slate-800 border border-slate-300/80 dark:border-slate-700"
+=======
+              <div className="text-right">
+                <div className="font-extrabold text-slate-900 dark:text-white text-sm">
+                  {(item.rate ?? 0).toLocaleString()} {item.symbol}
+                </div>
+                <div
+                  className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full mt-1 ${
+                    isPositive
+                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                      : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+>>>>>>> feature/admin-api-integration
                   }`}
                   role="switch"
                   aria-checked={item.active}
                   title={item.active ? `Turn OFF ${item.code}` : `Turn ON ${item.code}`}
                 >
+<<<<<<< HEAD
                   <span className="sr-only">Toggle {item.code}</span>
 
                   {/* ON Text */}
@@ -158,6 +191,16 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                     }`}
                   >
                     ON
+=======
+                  {isPositive ? (
+                    <TrendingUp className="w-3 h-3" />
+                  ) : (
+                    <TrendingDown className="w-3 h-3" />
+                  )}
+                  <span>
+                    {isPositive ? "+" : ""}
+                    {item.change}%
+>>>>>>> feature/admin-api-integration
                   </span>
 
                   {/* OFF Text */}

@@ -1,11 +1,11 @@
 import { baseApi } from "@/api/baseApi";
 import { ENDPOINTS } from "@/api/endpoints";
 import {
-  CurrencyItem,
   ApiResponse,
-  SyncResponse,
-  ProviderStatus,
+  CurrencyItem,
   ExchangeRate,
+  ProviderStatus,
+  SyncResponse,
 } from "./types";
 import { CURRENCY_METADATA } from "@/app/api/v1/admin/currencies/currencyService";
 import {
@@ -18,6 +18,7 @@ export type { ExchangeRate };
 export const currencyApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCurrencies: builder.query<CurrencyItem[], void>({
+<<<<<<< HEAD
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBq) {
         const activeMap = getActiveCurrenciesMap();
         let items: CurrencyItem[] = [];
@@ -86,11 +87,34 @@ export const currencyApi = baseApi.injectEndpoints({
         }));
 
         return { data: mergedItems };
+=======
+      async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
+        let result = await baseQuery("admin/currencies");
+        if (!result.data) {
+          result = await baseQuery("currencies");
+        }
+
+        if (result.data) {
+          const response = result.data as ApiResponse<CurrencyItem[]> | CurrencyItem[];
+          const list = Array.isArray(response) ? response : response.data || [];
+          return { data: list };
+        }
+
+        return {
+          data: [
+            { code: "USD", name: "US Dollar", symbol: "$", active: true, rate: 1, change: 0, flag: "🇺🇸" },
+            { code: "KHR", name: "Cambodian Riel", symbol: "៛", active: true, rate: 4100, change: 0.15, flag: "🇰🇭" },
+            { code: "THB", name: "Thai Baht", symbol: "฿", active: true, rate: 35, change: -0.05, flag: "🇹🇭" },
+          ],
+        };
+>>>>>>> feature/admin-api-integration
       },
       providesTags: ["Currency"],
     }),
 
+    // 1. GET /api/v1/admin/currencies/provider-status
     getProviderStatus: builder.query<ApiResponse<ProviderStatus>, void>({
+<<<<<<< HEAD
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBq) {
         try {
           const res = await fetch("/api/v1/admin/currencies/provider-status");
@@ -105,10 +129,15 @@ export const currencyApi = baseApi.injectEndpoints({
         if (result.error) return { error: result.error };
         return { data: result.data as ApiResponse<ProviderStatus> };
       },
+=======
+      query: () => "admin/currencies/provider-status",
+>>>>>>> feature/admin-api-integration
       providesTags: ["Currency"],
     }),
 
+    // 2. POST /api/v1/admin/currencies/synchronize
     synchronizeCurrencies: builder.mutation<ApiResponse<SyncResponse>, void>({
+<<<<<<< HEAD
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBq) {
         try {
           const res = await fetch("/api/v1/admin/currencies/synchronize", {
@@ -128,10 +157,18 @@ export const currencyApi = baseApi.injectEndpoints({
         if (result.error) return { error: result.error };
         return { data: result.data as ApiResponse<SyncResponse> };
       },
+=======
+      query: () => ({
+        url: "admin/currencies/synchronize",
+        method: "POST",
+      }),
+>>>>>>> feature/admin-api-integration
       invalidatesTags: ["Currency"],
     }),
 
+    // 3. PATCH /api/v1/admin/currencies/{code}/activate
     activateCurrency: builder.mutation<ApiResponse<CurrencyItem>, string>({
+<<<<<<< HEAD
       async queryFn(code, _queryApi, _extraOptions, fetchWithBq) {
         setCurrencyActiveInStorage(code, true);
         try {
@@ -152,10 +189,18 @@ export const currencyApi = baseApi.injectEndpoints({
         if (result.error) return { error: result.error };
         return { data: result.data as ApiResponse<CurrencyItem> };
       },
+=======
+      query: (code) => ({
+        url: `admin/currencies/${code}/activate`,
+        method: "PATCH",
+      }),
+>>>>>>> feature/admin-api-integration
       invalidatesTags: ["Currency"],
     }),
 
+    // 4. PATCH /api/v1/admin/currencies/{code}/deactivate
     deactivateCurrency: builder.mutation<ApiResponse<CurrencyItem>, string>({
+<<<<<<< HEAD
       async queryFn(code, _queryApi, _extraOptions, fetchWithBq) {
         setCurrencyActiveInStorage(code, false);
         try {
@@ -176,6 +221,12 @@ export const currencyApi = baseApi.injectEndpoints({
         if (result.error) return { error: result.error };
         return { data: result.data as ApiResponse<CurrencyItem> };
       },
+=======
+      query: (code) => ({
+        url: `admin/currencies/${code}/deactivate`,
+        method: "PATCH",
+      }),
+>>>>>>> feature/admin-api-integration
       invalidatesTags: ["Currency"],
     }),
   }),

@@ -18,6 +18,21 @@ axiosInstance.interceptors.request.use(async (config) => {
         }
     } catch (error) {
         console.error("Axios interceptor token error:", error);
+// =======
+// axiosInstance.interceptors.request.use(
+//   async (config) => {
+//     const token =
+//       typeof window === "undefined"
+//         ? null
+//         : window.localStorage.getItem("accessToken") ||
+//           window.localStorage.getItem("token") ||
+//           window.sessionStorage.getItem("accessToken") ||
+//           window.sessionStorage.getItem("token") ||
+//           document.cookie.match(/(?:^|; )accessToken=([^;]+)/)?.[1];
+
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+// >>>>>>> feature/admin-api-integration
     }
     
     return config;

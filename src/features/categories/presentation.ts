@@ -10,6 +10,7 @@ export const categoryIconAssets: Record<string, string> = {
   Tickets: "/categories/sports.svg",
   Plane: "/categories/travel.svg",
   GraduationCap: "/categories/education.svg",
+<<<<<<< HEAD
   ShoppingBag: "/categories/form-shopping.svg",
   Coffee: "/categories/form-coffee.svg",
   Music: "/categories/form-music.svg",
@@ -18,6 +19,8 @@ export const categoryIconAssets: Record<string, string> = {
   Globe: "/categories/form-globe.svg",
   Zap: "/categories/form-zap.svg",
   Box: "/categories/form-box.svg",
+=======
+>>>>>>> feature/admin-api-integration
 };
 
 export const categoryColorStyles: Record<
@@ -59,6 +62,7 @@ export const categoryColorStyles: Record<
     badge: "bg-orange-100/70",
     accent: "#f59e0b",
   },
+<<<<<<< HEAD
   "bg-violet-100 text-violet-500": {
     icon: "bg-violet-100/70",
     badge: "bg-violet-100/70",
@@ -101,6 +105,10 @@ Object.assign(categoryColorStyles, {
   "#64748b": categoryColorStyles["bg-slate-100 text-slate-500"],
 });
 
+=======
+};
+
+>>>>>>> feature/admin-api-integration
 export const defaultCategoryStyle = {
   icon: "bg-blue-100/70",
   badge: "bg-blue-100/70",

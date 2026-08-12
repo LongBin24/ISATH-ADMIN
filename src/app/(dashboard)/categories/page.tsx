@@ -1,10 +1,17 @@
 "use client";
 
+<<<<<<< HEAD
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { FolderTree } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+=======
+import React, { useState } from "react";
+import Image from "next/image";
+import { FolderTree } from "lucide-react";
+import { useRouter } from "next/navigation";
+>>>>>>> feature/admin-api-integration
 import {
   useGetCategoriesPaginatedInfiniteQuery,
   useCreateCategoryMutation,
@@ -17,6 +24,7 @@ import { CategoryFormValues } from "@/features/categories/schema";
 import { CategoryCard } from "@/features/categories/components/CategoryCard";
 import { CategoryFormModal } from "@/features/categories/components/CategoryFormModal";
 import { DeleteCategoryDialog } from "@/features/categories/components/DeleteCategoryDialog";
+<<<<<<< HEAD
 
 const getApiErrorMessage = (error: unknown) => {
   if (typeof error !== "object" || error === null || !("data" in error)) {
@@ -47,12 +55,21 @@ export default function CategoryManagementPage() {
       categoryPages?.pages.flatMap((page) => page.content) ?? [],
     [categoryPages],
   );
+=======
+
+export default function CategoryManagementPage() {
+  const router = useRouter();
+  const { data: categories, isLoading } = useGetCategoriesQuery();
+>>>>>>> feature/admin-api-integration
   const [createCategory, { isLoading: isCreating }] =
     useCreateCategoryMutation();
   const [updateCategory, { isLoading: isUpdating }] =
     useUpdateCategoryMutation();
+<<<<<<< HEAD
   const [updateCategoryPreference, { isLoading: isUpdatingPreference }] =
     useUpdateCategoryPreferenceMutation();
+=======
+>>>>>>> feature/admin-api-integration
   const [deleteCategory, { isLoading: isDeleting }] =
     useDeleteCategoryMutation();
 
@@ -67,6 +84,7 @@ export default function CategoryManagementPage() {
     "expense",
   );
 
+<<<<<<< HEAD
   useEffect(() => {
     const target = loadMoreRef.current;
     if (!target || !hasNextPage) return;
@@ -84,6 +102,8 @@ export default function CategoryManagementPage() {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+=======
+>>>>>>> feature/admin-api-integration
   const visibleCategories = categories?.filter((category) => {
     const categoryType = (category.type ?? "expense").toLowerCase();
 
@@ -103,6 +123,7 @@ export default function CategoryManagementPage() {
   };
 
   const handleFormSubmit = async (data: CategoryFormValues) => {
+<<<<<<< HEAD
     try {
       if (selectedCategory) {
         await Promise.all([
@@ -135,11 +156,18 @@ export default function CategoryManagementPage() {
       setIsModalOpen(false);
     } catch (error) {
       toast.error(getApiErrorMessage(error));
+=======
+    if (selectedCategory) {
+      await updateCategory({ id: selectedCategory.id, data });
+    } else {
+      await createCategory({ ...data, type: activeType });
+>>>>>>> feature/admin-api-integration
     }
   };
 
   const handleOpenDelete = (id: string) => {
     const category = categories?.find((item) => item.id === id);
+<<<<<<< HEAD
     if (
       category &&
       !category.systemCategory &&
@@ -147,17 +175,25 @@ export default function CategoryManagementPage() {
     ) {
       setCategoryToDelete(category);
     }
+=======
+    if (category) setCategoryToDelete(category);
+>>>>>>> feature/admin-api-integration
   };
 
   const handleConfirmDelete = async () => {
     if (!categoryToDelete) return;
 
+<<<<<<< HEAD
     try {
       await deleteCategory(categoryToDelete.id).unwrap();
       setCategoryToDelete(null);
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     }
+=======
+    await deleteCategory(categoryToDelete.id);
+    setCategoryToDelete(null);
+>>>>>>> feature/admin-api-integration
   };
 
   return (
@@ -244,18 +280,27 @@ export default function CategoryManagementPage() {
         </div>
       )}
 
+<<<<<<< HEAD
       <div ref={loadMoreRef} className="flex h-16 items-center justify-center">
         {isFetchingNextPage && (
           <FolderTree className="size-6 animate-spin text-[#003377] dark:text-slate-300" />
         )}
       </div>
 
+=======
+>>>>>>> feature/admin-api-integration
       <CategoryFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleFormSubmit}
         initialData={selectedCategory}
         isLoading={isCreating || isUpdating || isUpdatingPreference}
+      />
+      <DeleteCategoryDialog
+        category={categoryToDelete}
+        isDeleting={isDeleting}
+        onClose={() => setCategoryToDelete(null)}
+        onConfirm={handleConfirmDelete}
       />
       <DeleteCategoryDialog
         category={categoryToDelete}

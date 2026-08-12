@@ -3,8 +3,13 @@
 import React, { useState, useEffect } from "react";
 import { Download, X, Share2, PlusSquare, Smartphone, Sparkles } from "lucide-react";
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+}
+
 export default function PWAInstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [showIOSModal, setShowIOSModal] = useState(false);
 
@@ -18,28 +23,40 @@ export default function PWAInstallPrompt() {
       return; // Already running as PWA
     }
 
+    // Check if user dismissed previously
+    const isDismissed = localStorage.getItem("istash_pwa_dismissed");
+    if (isDismissed) {
+      return;
+    }
+
     // Detect iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
 
-    // Listen for BeforeInstallPrompt event (Android Chrome / Edge)
+    // Listen for BeforeInstallPrompt event (Android / Brave / Chrome / Edge)
     const handleBeforeInstallPrompt = (e: Event) => {
+      // Prevent browser's default automated infobar so custom UI banner can be displayed
       e.preventDefault();
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
       setShowInstallBanner(true);
     };
 
+    const handleAppInstalled = () => {
+      console.log("[PWA] App successfully installed!");
+      setShowInstallBanner(false);
+      setDeferredPrompt(null);
+    };
+
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     // Show banner for iOS if not installed
     if (isIOS) {
-      const iosDismissed = localStorage.getItem("istash_pwa_ios_dismissed");
-      if (!iosDismissed) {
-        setShowInstallBanner(true);
-      }
+      setShowInstallBanner(true);
     }
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 
@@ -53,7 +70,8 @@ export default function PWAInstallPrompt() {
 
     if (!deferredPrompt) return;
 
-    deferredPrompt.prompt();
+    // Trigger native browser install prompt dialog on user action
+    await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     console.log(`[PWA] User response to install prompt: ${outcome}`);
 
@@ -63,7 +81,7 @@ export default function PWAInstallPrompt() {
 
   const handleDismiss = () => {
     setShowInstallBanner(false);
-    localStorage.setItem("istash_pwa_ios_dismissed", "true");
+    localStorage.setItem("istash_pwa_dismissed", "true");
   };
 
   if (!showInstallBanner) return null;

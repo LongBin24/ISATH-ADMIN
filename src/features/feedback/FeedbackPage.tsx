@@ -11,16 +11,18 @@ import {
 import FeedbackCard from "./components/FeedbackCard";
 import FeedbackStatCard from "./components/FeedbackStatCard";
 import FeedbackTabs from "./components/FeedbackTabs";
-import { feedbackSample, feedbackTabs } from "./data";
+import { feedbackTabs } from "./data";
 import { FeedbackStatus } from "./types";
+import { useGetFeedbackQuery } from "./api";
 
 export default function FeedbackPage() {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<FeedbackStatus>("all");
+  const { data: feedback = [], isLoading, isError } = useGetFeedbackQuery();
 
   const filteredFeedback = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
-    return feedbackSample.filter((item) => {
+    return feedback.filter((item) => {
       const matchesTab = activeTab === "all" || item.status === activeTab;
       const matchesSearch =
         !normalizedSearch ||
@@ -31,17 +33,17 @@ export default function FeedbackPage() {
 
       return matchesTab && matchesSearch;
     });
-  }, [activeTab, search]);
+  }, [activeTab, feedback, search]);
 
   const summary = useMemo(() => {
-    const resolved = feedbackSample.filter(
+    const resolved = feedback.filter(
       (item) => item.status === "resolved",
     ).length;
-    const inProgress = feedbackSample.filter(
+    const inProgress = feedback.filter(
       (item) => item.status === "in-progress",
     ).length;
-    const total = feedbackSample.length;
-    const ratingSum = feedbackSample.reduce(
+    const total = feedback.length;
+    const ratingSum = feedback.reduce(
       (sum, item) => sum + item.rating,0,
     );
 
@@ -51,7 +53,7 @@ export default function FeedbackPage() {
       inProgress,
       averageRating: total ? Number((ratingSum / total).toFixed(1)) : 0,
     };
-  }, []);
+  }, [feedback]);
 
   return (
     <div className="space-y-8 font-google-sans">
@@ -115,7 +117,15 @@ export default function FeedbackPage() {
       </div>
 
       <div className="space-y-4">
-        {filteredFeedback.length > 0 ? (
+        {isLoading ? (
+          <div className="rounded-4xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
+            Loading feedback…
+          </div>
+        ) : isError ? (
+          <div className="rounded-4xl border border-rose-200 bg-rose-50 p-8 text-center text-rose-700 shadow-sm dark:border-rose-900 dark:bg-rose-950/20 dark:text-rose-300">
+            Unable to load feedback from the API.
+          </div>
+        ) : filteredFeedback.length > 0 ? (
           filteredFeedback.map((item) => (
             <FeedbackCard key={item.id} feedback={item} />
           ))

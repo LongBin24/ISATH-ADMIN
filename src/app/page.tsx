@@ -4,5 +4,5 @@ import "@fontsource/google-sans/700.css";
 import { redirect } from "next/navigation";
 
 export default function Home() {
-  redirect("/dashboard");
+  redirect("/login");
 }

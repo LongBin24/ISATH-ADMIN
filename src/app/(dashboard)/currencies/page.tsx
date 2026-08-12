@@ -1,5 +1,6 @@
 "use client";
 
+<<<<<<< HEAD
 import React, { useState } from "react";
 import { RefreshCw, Coins, ArrowRightLeft } from "lucide-react";
 import { CurrencyConverter } from "@/features/currencies/components/CurrencyConverter";
@@ -10,18 +11,36 @@ import {
   useSynchronizeCurrenciesMutation,
 } from "@/features/currencies/CurrencyApi";
 import toast from "react-hot-toast";
+=======
+import React, { useState } from 'react';
+import { RefreshCw } from 'lucide-react';
+import { CurrencyConverter } from '@/features/currencies/components/CurrencyConverter';
+import { ExchangeRateList } from '@/features/currencies/components/ExchangeRateList';
+import { MultiCurrencyTransactionManager } from '@/features/currencies/components/MultiCurrencyTransactionManager';
+import { useGetCurrenciesQuery, useSynchronizeCurrenciesMutation } from "@/features/currencies/CurrencyApi";
+import toast from 'react-hot-toast';
+>>>>>>> feature/admin-api-integration
 
 export default function CurrencyManagementPage() {
   const { data: rates, isLoading } = useGetCurrenciesQuery();
   const [sync, { isLoading: isSyncing }] = useSynchronizeCurrenciesMutation();
+<<<<<<< HEAD
   const [baseCurrency, setBaseCurrency] = useState<string>("USD");
   const [activeTab, setActiveTab] = useState<"transactions" | "converter">("transactions");
+=======
+  const [baseCurrency, setBaseCurrency] = useState("USD");
+>>>>>>> feature/admin-api-integration
 
   const handleSync = async () => {
     try {
       await sync().unwrap();
+<<<<<<< HEAD
       toast.success("ធ្វើសមកាលកម្មអត្រាប្តូរប្រាក់ជោគជ័យ!");
     } catch {
+=======
+      toast.success("ធ្វើសមកាលកម្មទិន្នន័យពី API ជោគជ័យ!"); 
+    } catch (err) {
+>>>>>>> feature/admin-api-integration
       toast.error("ការធ្វើសមកាលកម្មបរាជ័យ");
     }
   };
@@ -80,6 +99,7 @@ export default function CurrencyManagementPage() {
         </button>
       </div>
 
+<<<<<<< HEAD
       {/* 3. Tab Contents */}
       {activeTab === "transactions" && (
         <MultiCurrencyTransactionManager
@@ -97,6 +117,15 @@ export default function CurrencyManagementPage() {
           <ExchangeRateList rates={rates} isLoading={isLoading} />
         </div>
       )}
+=======
+      <MultiCurrencyTransactionManager
+        currencies={rates}
+        baseCurrency={baseCurrency}
+        onBaseCurrencyChange={setBaseCurrency}
+        onSync={handleSync}
+        isSyncing={isSyncing}
+      />
+>>>>>>> feature/admin-api-integration
     </div>
   );
 }
