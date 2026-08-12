@@ -8,6 +8,18 @@ const backendApiUrl = backendUrl.endsWith("/api")
   : `${backendUrl}/api`;
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.cloudinary.com",
+      },
+    ],
+  },
   async rewrites() {
     return [
       {

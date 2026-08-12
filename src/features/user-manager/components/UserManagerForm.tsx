@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { useCreateUserMutation } from "@/features/user-manager/api";
 import { UserRole } from "@/features/user-manager/types";
+import { UserCheck } from "lucide-react";
 
 export default function UserManagerForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<UserRole>("user");
+  const role: UserRole = "user";
   const [message, setMessage] = useState<string | null>(null);
   const [createUser, { isLoading }] = useCreateUserMutation();
 
@@ -24,7 +25,6 @@ export default function UserManagerForm() {
       await createUser({ name, email, role } as any).unwrap();
       setName("");
       setEmail("");
-      setRole("user");
       setMessage("បានបង្កើតអ្នកប្រើប្រាស់ដោយជោគជ័យ។");
     } catch (error) {
       console.error(error);
@@ -33,10 +33,10 @@ export default function UserManagerForm() {
   }
 
   return (
-    <div className="space-y-6 rounded-4xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+    <div className="space-y-6 rounded-4xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950 font-google-sans">
       <div className="mb-6 flex flex-col gap-2">
         <p className="text-sm uppercase tracking-[0.2em] text-[#003377]/70">
-          User Manager
+          ការគ្រប់គ្រងអ្នកប្រើប្រាស់
         </p>
         <h2 className="text-3xl font-bold text-[#003377] dark:text-white">
           គ្រប់គ្រងអ្នកប្រើប្រាស់
@@ -78,22 +78,11 @@ export default function UserManagerForm() {
 
         <div className="space-y-2 text-sm text-slate-700 dark:text-slate-200">
           <p>តួនាទី</p>
-          <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 p-1 dark:border-slate-800 dark:bg-slate-900">
-            {(["user", "admin"] as const).map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setRole(item)}
-                className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
-                  role === item
-                    ? "bg-[#FFC83D] text-[#003377]"
-                    : "bg-white text-slate-700 hover:bg-slate-100 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-800"
-                }`}
-              >
-                {item === "user" ? "User" : "Admin"}
-              </button>
-            ))}
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
+            <UserCheck className="size-4 text-emerald-600" />
+            <span>អ្នកប្រើប្រាស់</span>
           </div>
+          <p className="mt-1 text-xs text-slate-400">អ្នកគ្រប់គ្រងអាចបង្កើតបានតែគណនីអ្នកប្រើប្រាស់ប៉ុណ្ណោះ</p>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row">

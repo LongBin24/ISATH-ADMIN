@@ -14,6 +14,13 @@ export const ENDPOINTS = {
   ADMIN_CURRENCIES_PROVIDER_STATUS: "admin/currencies/provider-status",
   ADMIN_CURRENCIES_ACTIVATE: (code: string) => `admin/currencies/${code}/activate`,
   ADMIN_CURRENCIES_DEACTIVATE: (code: string) => `admin/currencies/${code}/deactivate`,
+
+  // Admin Users Endpoints
+  ADMIN_USERS: "admin/users",
+  ADMIN_USER_BY_ID: (userId: string) => `admin/users/${userId}`,
+  ADMIN_USER_ONBOARDING: (userId: string) => `admin/users/${userId}/onboarding`,
+  ADMIN_USER_SUSPEND: (userId: string) => `admin/users/${userId}/suspend`,
+  ADMIN_USER_REACTIVATE: (userId: string) => `admin/users/${userId}/reactivate`,
 } as const;
 
 export const ENDPOINTS_CATEGORY = {
