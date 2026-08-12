@@ -3,13 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { FolderTree } from "lucide-react";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import {
   useGetCategoriesPaginatedInfiniteQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
-  useUpdateCategoryPreferenceMutation,
   useDeleteCategoryMutation,
 } from "@/features/categories/categoryApi";
 import { Category } from "@/features/categories/types";
@@ -18,22 +16,54 @@ import { CategoryCard } from "@/features/categories/components/CategoryCard";
 import { CategoryFormModal } from "@/features/categories/components/CategoryFormModal";
 import { DeleteCategoryDialog } from "@/features/categories/components/DeleteCategoryDialog";
 
+const API_ERROR_TRANSLATIONS: Record<string, string> = {
+  "Category cannot be deleted while it has non-deleted subcategories.":
+    "មិនអាចលុបប្រភេទនេះបានទេ ដោយសារវានៅមានប្រភេទរងដែលមិនទាន់បានលុប។",
+};
+
+const CATEGORY_HAS_CHILDREN_MESSAGE =
+  "មិនអាចលុបប្រភេទនេះបានទេ ដោយសារវានៅមានប្រភេទរងដែលមិនទាន់បានលុប។";
+
 const getApiErrorMessage = (error: unknown) => {
   if (typeof error !== "object" || error === null || !("data" in error)) {
-    return "Unable to complete the request.";
+    return "មិនអាចបំពេញសំណើបានទេ។";
   }
 
-  const data = (error as any).data;
+  const data = (error as { data: unknown }).data;
 
-  if (typeof data === "object" && data !== null && "message" in data) {
-    return String(data.message);
+  if (typeof data === "object" && data !== null) {
+    const response = data as {
+      message?: unknown;
+      fieldErrors?: unknown;
+    };
+
+    if (Array.isArray(response.fieldErrors) && response.fieldErrors.length) {
+      const fieldMessages = response.fieldErrors
+        .map((fieldError) => {
+          if (typeof fieldError === "string") return fieldError;
+          if (typeof fieldError !== "object" || fieldError === null) return null;
+
+          const record = fieldError as { field?: unknown; message?: unknown };
+          if (typeof record.message !== "string") return null;
+
+          return typeof record.field === "string"
+            ? `${record.field}: ${record.message}`
+            : record.message;
+        })
+        .filter((message): message is string => Boolean(message));
+
+      if (fieldMessages.length) return fieldMessages.join(" · ");
+    }
+
+    if (typeof response.message === "string") {
+      return API_ERROR_TRANSLATIONS[response.message] ?? response.message;
+    }
   }
 
-  return "Unable to complete the request.";
+  return "មិនអាចបំពេញសំណើបានទេ។";
 };
 
 export default function CategoryManagementPage() {
-  const router = useRouter();
   const {
     data: categoryPages,
     isLoading,
@@ -51,8 +81,6 @@ export default function CategoryManagementPage() {
     useCreateCategoryMutation();
   const [updateCategory, { isLoading: isUpdating }] =
     useUpdateCategoryMutation();
-  const [updateCategoryPreference, { isLoading: isUpdatingPreference }] =
-    useUpdateCategoryPreferenceMutation();
   const [deleteCategory, { isLoading: isDeleting }] =
     useDeleteCategoryMutation();
 
@@ -96,8 +124,6 @@ export default function CategoryManagementPage() {
   };
 
   const handleOpenEdit = (category: Category) => {
-    if (category.systemCategory || category.ownedByCurrentUser === false) return;
-
     setSelectedCategory(category);
     setIsModalOpen(true);
   };
@@ -105,32 +131,30 @@ export default function CategoryManagementPage() {
   const handleFormSubmit = async (data: CategoryFormValues) => {
     try {
       if (selectedCategory) {
-        await Promise.all([
-          updateCategory({
-            id: selectedCategory.id,
-            data: {
-              name: data.name,
-              categoryType:
-                selectedCategory.type === "income" ? "INCOME" : "EXPENSE",
-              parentId: selectedCategory.parentId ?? "",
-              moveToRoot: !selectedCategory.parentId,
-              icon: data.icon,
-              color: data.color ?? selectedCategory.color ?? "#3b82f6",
-              defaultCategory: selectedCategory.defaultCategory ?? true,
-              status: selectedCategory.status ?? "ACTIVE",
-            },
-          }).unwrap(),
-          updateCategoryPreference({
-            id: selectedCategory.id,
-            data: {
-              icon: data.icon,
-              totalBudget: data.totalBudget,
-              color: data.color,
-            },
-          }).unwrap(),
-        ]);
+        await updateCategory({
+          id: selectedCategory.id,
+          data: {
+            name: data.name,
+            categoryType: data.type === "income" ? "INCOME" : "EXPENSE",
+            parentId: data.parentId ?? undefined,
+            moveToRoot: !data.parentId,
+            icon: data.icon,
+            color: data.color ?? selectedCategory.color ?? "#3b82f6",
+            status: selectedCategory.status ?? "ACTIVE",
+          },
+        }).unwrap();
       } else {
-        await createCategory({ ...data, type: activeType }).unwrap();
+        await createCategory({
+          parentId: data.parentId ?? undefined,
+          name: data.name,
+          type: data.type,
+          icon: data.icon,
+          color: data.color,
+          systemCategory: data.systemCategory,
+          categoryKey: data.categoryKey || undefined,
+          defaultCategory: data.defaultCategory,
+        }).unwrap();
+        toast.success("បានបង្កើតប្រភេទដោយជោគជ័យ។");
       }
       setIsModalOpen(false);
     } catch (error) {
@@ -138,15 +162,19 @@ export default function CategoryManagementPage() {
     }
   };
 
-  const handleOpenDelete = (id: string) => {
-    const category = categories?.find((item) => item.id === id);
-    if (
-      category &&
-      !category.systemCategory &&
-      category.ownedByCurrentUser !== false
-    ) {
-      setCategoryToDelete(category);
+  const handleOpenDelete = (category: Category) => {
+    const hasActiveSubcategories = categories.some(
+      (item) => item.parentId === category.id && !item.deletedAt,
+    );
+
+    if (hasActiveSubcategories) {
+      toast.error(CATEGORY_HAS_CHILDREN_MESSAGE, {
+        id: `category-delete-${category.id}`,
+      });
+      return;
     }
+
+    setCategoryToDelete(category);
   };
 
   const handleConfirmDelete = async () => {
@@ -155,6 +183,7 @@ export default function CategoryManagementPage() {
     try {
       await deleteCategory(categoryToDelete.id).unwrap();
       setCategoryToDelete(null);
+      toast.success("បានលុបប្រភេទដោយជោគជ័យ។");
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     }
@@ -224,7 +253,6 @@ export default function CategoryManagementPage() {
             <CategoryCard
               key={category.id}
               category={category}
-              onOpen={(selected) => router.push(`/categories/${selected.id}`)}
               onEdit={handleOpenEdit}
               onDelete={handleOpenDelete}
             />
@@ -255,7 +283,9 @@ export default function CategoryManagementPage() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleFormSubmit}
         initialData={selectedCategory}
-        isLoading={isCreating || isUpdating || isUpdatingPreference}
+        categories={categories}
+        defaultType={activeType}
+        isLoading={isCreating || isUpdating}
       />
       <DeleteCategoryDialog
         category={categoryToDelete}

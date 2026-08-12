@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { CategoryFormValues, categorySchema } from "../schema";
+import toast from "react-hot-toast";
+import { CategoryFormValues } from "../schema";
 import { Category } from "../types";
 
 interface CategoryFormModalProps {
@@ -12,67 +12,48 @@ interface CategoryFormModalProps {
   onClose: () => void;
   onSubmit: (data: CategoryFormValues) => void;
   initialData?: Category | null;
+  categories: Category[];
+  defaultType: "expense" | "income";
   isLoading?: boolean;
 }
 
-const AVAILABLE_COLORS = [
-  { value: "#facc15", label: "លឿង" },
-  { value: "#ef4444", label: "ក្រហម" },
-  { value: "#22c55e", label: "បៃតង" },
-  { value: "#06b6d4", label: "ខៀវខ្ចី" },
-  { value: "#8b5cf6", label: "ស្វាយ" },
-  { value: "#f59e0b", label: "ទឹកក្រូច" },
-  { value: "#ec4899", label: "ផ្កាឈូក" },
-  { value: "#10b981", label: "ត្បូង" },
-  { value: "#3b82f6", label: "ខៀវ" },
-  { value: "#d97706", label: "ត្នោត" },
-  { value: "#6366f1", label: "ខៀវស្វាយ" },
-  { value: "#64748b", label: "ប្រផេះ" },
+const COLORS = [
+  "#facc15", "#ef4444", "#22c55e", "#06b6d4", "#8b5cf6", "#f59e0b",
+  "#ec4899", "#10b981", "#3b82f6", "#d97706", "#6366f1", "#64748b",
 ] as const;
 
-const AVAILABLE_ICONS = [
-  { value: "Utensils", asset: "/categories/form-utensils.svg", label: "អាហារ" },
-  { value: "House", asset: "/categories/form-home.svg", label: "ផ្ទះ" },
-  { value: "Truck", asset: "/categories/form-truck.svg", label: "យានយន្ត" },
-  { value: "Heart", asset: "/categories/form-heart.svg", label: "សុខភាព" },
-  { value: "Film", asset: "/categories/form-film.svg", label: "ភាពយន្ត" },
-  { value: "GraduationCap", asset: "/categories/form-graduation.svg", label: "ការអប់រំ" },
-  { value: "Tickets", asset: "/categories/form-tickets.svg", label: "សំបុត្រ" },
-  { value: "Plane", asset: "/categories/form-plane.svg", label: "យន្តហោះ" },
-  { value: "ShoppingBag", asset: "/categories/form-shopping.svg", label: "ទិញទំនិញ" },
-  { value: "Coffee", asset: "/categories/form-coffee.svg", label: "កាហ្វេ" },
-  { value: "Music", asset: "/categories/form-music.svg", label: "តន្ត្រី" },
-  { value: "BriefcaseBusiness", asset: "/categories/form-briefcase.svg", label: "ការងារ" },
-  { value: "Smartphone", asset: "/categories/form-phone.svg", label: "ទូរស័ព្ទ" },
-  { value: "Globe", asset: "/categories/form-globe.svg", label: "ពិភពលោក" },
-  { value: "Zap", asset: "/categories/form-zap.svg", label: "អគ្គិសនី" },
-  { value: "Box", asset: "/categories/form-box.svg", label: "ប្រអប់" },
+const ICONS = [
+  ["Utensils", "/categories/form-utensils.svg"],
+  ["House", "/categories/form-home.svg"],
+  ["Truck", "/categories/form-truck.svg"],
+  ["Heart", "/categories/form-heart.svg"],
+  ["Film", "/categories/form-film.svg"],
+  ["GraduationCap", "/categories/form-graduation.svg"],
+  ["Tickets", "/categories/form-tickets.svg"],
+  ["Plane", "/categories/form-plane.svg"],
+  ["ShoppingBag", "/categories/form-shopping.svg"],
+  ["Coffee", "/categories/form-coffee.svg"],
+  ["Music", "/categories/form-music.svg"],
+  ["BriefcaseBusiness", "/categories/form-briefcase.svg"],
+  ["Smartphone", "/categories/form-phone.svg"],
+  ["Globe", "/categories/form-globe.svg"],
+  ["Zap", "/categories/form-zap.svg"],
+  ["Box", "/categories/form-box.svg"],
 ] as const;
 
 const DEFAULT_COLOR = "#22c55e";
+const inputClass =
+  "h-12 w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 text-sm text-slate-800 outline-none transition focus:border-[#facc15] focus:ring-2 focus:ring-[#facc15]/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
 
-const legacyColorValues: Record<string, string> = {
-  "bg-amber-100 text-amber-700": "#facc15",
-  "bg-red-100 text-red-500": "#ef4444",
-  "bg-green-100 text-green-600": "#22c55e",
-  "bg-cyan-100 text-cyan-600": "#06b6d4",
-  "bg-violet-100 text-violet-500": "#8b5cf6",
-  "bg-orange-100 text-orange-500": "#f59e0b",
-  "bg-pink-100 text-pink-500": "#ec4899",
-  "bg-emerald-100 text-emerald-500": "#10b981",
-  "bg-blue-100 text-blue-500": "#3b82f6",
-  "bg-amber-100 text-amber-600": "#d97706",
-  "bg-indigo-100 text-indigo-500": "#6366f1",
-  "bg-slate-100 text-slate-500": "#64748b",
-};
-
-export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
+export function CategoryFormModal({
   isOpen,
   onClose,
   onSubmit,
   initialData,
+  categories,
+  defaultType,
   isLoading = false,
-}) => {
+}: CategoryFormModalProps) {
   const {
     register,
     handleSubmit,
@@ -81,46 +62,45 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
     control,
     formState: { errors },
   } = useForm<CategoryFormValues>({
-    resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "",
       icon: "Truck",
-      totalBudget: 0,
       color: DEFAULT_COLOR,
+      type: defaultType,
+      parentId: null,
+      categoryKey: "",
+      systemCategory: false,
+      defaultCategory: false,
     },
   });
 
   const selectedIcon = useWatch({ control, name: "icon" });
   const selectedColor = useWatch({ control, name: "color" });
+  const selectedType = useWatch({ control, name: "type" });
+  const isSystemCategory = useWatch({ control, name: "systemCategory" });
 
   useEffect(() => {
-    if (initialData) {
-      reset({
-        name: initialData.name,
-        icon: initialData.icon,
-        totalBudget: initialData.totalBudget,
-        color:
-          legacyColorValues[initialData.color ?? ""] ??
-          initialData.color ??
-          DEFAULT_COLOR,
-      });
-    } else {
-      reset({
-        name: "",
-        icon: "Truck",
-        totalBudget: 0,
-        color: DEFAULT_COLOR,
-      });
-    }
-  }, [initialData, reset]);
+    reset({
+      name: initialData?.name ?? "",
+      icon: initialData?.icon ?? "Truck",
+      color: initialData?.color?.startsWith("#") ? initialData.color : DEFAULT_COLOR,
+      type: initialData?.type === "income" ? "income" : defaultType,
+      parentId: initialData?.parentId ?? null,
+      categoryKey: initialData?.categoryKey ?? "",
+      systemCategory: initialData?.systemCategory ?? false,
+      defaultCategory: initialData?.defaultCategory ?? false,
+    });
+  }, [defaultType, initialData, reset]);
+
+  useEffect(() => {
+    if (!isSystemCategory) setValue("defaultCategory", false);
+  }, [isSystemCategory, setValue]);
 
   useEffect(() => {
     if (!isOpen) return;
-
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !isLoading) onClose();
     };
-
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isLoading, isOpen, onClose]);
@@ -129,7 +109,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-[1px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !isLoading) onClose();
       }}
@@ -138,167 +118,150 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="category-form-title"
-        className="max-h-[calc(100vh-32px)] w-full max-w-[553px] overflow-y-auto rounded-[20px] border border-slate-900/10 bg-white shadow-[0_31px_31px_rgba(0,0,0,0.25)] dark:border-slate-700 dark:bg-slate-900"
+        className="max-h-[calc(100vh-32px)] w-full max-w-2xl overflow-y-auto rounded-[20px] border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900"
       >
-        <header className="flex items-center justify-between border-b border-slate-900/10 px-6 py-6 dark:border-slate-700">
-          <h2
-            id="category-form-title"
-            className="text-2xl font-bold text-[#003377] dark:text-slate-100"
-          >
-            {initialData ? "កែសម្រួលប្រភេទ" : "បង្កើតប្រភេទថ្មី"}
-          </h2>
-          <button
-            type="button"
-            disabled={isLoading}
-            onClick={onClose}
-            aria-label="បិទ"
-            className="flex size-10 items-center justify-center rounded-[15px] transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003377] disabled:opacity-50 dark:hover:bg-slate-800"
-          >
-            <Image
-              src="/categories/form-close.svg"
-              alt=""
-              width={20}
-              height={20}
-            />
+        <header className="flex items-center justify-between border-b border-slate-200 px-6 py-5 dark:border-slate-700">
+          <div>
+            <h2 id="category-form-title" className="text-2xl font-bold text-[#003377] dark:text-slate-100">
+              {initialData ? "កែសម្រួលប្រភេទ" : "បង្កើតប្រភេទថ្មី"}
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              កំណត់ព័ត៌មាន និងរបៀបរៀបចំប្រភេទនេះ។
+            </p>
+          </div>
+          <button type="button" disabled={isLoading} onClick={onClose} aria-label="បិទ" className="rounded-xl p-2 hover:bg-slate-100 disabled:opacity-50 dark:hover:bg-slate-800">
+            <Image src="/categories/form-close.svg" alt="" width={20} height={20} />
           </button>
         </header>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6">
+        <form
+          onSubmit={handleSubmit(onSubmit, (formErrors) => {
+            const message =
+              formErrors.name?.message ??
+              formErrors.type?.message ??
+              formErrors.parentId?.message ??
+              formErrors.categoryKey?.message ??
+              formErrors.systemCategory?.message ??
+              formErrors.defaultCategory?.message ??
+              formErrors.color?.message ??
+              formErrors.icon?.message ??
+              "សូមពិនិត្យព័ត៌មានដែលបានបន្លិច។";
+
+            toast.error(message, { id: "category-form-validation" });
+          })}
+          className="space-y-5 p-6"
+        >
           <div>
-            <label
-              htmlFor="category-name"
-              className="mb-2 block text-lg font-bold text-[#003377] dark:text-slate-100"
-            >
-              ឈ្មោះប្រភេទ
-            </label>
+            <label htmlFor="category-name" className="mb-2 block text-sm font-bold text-[#003377] dark:text-slate-100">ឈ្មោះប្រភេទ</label>
             <input
               id="category-name"
-              type="text"
               autoFocus
-              {...register("name")}
-              placeholder="ការថែទាំ..."
-              className="h-[51px] w-full rounded-[20px] border border-slate-900/10 bg-slate-100 px-4 text-base text-slate-800 outline-none transition placeholder:text-[#7a8088] focus:border-[#facc15] focus:ring-2 focus:ring-[#facc15]/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              maxLength={100}
+              {...register("name", {
+                required: "សូមបញ្ចូលឈ្មោះប្រភេទ។",
+                validate: (value) =>
+                  value.trim().length > 0 || "សូមបញ្ចូលឈ្មោះប្រភេទ។",
+              })}
+              placeholder="ឧទាហរណ៍៖ ការធ្វើដំណើរ"
+              className={inputClass}
             />
-            {errors.name && (
-              <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
           </div>
 
-          <div className="mt-5">
-            <label
-              htmlFor="category-budget"
-              className="mb-2 block text-lg font-bold text-[#003377] dark:text-slate-100"
-            >
-              ថវិការ (USD)
-            </label>
-            <div className="relative">
-              <Image
-                src="/categories/form-dollar.svg"
-                alt=""
-                width={19}
-                height={19}
-                className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2"
-              />
-              <input
-                id="category-budget"
-                type="number"
-                step="any"
-                {...register("totalBudget", { valueAsNumber: true })}
-                placeholder="200"
-                className="h-[51px] w-full rounded-[20px] border border-slate-900/10 bg-slate-100 py-3 pl-11 pr-4 text-base text-slate-800 outline-none transition placeholder:text-[#7a8088] focus:border-[#facc15] focus:ring-2 focus:ring-[#facc15]/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-              />
-            </div>
-            {errors.totalBudget && (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.totalBudget.message}
-              </p>
-            )}
-          </div>
-
-          <fieldset className="mt-5">
-            <legend className="mb-2 text-lg font-bold text-[#003377] dark:text-slate-100">
-              ពណ៌
-            </legend>
-            <div className="flex flex-wrap gap-2.5">
-              {AVAILABLE_COLORS.map((color) => {
-                const isSelected = selectedColor === color.value;
-
-                return (
-                  <button
-                    key={color.value}
-                    type="button"
-                    aria-label={color.label}
-                    aria-pressed={isSelected}
-                    onClick={() =>
-                      setValue("color", color.value, { shouldDirty: true })
-                    }
-                    className="size-10 rounded-full border-2 transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2"
-                    style={{
-                      backgroundColor: color.value,
-                      borderColor: isSelected ? "#0f172a" : "transparent",
-                    }}
-                  />
-                );
-              })}
-            </div>
-          </fieldset>
-
-          <fieldset className="mt-5">
-            <legend className="mb-2 text-lg font-bold text-[#003377] dark:text-slate-100">
-              រូបតំណាង
-            </legend>
-            <div className="flex flex-wrap gap-2.5">
-              {AVAILABLE_ICONS.map((icon) => {
-                const isSelected = selectedIcon === icon.value;
-
-                return (
-                  <button
-                    key={icon.value}
-                    type="button"
-                    aria-label={icon.label}
-                    aria-pressed={isSelected}
-                    onClick={() =>
-                      setValue("icon", icon.value, { shouldDirty: true })
-                    }
-                    className={`flex size-11 items-center justify-center rounded-[20px] border-2 transition hover:border-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#facc15] ${
-                      isSelected
-                        ? "border-[#facc15] bg-[#facc15]/10"
-                        : "border-slate-900/10 bg-white dark:border-slate-600 dark:bg-slate-900"
-                    }`}
-                  >
-                    <Image src={icon.asset} alt="" width={20} height={20} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <fieldset>
+              <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">ប្រភេទប្រតិបត្តិការ</legend>
+              <div className="grid h-12 grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800">
+                {(["expense", "income"] as const).map((type) => (
+                  <button key={type} type="button" onClick={() => setValue("type", type, { shouldDirty: true })} className={`rounded-xl text-sm font-semibold capitalize transition ${selectedType === type ? "bg-white text-[#003377] shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500"}`}>
+                    {type === "income" ? "ចំណូល" : "ចំណាយ"}
                   </button>
-                );
-              })}
+                ))}
+              </div>
+            </fieldset>
+
+            <div>
+              <label htmlFor="category-parent" className="mb-2 block text-sm font-bold text-[#003377] dark:text-slate-100">ប្រភេទមេ</label>
+              <select id="category-parent" {...register("parentId", { setValueAs: (value) => value || null })} className={inputClass}>
+                <option value="">គ្មានប្រភេទមេ (ប្រភេទដើម)</option>
+                {categories.filter((category) => category.id !== initialData?.id).map((category) => (
+                  <option key={category.id} value={category.id}>{category.name}</option>
+                ))}
+              </select>
             </div>
-            {errors.icon && (
-              <p className="mt-1 text-xs text-red-500">{errors.icon.message}</p>
-            )}
+          </div>
+
+          {!initialData && (
+            <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+              <h3 className="font-bold text-[#003377] dark:text-slate-100">ការកំណត់ប្រភេទ</h3>
+              <p className="mb-4 mt-1 text-xs text-slate-500">លេខកូដនឹងបង្កើតដោយស្វ័យប្រវត្តិ ប្រសិនបើទុកទទេ។</p>
+              <label htmlFor="category-key" className="sr-only">លេខកូដប្រភេទ</label>
+              <input
+                id="category-key"
+                maxLength={100}
+                {...register("categoryKey", {
+                  setValueAs: (value: string) => value.trim().toUpperCase(),
+                  validate: (value) =>
+                    !value ||
+                    /^[A-Z][A-Z0-9_]*$/.test(value) ||
+                    "លេខកូដត្រូវចាប់ផ្តើមដោយអក្សរធំ ហើយប្រើតែអក្សរធំ លេខ ឬសញ្ញាគូសក្រោម។",
+                })}
+                placeholder="លេខកូដប្រភេទ (មិនចាំបាច់)"
+                className={`${inputClass} font-mono uppercase`}
+              />
+              {errors.categoryKey && <p className="mt-1 text-xs text-red-500">{errors.categoryKey.message}</p>}
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-white p-3 dark:bg-slate-900">
+                  <input type="checkbox" {...register("systemCategory")} className="mt-1 size-4 accent-[#003377]" />
+                  <span><span className="block text-sm font-semibold">ប្រភេទប្រព័ន្ធ</span><span className="block text-xs text-slate-500">គ្រប់គ្រងសម្រាប់ប្រព័ន្ធទាំងមូល។</span></span>
+                </label>
+                <label className={`flex items-start gap-3 rounded-xl bg-white p-3 dark:bg-slate-900 ${isSystemCategory ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}>
+                  <input
+                    type="checkbox"
+                    aria-disabled={!isSystemCategory}
+                    tabIndex={isSystemCategory ? 0 : -1}
+                    {...register("defaultCategory")}
+                    onClick={(event) => {
+                      if (!isSystemCategory) event.preventDefault();
+                    }}
+                    className={`mt-1 size-4 accent-[#003377] ${!isSystemCategory ? "pointer-events-none" : ""}`}
+                  />
+                  <span><span className="block text-sm font-semibold">ប្រភេទលំនាំដើម</span><span className="block text-xs text-slate-500">តម្រូវឱ្យជាប្រភេទប្រព័ន្ធ។</span></span>
+                </label>
+              </div>
+              {errors.defaultCategory && <p className="mt-2 text-xs text-red-500">{errors.defaultCategory.message}</p>}
+            </section>
+          )}
+
+          <fieldset>
+            <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">ពណ៌</legend>
+            <div className="flex flex-wrap gap-2.5">
+              {COLORS.map((color) => (
+                <button key={color} type="button" aria-label={`ប្រើពណ៌ ${color}`} aria-pressed={selectedColor === color} onClick={() => setValue("color", color, { shouldDirty: true })} className="size-9 rounded-full border-2 transition hover:scale-105" style={{ backgroundColor: color, borderColor: selectedColor === color ? "#0f172a" : "transparent" }} />
+              ))}
+            </div>
           </fieldset>
 
-          <div className="mt-5 flex gap-3.5">
-            <button
-              type="button"
-              disabled={isLoading}
-              onClick={onClose}
-              className="h-[51px] flex-1 rounded-[20px] border border-slate-900/10 bg-white px-5 text-base font-bold text-slate-900 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
-            >
-              បោះបង់
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="h-[51px] flex-1 rounded-[20px] bg-[#facc15] px-5 text-base font-bold text-slate-900 shadow-[0_2px_3px_rgba(0,0,0,0.12)] transition hover:bg-[#f4c20d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003377] focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
-            >
-              {isLoading
-                ? "កំពុងរក្សាទុក..."
-                : initialData
-                  ? "រក្សាទុក"
-                  : "បង្កើត"}
+          <fieldset>
+            <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">រូបតំណាង</legend>
+            <div className="flex flex-wrap gap-2.5">
+              {ICONS.map(([name, asset]) => (
+                <button key={name} type="button" aria-label={`ប្រើរូបតំណាង ${name}`} aria-pressed={selectedIcon === name} onClick={() => setValue("icon", name, { shouldDirty: true })} className={`flex size-11 items-center justify-center rounded-2xl border-2 transition ${selectedIcon === name ? "border-[#facc15] bg-[#facc15]/10" : "border-slate-200 dark:border-slate-700"}`}>
+                  <Image src={asset} alt="" width={20} height={20} />
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="flex gap-3 pt-1">
+            <button type="button" disabled={isLoading} onClick={onClose} className="h-12 flex-1 rounded-2xl border border-slate-200 font-bold hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-slate-800">បោះបង់</button>
+            <button type="submit" disabled={isLoading} className="h-12 flex-1 rounded-2xl bg-[#facc15] font-bold text-slate-900 hover:bg-[#f4c20d] disabled:cursor-wait disabled:opacity-60">
+              {isLoading ? "កំពុងរក្សាទុក..." : initialData ? "កែសម្រួល" : "បង្កើត"}
             </button>
           </div>
         </form>
       </section>
     </div>
   );
-};
+}

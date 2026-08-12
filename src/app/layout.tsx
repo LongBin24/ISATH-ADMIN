@@ -1,18 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import "@fontsource/google-sans/400.css";
+import "@fontsource/google-sans/500.css";
+import "@fontsource/google-sans/600.css";
+import "@fontsource/google-sans/700.css";
 import "./globals.css";
 import { ReduxProvider } from "../redux/provider";
 import { Toaster } from "react-hot-toast";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const viewport: Viewport = {
   themeColor: "#003377",
@@ -47,10 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="km"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="km" className="h-full antialiased">
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta

@@ -7,6 +7,10 @@ export interface CategoryTransaction {
 
 export interface Category {
   id: string;
+  parentId?: string | null;
+  parentName?: string | null;
+  userId?: string | null;
+  categoryKey?: string;
   name: string;
   icon: string;
   transactionCount: number;
@@ -14,10 +18,13 @@ export interface Category {
   spentAmount?: number;
   type?: "expense" | "income" | string;
   color?: string;
-  parentId?: string | null;
   defaultCategory?: boolean;
   status?: "ACTIVE" | "INACTIVE";
   systemCategory?: boolean;
   ownedByCurrentUser?: boolean;
+  hiddenForCurrentUser?: boolean;
+  deletedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
   recentTransactions?: CategoryTransaction[];
 }

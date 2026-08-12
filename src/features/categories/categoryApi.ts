@@ -3,35 +3,35 @@ import { baseApi } from "@/api/baseApi";
 import { API_TAGS } from "@/api/tags";
 import { Category, CategoryTransaction } from "./types";
 
-type CategoryFields = Pick<
-  Category,
-  "name" | "icon" | "totalBudget" | "color" | "type"
->;
-
-export type CreateCategoryPayload = CategoryFields;
+export type CreateCategoryPayload = {
+  parentId?: string;
+  name: string;
+  type: "expense" | "income";
+  icon: string;
+  color: string;
+  systemCategory: boolean;
+  categoryKey?: string;
+  defaultCategory: boolean;
+};
 export type UpdateCategoryPayload = {
   name: string;
   categoryType: "INCOME" | "EXPENSE";
-  parentId: string;
+  parentId?: string;
   moveToRoot: boolean;
   icon: string;
   color: string;
-  defaultCategory: boolean;
   status: "ACTIVE" | "INACTIVE";
 };
-export type UpdateCategoryPreferencePayload = Pick<
-  Category,
-  "icon" | "totalBudget" | "color"
->;
 
 type CreateCategoryRequest = {
+  parentId?: string;
   name: string;
   categoryType: "INCOME" | "EXPENSE";
   icon: string;
   color: string;
-  systemCategory: false;
+  systemCategory: boolean;
   categoryKey: string;
-  defaultCategory: true;
+  defaultCategory: boolean;
 };
 
 type RecordValue = Record<string, unknown>;
@@ -60,8 +60,9 @@ const unwrapData = (response: unknown): unknown => {
 };
 
 const createCategoryKey = () => {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  const randomValues = new Uint8Array(12);
+  const randomValues = new Uint8Array(16);
   globalThis.crypto.getRandomValues(randomValues);
 
   const suffix = Array.from(
@@ -69,19 +70,23 @@ const createCategoryKey = () => {
     (value) => alphabet[value % alphabet.length],
   ).join("");
 
-  return `CAT_${suffix}`;
+  const firstValue = new Uint8Array(1);
+  globalThis.crypto.getRandomValues(firstValue);
+
+  return `${letters[firstValue[0] % letters.length]}${suffix}`;
 };
 
 const toCreateCategoryRequest = (
   payload: CreateCategoryPayload,
 ): CreateCategoryRequest => ({
+  ...(payload.parentId ? { parentId: payload.parentId } : {}),
   name: payload.name,
   categoryType: payload.type === "income" ? "INCOME" : "EXPENSE",
   icon: payload.icon,
-  color: payload.color ?? "#3b82f6",
-  systemCategory: false,
-  categoryKey: createCategoryKey(),
-  defaultCategory: true,
+  color: payload.color,
+  systemCategory: payload.systemCategory,
+  categoryKey: payload.categoryKey || createCategoryKey(),
+  defaultCategory: payload.systemCategory && payload.defaultCategory,
 });
 
 const normalizeTransaction = (
@@ -107,6 +112,12 @@ const normalizeCategory = (value: unknown): Category => {
 
   return {
     id: String(record.id ?? record.categoryId ?? ""),
+    parentId: typeof record.parentId === "string" ? record.parentId : null,
+    parentName:
+      typeof record.parentName === "string" ? record.parentName : null,
+    userId: typeof record.userId === "string" ? record.userId : null,
+    categoryKey:
+      typeof record.categoryKey === "string" ? record.categoryKey : undefined,
     name: String(record.name ?? record.categoryName ?? ""),
     icon: String(record.icon ?? preference.icon ?? "Box"),
     transactionCount: asNumber(
@@ -120,8 +131,6 @@ const normalizeCategory = (value: unknown): Category => {
     ),
     type: rawType === "income" ? "income" : "expense",
     color: String(record.color ?? preference.color ?? "#3b82f6"),
-    parentId:
-      typeof record.parentId === "string" ? record.parentId : null,
     defaultCategory: Boolean(record.defaultCategory),
     status: record.status === "INACTIVE" ? "INACTIVE" : "ACTIVE",
     systemCategory: Boolean(record.systemCategory),
@@ -129,6 +138,16 @@ const normalizeCategory = (value: unknown): Category => {
       typeof record.ownedByCurrentUser === "boolean"
         ? record.ownedByCurrentUser
         : undefined,
+    hiddenForCurrentUser:
+      typeof record.hiddenForCurrentUser === "boolean"
+        ? record.hiddenForCurrentUser
+        : undefined,
+    deletedAt:
+      typeof record.deletedAt === "string" ? record.deletedAt : null,
+    createdAt:
+      typeof record.createdAt === "string" ? record.createdAt : undefined,
+    updatedAt:
+      typeof record.updatedAt === "string" ? record.updatedAt : undefined,
     recentTransactions: Array.isArray(rawTransactions)
       ? rawTransactions.map(normalizeTransaction)
       : undefined,
@@ -230,6 +249,32 @@ export const categoryApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
+      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+        try {
+          const { data: updatedCategory } = await queryFulfilled;
+
+          dispatch(
+            categoryApi.util.updateQueryData(
+              "getCategoriesPaginated",
+              undefined,
+              (draft) => {
+                for (const page of draft.pages) {
+                  const index = page.content.findIndex(
+                    (category) => category.id === id,
+                  );
+
+                  if (index !== -1) {
+                    page.content[index] = updatedCategory;
+                    break;
+                  }
+                }
+              },
+            ),
+          );
+        } catch {
+          // The mutation error is handled by the calling page.
+        }
+      },
       transformResponse: (response: unknown) =>
         normalizeCategory(unwrapData(response)),
       invalidatesTags: (_result, _error, { id }) => [
@@ -238,22 +283,6 @@ export const categoryApi = baseApi.injectEndpoints({
       ],
     }),
 
-    updateCategoryPreference: builder.mutation<
-      Category,
-      { id: string; data: UpdateCategoryPreferencePayload }
-    >({
-      query: ({ id, data }) => ({
-        url: ENDPOINTS_CATEGORY.UPDATE_CATEGORY_PREFERENCE(id),
-        method: "PATCH",
-        body: data,
-      }),
-      transformResponse: (response: unknown) =>
-        normalizeCategory(unwrapData(response)),
-      invalidatesTags: (_result, _error, { id }) => [
-        { type: API_TAGS.CATEGORY, id },
-        { type: API_TAGS.CATEGORY, id: "LIST" },
-      ],
-    }),
     deleteCategory: builder.mutation<void, string>({
       query: (id) => ({
         url: ENDPOINTS_CATEGORY.DELETE_CATEGORY(id),
@@ -273,6 +302,5 @@ export const {
   useGetCategoriesPaginatedInfiniteQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
-  useUpdateCategoryPreferenceMutation,
   useDeleteCategoryMutation,
 } = categoryApi;

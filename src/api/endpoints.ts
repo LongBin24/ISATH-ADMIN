@@ -22,5 +22,4 @@ export const ENDPOINTS_CATEGORY = {
   CREATE_CATEGORY: "admin/categories",
   UPDATE_CATEGORY: (id: string) => `admin/categories/${id}`,
   DELETE_CATEGORY: (id: string) => `admin/categories/${id}`,
-  UPDATE_CATEGORY_PREFERENCE: (id: string) => `admin/categories/${id}`,
 } as const;

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import "@fontsource/google-sans/400.css";
 import Sidebar from "@/components/layout/Sidebar";
 import Navbar from "@/components/layout/Navbar";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
