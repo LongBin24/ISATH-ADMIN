@@ -1,51 +1,53 @@
-export type FeedbackStatus = "all" | "resolved" | "in-progress" | "new";
+export type ReviewStatus = "PENDING" | "IN_REVIEW" | "RESOLVED" | "CLOSED";
 
-export interface FeedbackItem {
+export type FeedbackStatus = "ALL" | ReviewStatus;
+
+export interface Review {
   id: string;
+  userId: string;
+  reviewType: string;
   title: string;
   description: string;
-  category: string;
-  status: Exclude<FeedbackStatus, "all">;
-  rating: number;
-  votes: number;
-  date: string;
+  screenshotUrl: string | null;
+  uiRating: number | null;
+  performanceRating: number | null;
+  easeOfUseRating: number | null;
+  featureRating: number | null;
+  overallRating: number | null;
+  reviewStatus: ReviewStatus;
+  reviewedBy: string | null;
+  latestReviewNote: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UpdateReviewStatusRequest {
-  reviewStatus: "PENDING" | "IN_REVIEW" | "RESOLVED" | "CLOSED";
-  latestReviewNote?: string;
+  reviewStatus: ReviewStatus;
+  latestReviewNote: string;
 }
 
-export interface ReviewResponse {
-  id: string;
-  userId?: string;
-  reviewType: "SUGGESTION" | "BUG_REPORT" | "COMPLAINT" | "COMPLIMENT" | "GENERAL" | string;
-  title: string;
-  description: string;
-  screenshotUrl?: string;
-  uiRating?: number;
-  performanceRating?: number;
-  easeOfUseRating?: number;
-  featureRating?: number;
-  overallRating?: number;
-  reviewStatus: "PENDING" | "IN_REVIEW" | "RESOLVED" | "CLOSED" | string;
-  reviewedBy?: string;
-  latestReviewNote?: string;
-  reviewedAt?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface ApiResponseReviewResponse {
-  success: boolean;
-  message?: string;
-  data: ReviewResponse;
-  timestamp?: string;
-}
-
-// Aliases for compatibility
-export type AdminReviewItem = ReviewResponse;
-export type AdminReviewResponse = ApiResponseReviewResponse;
 export interface UpdateReviewStatusPayload extends UpdateReviewStatusRequest {
   id: string;
 }
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+  timestamp?: string;
+}
+
+export interface ReviewPage {
+  content: Review[];
+  totalElements?: number;
+  totalPages?: number;
+  number?: number;
+  size?: number;
+}
+
+// Compatibility aliases for existing feature imports.
+export type FeedbackItem = Review;
+export type ReviewResponse = Review;
+export type AdminReviewItem = Review;
+export type AdminReviewResponse = ApiResponse<Review>;

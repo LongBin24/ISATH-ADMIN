@@ -16,24 +16,24 @@ export default function FeedbackStatCard({
   accent,
 }: FeedbackStatCardProps) {
   return (
-    <div className=" w-auto rounded-4xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-      <div className="flex items-start justify-between gap-4 ">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:rounded-3xl sm:p-5">
+      <div className="flex min-w-0 items-start justify-between gap-2 sm:gap-4">
+        <div className="min-w-0">
+          <p className="truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500 dark:text-slate-400 sm:text-xs sm:tracking-[0.16em]">
             {title}
           </p>
-          <p className="mt-3 text-3xl font-bold text-[#003377] dark:text-white">
+          <p className="mt-2 text-2xl font-bold text-[#003377] dark:text-white sm:mt-3 sm:text-3xl">
             {value}
           </p>
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 hidden text-sm text-slate-500 dark:text-slate-400 sm:block">
             {description}
           </p>
         </div>
         <div
-          className="rounded-3xl p-3"
+          className="shrink-0 rounded-xl p-2 sm:rounded-2xl sm:p-3"
           style={{ backgroundColor: `${accent}20` }}
         >
-          <Icon size={24} style={{ color: accent }} />
+          <Icon className="size-4 sm:size-6" style={{ color: accent }} />
         </div>
       </div>
     </div>
