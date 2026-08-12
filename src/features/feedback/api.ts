@@ -1,74 +1,71 @@
 import { baseApi } from "@/api/baseApi";
-import { 
-  FeedbackItem, 
-  AdminReviewItem, 
-  AdminReviewResponse, 
-  UpdateReviewStatusPayload 
+import { API_TAGS } from "@/api/tags";
+import type {
+  ApiResponse,
+  Review,
+  ReviewPage,
+  UpdateReviewStatusPayload,
 } from "./types";
 
-type ReviewResponse = {
-  id: string;
-  reviewType: string;
-  title: string;
-  description: string;
-  overallRating?: number;
-  reviewStatus: "PENDING" | "IN_REVIEW" | "RESOLVED" | "CLOSED";
-  createdAt: string;
-};
+type ReviewListPayload = Review[] | ReviewPage | ApiResponse<Review[] | ReviewPage>;
+type ReviewPayload = Review | ApiResponse<Review>;
 
-const toFeedback = (review: ReviewResponse): FeedbackItem => ({
-  id: review.id,
-  title: review.title,
-  description: review.description,
-  category: review.reviewType,
-  status:
-    review.reviewStatus === "RESOLVED" || review.reviewStatus === "CLOSED"
-      ? "resolved"
-      : review.reviewStatus === "IN_REVIEW"
-        ? "in-progress"
-        : "new",
-  rating: review.overallRating ?? 0,
-  votes: 0,
-  date: new Intl.DateTimeFormat("en-GB").format(new Date(review.createdAt)),
-});
+function unwrapReviewList(response: ReviewListPayload): Review[] {
+  const payload = "data" in response && !Array.isArray(response) ? response.data : response;
+  return Array.isArray(payload) ? payload : payload.content;
+}
+
+function unwrapReview(response: ReviewPayload): Review {
+  return "data" in response ? response.data : response;
+}
 
 export const feedbackApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getFeedback: builder.query<FeedbackItem[], void>({
-      async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
-        let result = await baseQuery("admin/reviews?pageNumber=0&pageSize=100");
-        if (!result.data) {
-          result = await baseQuery("reviews?pageNumber=0&pageSize=100");
-        }
-
-        if (result.data) {
-          const raw = result.data as any;
-          const list = Array.isArray(raw) ? raw : raw.content || [];
-          return { data: list.map(toFeedback) };
-        }
-
-        return { data: [] };
-      },
-      providesTags: ["Feedback"],
+    getFeedback: builder.query<Review[], void>({
+      query: () => "admin/reviews",
+      transformResponse: unwrapReviewList,
+      providesTags: (result) => [
+        { type: API_TAGS.FEEDBACK, id: "LIST" },
+        ...(result ?? []).map(({ id }) => ({ type: API_TAGS.FEEDBACK, id })),
+      ],
     }),
 
-    // PATCH /api/v1/admin/reviews/{id}/status
-    updateReviewStatus: builder.mutation<AdminReviewResponse, UpdateReviewStatusPayload>({
+    getReviewById: builder.query<Review, string>({
+      query: (id) => `admin/reviews/${id}`,
+      transformResponse: unwrapReview,
+      providesTags: (_result, _error, id) => [{ type: API_TAGS.FEEDBACK, id }],
+    }),
+
+    updateReviewStatus: builder.mutation<Review, UpdateReviewStatusPayload>({
       query: ({ id, reviewStatus, latestReviewNote }) => ({
         url: `admin/reviews/${id}/status`,
         method: "PATCH",
-        body: {
-          reviewStatus,
-          latestReviewNote,
-        },
+        body: { reviewStatus, latestReviewNote },
       }),
-      invalidatesTags: ["Feedback"],
+      transformResponse: unwrapReview,
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: API_TAGS.FEEDBACK, id },
+        { type: API_TAGS.FEEDBACK, id: "LIST" },
+      ],
+    }),
+
+    deleteReview: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `admin/reviews/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: API_TAGS.FEEDBACK, id },
+        { type: API_TAGS.FEEDBACK, id: "LIST" },
+      ],
     }),
   }),
   overrideExisting: true,
 });
 
-export const { 
-  useGetFeedbackQuery, 
-  useUpdateReviewStatusMutation 
+export const {
+  useGetFeedbackQuery,
+  useGetReviewByIdQuery,
+  useUpdateReviewStatusMutation,
+  useDeleteReviewMutation,
 } = feedbackApi;
