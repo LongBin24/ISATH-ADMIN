@@ -89,6 +89,7 @@ export default function Navbar({ onMenuToggle, isSidebarOpen = false }: NavbarPr
                 </div>
               )}
             </div>
+          
           </Link>
           <button
             type="button"

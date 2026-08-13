@@ -12,7 +12,8 @@ import { useNotificationUI } from "../hook";
 export default function NotificationHeader() {
   const { data: stats } = useGetNotificationStatsQuery();
   const [markAllAsRead, { isLoading: isMarking }] = useMarkAllAsReadMutation();
-  const [resetNotifications, { isLoading: isResetting }] = useResetNotificationsMutation();
+  const [resetNotifications, { isLoading: isResetting }] =
+    useResetNotificationsMutation();
   const { toggleTriggerModal } = useNotificationUI();
 
   return (
@@ -30,13 +31,21 @@ export default function NotificationHeader() {
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-google-sans">
-            ប្រព័ន្ធជូនដំណឹងហិរញ្ញវត្ថុ <span className="text-[#FFC83D]">iStash</span>
+            ប្រព័ន្ធជូនដំណឹងហិរញ្ញវត្ថុ{" "}
+            <span className="text-[#FFC83D]">iStash</span>
           </h1>
 
           <p className="text-sm text-slate-300 leading-relaxed font-google-sans">
             រំលឹក និងជូនដំណឹងព័ត៌មានហិរញ្ញវត្ថុសំខាន់ៗដល់អ្នកប្រើប្រាស់ តាមរយៈ
-            <span className="text-[#FFC83D] font-medium font-sans"> ការជូនដំណឹងក្នុងកម្មវិធី</span> និង
-            <span className="text-[#FFC83D] font-medium font-sans"> ការជូនដំណឹងតាមអ៊ីមែល</span>
+            <span className="text-[#FFC83D] font-medium font-sans">
+              {" "}
+              ការជូនដំណឹងក្នុងកម្មវិធី
+            </span>{" "}
+            និង
+            <span className="text-[#FFC83D] font-medium font-sans">
+              {" "}
+              ការជូនដំណឹងតាមអ៊ីមែល
+            </span>
           </p>
         </div>
 
@@ -55,7 +64,10 @@ export default function NotificationHeader() {
             <div>
               <p className="text-xs text-slate-400">មិនទាន់អាន</p>
               <p className="text-lg font-bold text-white">
-                {stats?.unreadCount || 0} <span className="text-xs text-slate-400">/ {stats?.total || 0}</span>
+                {stats?.unreadCount || 0}{" "}
+                <span className="text-xs text-slate-400">
+                  / {stats?.total || 0}
+                </span>
               </p>
             </div>
           </div>
@@ -67,7 +79,7 @@ export default function NotificationHeader() {
             className="flex items-center gap-2 rounded-2xl bg-[#FFC83D] px-4 py-3 text-sm font-bold text-[#003377] shadow-lg shadow-[#FFC83D]/20 transition hover:bg-[#e0ac2b] active:scale-95"
           >
             <Send size={16} />
-            <span>បង្កើតការជូនដំណឹងសាកល្បង</span>
+            <span>បង្កើតការជូនដំណឹង</span>
           </button>
 
           {/* Mark All Read Button */}
@@ -92,7 +104,10 @@ export default function NotificationHeader() {
             className="flex items-center justify-center rounded-2xl bg-slate-800/80 p-3 text-slate-300 hover:text-white transition hover:bg-slate-700 border border-slate-700"
             title="កំណត់ឡើងវិញ"
           >
-            <RefreshCw size={16} className={isResetting ? "animate-spin text-[#FFC83D]" : ""} />
+            <RefreshCw
+              size={16}
+              className={isResetting ? "animate-spin text-[#FFC83D]" : ""}
+            />
           </button>
         </div>
       </div>
