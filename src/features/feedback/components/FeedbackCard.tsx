@@ -14,20 +14,20 @@ const statusStyles: Record<ReviewStatus, string> = {
 };
 
 const statusLabels: Record<ReviewStatus, string> = {
-  PENDING: "Pending",
-  IN_REVIEW: "In Review",
-  RESOLVED: "Resolved",
-  CLOSED: "Closed",
+  PENDING: "កំពុងរង់ចាំ",
+  IN_REVIEW: "កំពុងពិនិត្យ",
+  RESOLVED: "បានដោះស្រាយ",
+  CLOSED: "បានបិទ",
 };
 
 export default function FeedbackCard({ feedback, onView }: FeedbackCardProps) {
   return (
-    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-950 sm:rounded-4xl sm:p-6">
+    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 font-google-sans shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-950 sm:rounded-4xl sm:p-6">
       <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0 flex-1 space-y-3 sm:space-y-4">
           <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
             <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 dark:border-slate-800 dark:bg-slate-900">
-              {feedback.reviewType.replaceAll("_", " ")}
+              {feedback.reviewType}
             </span>
             <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[feedback.reviewStatus]}`}>
               {statusLabels[feedback.reviewStatus]}
@@ -43,7 +43,7 @@ export default function FeedbackCard({ feedback, onView }: FeedbackCardProps) {
             <div className="inline-flex items-center gap-1">
               <Star className="h-4 w-4 text-amber-400" /> {feedback.overallRating ?? "—"}
             </div>
-            <div>{new Intl.DateTimeFormat("en-GB").format(new Date(feedback.createdAt))}</div>
+            <div>{new Intl.DateTimeFormat("km-KH").format(new Date(feedback.createdAt))}</div>
           </div>
         </div>
         <button
@@ -51,7 +51,7 @@ export default function FeedbackCard({ feedback, onView }: FeedbackCardProps) {
           onClick={() => onView(feedback.id)}
           className="inline-flex w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-[#003377] transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 sm:w-auto sm:self-start sm:rounded-full"
         >
-          View details <ChevronRight size={16} />
+          មើលព័ត៌មានលម្អិត <ChevronRight size={16} />
         </button>
       </div>
     </article>
