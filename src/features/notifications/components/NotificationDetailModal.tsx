@@ -1,25 +1,43 @@
 "use client";
 
-import React from "react";
-import { X, Calendar, ExternalLink, Wallet, AlertTriangle, Target, Repeat, BarChart3, Mail, Bell } from "lucide-react";
+import React, { useState } from "react";
+import { X, Calendar, ExternalLink, Wallet, AlertTriangle, Target, Repeat, BarChart3, Mail, Bell, RotateCcw, Check, RefreshCw } from "lucide-react";
 import { useNotificationUI } from "../hook";
-import { useMarkAsReadMutation } from "../api";
 import { CATEGORY_CONFIGS } from "../constants";
+import { useRetryNotificationDeliveryMutation, useGetAdminNotificationByIdQuery } from "../api";
 
 export default function NotificationDetailModal() {
   const { selectedNotification, isDetailModalOpen, dismissDetailModal } = useNotificationUI();
-  const [markAsRead] = useMarkAsReadMutation();
+  const notificationId = selectedNotification?.id ?? "";
+  const { data: adminNotificationDetail, isLoading: isFetchingDetail } = useGetAdminNotificationByIdQuery(notificationId, {
+    skip: !notificationId || !isDetailModalOpen,
+  });
+
+  const [retryDelivery, { isLoading: isRetrying }] = useRetryNotificationDeliveryMutation();
+  const [retrySuccess, setRetrySuccess] = useState(false);
+  const [retryErrorMessage, setRetryErrorMessage] = useState<string | null>(null);
 
   if (!isDetailModalOpen || !selectedNotification) return null;
 
-  const config = CATEGORY_CONFIGS[selectedNotification.category];
-
   const handleClose = () => {
-    if (!selectedNotification.isRead) {
-      markAsRead(selectedNotification.id);
-    }
     dismissDetailModal();
   };
+
+  const handleRetry = async () => {
+    setRetryErrorMessage(null);
+    setRetrySuccess(false);
+    try {
+      await retryDelivery({ notificationId: selectedNotification.id }).unwrap();
+      setRetrySuccess(true);
+      setTimeout(() => setRetrySuccess(false), 3000);
+    } catch (e: any) {
+      const msg = e?.data?.message || e?.message || "No failed notification deliveries are available to retry.";
+      setRetryErrorMessage(msg);
+      setTimeout(() => setRetryErrorMessage(null), 4000);
+    }
+  };
+
+  const config = CATEGORY_CONFIGS[(selectedNotification as any).category || selectedNotification.notificationType];
 
   const getPriorityKh = (priority: string) => {
     switch (priority) {
@@ -32,19 +50,22 @@ export default function NotificationDetailModal() {
       case "URGENT":
         return "បន្ទាន់";
       default:
-        return priority;
+        return priority || "មធ្យម";
     }
   };
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case "DAILY_EXPENSE":
+      case "DAILY_REMINDER":
         return <Wallet className="text-[#FFC83D]" size={24} />;
       case "BUDGET_WARNING":
         return <AlertTriangle className="text-red-500" size={24} />;
       case "SAVINGS_GOAL":
+      case "SAVINGS_REMINDER":
         return <Target className="text-emerald-500" size={24} />;
       case "RECURRING_TX":
+      case "RECURRING_REMINDER":
         return <Repeat className="text-[#003377] dark:text-blue-400" size={24} />;
       case "MONTHLY_SUMMARY":
         return <BarChart3 className="text-indigo-500" size={24} />;
@@ -60,13 +81,13 @@ export default function NotificationDetailModal() {
         <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800 dark:bg-slate-850">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800">
-              {getCategoryIcon(selectedNotification.category)}
+              {getCategoryIcon((selectedNotification as any).category || selectedNotification.notificationType)}
             </div>
             <div>
               <span className="text-xs font-semibold text-[#003377] dark:text-[#FFC83D]">
-                {config?.nameKh || selectedNotification.category}
+                {config?.nameKh || selectedNotification.notificationType}
               </span>
-              <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
+              <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 font-google-sans">
                 ព័ត៌មានលម្អិតនៃការជូនដំណឹង
               </h3>
             </div>
@@ -82,123 +103,99 @@ export default function NotificationDetailModal() {
 
         {/* Modal Content */}
         <div className="p-6 space-y-5 font-google-sans">
-          {/* Notification Title & Priority */}
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span
-                className={`inline-block h-2 w-2 rounded-full ${
-                  selectedNotification.priority === "HIGH" || selectedNotification.priority === "URGENT"
-                    ? "bg-red-500"
-                    : selectedNotification.priority === "MEDIUM"
-                    ? "bg-[#FFC83D]"
-                    : "bg-blue-500"
-                }`}
-              />
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                កម្រិតអាទិភាព៖ {getPriorityKh(selectedNotification.priority)}
-              </span>
+          {isFetchingDetail ? (
+            <div className="flex flex-col items-center justify-center py-8 text-slate-400">
+              <RefreshCw className="animate-spin text-[#FFC83D] mb-2" size={24} />
+              <p className="text-xs">កំពុងទាញយកព័ត៌មានលម្អិត... (Fetching details by ID)</p>
             </div>
-            <h4 className="text-lg font-bold text-slate-900 dark:text-white leading-snug">
-              {selectedNotification.titleKh}
-            </h4>
-          </div>
+          ) : (
+            <>
+              {/* Notification Title & Priority */}
+              <div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span
+                    className={`inline-block h-2 w-2 rounded-full ${
+                      (selectedNotification as any).priority === "HIGH" || (selectedNotification as any).priority === "URGENT"
+                        ? "bg-red-500"
+                        : (selectedNotification as any).priority === "MEDIUM"
+                        ? "bg-[#FFC83D]"
+                        : "bg-blue-500"
+                    }`}
+                  />
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    កម្រិតអាទិភាព៖ {getPriorityKh((selectedNotification as any).priority || "MEDIUM")}
+                  </span>
+                </div>
+                <h4 className="text-lg font-bold text-slate-900 dark:text-white leading-snug">
+                  {adminNotificationDetail?.title || (selectedNotification as any).titleKh || selectedNotification.title}
+                </h4>
+              </div>
 
-          {/* Channels Used */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 dark:text-slate-400">ប៉ុស្តិ៍ជូនដំណឹង៖</span>
-            {selectedNotification.channels.includes("IN_APP") && (
-              <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
-                <Bell size={12} /> ក្នុងកម្មវិធី
-              </span>
-            )}
-            {selectedNotification.channels.includes("EMAIL") && (
-              <span className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
-                <Mail size={12} /> អ៊ីមែល
-              </span>
-            )}
-          </div>
 
-          {/* Message Body */}
-          <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-sm text-slate-700 dark:bg-slate-800/60 dark:border-slate-750 dark:text-slate-300 leading-relaxed font-google-sans">
-            {selectedNotification.messageKh}
-          </div>
-
-          {/* Metadata Display (if present) */}
-          {selectedNotification.metadata && (
-            <div className="rounded-2xl bg-amber-500/5 p-4 border border-[#FFC83D]/20 space-y-3">
-              <h5 className="text-xs font-bold text-[#003377] dark:text-[#FFC83D] uppercase tracking-wider">
-                ទិន្នន័យបន្ថែម
-              </h5>
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                {selectedNotification.metadata.amount !== undefined && (
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400">ចំនួនទឹកប្រាក់៖</span>
-                    <p className="font-bold text-slate-800 dark:text-slate-200">
-                      ${selectedNotification.metadata.amount.toFixed(2)}
-                    </p>
-                  </div>
+              {/* Channels Used */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-500 dark:text-slate-400">ប៉ុស្តិ៍ជូនដំណឹង៖</span>
+                {((adminNotificationDetail?.channels?.includes("IN_APP") || (selectedNotification as any).channels?.includes("IN_APP")) ?? true) && (
+                  <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
+                    <Bell size={12} /> ក្នុងកម្មវិធី
+                  </span>
                 )}
-                {selectedNotification.metadata.budgetLimit !== undefined && (
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400">ដែនកំណត់ថវិកា៖</span>
-                    <p className="font-bold text-slate-800 dark:text-slate-200">
-                      ${selectedNotification.metadata.budgetLimit.toFixed(2)}
-                    </p>
-                  </div>
-                )}
-                {selectedNotification.metadata.budgetCategory && (
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400">ប្រភេទចំណាយ៖</span>
-                    <p className="font-bold text-slate-800 dark:text-slate-200">
-                      {selectedNotification.metadata.budgetCategory}
-                    </p>
-                  </div>
-                )}
-                {selectedNotification.metadata.savingsGoalName && (
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400">ឈ្មោះគោលដៅ៖</span>
-                    <p className="font-bold text-slate-800 dark:text-slate-200">
-                      {selectedNotification.metadata.savingsGoalName}
-                    </p>
-                  </div>
-                )}
-                {selectedNotification.metadata.dueDate && (
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400">កាលបរិច្ឆេទត្រូវបង់៖</span>
-                    <p className="font-bold text-slate-800 dark:text-slate-200">
-                      {selectedNotification.metadata.dueDate}
-                    </p>
-                  </div>
+                {((adminNotificationDetail?.channels?.includes("EMAIL") || (selectedNotification as any).channels?.includes("EMAIL")) ?? false) && (
+                  <span className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
+                    <Mail size={12} /> អ៊ីមែល
+                  </span>
                 )}
               </div>
 
-              {/* Progress Bar if budget or savings goal */}
-              {selectedNotification.metadata.budgetUsedPercent !== undefined && (
-                <div className="space-y-1">
-                  <div className="flex justify-between text-xs font-semibold">
-                    <span>ការប្រើប្រាស់ថវិកា</span>
-                    <span className="text-red-500">{selectedNotification.metadata.budgetUsedPercent}%</span>
-                  </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                    <div
-                      className="h-full bg-red-500 rounded-full"
-                      style={{ width: `${selectedNotification.metadata.budgetUsedPercent}%` }}
-                    />
-                  </div>
+              {/* Message Body */}
+              <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-sm text-slate-700 dark:bg-slate-800/60 dark:border-slate-750 dark:text-slate-300 leading-relaxed font-google-sans">
+                {adminNotificationDetail?.message || (selectedNotification as any).messageKh || selectedNotification.message}
+              </div>
+
+              {/* Error Message Banner */}
+              {retryErrorMessage && (
+                <div className="flex items-center gap-2 rounded-2xl bg-amber-500/10 p-3 text-xs font-semibold text-amber-800 dark:text-amber-300 border border-amber-500/20 font-google-sans">
+                  <AlertTriangle size={16} className="shrink-0 text-amber-600 dark:text-amber-400" />
+                  <span>{retryErrorMessage}</span>
                 </div>
               )}
-            </div>
-          )}
 
-          {/* Timestamp */}
-          <div className="flex items-center text-xs text-slate-400 gap-1.5">
-            <Calendar size={14} />
-            <span>កាលបរិច្ឆេទផ្ញើ៖ {new Date(selectedNotification.createdAt).toLocaleString("km-KH")}</span>
-          </div>
+              {/* Timestamp */}
+              <div className="flex items-center text-xs text-slate-400 gap-1.5">
+                <Calendar size={14} />
+                <span>កាលបរិច្ឆេទផ្ញើ៖ {new Date(adminNotificationDetail?.createdAt || selectedNotification.createdAt).toLocaleString("km-KH")}</span>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Footer Actions */}
         <div className="flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800 dark:bg-slate-850">
+          <button
+            type="button"
+            onClick={handleRetry}
+            disabled={isRetrying || retrySuccess}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs font-bold text-amber-800 hover:bg-amber-100 dark:border-amber-700/60 dark:bg-amber-950/40 dark:text-amber-300 transition disabled:opacity-50"
+            title="Retry sending failed notification deliveries"
+          >
+            {isRetrying ? (
+              <>
+                <RefreshCw size={14} className="animate-spin" />
+                <span>កំពុងផ្ញើឡើងវិញ...</span>
+              </>
+            ) : retrySuccess ? (
+              <>
+                <Check size={14} className="text-green-600" />
+                <span>បានផ្ញើឡើងវិញរួចរាល់!</span>
+              </>
+            ) : (
+              <>
+                <RotateCcw size={14} />
+                <span>ព្យាយាមផ្ញើឡើងវិញ</span>
+              </>
+            )}
+          </button>
+
           <button
             type="button"
             onClick={handleClose}

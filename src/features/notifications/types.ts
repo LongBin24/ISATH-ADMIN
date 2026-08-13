@@ -165,6 +165,7 @@ export interface NotificationResponse {
   expiresAt?: string;
   createdAt: string;
   updatedAt?: string;
+  channels?: ("IN_APP" | "EMAIL")[];
 }
 
 export interface PagedModelNotificationResponse {

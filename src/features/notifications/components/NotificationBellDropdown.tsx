@@ -5,6 +5,7 @@ import {
   useGetNotificationsQuery,
   useGetNotificationStatsQuery,
   useMarkAllAsReadMutation,
+  useMarkAsReadMutation,
 } from "../api";
 import { useNotificationUI } from "../hook";
 import Link from "next/link";
@@ -13,9 +14,10 @@ export default function NotificationBellDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { data: stats } = useGetNotificationStatsQuery();
-  const { data: notifications = [] } = useGetNotificationsQuery();
+  const { data: stats } = useGetNotificationStatsQuery(undefined, { pollingInterval: 10000 });
+  const { data: notifications = [] } = useGetNotificationsQuery(undefined, { pollingInterval: 10000 });
   const [markAllAsRead] = useMarkAllAsReadMutation();
+  const [markAsRead] = useMarkAsReadMutation();
   const { selectNotification } = useNotificationUI();
 
   // Close dropdown on click outside
@@ -90,6 +92,9 @@ export default function NotificationBellDropdown() {
                 <div
                   key={item.id}
                   onClick={() => {
+                    if (!item.isRead) {
+                      markAsRead(item.id);
+                    }
                     selectNotification(item);
                     setIsOpen(false);
                   }}
