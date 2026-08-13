@@ -1,9 +1,8 @@
-
 "use client";
 
-import { ArrowRight, LockKeyhole, ShieldCheck } from "lucide-react";
+import { ArrowRight, LockKeyhole, RefreshCw, ShieldCheck } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function safeReturnPath(value: string | null): string {
   return value && value.startsWith("/") && !value.startsWith("//") ? value : "/dashboard";
@@ -23,6 +22,12 @@ export function LoginForm() {
     window.location.assign(`/api/keycloak/login?${params.toString()}`);
   }
 
+  useEffect(() => {
+    if (!searchParams.get("authError")) {
+      handleSignIn();
+    }
+  }, []);
+
   return (
     <div className="mt-7 space-y-5">
       <div className="rounded-2xl border border-[#003377]/10 bg-[#003377]/[0.035] p-4">
@@ -34,14 +39,20 @@ export function LoginForm() {
 
       {(error || providerError) && <p role="alert" className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{error || providerError}</p>}
 
-      <button type="button" onClick={handleSignIn} className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#FFC83D] px-5 text-sm font-bold text-[#003377] transition hover:-translate-y-0.5 hover:bg-[#f5b91f] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#FFC83D]/35">
-        <LockKeyhole className="size-4" />
-        Sign in with Keycloak
-        <ArrowRight className="size-4" />
-      </button>
+      {!providerError ? (
+        <div className="flex items-center justify-center gap-2.5 py-4 text-sm font-bold text-[#003377]">
+          <RefreshCw className="size-4 animate-spin text-[#FFC83D]" />
+          <span>Redirecting to Keycloak login form...</span>
+        </div>
+      ) : (
+        <button type="button" onClick={handleSignIn} className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#FFC83D] px-5 text-sm font-bold text-[#003377] transition hover:-translate-y-0.5 hover:bg-[#f5b91f] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#FFC83D]/35">
+          <LockKeyhole className="size-4" />
+          Sign in with Keycloak
+          <ArrowRight className="size-4" />
+        </button>
+      )}
 
       <p className="text-center text-xs leading-5 text-slate-500">Use your administrator email and password on the secure Keycloak page. Only authorized iStash administrators can access this portal.</p>
     </div>
   );
 }
-

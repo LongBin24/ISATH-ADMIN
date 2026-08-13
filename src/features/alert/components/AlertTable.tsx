@@ -1,5 +1,13 @@
 import { AlertRule } from "../types";
 import { BellOff, ChevronRight, Eye, Inbox, LockKeyhole } from "lucide-react";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
 
 interface AlertTableProps {
   alertRules: AlertRule[];
@@ -70,29 +78,29 @@ export function AlertTable({ alertRules, onViewDetails }: AlertTableProps) {
   return (
     <section className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="hidden overflow-x-auto md:block">
-        <table className="w-full border-collapse text-left">
-          <thead>
-            <tr className="border-b border-slate-200 bg-slate-50/80 text-xs font-bold text-slate-500 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-400">
-              <th className="px-5 py-4">ឈ្មោះច្បាប់</th>
-              <th className="px-5 py-4">ប្រភេទជូនដំណឹង</th>
-              <th className="px-5 py-4">លក្ខខណ្ឌ</th>
-              <th className="px-5 py-4">កម្រិត</th>
-              <th className="px-5 py-4">ស្ថានភាព</th>
-              <th className="px-5 py-4 text-right">សកម្មភាព</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+        <Table className="font-google-sans">
+          <TableHeader className="bg-slate-50/80 dark:bg-slate-800/50">
+            <TableRow className="hover:bg-transparent">
+              <TableHead>ឈ្មោះច្បាប់</TableHead>
+              <TableHead>ប្រភេទជូនដំណឹង</TableHead>
+              <TableHead>លក្ខខណ្ឌ</TableHead>
+              <TableHead>កម្រិត</TableHead>
+              <TableHead>ស្ថានភាព</TableHead>
+              <TableHead className="text-right">សកម្មភាព</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {alertRules.map((rule) => (
-              <tr key={rule.id} className="group transition hover:bg-[#FFC83D]/[0.06]">
-                <td className="max-w-60 px-5 py-4">
+              <TableRow key={rule.id} className="group hover:bg-[#FFC83D]/[0.06]">
+                <TableCell className="max-w-60">
                   <p className="truncate text-sm font-bold text-slate-900 dark:text-white">{rule.ruleName}</p>
                   <p className="mt-1 truncate text-xs text-slate-400">ID: {rule.id}</p>
-                </td>
-                <td className="px-5 py-4 text-sm text-slate-600 dark:text-slate-300">{translateValue(rule.alertType)}</td>
-                <td className="px-5 py-4 text-sm text-slate-600 dark:text-slate-300">{translateValue(rule.triggerType)}</td>
-                <td className="px-5 py-4"><SeverityBadge severity={rule.severity} /></td>
-                <td className="px-5 py-4"><StatusBadge rule={rule} /></td>
-                <td className="px-5 py-4 text-right">
+                </TableCell>
+                <TableCell className="text-sm text-slate-600 dark:text-slate-300">{translateValue(rule.alertType)}</TableCell>
+                <TableCell className="text-sm text-slate-600 dark:text-slate-300">{translateValue(rule.triggerType)}</TableCell>
+                <TableCell><SeverityBadge severity={rule.severity} /></TableCell>
+                <TableCell><StatusBadge rule={rule} /></TableCell>
+                <TableCell className="text-right">
                   <button
                     type="button"
                     onClick={() => onViewDetails(rule.id)}
@@ -101,11 +109,11 @@ export function AlertTable({ alertRules, onViewDetails }: AlertTableProps) {
                     <Eye className="size-4" />
                     មើលលម្អិត
                   </button>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       <div className="divide-y divide-slate-100 dark:divide-slate-800 md:hidden">

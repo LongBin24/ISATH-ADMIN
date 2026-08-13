@@ -33,7 +33,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 font-google-sans">
-      <div className="rounded-3xle dark:bg-slate-900 dark:border dark:border-slate-800 sm:flex sm:items-center sm:justify-between sm:gap-4">
+      <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-200/80 dark:bg-slate-900 dark:border-slate-800 sm:flex sm:items-center sm:justify-between sm:gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#003377] dark:text-white">
             ផ្ទាំងគ្រប់គ្រង
@@ -43,8 +43,9 @@ export default function AdminDashboard() {
           </p>
         </div>
         <button
+          type="button"
           onClick={() => setOpenCreate(true)}
-          className="inline-flex items-center justify-center rounded-full bg-[#FFC83D] px-7 py-3 text-sm font-semibold text-[#003377] shadow-sm transition hover:bg-[#f7c948] dark:bg-[#FFC83D] dark:text-slate-950"
+          className="inline-flex items-center justify-center rounded-full bg-[#FFC83D] px-7 py-3 text-sm font-semibold text-[#003377] shadow-sm transition hover:bg-[#f7c948] dark:bg-[#FFC83D] dark:text-[#003377]"
         >
           + បង្កើតថ្មី
         </button>
