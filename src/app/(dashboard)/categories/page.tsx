@@ -9,6 +9,7 @@ import {
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
+  type UpdateCategoryPayload,
 } from "@/features/categories/categoryApi";
 import { Category } from "@/features/categories/types";
 import { CategoryFormValues } from "@/features/categories/schema";
@@ -19,6 +20,8 @@ import { DeleteCategoryDialog } from "@/features/categories/components/DeleteCat
 const API_ERROR_TRANSLATIONS: Record<string, string> = {
   "Category cannot be deleted while it has non-deleted subcategories.":
     "មិនអាចលុបប្រភេទនេះបានទេ ដោយសារវានៅមានប្រភេទរងដែលមិនទាន់បានលុប។",
+  "The category type is incompatible with an existing subcategory.":
+    "មិនអាចប្តូរប្រភេទនេះបានទេ ព្រោះវាមិនត្រូវគ្នាជាមួយប្រភេទរងដែលមានស្រាប់។",
 };
 
 const CATEGORY_HAS_CHILDREN_MESSAGE =
@@ -121,9 +124,6 @@ export default function CategoryManagementPage() {
   };
 
   const handleOpenEdit = (category: Category) => {
-
-    if (category.systemCategory || category.ownedByCurrentUser === false)
-      return;
     setSelectedCategory(category);
     setIsModalOpen(true);
   };
@@ -131,18 +131,37 @@ export default function CategoryManagementPage() {
   const handleFormSubmit = async (data: CategoryFormValues) => {
     try {
       if (selectedCategory) {
+        const previousParentId = selectedCategory.parentId ?? null;
+        const nextParentId = data.parentId ?? null;
+        const hierarchyChanged = previousParentId !== nextParentId;
+        const previousType =
+          selectedCategory.type === "income" ? "INCOME" : "EXPENSE";
+        const nextType = data.type === "income" ? "INCOME" : "EXPENSE";
+        const previousColor = selectedCategory.color ?? "#3b82f6";
+        const updateData: UpdateCategoryPayload = {};
+
+        if (data.name.trim() !== selectedCategory.name) {
+          updateData.name = data.name.trim();
+        }
+        if (nextType !== previousType) updateData.categoryType = nextType;
+        if (data.icon !== selectedCategory.icon) updateData.icon = data.icon;
+        if (data.color !== previousColor) updateData.color = data.color;
+
+        if (hierarchyChanged) {
+          if (nextParentId) updateData.parentId = nextParentId;
+          else updateData.moveToRoot = true;
+        }
+
+        if (Object.keys(updateData).length === 0) {
+          toast("មិនមានការផ្លាស់ប្តូរសម្រាប់រក្សាទុកទេ។");
+          return;
+        }
+
         await updateCategory({
           id: selectedCategory.id,
-          data: {
-            name: data.name,
-            categoryType: data.type === "income" ? "INCOME" : "EXPENSE",
-            parentId: data.parentId ?? undefined,
-            moveToRoot: !data.parentId,
-            icon: data.icon,
-            color: data.color ?? selectedCategory.color ?? "#3b82f6",
-            status: selectedCategory.status ?? "ACTIVE",
-          },
+          data: updateData,
         }).unwrap();
+        toast.success("បានកែសម្រួលប្រភេទដោយជោគជ័យ។");
       } else {
         await createCategory({
           parentId: data.parentId ?? undefined,

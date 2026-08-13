@@ -14,13 +14,13 @@ export type CreateCategoryPayload = {
   defaultCategory: boolean;
 };
 export type UpdateCategoryPayload = {
-  name: string;
-  categoryType: "INCOME" | "EXPENSE";
+  name?: string;
+  categoryType?: "INCOME" | "EXPENSE";
   parentId?: string;
-  moveToRoot: boolean;
-  icon: string;
-  color: string;
-  status: "ACTIVE" | "INACTIVE";
+  moveToRoot?: boolean;
+  icon?: string;
+  color?: string;
+  status?: "ACTIVE" | "INACTIVE";
 };
 
 type CreateCategoryRequest = {

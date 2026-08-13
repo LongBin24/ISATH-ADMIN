@@ -14,13 +14,23 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
 
   return (
     <article
-      className="group relative flex min-h-[217px] flex-col rounded-[20px] border border-slate-900/10 bg-white p-5 shadow-[0_2px_3px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+      role="button"
+      tabIndex={0}
+      onClick={() => onEdit(category)}
+      onKeyDown={(event) => {
+        if (event.target !== event.currentTarget) return;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onEdit(category);
+        }
+      }}
+      className="group relative flex min-h-[217px] cursor-pointer flex-col rounded-[20px] border border-slate-900/10 bg-white p-5 shadow-[0_2px_3px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003377] focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900"
     >
       <div className="absolute right-4 top-4 z-10 flex gap-1 rounded-xl border border-slate-100 bg-white/95 p-1 opacity-0 shadow-sm transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 dark:border-slate-700 dark:bg-slate-800/95">
-        <button type="button" onClick={() => onEdit(category)} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-[#003377] dark:hover:bg-slate-700" aria-label={`កែសម្រួល ${category.name}`}>
+        <button type="button" onClick={(event) => { event.stopPropagation(); onEdit(category); }} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-[#003377] dark:hover:bg-slate-700" aria-label={`កែសម្រួល ${category.name}`}>
           <Pencil className="size-4" />
         </button>
-        <button type="button" onClick={() => onDelete(category)} className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-slate-700" aria-label={`លុប ${category.name}`}>
+        <button type="button" onClick={(event) => { event.stopPropagation(); onDelete(category); }} className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-slate-700" aria-label={`លុប ${category.name}`}>
           <Trash2 className="size-4" />
         </button>
       </div>
