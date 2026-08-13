@@ -3,6 +3,7 @@ import { ENDPOINTS } from "@/api/endpoints";
 import { API_TAGS } from "@/api/tags";
 import {
   NotificationItem,
+  NotificationCategory,
   NotificationStats,
   UserNotificationPreferences,
   AdminNotificationItem,
@@ -121,16 +122,27 @@ export const notificationApi = baseApi.injectEndpoints({
         );
         const content = (result.data as any)?.content || [];
 
+        const categoryMap: Record<string, NotificationCategory> = {
+          DAILY_REMINDER: "DAILY_EXPENSE",
+          DAILY_EXPENSE: "DAILY_EXPENSE",
+          BUDGET_WARNING: "BUDGET_WARNING",
+          SAVINGS_REMINDER: "SAVINGS_GOAL",
+          SAVINGS_GOAL: "SAVINGS_GOAL",
+          RECURRING_REMINDER: "RECURRING_TX",
+          RECURRING_TX: "RECURRING_TX",
+          MONTHLY_SUMMARY: "MONTHLY_SUMMARY",
+        };
+
         const mapped = content.map((item: any) => ({
           ...item,
           isRead: item.read,
-          category: item.notificationType || "DAILY_REMINDER",
+          category: categoryMap[item.notificationType] || item.notificationType || "DAILY_EXPENSE",
           titleKh: item.title || "",
           titleEn: item.title || "",
           messageKh: item.message || "",
           messageEn: item.message || "",
-          channels: ["IN_APP"],
-          priority: "MEDIUM",
+          channels: item.channels || ["IN_APP"],
+          priority: item.priority || "MEDIUM",
         }));
         return { data: mapped };
       },

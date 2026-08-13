@@ -71,12 +71,20 @@ export default function InAppNotificationFeed() {
   const filteredNotifications = useMemo(() => {
     return notifications.filter((item) => {
       const matchesCategory =
-        selectedCategoryFilter === "ALL" || item.category === selectedCategoryFilter;
+        selectedCategoryFilter === "ALL" ||
+        item.category === selectedCategoryFilter ||
+        item.notificationType === selectedCategoryFilter ||
+        (selectedCategoryFilter === "DAILY_EXPENSE" && (item.category === "DAILY_REMINDER" || item.notificationType === "DAILY_REMINDER")) ||
+        (selectedCategoryFilter === "SAVINGS_GOAL" && (item.category === "SAVINGS_REMINDER" || item.notificationType === "SAVINGS_REMINDER")) ||
+        (selectedCategoryFilter === "RECURRING_TX" && (item.category === "RECURRING_REMINDER" || item.notificationType === "RECURRING_REMINDER"));
+
       const query = searchQuery.toLowerCase().trim();
       const matchesSearch =
         !query ||
-        item.titleKh.toLowerCase().includes(query) ||
-        item.messageKh.toLowerCase().includes(query);
+        (item.titleKh || "").toLowerCase().includes(query) ||
+        (item.title || "").toLowerCase().includes(query) ||
+        (item.messageKh || "").toLowerCase().includes(query) ||
+        (item.message || "").toLowerCase().includes(query);
 
       return matchesCategory && matchesSearch;
     });
