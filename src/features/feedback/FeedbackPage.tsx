@@ -53,10 +53,10 @@ export default function FeedbackPage() {
       <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:rounded-4xl sm:p-5 lg:p-6">
         <div className="mb-5 sm:mb-8">
           <div className="grid w-full grid-cols-2 gap-2 text-[#003377] sm:gap-4 xl:grid-cols-4">
-            <FeedbackStatCard title="Total Submitted" value={summary.total} description="All feedback items" icon={MessageCircle} accent="#003377" />
-            <FeedbackStatCard title="Resolved" value={summary.resolved} description="Resolved or closed" icon={CheckCircle2} accent="#10B981" />
-            <FeedbackStatCard title="In Review" value={summary.inProgress} description="Under active review" icon={Loader2} accent="#F59E0B" />
-            <FeedbackStatCard title="Avg Rating" value={`${summary.averageRating} ★`} description="Rated submissions" icon={Star} accent="#FBBF24" />
+            <FeedbackStatCard title="បានដាក់ស្នើសរុប" value={summary.total} description="មតិកែលម្អទាំងអស់" icon={MessageCircle} accent="#003377" />
+            <FeedbackStatCard title="បានដោះស្រាយ" value={summary.resolved} description="បានដោះស្រាយ ឬបានបិទ" icon={CheckCircle2} accent="#10B981" />
+            <FeedbackStatCard title="កំពុងពិនិត្យ" value={summary.inProgress} description="កំពុងត្រូវបានពិនិត្យ" icon={Loader2} accent="#F59E0B" />
+            <FeedbackStatCard title="ពិន្ទុមធ្យម" value={`${summary.averageRating} ★`} description="មតិដែលបានវាយតម្លៃ" icon={Star} accent="#FBBF24" />
           </div>
         </div>
 
@@ -64,7 +64,7 @@ export default function FeedbackPage() {
           <div className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input value={search} onChange={(event) => setSearch(event.target.value)} type="search" placeholder="Search reviews…" className="w-full rounded-3xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100" />
+              <input value={search} onChange={(event) => setSearch(event.target.value)} type="search" placeholder="ស្វែងរកមតិកែលម្អ…" className="w-full rounded-3xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100" />
             </div>
             <div className="min-w-0">
               <FeedbackTabs tabs={feedbackTabs} activeTab={activeTab} onChange={setActiveTab} />
@@ -75,13 +75,13 @@ export default function FeedbackPage() {
 
       <div className="space-y-3 sm:space-y-4">
         {isLoading ? (
-          <div className="rounded-4xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">Loading feedback…</div>
+          <div className="rounded-4xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">កំពុងផ្ទុកមតិកែលម្អ…</div>
         ) : isError ? (
-          <div className="rounded-4xl border border-rose-200 bg-rose-50 p-8 text-center text-rose-700 shadow-sm dark:border-rose-900 dark:bg-rose-950/20 dark:text-rose-300">Unable to load feedback from the API.</div>
+          <div className="rounded-4xl border border-rose-200 bg-rose-50 p-8 text-center text-rose-700 shadow-sm dark:border-rose-900 dark:bg-rose-950/20 dark:text-rose-300">មិនអាចផ្ទុកមតិកែលម្អបានទេ។</div>
         ) : filteredFeedback.length > 0 ? (
           filteredFeedback.map((item) => <FeedbackCard key={item.id} feedback={item} onView={setSelectedReviewId} />)
         ) : (
-          <div className="rounded-4xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">No feedback matches your search.</div>
+          <div className="rounded-4xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">រកមិនឃើញមតិកែលម្អដែលត្រូវនឹងការស្វែងរកទេ។</div>
         )}
       </div>
 

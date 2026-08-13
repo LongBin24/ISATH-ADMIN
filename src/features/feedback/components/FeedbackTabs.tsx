@@ -14,8 +14,8 @@ export default function FeedbackTabs({
   return (
     <div
       role="tablist"
-      aria-label="Filter reviews by status"
-      className="-mx-3 flex snap-x gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
+      aria-label="ត្រងមតិកែលម្អតាមស្ថានភាព"
+      className="-mx-3 flex snap-x gap-2 overflow-x-auto px-3 pb-1 font-google-sans [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
     >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.key;
