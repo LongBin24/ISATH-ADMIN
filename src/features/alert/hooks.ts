@@ -1,6 +1,11 @@
 import {
   useGetAlertRulesQuery,
   useGetAlertRuleByIdQuery,
+  useLazyGetAlertRuleByIdQuery,
 } from "./api";
 
-export { useGetAlertRulesQuery, useGetAlertRuleByIdQuery };
+export {
+  useGetAlertRulesQuery,
+  useGetAlertRuleByIdQuery,
+  useLazyGetAlertRuleByIdQuery,
+};

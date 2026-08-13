@@ -1,11 +1,23 @@
-export type AlertType = "RECURRING_REMINDER" | "THRESHOLD_EXCEEDED" | "CUSTOM";
-export type TriggerType = "SCHEDULE" | "EVENT" | "MANUAL";
-export type ReferenceType =
-  | "RECURRING_TRANSACTION"
-  | "TRANSACTION_CATEGORY"
-  | "ACCOUNT_BALANCE"
-  | "NONE";
-export type Severity = "INFO" | "WARNING" | "CRITICAL";
+export const ALERT_TYPES = [
+  "RECURRING_REMINDER",
+  "THRESHOLD_EXCEEDED",
+  "CUSTOM",
+] as const;
+export type AlertType = (typeof ALERT_TYPES)[number];
+
+export const TRIGGER_TYPES = ["SCHEDULE", "EVENT", "MANUAL"] as const;
+export type TriggerType = (typeof TRIGGER_TYPES)[number];
+
+export const REFERENCE_TYPES = [
+  "RECURRING_TRANSACTION",
+  "TRANSACTION_CATEGORY",
+  "ACCOUNT_BALANCE",
+  "NONE",
+] as const;
+export type ReferenceType = (typeof REFERENCE_TYPES)[number];
+
+export const SEVERITIES = ["INFO", "WARNING", "CRITICAL"] as const;
+export type Severity = (typeof SEVERITIES)[number];
 
 export interface RuleConfiguration {
   message: string;

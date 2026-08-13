@@ -1,50 +1,82 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/api/baseApi";
+import { API_TAGS } from "@/api/tags";
 import { AlertRule } from "./types";
-import type { RootState } from "../../../store";
 
-// A custom base query to handle authentication headers.
-const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  prepareHeaders: (headers, { getState }) => {
-    // This assumes your auth state and token are in the Redux store.
-    // Adapt this to your actual token storage mechanism (e.g., next-auth `getSession`).
-    const token = (getState() as RootState).auth?.token;
+const ALERT_RULES_ENDPOINT = "admin/alert-rules";
 
-    if (token) {
-      headers.set("authorization", `Bearer ${token}`);
-    }
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
 
-    return headers;
-  },
-});
+function unwrapAlertRule(response: unknown): AlertRule {
+  if (isRecord(response) && isRecord(response.data)) {
+    return response.data as unknown as AlertRule;
+  }
 
-export const alertRulesApi = createApi({
-  reducerPath: "alertRulesApi",
-  baseQuery: baseQuery,
-  tagTypes: ["AlertRule"],
+  return response as AlertRule;
+}
+
+function unwrapAlertRules(response: unknown): AlertRule[] {
+  if (Array.isArray(response)) return response as AlertRule[];
+
+  if (isRecord(response) && Array.isArray(response.content)) {
+    return response.content as AlertRule[];
+  }
+
+  if (isRecord(response) && Array.isArray(response.data)) {
+    return response.data as AlertRule[];
+  }
+
+  return [];
+}
+
+export const alertRulesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAlertRules: builder.query<
       AlertRule[],
       { search?: string; severity?: string; status?: string } | void
     >({
       query: (params) => ({
-        url: "admin/alert-rules",
+        url: ALERT_RULES_ENDPOINT,
         params: params || undefined,
       }),
+      transformResponse: unwrapAlertRules,
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "AlertRule" as const, id })),
-              { type: "AlertRule", id: "LIST" },
+              ...result.map(({ id }) => ({
+                type: API_TAGS.ALERT_RULE,
+                id,
+              })),
+              {
+                type: API_TAGS.ALERT_RULE,
+                id: "LIST",
+              },
             ]
-          : [{ type: "AlertRule", id: "LIST" }],
+          : [
+              {
+                type: API_TAGS.ALERT_RULE,
+                id: "LIST",
+              },
+            ],
     }),
     getAlertRuleById: builder.query<AlertRule, string>({
-      query: (ruleId) => `admin/alert-rules/${ruleId}`,
-      providesTags: (result, error, id) => [{ type: "AlertRule", id }],
+      query: (ruleId) =>
+        `${ALERT_RULES_ENDPOINT}/${encodeURIComponent(ruleId)}`,
+      transformResponse: unwrapAlertRule,
+      providesTags: (_result, _error, id) => [
+        {
+          type: API_TAGS.ALERT_RULE,
+          id,
+        },
+      ],
     }),
   }),
+  overrideExisting: true,
 });
 
-export const { useGetAlertRulesQuery, useGetAlertRuleByIdQuery } =
-  alertRulesApi;
+export const {
+  useGetAlertRulesQuery,
+  useGetAlertRuleByIdQuery,
+  useLazyGetAlertRuleByIdQuery,
+} = alertRulesApi;

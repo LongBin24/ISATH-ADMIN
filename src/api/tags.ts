@@ -10,6 +10,7 @@ export const API_TAGS = {
   CURRENCY: "Currency",
   CATEGORY: "Category",
   FEEDBACK: "Feedback",
+  ALERT_RULE: "AlertRule",
 } as const;
 
 export type ApiTagType = (typeof API_TAGS)[keyof typeof API_TAGS];

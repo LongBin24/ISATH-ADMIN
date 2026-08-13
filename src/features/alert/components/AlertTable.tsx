@@ -1,87 +1,140 @@
 import { AlertRule } from "../types";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { BellOff, ChevronRight, Eye, Inbox, LockKeyhole } from "lucide-react";
 
 interface AlertTableProps {
   alertRules: AlertRule[];
   onViewDetails: (ruleId: string) => void;
 }
 
-export function AlertTable({ alertRules, onViewDetails }: AlertTableProps) {
+const valueTranslations: Record<string, string> = {
+  DAILY_EXPENSE_REMINDER: "រំលឹកចំណាយប្រចាំថ្ងៃ",
+  BUDGET_THRESHOLD: "កម្រិតថវិកា",
+  SAVINGS_REMINDER: "រំលឹកការសន្សំ",
+  RECURRING_REMINDER: "រំលឹកប្រតិបត្តិការប្រចាំ",
+  MONTHLY_SUMMARY: "សង្ខេបប្រចាំខែ",
+  THRESHOLD_EXCEEDED: "លើសកម្រិតកំណត់",
+  CUSTOM: "កំណត់ដោយផ្ទាល់",
+  TIME: "តាមម៉ោង",
+  THRESHOLD: "តាមកម្រិត",
+  EVENT: "តាមព្រឹត្តិការណ៍",
+  SCHEDULE: "តាមកាលវិភាគ",
+  MANUAL: "ដោយផ្ទាល់",
+};
+
+function translateValue(value: string) {
+  return valueTranslations[value] ?? value.replaceAll("_", " ");
+}
+
+function SeverityBadge({ severity }: { severity: AlertRule["severity"] }) {
+  const styles = {
+    CRITICAL: "bg-red-50 text-red-700 ring-red-600/15 dark:bg-red-950/50 dark:text-red-300",
+    WARNING: "bg-[#FFC83D]/20 text-[#7A5800] ring-[#FFC83D]/40 dark:text-[#FFC83D]",
+    INFO: "bg-sky-50 text-sky-700 ring-sky-600/15 dark:bg-sky-950/50 dark:text-sky-300",
+  };
+  const labels = { CRITICAL: "ធ្ងន់ធ្ងរ", WARNING: "ប្រុងប្រយ័ត្ន", INFO: "ព័ត៌មាន" };
+
   return (
-    <div className="rounded-md border overflow-x-auto bg-card">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Rule Name</TableHead>
-            <TableHead>Alert Type</TableHead>
-            <TableHead>Trigger Type</TableHead>
-            <TableHead>Severity</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {alertRules.length > 0 ? (
-            alertRules.map((rule) => (
-              <TableRow key={rule.id}>
-                <TableCell className="font-medium">{rule.ruleName}</TableCell>
-                <TableCell>{rule.alertType}</TableCell>
-                <TableCell>{rule.triggerType}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant={
-                      rule.severity === "CRITICAL"
-                        ? "destructive"
-                        : rule.severity === "WARNING"
-                          ? "secondary"
-                          : "default"
-                    }
-                  >
-                    {rule.severity}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Switch checked={rule.enabled} disabled={!rule.canDisable} />
-                  <Badge
-                    variant={rule.enabled ? "default" : "outline"}
-                    className="ml-2"
-                  >
-                    {rule.enabled ? "Enabled" : "Disabled"}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => onViewDetails(rule.id)}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center">
-                No alert rules found.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+    <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${styles[severity]}`}>
+      {labels[severity]}
+    </span>
+  );
+}
+
+function StatusBadge({ rule }: { rule: AlertRule }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`size-2 rounded-full ${rule.enabled ? "bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.12)]" : "bg-slate-400"}`} />
+      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+        {rule.enabled ? "ដំណើរការ" : "បានបិទ"}
+      </span>
+      {!rule.canDisable && <LockKeyhole className="size-3.5 text-slate-400" aria-label="មិនអាចបិទបាន" />}
     </div>
+  );
+}
+
+export function AlertTable({ alertRules, onViewDetails }: AlertTableProps) {
+  if (alertRules.length === 0) {
+    return (
+      <div className="flex min-h-72 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white px-6 text-center dark:border-slate-700 dark:bg-slate-900">
+        <span className="mb-4 grid size-14 place-items-center rounded-2xl bg-[#FFC83D]/20 text-[#8A6500] dark:text-[#FFC83D]">
+          <Inbox className="size-7" />
+        </span>
+        <h3 className="font-bold text-slate-900 dark:text-white">រកមិនឃើញច្បាប់ជូនដំណឹង</h3>
+        <p className="mt-1 max-w-sm text-sm leading-6 text-slate-500 dark:text-slate-400">
+          សូមសាកល្បងកែប្រែពាក្យស្វែងរក ឬជ្រើសរើសតម្រងផ្សេងទៀត។
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <section className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full border-collapse text-left">
+          <thead>
+            <tr className="border-b border-slate-200 bg-slate-50/80 text-xs font-bold text-slate-500 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-400">
+              <th className="px-5 py-4">ឈ្មោះច្បាប់</th>
+              <th className="px-5 py-4">ប្រភេទជូនដំណឹង</th>
+              <th className="px-5 py-4">លក្ខខណ្ឌ</th>
+              <th className="px-5 py-4">កម្រិត</th>
+              <th className="px-5 py-4">ស្ថានភាព</th>
+              <th className="px-5 py-4 text-right">សកម្មភាព</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            {alertRules.map((rule) => (
+              <tr key={rule.id} className="group transition hover:bg-[#FFC83D]/[0.06]">
+                <td className="max-w-60 px-5 py-4">
+                  <p className="truncate text-sm font-bold text-slate-900 dark:text-white">{rule.ruleName}</p>
+                  <p className="mt-1 truncate text-xs text-slate-400">ID: {rule.id}</p>
+                </td>
+                <td className="px-5 py-4 text-sm text-slate-600 dark:text-slate-300">{translateValue(rule.alertType)}</td>
+                <td className="px-5 py-4 text-sm text-slate-600 dark:text-slate-300">{translateValue(rule.triggerType)}</td>
+                <td className="px-5 py-4"><SeverityBadge severity={rule.severity} /></td>
+                <td className="px-5 py-4"><StatusBadge rule={rule} /></td>
+                <td className="px-5 py-4 text-right">
+                  <button
+                    type="button"
+                    onClick={() => onViewDetails(rule.id)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-[#003377] transition hover:border-[#FFC83D] hover:bg-[#FFC83D] dark:border-slate-700 dark:bg-slate-800 dark:text-[#FFC83D] dark:hover:text-[#003377]"
+                  >
+                    <Eye className="size-4" />
+                    មើលលម្អិត
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="divide-y divide-slate-100 dark:divide-slate-800 md:hidden">
+        {alertRules.map((rule) => (
+          <button
+            type="button"
+            key={rule.id}
+            onClick={() => onViewDetails(rule.id)}
+            className="w-full p-4 text-left transition hover:bg-[#FFC83D]/[0.06]"
+          >
+            <div className="flex items-start gap-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#FFC83D]/20 text-[#8A6500] dark:text-[#FFC83D]">
+                {rule.enabled ? <Eye className="size-4" /> : <BellOff className="size-4" />}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="truncate text-sm font-bold text-slate-900 dark:text-white">{rule.ruleName}</p>
+                  <ChevronRight className="size-4 shrink-0 text-slate-400" />
+                </div>
+                <p className="mt-1 truncate text-xs text-slate-500 dark:text-slate-400">{translateValue(rule.alertType)}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <SeverityBadge severity={rule.severity} />
+                  <StatusBadge rule={rule} />
+                </div>
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </section>
   );
 }

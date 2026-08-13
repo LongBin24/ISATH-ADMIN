@@ -1,10 +1,10 @@
 "use client";
 
-import { Search, Moon, Sun, Bell, User, Menu, X, LogOut } from "lucide-react";
+import { Search, Moon, Sun, User, Menu, X, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "@/hooks/use-theme";
 import NotificationBellDropdown from "@/features/notifications/components/NotificationBellDropdown";
-
+import AlertBellDropdown from "@/features/alert/components/AlertBellDropdown";
 import { useGetProfileQuery } from "@/features/profile/api";
 
 interface NavbarProps {
@@ -60,6 +60,10 @@ export default function Navbar({ onMenuToggle, isSidebarOpen = false }: NavbarPr
             {mounted && theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
+          {/* Admin System Alert Dropdown Icon */}
+          <AlertBellDropdown />
+
+          {/* User Notifications Dropdown Icon */}
           <NotificationBellDropdown />
 
           <Link href="/profile" className="flex items-center gap-3 border-l border-slate-200 pl-2 sm:pl-4 dark:border-slate-800 hover:opacity-80 transition">
