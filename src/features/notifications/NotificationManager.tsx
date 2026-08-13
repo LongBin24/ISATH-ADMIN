@@ -1,0 +1,172 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { AlertCircle, BellOff, BellPlus, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useGetAdminUsersQuery } from "@/features/user-manager/api";
+import { useGetAdminNotificationsQuery } from "./api";
+import type { AdminNotificationItem, AdminNotificationQueryParams } from "./types";
+import NotificationDetailSheet from "./components/NotificationDetailSheet";
+import NotificationFilterToolbar, { DEFAULT_NOTIFICATION_FILTERS, type NotificationFilters } from "./components/NotificationFilterToolbar";
+import NotificationTable from "./components/NotificationTable";
+import SendNotificationDialog from "./components/SendNotificationDialog";
+import { useAdminI18n } from "@/i18n/admin-i18n";
+
+export default function NotificationManager() {
+  const { t } = useAdminI18n();
+  const [filters, setFilters] = useState<NotificationFilters>(DEFAULT_NOTIFICATION_FILTERS);
+  const [pageNumber, setPageNumber] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortDirection, setSortDirection] = useState<"ASC" | "DESC">("DESC");
+  const [selectedNotification, setSelectedNotification] = useState<AdminNotificationItem | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [sendOpen, setSendOpen] = useState(false);
+
+  const queryParams = useMemo<AdminNotificationQueryParams>(() => ({
+    userId: filters.user?.id,
+    notificationType: filters.notificationType === "ALL" ? undefined : filters.notificationType,
+    referenceType: filters.referenceType === "ALL" ? undefined : filters.referenceType,
+    read: filters.read === "ALL" ? undefined : filters.read === "READ",
+    createdFrom: filters.createdFrom,
+    createdTo: filters.createdTo,
+    pageNumber,
+    pageSize,
+    sortBy: "createdAt",
+    sortDirection,
+  }), [filters, pageNumber, pageSize, sortDirection]);
+
+  const { data, isLoading, isFetching, isError, refetch } = useGetAdminNotificationsQuery(queryParams);
+  const { data: recipientData } = useGetAdminUsersQuery({ pageNumber: 0, pageSize: 200 });
+  const notifications = data?.content ?? [];
+  const page = data?.page;
+  const totalElements = page?.totalElements ?? 0;
+  const totalPages = page?.totalPages ?? 0;
+  const usersById = useMemo(
+    () => new Map((recipientData?.content ?? []).map((user) => [user.id, user])),
+    [recipientData?.content],
+  );
+  const hasFilters =
+    !!filters.user ||
+    filters.notificationType !== "ALL" ||
+    filters.referenceType !== "ALL" ||
+    filters.read !== "ALL" ||
+    !!filters.createdFrom ||
+    !!filters.createdTo;
+  const startItem = totalElements === 0 ? 0 : pageNumber * pageSize + 1;
+  const endItem = Math.min((pageNumber + 1) * pageSize, totalElements);
+  const pageNumbers = useMemo(() => {
+    const start = Math.max(0, Math.min(pageNumber - 2, totalPages - 5));
+    return Array.from({ length: Math.min(5, totalPages) }, (_, index) => start + index);
+  }, [pageNumber, totalPages]);
+
+  function updateFilters(next: NotificationFilters) {
+    setFilters(next);
+    setPageNumber(0);
+  }
+
+  function resetFilters() {
+    setFilters(DEFAULT_NOTIFICATION_FILTERS);
+    setPageNumber(0);
+  }
+
+  function openDetails(notification: AdminNotificationItem) {
+    setSelectedNotification(notification);
+    setDetailOpen(true);
+  }
+
+  return (
+    <div className="space-y-7 font-google-sans">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">{t("Notifications")}</h1>
+          <p className="mt-1 text-base text-muted-foreground">{t("Monitor notification activity, delivery, and system messages.")}</p>
+        </div>
+        <Button size="lg" onClick={() => setSendOpen(true)} className="bg-[#FFC83D] text-[#003377] hover:bg-[#f0ba33]">
+          <BellPlus className="mr-2 size-4" />
+          {t("Send Notification")}
+        </Button>
+      </header>
+
+      <Card className="rounded-2xl border-border shadow-sm">
+        <CardContent className="space-y-5 p-4 sm:p-6">
+          <NotificationFilterToolbar filters={filters} onChange={updateFilters} onReset={resetFilters} />
+
+          {isError ? (
+            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 py-16 text-center">
+              <AlertCircle className="size-8 text-destructive" />
+              <div>
+                <p className="text-lg font-semibold text-foreground">Unable to load notifications.</p>
+                <p className="mt-1 text-base text-muted-foreground">Please try again.</p>
+              </div>
+              <Button variant="outline" onClick={() => refetch()}><RefreshCw className="mr-2 size-4" />Retry</Button>
+            </div>
+          ) : !isLoading && notifications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border py-16 text-center">
+              <span className="grid size-12 place-items-center rounded-2xl bg-muted"><BellOff className="size-6 text-muted-foreground" /></span>
+              <div>
+                <p className="text-lg font-semibold text-foreground">{hasFilters ? "No notifications found" : "No notifications yet"}</p>
+                <p className="mt-1 text-base text-muted-foreground">
+                  {hasFilters ? "There are no notifications matching the current filters." : "System notifications will appear here."}
+                </p>
+              </div>
+              <Button variant={hasFilters ? "outline" : "default"} onClick={hasFilters ? resetFilters : () => setSendOpen(true)} className={!hasFilters ? "bg-[#FFC83D] text-[#003377] hover:bg-[#f0ba33]" : ""}>
+                {hasFilters ? "Reset Filters" : "Send Notification"}
+              </Button>
+            </div>
+          ) : (
+            <>
+              <NotificationTable
+                notifications={notifications}
+                usersById={usersById}
+                isLoading={isLoading || isFetching}
+                sortDirection={sortDirection}
+                onSortDirectionChange={(direction) => {
+                  setSortDirection(direction);
+                  setPageNumber(0);
+                }}
+                onView={openDetails}
+              />
+
+              <div className="flex flex-col items-center justify-between gap-4 pt-1 text-base sm:flex-row">
+                <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
+                  <span>
+                    Showing <span className="font-medium text-foreground">{startItem}</span>–<span className="font-medium text-foreground">{endItem}</span> of <span className="font-medium text-foreground">{totalElements.toLocaleString()}</span> notifications
+                  </span>
+                  <div className="admin-page-size"><Select value={String(pageSize)} onValueChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }}>
+                    <SelectTrigger className="h-10 w-32 text-base"><SelectValue value={`${pageSize} / page`} /></SelectTrigger>
+                    <SelectContent value={String(pageSize)} onValueChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }}>
+                      <SelectItem value="10">10 / page</SelectItem>
+                      <SelectItem value="20">20 / page</SelectItem>
+                      <SelectItem value="50">50 / page</SelectItem>
+                    </SelectContent>
+                  </Select></div>
+                </div>
+
+                {totalPages > 1 && (
+                  <Pagination className="mx-0 w-auto">
+                    <PaginationContent>
+                      <PaginationItem><PaginationPrevious disabled={pageNumber === 0} onClick={() => setPageNumber((value) => Math.max(0, value - 1))} /></PaginationItem>
+                      {pageNumbers.map((number) => <PaginationItem key={number}><PaginationLink isActive={number === pageNumber} onClick={() => setPageNumber(number)}>{number + 1}</PaginationLink></PaginationItem>)}
+                      <PaginationItem><PaginationNext disabled={pageNumber >= totalPages - 1} onClick={() => setPageNumber((value) => Math.min(totalPages - 1, value + 1))} /></PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      <NotificationDetailSheet
+        notification={selectedNotification}
+        user={selectedNotification ? usersById.get(selectedNotification.userId) : undefined}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+      />
+      <SendNotificationDialog open={sendOpen} onOpenChange={setSendOpen} />
+    </div>
+  );
+}

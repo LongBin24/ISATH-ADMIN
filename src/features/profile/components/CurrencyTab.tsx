@@ -136,7 +136,7 @@ export default function CurrencyTab({
             <Sparkles className="h-4 w-4 text-[#FFC83D]" />
             ការបង្ហាញទម្រង់តម្លៃគំរូ
           </span>
-          <span className="rounded-md bg-[#FFC83D] px-2 py-0.5 text-[10px] font-bold text-[#003377]">
+          <span className="rounded-md bg-[#FFC83D] px-2 py-0.5 text-xs font-bold text-[#003377]">
             {activeOption.code}
           </span>
         </div>

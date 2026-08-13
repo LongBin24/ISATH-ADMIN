@@ -52,7 +52,7 @@ export default function FeedbackPage() {
     <div className="min-w-0 space-y-4 font-google-sans sm:space-y-6 xl:space-y-8">
       <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:rounded-4xl sm:p-5 lg:p-6">
         <div className="mb-5 sm:mb-8">
-          <div className="grid w-full grid-cols-2 gap-2 text-[#003377] sm:gap-4 xl:grid-cols-4">
+          <div className="admin-stat-grid grid w-full grid-cols-2 gap-2 text-[#003377] sm:gap-4 xl:grid-cols-4">
             <FeedbackStatCard title="បានដាក់ស្នើសរុប" value={summary.total} description="មតិកែលម្អទាំងអស់" icon={MessageCircle} accent="#003377" />
             <FeedbackStatCard title="បានដោះស្រាយ" value={summary.resolved} description="បានដោះស្រាយ ឬបានបិទ" icon={CheckCircle2} accent="#10B981" />
             <FeedbackStatCard title="កំពុងពិនិត្យ" value={summary.inProgress} description="កំពុងត្រូវបានពិនិត្យ" icon={Loader2} accent="#F59E0B" />

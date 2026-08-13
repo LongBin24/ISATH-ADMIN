@@ -254,7 +254,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                       <span>{curr.flag || "🌐"}</span>
                       <span>{curr.code}</span>
                     </div>
-                    <span className="text-[10px] font-normal opacity-80 mt-0.5">{khmerName}</span>
+                    <span className="text-xs font-normal opacity-80 mt-0.5">{khmerName}</span>
                   </div>
                   {isSelected && <CheckCircle2 size={14} className="text-[#FFC83D] dark:text-[#003377]" />}
                 </button>
@@ -280,7 +280,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
             {activeBaseItem.symbol}{" "}
             {stats.income.toLocaleString("en-US", { maximumFractionDigits: 2 })}
           </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             បំប្លែងស្វ័យប្រវត្តិជា {KHMER_CURRENCY_NAMES[baseCurrency] || baseCurrency}
           </p>
         </div>
@@ -299,7 +299,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
             {activeBaseItem.symbol}{" "}
             {stats.expense.toLocaleString("en-US", { maximumFractionDigits: 2 })}
           </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             បំប្លែងស្វ័យប្រវត្តិជា {KHMER_CURRENCY_NAMES[baseCurrency] || baseCurrency}
           </p>
         </div>
@@ -318,7 +318,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
             {activeBaseItem.symbol}{" "}
             {stats.balance.toLocaleString("en-US", { maximumFractionDigits: 2 })}
           </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             សមតុល្យតាមអត្រាប្តូរប្រាក់បច្ចុប្បន្ន
           </p>
         </div>
@@ -371,7 +371,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                       {tx.title}
                     </h4>
                     <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      <span className="rounded-md bg-slate-200/60 dark:bg-slate-700 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:text-slate-300">
+                      <span className="rounded-md bg-slate-200/60 dark:bg-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
                         {tx.category}
                       </span>
                       <span className="flex items-center gap-1">

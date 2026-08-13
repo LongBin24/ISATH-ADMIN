@@ -5,7 +5,7 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: "default" | "secondary" | "destructive" | "outline";
 }
 
-function Badge({ className, variant = "default", ...props }: BadgeProps) {
+function Badge({ className, variant = "default", children, title, ...props }: BadgeProps) {
   const variants = {
     default:
       "border-transparent bg-slate-900 text-slate-50 dark:bg-slate-50 dark:text-slate-900",
@@ -19,13 +19,21 @@ function Badge({ className, variant = "default", ...props }: BadgeProps) {
 
   return (
     <span
+      data-slot="badge"
+      title={title ?? (React.Children.toArray(children).filter((child) => typeof child === "string" || typeof child === "number").join(" ") || undefined)}
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        "inline-flex min-w-0 items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
         variants[variant],
         className
       )}
       {...props}
-    />
+    >
+      {React.Children.map(children, (child) =>
+        typeof child === "string" || typeof child === "number"
+          ? <span className="min-w-0 truncate">{child}</span>
+          : child
+      )}
+    </span>
   );
 }
 

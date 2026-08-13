@@ -11,6 +11,7 @@ const protectedPrefixes = [
   "/notifications",
   "/feedback",
   "/ai-config",
+  "/alert",
 ];
 
 export default function proxy(request: NextRequest) {
@@ -45,5 +46,6 @@ export const config = {
     "/notifications/:path*",
     "/feedback/:path*",
     "/ai-config/:path*",
+    "/alert/:path*",
   ],
 };

@@ -5,18 +5,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Bell, Settings, UserCog, BarChart3 } from "lucide-react";
 import { useGetNotificationStatsQuery } from "@/features/notifications/api";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const { data: stats } = useGetNotificationStatsQuery();
   const unreadCount = stats?.unreadCount || 0;
+  const { t } = useAdminI18n();
 
   const navItems = [
-    { label: "ផ្ទាំងគ្រប់គ្រង", icon: LayoutDashboard, href: "/dashboard" },
-    { label: "របាយការណ៍", icon: BarChart3, href: "/reports" },
-    { label: "ការជូនដំណឹង", icon: Bell, href: "/notifications", badge: unreadCount },
-    { label: "អ្នកប្រើប្រាស់", icon: UserCog, href: "/user-manager" },
-    { label: "ការកំណត់", icon: Settings, href: "/settings" },
+    { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+    { label: "Reports", icon: BarChart3, href: "/reports" },
+    { label: "Notifications", icon: Bell, href: "/notifications", badge: unreadCount },
+    { label: "Users", icon: UserCog, href: "/user-manager" },
+    { label: "Settings", icon: Settings, href: "/settings" },
   ];
 
   return (
@@ -39,12 +41,12 @@ export default function MobileBottomNav() {
               <div className="relative">
                 <Icon size={20} className={isActive ? "scale-110 transition" : ""} />
                 {item.badge !== undefined && item.badge > 0 && (
-                  <span className="absolute -top-1 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#FFC83D] text-[9px] font-bold text-[#003377] ring-2 ring-white dark:ring-slate-950">
+                  <span className="absolute -top-1 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#FFC83D] text-xs font-bold text-[#003377] ring-2 ring-white dark:ring-slate-950">
                     {item.badge > 9 ? "9+" : item.badge}
                   </span>
                 )}
               </div>
-              <span className="text-[10px] font-medium leading-tight">{item.label}</span>
+              <span className="text-xs font-medium leading-tight">{t(item.label)}</span>
             </Link>
           );
         })}

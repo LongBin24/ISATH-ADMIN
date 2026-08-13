@@ -9,11 +9,210 @@
   --brand-primary: #FFC83D;
   --brand-secondary: #003377;
   --brand-accent: #334155;
+
+  /* shadcn/ui tokens, tuned to the iStash brand palette above */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.24 0.08 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.24 0.08 250);
+  --primary: oklch(0.83 0.17 84);
+  --primary-foreground: oklch(0.22 0.08 250);
+  --secondary: oklch(0.96 0.03 85);
+  --secondary-foreground: oklch(0.3 0.08 250);
+  --muted: oklch(0.96 0.01 250);
+  --muted-foreground: oklch(0.48 0.04 250);
+  --accent: oklch(0.95 0.04 85);
+  --accent-foreground: oklch(0.25 0.08 250);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.98 0.01 25);
+  --border: oklch(0.91 0.01 250);
+  --input: oklch(0.91 0.01 250);
+  --ring: oklch(0.83 0.17 84 / 50%);
+  --chart-1: oklch(0.83 0.17 84);
+  --chart-2: oklch(0.35 0.09 250);
+  --chart-3: oklch(0.55 0.15 160);
+  --chart-4: oklch(0.65 0.18 45);
+  --chart-5: oklch(0.5 0.2 25);
+  --radius: 0.75rem;
+}
+
+/* Admin readability baseline: page content is 18px+, while dense data tables
+   keep their intentionally compact but accessible 12–16px hierarchy. */
+.admin-readable {
+  font-size: 1.125rem;
+}
+
+.admin-readable :where(.text-xs, .text-sm, .text-base) {
+  font-size: 1.125rem;
+  line-height: 1.65;
+}
+
+.admin-readable :where(input, textarea, select) {
+  font-size: 1.125rem;
+}
+
+/* Subtitles and supporting copy outside dense tables use a consistent 16px. */
+.admin-readable :where(.text-muted-foreground):not(:where(table *)) {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+/* Status badges are 16px in cards, dialogs, and detail views. */
+[data-slot="badge"] {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.admin-readable table {
+  font-size: 0.875rem;
+}
+
+/* Tables retain their compact, readable 14px status treatment. */
+.admin-readable table [data-slot="badge"] {
+  max-width: 10rem;
+  overflow: hidden;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+}
+
+/* Pagination is intentionally fixed at 16px on every admin page. */
+[data-slot="pagination"],
+[data-slot="pagination"] :where(button, span) {
+  font-size: 1rem !important;
+  line-height: 1.5rem;
+}
+
+.admin-page-size,
+.admin-page-size :where(button, span) {
+  font-size: 1rem !important;
+  line-height: 1.5rem;
+}
+
+.admin-readable table .text-xs {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+}
+
+.admin-readable table :where(.text-sm, .text-base) {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.admin-readable table .text-lg {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+/* Keep row groups readable without heavy, high-contrast connected rules. */
+.admin-readable .divide-y > :not(:last-child) {
+  border-color: color-mix(in oklab, var(--border) 42%, transparent);
+}
+
+/* Shared visual rhythm for overview/statistic cards across admin pages. */
+.admin-stat-grid > :nth-child(4n + 1) {
+  --stat-accent: #1d4ed8;
+  --stat-soft: #dbeafe;
+  --stat-surface: rgb(239 246 255 / 72%);
+  --stat-border: #bfdbfe;
+}
+
+.admin-stat-grid > :nth-child(4n + 2) {
+  --stat-accent: #7c3aed;
+  --stat-soft: #ede9fe;
+  --stat-surface: rgb(245 243 255 / 72%);
+  --stat-border: #ddd6fe;
+}
+
+.admin-stat-grid > :nth-child(4n + 3) {
+  --stat-accent: #b45309;
+  --stat-soft: #fef3c7;
+  --stat-surface: rgb(255 251 235 / 78%);
+  --stat-border: #fde68a;
+}
+
+.admin-stat-grid > :nth-child(4n + 4) {
+  --stat-accent: #0f766e;
+  --stat-soft: #ccfbf1;
+  --stat-surface: rgb(240 253 250 / 76%);
+  --stat-border: #99f6e4;
+}
+
+.admin-stat-grid > :not(.animate-pulse) {
+  border-color: var(--stat-border);
+  background: var(--stat-surface);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 5%);
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.admin-stat-grid > :not(.animate-pulse):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgb(15 23 42 / 8%);
+}
+
+.admin-stat-grid > :not(.animate-pulse) :where(.size-11) {
+  background: var(--stat-soft) !important;
+  color: var(--stat-accent) !important;
+}
+
+.admin-stat-grid > :not(.animate-pulse) :where(.text-3xl) {
+  color: var(--stat-accent);
+}
+
+.dark .admin-stat-grid > :nth-child(4n + 1) {
+  --stat-accent: #93c5fd;
+  --stat-soft: rgb(30 64 175 / 35%);
+  --stat-surface: rgb(30 64 175 / 12%);
+  --stat-border: rgb(96 165 250 / 32%);
+}
+
+.dark .admin-stat-grid > :nth-child(4n + 2) {
+  --stat-accent: #c4b5fd;
+  --stat-soft: rgb(109 40 217 / 32%);
+  --stat-surface: rgb(109 40 217 / 12%);
+  --stat-border: rgb(167 139 250 / 30%);
+}
+
+.dark .admin-stat-grid > :nth-child(4n + 3) {
+  --stat-accent: #fcd34d;
+  --stat-soft: rgb(180 83 9 / 30%);
+  --stat-surface: rgb(180 83 9 / 11%);
+  --stat-border: rgb(245 158 11 / 30%);
+}
+
+.dark .admin-stat-grid > :nth-child(4n + 4) {
+  --stat-accent: #5eead4;
+  --stat-soft: rgb(15 118 110 / 32%);
+  --stat-surface: rgb(15 118 110 / 12%);
+  --stat-border: rgb(45 212 191 / 30%);
 }
 
 .dark {
   --background: #020617;
   --foreground: #f8fafc;
+
+  --card: oklch(0.16 0.03 255);
+  --card-foreground: oklch(0.97 0.01 250);
+  --popover: oklch(0.16 0.03 255);
+  --popover-foreground: oklch(0.97 0.01 250);
+  --primary: oklch(0.83 0.17 84);
+  --primary-foreground: oklch(0.15 0.06 250);
+  --secondary: oklch(0.2 0.04 255);
+  --secondary-foreground: oklch(0.85 0.15 85);
+  --muted: oklch(0.2 0.03 255);
+  --muted-foreground: oklch(0.68 0.03 250);
+  --accent: oklch(0.22 0.04 255);
+  --accent-foreground: oklch(0.85 0.15 85);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.15 0.02 25);
+  --border: oklch(0.24 0.03 255);
+  --input: oklch(0.24 0.03 255);
+  --ring: oklch(0.83 0.17 84 / 40%);
+  --chart-1: oklch(0.83 0.17 84);
+  --chart-2: oklch(0.48 0.12 250);
+  --chart-3: oklch(0.65 0.16 160);
+  --chart-4: oklch(0.72 0.19 45);
+  --chart-5: oklch(0.6 0.22 25);
 }
 
 @theme inline {
@@ -24,6 +223,33 @@
   --color-brand-accent: var(--brand-accent);
   --font-sans: "Google Sans", "Kantumruy Pro", "Noto Sans Khmer", sans-serif;
   --font-mono: "Google Sans Mono", monospace;
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
 }
 
 html {
@@ -38,9 +264,12 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: "Google Sans", "Kantumruy Pro", "Noto Sans Khmer", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 .font-google-sans {
   font-family: "Google Sans", "Kantumruy Pro", "Noto Sans Khmer", sans-serif;
 }
-

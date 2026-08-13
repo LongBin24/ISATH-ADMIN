@@ -16,10 +16,10 @@ export interface Category {
   transactionCount: number;
   totalBudget: number;
   spentAmount?: number;
-  type?: "expense" | "income" | string;
+  type?: "expense" | "income" | "both" | string;
   color?: string;
   defaultCategory?: boolean;
-  status?: "ACTIVE" | "INACTIVE";
+  status?: "ACTIVE" | "INACTIVE" | "DELETED";
   systemCategory?: boolean;
   ownedByCurrentUser?: boolean;
   hiddenForCurrentUser?: boolean;

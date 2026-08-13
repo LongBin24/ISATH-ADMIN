@@ -34,9 +34,6 @@ export type EditProfileFormValues = z.infer<typeof editProfileSchema>;
 
 export const changePasswordSchema = z
   .object({
-    currentPassword: z
-      .string()
-      .min(1, { message: "សូមបញ្ចូលពាក្យសម្ងាត់បច្ចុប្បន្ន" }),
     newPassword: z
       .string()
       .min(8, { message: "ពាក្យសម្ងាត់ថ្មីត្រូវមានយ៉ាងហោចណាស់ ៨ តួអក្សរ" })

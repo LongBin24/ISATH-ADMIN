@@ -1,11 +1,12 @@
 export type ReviewStatus = "PENDING" | "IN_REVIEW" | "RESOLVED" | "CLOSED";
+export type ReviewType = "SUGGESTION" | "BUG_REPORT" | "COMPLAINT" | "COMPLIMENT" | "GENERAL";
 
 export type FeedbackStatus = "ALL" | ReviewStatus;
 
 export interface Review {
   id: string;
   userId: string;
-  reviewType: string;
+  reviewType: ReviewType;
   title: string;
   description: string;
   screenshotUrl: string | null;
@@ -40,10 +41,20 @@ export interface ApiResponse<T> {
 
 export interface ReviewPage {
   content: Review[];
-  totalElements?: number;
-  totalPages?: number;
-  number?: number;
+  totalElements: number;
+  totalPages: number;
+  page: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+}
+
+export interface ReviewQueryParams {
+  type?: ReviewType;
+  status?: ReviewStatus;
+  page?: number;
   size?: number;
+  sort?: string[];
 }
 
 // Compatibility aliases for existing feature imports.

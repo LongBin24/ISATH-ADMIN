@@ -7,6 +7,42 @@ export interface PageMetadata {
   totalPages: number;
 }
 
+export const ADMIN_NOTIFICATION_TYPES = [
+  "DAILY_REMINDER",
+  "BUDGET_WARNING",
+  "SAVINGS_REMINDER",
+  "RECURRING_REMINDER",
+  "MONTHLY_SUMMARY",
+] as const;
+
+export const ADMIN_REFERENCE_TYPES = [
+  "BUDGET",
+  "SAVINGS_GOAL",
+  "RECURRING_TRANSACTION",
+  "WALLET",
+  "WALLET_INVITATION",
+  "TRANSACTION",
+] as const;
+
+export type AdminNotificationType = (typeof ADMIN_NOTIFICATION_TYPES)[number];
+export type AdminReferenceType = (typeof ADMIN_REFERENCE_TYPES)[number];
+export type NotificationChannel = "IN_APP" | "EMAIL";
+
+export interface AdminNotificationQueryParams {
+  userId?: string;
+  notificationType?: AdminNotificationType;
+  referenceType?: AdminReferenceType;
+  referenceId?: string;
+  read?: boolean;
+  alertRuleId?: string;
+  createdFrom?: string;
+  createdTo?: string;
+  pageNumber?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDirection?: "ASC" | "DESC";
+}
+
 export type NotificationCategory =
   | "DAILY_REMINDER"
   | "BUDGET_WARNING"
@@ -55,7 +91,7 @@ export interface NotificationItem {
   isRead: boolean;
   createdAt: string;
   actionUrl?: string;
-  metadata?: any;
+  metadata?: { amount?: number; [key: string]: unknown };
 }
 
 export interface NotificationCategoryConfig {
@@ -139,13 +175,13 @@ export interface CreateAdminNotificationRequest {
   userId: string;
   title: string;
   message: string;
-  notificationType: "DAILY_REMINDER" | "BUDGET_WARNING" | "SAVINGS_REMINDER" | "RECURRING_REMINDER" | "MONTHLY_SUMMARY" | string;
-  referenceType?: "BUDGET" | "SAVINGS_GOAL" | "RECURRING_TRANSACTION" | "WALLET" | "WALLET_INVITATION" | "TRANSACTION" | string;
+  notificationType: AdminNotificationType;
+  referenceType?: AdminReferenceType;
   referenceId?: string;
   actionUrl?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   expiresAt?: string;
-  channels?: ("IN_APP" | "EMAIL")[];
+  channels?: NotificationChannel[];
 }
 
 export interface NotificationResponse {
@@ -155,17 +191,17 @@ export interface NotificationResponse {
   alertRuleId?: string;
   title: string;
   message: string;
-  notificationType: string;
-  referenceType?: string;
+  notificationType: AdminNotificationType;
+  referenceType?: AdminReferenceType;
   referenceId?: string;
   read: boolean;
   readAt?: string;
   actionUrl?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   expiresAt?: string;
   createdAt: string;
   updatedAt?: string;
-  channels?: ("IN_APP" | "EMAIL")[];
+  channels?: NotificationChannel[];
 }
 
 export interface PagedModelNotificationResponse {
@@ -202,7 +238,7 @@ export interface AlertRuleResponse {
   thresholdPercentage?: number;
   daysBefore?: number;
   frequency?: "DAILY" | "WEEKLY" | "MONTHLY" | "ONCE" | string;
-  ruleConfiguration?: Record<string, any>;
+  ruleConfiguration?: Record<string, unknown>;
   nextTriggerAt?: string;
   lastTriggeredAt?: string;
   createdAt: string;

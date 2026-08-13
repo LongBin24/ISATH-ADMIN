@@ -56,7 +56,7 @@ export default function NotificationHeader() {
             <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-[#FFC83D] text-[#003377]">
               <Bell size={20} />
               {stats && stats.unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
                   {stats.unreadCount}
                 </span>
               )}

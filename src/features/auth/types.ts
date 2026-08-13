@@ -18,3 +18,7 @@ export interface LoginResponse {
     user?: any;
   };
 }
+
+export interface LogoutPayload {
+  refreshToken: string;
+}

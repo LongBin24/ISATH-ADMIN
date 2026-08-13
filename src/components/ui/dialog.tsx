@@ -20,7 +20,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
         onClick={() => onOpenChange && onOpenChange(false)}
       />
       {/* Centered Modal Container */}
-      <div className="relative z-50 w-full max-w-xl my-auto animate-in fade-in-90 zoom-in-95 duration-200">
+      <div className="relative z-50 my-auto flex w-full justify-center animate-in fade-in-90 zoom-in-95 duration-200">
         {children}
       </div>
     </div>,
@@ -36,7 +36,7 @@ export function DialogContent({
   return (
     <div
       className={cn(
-        "relative w-full rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 font-google-sans",
+        "admin-readable relative w-full max-w-xl rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl dark:shadow-black/40 font-google-sans",
         className
       )}
     >
@@ -88,7 +88,7 @@ export function DialogDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("text-xs text-slate-500 dark:text-slate-400 font-google-sans", className)}
+      className={cn("text-base text-muted-foreground font-google-sans", className)}
       {...props}
     />
   );

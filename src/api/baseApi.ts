@@ -8,7 +8,6 @@ export const baseApi = createApi({
 
     prepareHeaders: (headers) => {
       let token: string | undefined | null;
-      console.log(token);
       if (typeof window !== "undefined") {
         token =
           window.localStorage.getItem("accessToken") ||

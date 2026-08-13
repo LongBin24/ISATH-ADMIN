@@ -34,7 +34,7 @@ function SeverityBadge({ severity }: { severity: AlertRule["severity"] }) {
   const labels = { CRITICAL: "ធ្ងន់ធ្ងរ", WARNING: "ប្រុងប្រយ័ត្ន", INFO: "ព័ត៌មាន" };
 
   return (
-    <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${styles[severity]}`}>
+    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset ${styles[severity]}`}>
       {labels[severity]}
     </span>
   );

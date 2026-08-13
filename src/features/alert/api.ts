@@ -1,6 +1,6 @@
 import { baseApi } from "@/api/baseApi";
 import { API_TAGS } from "@/api/tags";
-import { AlertRule } from "./types";
+import { AlertRule, AlertRulePage, AlertRuleQueryParams } from "./types";
 
 const ALERT_RULES_ENDPOINT = "admin/alert-rules";
 
@@ -30,15 +30,27 @@ function unwrapAlertRules(response: unknown): AlertRule[] {
   return [];
 }
 
+function unwrapAlertRulePage(response: unknown): AlertRulePage {
+  const root = isRecord(response) && isRecord(response.data) ? response.data : response;
+  const body = isRecord(root) ? root : {};
+  const content = Array.isArray(body.content) ? body.content as AlertRule[] : [];
+  const page = isRecord(body.page) ? body.page : body;
+  const number = typeof page.number === "number" ? page.number : 0;
+  const size = typeof page.size === "number" ? page.size : content.length;
+  const totalElements = typeof page.totalElements === "number" ? page.totalElements : content.length;
+  const totalPages = typeof page.totalPages === "number" ? page.totalPages : totalElements ? 1 : 0;
+  return { content, page: { number, size, totalElements, totalPages } };
+}
+
 export const alertRulesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAlertRules: builder.query<
       AlertRule[],
       { search?: string; severity?: string; status?: string } | void
     >({
-      query: (params) => ({
+      query: () => ({
         url: ALERT_RULES_ENDPOINT,
-        params: params || undefined,
+        params: { pageNumber: 0, pageSize: 200 },
       }),
       transformResponse: unwrapAlertRules,
       providesTags: (result) =>
@@ -60,6 +72,14 @@ export const alertRulesApi = baseApi.injectEndpoints({
               },
             ],
     }),
+    getAdminAlertRules: builder.query<AlertRulePage, AlertRuleQueryParams>({
+      query: (params) => ({ url: ALERT_RULES_ENDPOINT, params }),
+      transformResponse: unwrapAlertRulePage,
+      providesTags: (result) => [
+        { type: API_TAGS.ALERT_RULE, id: "LIST" },
+        ...(result?.content ?? []).map(({ id }) => ({ type: API_TAGS.ALERT_RULE, id })),
+      ],
+    }),
     getAlertRuleById: builder.query<AlertRule, string>({
       query: (ruleId) =>
         `${ALERT_RULES_ENDPOINT}/${encodeURIComponent(ruleId)}`,
@@ -77,6 +97,7 @@ export const alertRulesApi = baseApi.injectEndpoints({
 
 export const {
   useGetAlertRulesQuery,
+  useGetAdminAlertRulesQuery,
   useGetAlertRuleByIdQuery,
   useLazyGetAlertRuleByIdQuery,
 } = alertRulesApi;

@@ -14,13 +14,42 @@ export type CreateCategoryPayload = {
   defaultCategory: boolean;
 };
 export type UpdateCategoryPayload = {
-  name: string;
-  categoryType: "INCOME" | "EXPENSE";
+  name?: string;
+  categoryType?: "INCOME" | "EXPENSE" | "BOTH";
   parentId?: string;
-  moveToRoot: boolean;
-  icon: string;
-  color: string;
-  status: "ACTIVE" | "INACTIVE";
+  moveToRoot?: boolean;
+  icon?: string;
+  color?: string;
+  defaultCategory?: boolean;
+  status?: "ACTIVE" | "INACTIVE" | "DELETED";
+};
+
+export type CategoryQueryParams = {
+  parentId?: string;
+  type?: "INCOME" | "EXPENSE" | "BOTH";
+  status?: "ACTIVE" | "INACTIVE" | "DELETED";
+  defaultCategory?: boolean;
+  systemCategory?: boolean;
+  rootOnly?: boolean;
+  keyword?: string;
+  includeHidden?: boolean;
+  pageNumber?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDirection?: "ASC" | "DESC";
+};
+
+export type AdminCategoryPage = CategoryPage;
+
+export type AdminCreateCategoryPayload = {
+  parentId?: string;
+  name: string;
+  categoryType: "INCOME" | "EXPENSE" | "BOTH";
+  icon?: string;
+  color?: string;
+  systemCategory?: boolean;
+  categoryKey?: string;
+  defaultCategory?: boolean;
 };
 
 type CreateCategoryRequest = {
@@ -129,10 +158,10 @@ const normalizeCategory = (value: unknown): Category => {
     spentAmount: asNumber(
       record.spentAmount ?? record.totalSpent ?? record.totalAmount ?? record.amount,
     ),
-    type: rawType === "income" ? "income" : "expense",
+    type: rawType === "income" ? "income" : rawType === "both" ? "both" : "expense",
     color: String(record.color ?? preference.color ?? "#3b82f6"),
     defaultCategory: Boolean(record.defaultCategory),
-    status: record.status === "INACTIVE" ? "INACTIVE" : "ACTIVE",
+    status: record.status === "INACTIVE" ? "INACTIVE" : record.status === "DELETED" ? "DELETED" : "ACTIVE",
     systemCategory: Boolean(record.systemCategory),
     ownedByCurrentUser:
       typeof record.ownedByCurrentUser === "boolean"
@@ -199,6 +228,19 @@ export const categoryApi = baseApi.injectEndpoints({
       ],
     }),
 
+    getAdminCategories: builder.query<AdminCategoryPage, CategoryQueryParams>({
+      query: (params) => ({
+        url: ENDPOINTS_CATEGORY.GET_CATEGORIES,
+        method: "GET",
+        params,
+      }),
+      transformResponse: normalizeCategoryPage,
+      providesTags: (result) => [
+        { type: API_TAGS.CATEGORY, id: "LIST" },
+        ...(result?.content.map((category) => ({ type: API_TAGS.CATEGORY, id: category.id })) ?? []),
+      ],
+    }),
+
     getCategoriesPaginated: builder.infiniteQuery<
       CategoryPage,
       void,
@@ -237,6 +279,16 @@ export const categoryApi = baseApi.injectEndpoints({
       }),
       transformResponse: (response: unknown) =>
         normalizeCategory(unwrapData(response)),
+      invalidatesTags: [{ type: API_TAGS.CATEGORY, id: "LIST" }],
+    }),
+
+    createAdminCategory: builder.mutation<Category, AdminCreateCategoryPayload>({
+      query: (payload) => ({
+        url: ENDPOINTS_CATEGORY.CREATE_CATEGORY,
+        method: "POST",
+        body: payload,
+      }),
+      transformResponse: (response: unknown) => normalizeCategory(unwrapData(response)),
       invalidatesTags: [{ type: API_TAGS.CATEGORY, id: "LIST" }],
     }),
 
@@ -299,8 +351,10 @@ export const categoryApi = baseApi.injectEndpoints({
 
 export const {
   useGetCategoriesQuery,
+  useGetAdminCategoriesQuery,
   useGetCategoriesPaginatedInfiniteQuery,
   useCreateCategoryMutation,
+  useCreateAdminCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
 } = categoryApi;

@@ -1,9 +1,9 @@
 import { baseApi } from "@/api/baseApi";
+import { ENDPOINTS } from "@/api/endpoints";
 import {
   DashboardStats,
   InActiveSummary,
   ProcessSummary,
-  User,
   UserSummary,
 } from "./type";
 
@@ -19,12 +19,14 @@ export const adminApi = baseApi.injectEndpoints({
       async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
         const transRes = await baseQuery("transactions?pageNumber=0&pageSize=1");
         const usersRes = await baseQuery("admin/users?pageNumber=0&pageSize=100");
+        const statsRes = await baseQuery(ENDPOINTS.ADMIN_USERS_STATISTICS);
 
         const transactions = getData<TransactionPage>(transRes.data);
         const usersData = (usersRes.data as any)?.data;
-        
-        const totalUsers = usersData?.page?.totalElements ?? (Array.isArray(usersData?.content) ? usersData.content.length : 0);
+        const statsData = (statsRes.data as any)?.data;
+
         const content = Array.isArray(usersData?.content) ? usersData.content : [];
+        const totalUsers = statsData?.totalUsers ?? usersData?.totalElements ?? content.length;
         const inActiveUsers = content.filter((u: any) => u.accountStatus !== "ACTIVE").length;
 
         return {
@@ -37,23 +39,16 @@ export const adminApi = baseApi.injectEndpoints({
       },
       providesTags: ["User"],
     }),
-    createUser: builder.mutation<User, Partial<User>>({
-      queryFn: () => ({
-        error: {
-          status: 501,
-          data: "User registration is managed via Keycloak.",
-        },
-      }),
-    }),
     getUserSummary: builder.query<UserSummary, void>({
       async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
         const usersRes = await baseQuery("admin/users?pageNumber=0&pageSize=100");
+        const statsRes = await baseQuery(ENDPOINTS.ADMIN_USERS_STATISTICS);
         let total = 0;
         let active = 0;
         if (usersRes.data) {
           const usersData = (usersRes.data as any)?.data;
           const content = Array.isArray(usersData?.content) ? usersData.content : [];
-          total = usersData?.page?.totalElements ?? content.length;
+          total = (statsRes.data as any)?.data?.totalUsers ?? usersData?.totalElements ?? content.length;
           active = content.filter((u: any) => u.accountStatus === "ACTIVE").length;
         }
         return {
@@ -107,11 +102,15 @@ export const adminApi = baseApi.injectEndpoints({
   overrideExisting: true,
 });
 
-export { useGetUsersQuery, useSuspendUserMutation, useReactivateUserMutation } from "../user-manager/api";
+export {
+  useGetUsersQuery,
+  useSuspendUserMutation,
+  useReactivateUserMutation,
+  useCreateUserMutation,
+} from "../user-manager/api";
 
 export const {
   useGetStatsQuery,
-  useCreateUserMutation,
   useGetUserSummaryQuery,
   useGetProcessSummaryQuery,
   useGetInActiveSummaryQuery,

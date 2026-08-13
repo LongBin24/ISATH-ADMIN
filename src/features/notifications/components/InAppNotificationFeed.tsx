@@ -267,12 +267,12 @@ export default function InAppNotificationFeed() {
 
                         {/* Priority Tag in Khmer */}
                         {item.priority === "HIGH" && (
-                          <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-600 dark:bg-red-950/60 dark:text-red-300">
+                          <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-600 dark:bg-red-950/60 dark:text-red-300">
                             សំខាន់
                           </span>
                         )}
                         {item.priority === "URGENT" && (
-                          <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                          <span className="rounded-full bg-red-600 px-2 py-0.5 text-xs font-bold text-white">
                             បន្ទាន់
                           </span>
                         )}

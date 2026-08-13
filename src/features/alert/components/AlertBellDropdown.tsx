@@ -60,7 +60,7 @@ export default function AlertBellDropdown() {
         <AlertTriangle size={20} />
         {activeAlerts.length > 0 && (
           <span
-            className={`absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-900 ${
+            className={`absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full text-xs font-bold text-white ring-2 ring-white dark:ring-slate-900 ${
               criticalCount > 0 ? "animate-pulse bg-red-500" : "bg-[#E3A900]"
             }`}
           >
@@ -74,10 +74,10 @@ export default function AlertBellDropdown() {
           <div className="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-[#FFF8E1] to-white px-5 py-4 dark:border-slate-800 dark:from-[#FFC83D]/10 dark:to-slate-900">
             <div>
               <p className="text-sm font-bold text-[#003377] dark:text-[#FFC83D]">ការជូនដំណឹងរបស់ប្រព័ន្ធ</p>
-              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">ព័ត៌មានសម្រាប់អ្នកគ្រប់គ្រង</p>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">ព័ត៌មានសម្រាប់អ្នកគ្រប់គ្រង</p>
             </div>
             {activeAlerts.length > 0 && (
-              <span className="rounded-full bg-[#FFC83D]/25 px-2.5 py-1 text-[11px] font-bold text-[#7A5800] dark:text-[#FFC83D]">
+              <span className="rounded-full bg-[#FFC83D]/25 px-2.5 py-1 text-xs font-bold text-[#7A5800] dark:text-[#FFC83D]">
                 {activeAlerts.length} សកម្ម
               </span>
             )}
@@ -106,11 +106,11 @@ export default function AlertBellDropdown() {
                   <span className="min-w-0 flex-1 space-y-1">
                     <span className="flex items-center justify-between gap-2">
                       <span className="truncate text-xs font-bold text-slate-900 dark:text-white">{item.ruleName}</span>
-                      <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                      <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                         {severityLabels[item.severity]}
                       </span>
                     </span>
-                    <span className="line-clamp-2 block text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
+                    <span className="line-clamp-2 block text-xs leading-relaxed text-slate-500 dark:text-slate-400">
                       {item.ruleConfiguration?.message || "ច្បាប់ជូនដំណឹងរបស់ប្រព័ន្ធ"}
                     </span>
                   </span>

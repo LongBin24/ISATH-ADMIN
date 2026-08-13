@@ -1,301 +1,250 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { X, Send, AlertCircle, Sparkles } from "lucide-react";
-import {
-  triggerNotificationSchema,
-  TriggerNotificationFormData,
-} from "../types";
-import { useCreateAdminNotificationMutation } from "../api";
-import { useGetUsersQuery } from "@/features/user-manager/api";
-import { useNotificationUI } from "../hook";
-import { CATEGORY_CONFIGS } from "../constants";
+import { useState } from "react";
 import toast from "react-hot-toast";
+import { ChevronDown, ChevronUp, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { AdminUser } from "@/features/user-manager/types";
+import { useCreateAdminNotificationMutation } from "../api";
+import { notificationTypeLabel, referenceTypeLabel } from "../presentation";
+import {
+  ADMIN_NOTIFICATION_TYPES,
+  ADMIN_REFERENCE_TYPES,
+  type AdminNotificationType,
+  type AdminReferenceType,
+  type NotificationChannel,
+} from "../types";
+import NotificationUserSelector from "./NotificationUserSelector";
 
-export default function SendNotificationDialog() {
-  const { isTriggerModalOpen, toggleTriggerModal } = useNotificationUI();
-  const [createAdminNotification, { isLoading }] =
-    useCreateAdminNotificationMutation();
-  const { data: usersList = [] } = useGetUsersQuery();
-  const [submitError, setSubmitError] = React.useState<string | null>(null);
-  const [selectedUserId, setSelectedUserId] = React.useState<string>("");
+interface FormState {
+  user: AdminUser | null;
+  title: string;
+  message: string;
+  notificationType: AdminNotificationType;
+  channels: NotificationChannel[];
+  referenceType: AdminReferenceType | "NONE";
+  referenceId: string;
+  actionUrl: string;
+  expiresAt: string;
+}
 
-  useEffect(() => {
-    if (usersList.length > 0 && !selectedUserId) {
-      setSelectedUserId(usersList[0].id);
-    }
-  }, [usersList, selectedUserId]);
+const INITIAL_FORM: FormState = {
+  user: null,
+  title: "",
+  message: "",
+  notificationType: "DAILY_REMINDER",
+  channels: ["IN_APP"],
+  referenceType: "NONE",
+  referenceId: "",
+  actionUrl: "",
+  expiresAt: "",
+};
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<TriggerNotificationFormData>({
-    resolver: zodResolver(triggerNotificationSchema),
-    defaultValues: {
-      category: "DAILY_REMINDER",
-      channel: "BOTH",
-      customTitleKh: "ដល់ម៉ោងកត់ត្រាការចំណាយប្រចាំថ្ងៃ!",
-      customMessageKh:
-        "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រាប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ។",
-      priority: "MEDIUM",
-    },
-  });
+export default function SendNotificationDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  const [form, setForm] = useState<FormState>(INITIAL_FORM);
+  const [errors, setErrors] = useState<Partial<Record<"user" | "title" | "message" | "channels", string>>>({});
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [createNotification, { isLoading }] = useCreateAdminNotificationMutation();
 
-  const selectedCategory = watch("category");
+  function reset() {
+    setForm(INITIAL_FORM);
+    setErrors({});
+    setAdvancedOpen(false);
+  }
 
-  useEffect(() => {
-    switch (selectedCategory) {
-      case "DAILY_REMINDER":
-        setValue("customTitleKh", "ដល់ម៉ោងកត់ត្រាការចំណាយប្រចាំថ្ងៃ!");
-        setValue(
-          "customMessageKh",
-          "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រាប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ។",
-        );
-        setValue("priority", "MEDIUM");
-        break;
-      case "BUDGET_WARNING":
-        setValue(
-          "customTitleKh",
-          "ការព្រមាន៖ ការចំណាយលើ «អាហារ» ជិតដល់កម្រិតកំណត់!",
-        );
-        setValue(
-          "customMessageKh",
-          "អ្នកបានចំណាយ 85% នៃថវិកាប្រចាំខែដែលបានកំណត់ចំនួន $400.00 ក្នុងខែនេះហើយ។",
-        );
-        setValue("priority", "HIGH");
-        break;
-      case "SAVINGS_REMINDER":
-        setValue("customTitleKh", "អបអរសាទរ! គោលដៅសន្សំសម្រេចបាន 75%");
-        setValue(
-          "customMessageKh",
-          "អ្នកបានសន្សំប្រាក់បាន $750.00 នៃគោលដៅសរុប $1,000.00។",
-        );
-        setValue("priority", "MEDIUM");
-        break;
-      case "RECURRING_REMINDER":
-        setValue(
-          "customTitleKh",
-          "ការរំលឹកបង់ប្រាក់៖ វិក្កយបត្រត្រូវបង់នៅថ្ងៃស្អែក",
-        );
-        setValue(
-          "customMessageKh",
-          "វិក្កយបត្រប្រចាំខែសេវាអ៊ីនធឺណិតចំនួន $35.00 នឹងត្រូវទូទាត់នៅថ្ងៃស្អែក។",
-        );
-        setValue("priority", "HIGH");
-        break;
-      case "MONTHLY_SUMMARY":
-        setValue("customTitleKh", "របាយការណ៍ហិរញ្ញវត្ថុសង្ខេបប្រចាំខែកក្កដា");
-        setValue(
-          "customMessageKh",
-          "ចំណូលសរុប $2,450.00, ចំណាយសរុប $1,280.00, សន្សំសុទ្ធ $1,170.00។",
-        );
-        setValue("priority", "LOW");
-        break;
-    }
-  }, [selectedCategory, setValue]);
+  function toggleChannel(channel: NotificationChannel) {
+    setForm((current) => ({
+      ...current,
+      channels: current.channels.includes(channel)
+        ? current.channels.filter((item) => item !== channel)
+        : [...current.channels, channel],
+    }));
+    setErrors((current) => ({ ...current, channels: undefined }));
+  }
 
-  if (!isTriggerModalOpen) return null;
+  function validate() {
+    const next: typeof errors = {};
+    if (!form.user) next.user = "Select a recipient.";
+    if (!form.title.trim()) next.title = "Title is required.";
+    else if (form.title.trim().length > 200) next.title = "Title must be 200 characters or fewer.";
+    if (!form.message.trim()) next.message = "Message is required.";
+    else if (form.message.trim().length > 2000) next.message = "Message must be 2,000 characters or fewer.";
+    if (form.channels.length === 0) next.channels = "Select at least one delivery channel.";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
 
-  const onSubmit = async (data: TriggerNotificationFormData) => {
-    setSubmitError(null);
-    const targetUser =
-      selectedUserId || (usersList.length > 0 ? usersList[0].id : "");
-
-    if (!targetUser) {
-      setSubmitError("សូមជ្រើសរើស ឬបញ្ចូល User UUID ដែលត្រូវទទួលការជូនដំណឹង");
-      return;
-    }
-
-    const channelMap: Record<string, ("IN_APP" | "EMAIL")[]> = {
-      BOTH: ["IN_APP", "EMAIL"],
-      IN_APP: ["IN_APP"],
-      EMAIL: ["EMAIL"],
-    };
-    const channels = channelMap[data.channel] || ["IN_APP"];
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!validate() || !form.user) return;
 
     try {
-      await createAdminNotification({
-        userId: targetUser,
-        title: data.customTitleKh || "ការជូនដំណឹងពីប្រព័ន្ធ",
-        message: data.customMessageKh || "ព័ត៌មានលម្អិតនៃការជូនដំណឹង",
-        notificationType: data.category || "DAILY_REMINDER",
-        channels,
+      await createNotification({
+        userId: form.user.id,
+        title: form.title.trim(),
+        message: form.message.trim(),
+        notificationType: form.notificationType,
+        channels: form.channels,
+        referenceType: form.referenceType === "NONE" ? undefined : form.referenceType,
+        referenceId: form.referenceId.trim() || undefined,
+        actionUrl: form.actionUrl.trim() || undefined,
+        expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : undefined,
       }).unwrap();
-      toast.success("បានផ្ញើការជូនដំណឹងជោគជ័យ!");
-      toggleTriggerModal(false);
+      toast.success("Notification sent successfully.");
       reset();
-    } catch (e: any) {
-      setSubmitError(
-        e?.data?.message ||
-          e?.message ||
-          "មិនអាចផ្ញើការជូនដំណឹងបានទេ សូមព្យាយាមម្តងទៀត",
-      );
+      onOpenChange(false);
+    } catch (error) {
+      const message = (error as { data?: { message?: string } })?.data?.message;
+      toast.error(message || "Unable to send this notification.");
     }
-  };
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200 font-google-sans">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900 dark:border dark:border-slate-800">
-        <div className="flex items-center justify-between border-b border-slate-100 bg-[#003377] px-6 py-4 text-white">
-          <div className="flex items-center gap-2">
-            <Sparkles className="text-[#FFC83D]" size={20} />
-            <h3 className="text-base font-bold font-google-sans">
-              បង្កើត និងផ្ញើការជូនដំណឹងសាកល្បង
-            </h3>
-          </div>
-          <button
-            type="button"
-            onClick={() => toggleTriggerModal(false)}
-            className="rounded-full p-1 text-white/80 hover:bg-white/10 hover:text-white"
-          >
-            <X size={20} />
-          </button>
-        </div>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) reset();
+        onOpenChange(next);
+      }}
+    >
+      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto" onClose={() => onOpenChange(false)}>
+        <DialogHeader>
+          <DialogTitle>Send Notification</DialogTitle>
+          <DialogDescription>Send a system notification to an iStash user.</DialogDescription>
+        </DialogHeader>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="p-6 space-y-4 font-google-sans"
-        >
-          {submitError && (
-            <div className="flex items-center gap-2 rounded-2xl bg-red-500/10 p-3 text-xs font-bold text-red-600 dark:text-red-400 border border-red-500/30">
-              <AlertCircle size={16} />
-              <span>{submitError}</span>
-            </div>
-          )}
-
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              អ្នកទទួលការជូនដំណឹង (Target Recipient User)
-            </label>
-            {usersList.length > 0 ? (
-              <select
-                value={selectedUserId}
-                onChange={(e) => setSelectedUserId(e.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold text-slate-800 outline-none transition focus:border-[#FFC83D] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              >
-                {usersList.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name} ({u.email || u.id})
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <input
-                type="text"
-                value={selectedUserId}
-                onChange={(e) => setSelectedUserId(e.target.value)}
-                placeholder="បញ្ចូល User UUID..."
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              />
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              ប្រភេទការជូនដំណឹង
-            </label>
-            <select
-              {...register("category")}
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold text-slate-800 outline-none transition focus:border-[#FFC83D] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-            >
-              {Object.values(CATEGORY_CONFIGS).map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.nameKh}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                ប៉ុស្តិ៍ផ្ញើ
-              </label>
-              <select
-                {...register("channel")}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              >
-                <option value="BOTH">ទាំងពីរ (ក្នុងកម្មវិធី និងអ៊ីមែល)</option>
-                <option value="IN_APP">តែក្នុងកម្មវិធីប៉ុណ្ណោះ</option>
-                <option value="EMAIL">តែអ៊ីមែលប៉ុណ្ណោះ</option>
-              </select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                កម្រិតអាទិភាព
-              </label>
-              <select
-                {...register("priority")}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              >
-                <option value="LOW">ទាប</option>
-                <option value="MEDIUM">មធ្យម</option>
-                <option value="HIGH">ខ្ពស់</option>
-                <option value="URGENT">បន្ទាន់</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              ចំណងជើង
-            </label>
-            <input
-              type="text"
-              {...register("customTitleKh")}
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              placeholder="បញ្ចូលចំណងជើង..."
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          <div className="space-y-2">
+            <Label>Recipient</Label>
+            <NotificationUserSelector
+              value={form.user}
+              onChange={(user) => {
+                setForm((current) => ({ ...current, user }));
+                setErrors((current) => ({ ...current, user: undefined }));
+              }}
+              allowClear={false}
+              placeholder="Search and select a recipient"
             />
-            {errors.customTitleKh && (
-              <p className="text-[11px] font-bold text-red-500">
-                {errors.customTitleKh.message}
-              </p>
-            )}
+            {errors.user && <p className="text-sm text-destructive">{errors.user}</p>}
           </div>
 
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              ខ្លឹមសារសារ
-            </label>
+          <div className="space-y-2">
+            <Label htmlFor="notification-title">Title</Label>
+            <Input
+              id="notification-title"
+              value={form.title}
+              onChange={(event) => {
+                setForm((current) => ({ ...current, title: event.target.value }));
+                setErrors((current) => ({ ...current, title: undefined }));
+              }}
+              className="h-11 text-base"
+              maxLength={200}
+            />
+            <div className="flex justify-between gap-3 text-sm">
+              <span className="text-destructive">{errors.title}</span>
+              <span className="ml-auto text-muted-foreground">{form.title.length}/200</span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="notification-message">Message</Label>
             <textarea
-              rows={3}
-              {...register("customMessageKh")}
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              placeholder="បញ្ចូលខ្លឹមសារសារ..."
+              id="notification-message"
+              value={form.message}
+              onChange={(event) => {
+                setForm((current) => ({ ...current, message: event.target.value }));
+                setErrors((current) => ({ ...current, message: undefined }));
+              }}
+              rows={5}
+              maxLength={2000}
+              className="w-full rounded-xl border border-input bg-background px-3 py-3 text-base leading-6 text-foreground shadow-sm outline-none focus:ring-2 focus:ring-ring"
             />
-            {errors.customMessageKh && (
-              <p className="text-[11px] font-bold text-red-500">
-                {errors.customMessageKh.message}
-              </p>
-            )}
+            <div className="flex justify-between gap-3 text-sm">
+              <span className="text-destructive">{errors.message}</span>
+              <span className="ml-auto text-muted-foreground">{form.message.length}/2,000</span>
+            </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Notification Type</Label>
+              <Select value={form.notificationType} onValueChange={(value) => setForm((current) => ({ ...current, notificationType: value as AdminNotificationType }))}>
+                <SelectTrigger className="h-11 text-base"><SelectValue value={notificationTypeLabel(form.notificationType)} /></SelectTrigger>
+                <SelectContent value={form.notificationType} onValueChange={(value) => setForm((current) => ({ ...current, notificationType: value as AdminNotificationType }))}>
+                  {ADMIN_NOTIFICATION_TYPES.map((type) => <SelectItem key={type} value={type}>{notificationTypeLabel(type)}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium text-foreground">Delivery Channels</legend>
+              <div className="flex min-h-11 items-center gap-5 rounded-xl border border-input px-3">
+                {(["IN_APP", "EMAIL"] as const).map((channel) => (
+                  <label key={channel} className="flex cursor-pointer items-center gap-2 text-base">
+                    <input
+                      type="checkbox"
+                      checked={form.channels.includes(channel)}
+                      onChange={() => toggleChannel(channel)}
+                      className="size-4 rounded border-input accent-[#003377]"
+                    />
+                    {channel === "IN_APP" ? "In-App" : "Email"}
+                  </label>
+                ))}
+              </div>
+              {errors.channels && <p className="text-sm text-destructive">{errors.channels}</p>}
+            </fieldset>
+          </div>
+
+          <div className="rounded-2xl border border-border">
             <button
               type="button"
-              onClick={() => toggleTriggerModal(false)}
-              className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              onClick={() => setAdvancedOpen((value) => !value)}
+              className="flex w-full items-center justify-between px-4 py-3 text-base font-medium text-foreground"
             >
-              បោះបង់
+              Advanced Options
+              {advancedOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
             </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex items-center gap-2 rounded-xl bg-[#003377] px-5 py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#002255] transition active:scale-95 disabled:opacity-50"
-            >
-              <Send size={14} />
-              <span>{isLoading ? "កំពុងផ្ញើ..." : "ផ្ញើការជូនដំណឹង"}</span>
-            </button>
+            {advancedOpen && (
+              <div className="space-y-4 border-t border-border p-4">
+                <div className="space-y-2">
+                  <Label>Reference Type</Label>
+                  <Select value={form.referenceType} onValueChange={(value) => setForm((current) => ({ ...current, referenceType: value as FormState["referenceType"] }))}>
+                    <SelectTrigger className="h-11 text-base"><SelectValue value={form.referenceType === "NONE" ? "No reference" : referenceTypeLabel(form.referenceType)} /></SelectTrigger>
+                    <SelectContent value={form.referenceType} onValueChange={(value) => setForm((current) => ({ ...current, referenceType: value as FormState["referenceType"] }))}>
+                      <SelectItem value="NONE">No reference</SelectItem>
+                      {ADMIN_REFERENCE_TYPES.map((type) => <SelectItem key={type} value={type}>{referenceTypeLabel(type)}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="reference-id">Reference ID (technical, optional)</Label>
+                  <Input id="reference-id" value={form.referenceId} onChange={(event) => setForm((current) => ({ ...current, referenceId: event.target.value }))} className="h-11 text-base" placeholder="UUID" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="action-url">Action URL (optional)</Label>
+                  <Input id="action-url" value={form.actionUrl} onChange={(event) => setForm((current) => ({ ...current, actionUrl: event.target.value }))} className="h-11 text-base" placeholder="/budgets/..." />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="expires-at">Expiration (optional)</Label>
+                  <Input id="expires-at" type="datetime-local" value={form.expiresAt} onChange={(event) => setForm((current) => ({ ...current, expiresAt: event.target.value }))} className="h-11 text-base" />
+                </div>
+              </div>
+            )}
           </div>
+
+          <DialogClose>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button type="submit" disabled={isLoading} className="bg-[#FFC83D] text-[#003377] hover:bg-[#f0ba33]">
+              <Send className="mr-2 size-4" />
+              {isLoading ? "Sending..." : "Send Notification"}
+            </Button>
+          </DialogClose>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -6,7 +6,7 @@ const verifierCookie = "keycloak_pkce_verifier";
 const stateCookie = "keycloak_oauth_state";
 
 function safeReturnPath(value: string | null) {
-  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/dashboard";
+  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/welcome";
 }
 
 function base64UrlEncode(value: Uint8Array) {

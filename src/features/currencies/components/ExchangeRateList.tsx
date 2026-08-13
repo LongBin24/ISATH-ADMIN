@@ -95,7 +95,7 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                   <div className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                     <span>{item.code}</span>
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors ${
+                      className={`text-xs font-bold px-2 py-0.5 rounded-full transition-colors ${
                         item.active
                           ? "bg-[#003377]/10 text-[#003377] dark:bg-[#FFC83D]/20 dark:text-[#FFC83D]"
                           : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
@@ -116,7 +116,7 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                     {(item.rate ?? 0).toLocaleString()} {item.symbol}
                   </div>
                   <div
-                    className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full mt-1 ${
+                    className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full mt-1 ${
                       isPositive
                         ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                         : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
@@ -151,7 +151,7 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
 
                   {/* ON Text */}
                   <span
-                    className={`absolute left-2 text-[10px] font-black uppercase tracking-tight transition-opacity duration-200 select-none ${
+                    className={`absolute left-2 text-xs font-black uppercase tracking-tight transition-opacity duration-200 select-none ${
                       item.active
                         ? "opacity-100 text-[#FFC83D] dark:text-[#003377]"
                         : "opacity-0"
@@ -162,7 +162,7 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
 
                   {/* OFF Text */}
                   <span
-                    className={`absolute right-2 text-[10px] font-extrabold uppercase tracking-tight transition-opacity duration-200 select-none ${
+                    className={`absolute right-2 text-xs font-extrabold uppercase tracking-tight transition-opacity duration-200 select-none ${
                       !item.active
                         ? "opacity-100 text-slate-400 dark:text-slate-500"
                         : "opacity-0"

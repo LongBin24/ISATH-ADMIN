@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { UserProfile } from "../types";
-import { useUploadAvatarMutation, useResetAvatarMutation } from "../api";
+import { useUploadAvatarMutation, useUploadAvatarFileMutation, useResetAvatarMutation } from "../api";
 import { Camera, RefreshCw, Upload, Check, X } from "lucide-react";
 
 interface ProfileAvatarModalProps {
@@ -32,15 +32,19 @@ export default function ProfileAvatarModal({
   onError,
 }: ProfileAvatarModalProps) {
   const [selectedAvatar, setSelectedAvatar] = useState<string>(profile.avatar);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [customUrl, setCustomUrl] = useState<string>("");
   const [isDefault, setIsDefault] = useState<boolean>(profile.isDefaultAvatar);
 
-  const [uploadAvatar, { isLoading: isUploading }] = useUploadAvatarMutation();
+  const [uploadAvatar, { isLoading: isUploadingUrl }] = useUploadAvatarMutation();
+  const [uploadAvatarFile, { isLoading: isUploadingFile }] = useUploadAvatarFileMutation();
   const [resetAvatar, { isLoading: isResetting }] = useResetAvatarMutation();
+  const isUploading = isUploadingUrl || isUploadingFile;
 
   useEffect(() => {
     if (isOpen) {
       setSelectedAvatar(profile.avatar);
+      setSelectedFile(null);
       setIsDefault(profile.isDefaultAvatar);
       setCustomUrl("");
     }
@@ -50,12 +54,14 @@ export default function ProfileAvatarModal({
 
   const handleSelectPreset = (url: string) => {
     setSelectedAvatar(url);
+    setSelectedFile(null);
     setIsDefault(false);
   };
 
   const handleApplyCustomUrl = () => {
     if (customUrl.trim()) {
       setSelectedAvatar(customUrl.trim());
+      setSelectedFile(null);
       setIsDefault(false);
       setCustomUrl("");
     }
@@ -64,23 +70,22 @@ export default function ProfileAvatarModal({
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (typeof event.target?.result === "string") {
-          setSelectedAvatar(event.target.result);
-          setIsDefault(false);
-        }
-      };
-      reader.readAsDataURL(file);
+      setSelectedAvatar(URL.createObjectURL(file));
+      setSelectedFile(file);
+      setIsDefault(false);
     }
   };
 
   const handleSaveAvatar = async () => {
     try {
-      await uploadAvatar({
-        avatarUrl: selectedAvatar,
-        isDefault: isDefault,
-      }).unwrap();
+      if (selectedFile) {
+        await uploadAvatarFile(selectedFile).unwrap();
+      } else {
+        await uploadAvatar({
+          avatarUrl: selectedAvatar,
+          isDefault: isDefault,
+        }).unwrap();
+      }
       onSuccess("បានផ្លាស់ប្តូររូបថតគណនីដោយជោគជ័យ!");
       onClose();
     } catch (err) {
@@ -136,7 +141,7 @@ export default function ProfileAvatarModal({
               className="h-28 w-28 rounded-full border-4 border-[#FFC83D] object-cover shadow-md dark:border-[#003377]"
             />
             {isDefault && (
-              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-[#003377] px-2 py-0.5 text-[10px] font-semibold text-[#FFC83D] shadow">
+              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-[#003377] px-2 py-0.5 text-xs font-semibold text-[#FFC83D] shadow">
                 រូបតំណាងដើម
               </span>
             )}

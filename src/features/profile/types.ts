@@ -19,11 +19,13 @@ export interface CurrencyOption {
 
 export interface UserProfile {
   id: string;
+  keycloakUserId: string;
   username: string;
   firstName: string;
   lastName: string;
   displayName: string;
   email: string;
+  emailVerified: boolean;
   phoneNumber: string;
   avatar: string;
   isDefaultAvatar: boolean;
@@ -36,6 +38,23 @@ export interface UserProfile {
   status: "active" | "inactive" | "pending";
   preferredCurrency: CurrencyCode;
   notifications: UserNotificationSettings;
+  dateOfBirth: string;
+  gender: "MALE" | "FEMALE" | "OTHER" | "PREFER_NOT_TO_SAY" | "";
+  occupation: string;
+  addressLine1: string;
+  addressLine2: string;
+  stateProvince: string;
+  postalCode: string;
+  countryCode: string;
+  profileCompleted: boolean;
+  onboardingCompleted: boolean;
+  termsAcceptedAt: string;
+  privacyPolicyAcceptedAt: string;
+  updatedAt: string;
+  deletedAt: string;
+  languageCode: string;
+  timezone: string;
+  theme: string;
 }
 
 export interface UpdateProfilePayload {
@@ -50,9 +69,9 @@ export interface UpdateProfilePayload {
 }
 
 export interface ChangePasswordPayload {
-  currentPassword: string;
   newPassword: string;
   confirmPassword: string;
+  passwordConfirmed: boolean;
 }
 
 export interface UpdateCurrencyPayload {

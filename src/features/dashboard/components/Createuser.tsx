@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
-import { X, UserCheck } from "lucide-react";
+import { X, UserCheck, Eye, EyeOff } from "lucide-react";
 import { useCreateUserMutation } from "../api";
 
 export default function Createuser({
@@ -14,32 +14,59 @@ export default function Createuser({
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }) {
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const role = "user"; // Fixed: Admin can only create User accounts
+  const [temporaryPassword, setTemporaryPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const role = "USER"; // Fixed: Admin can only create User accounts
   const [creating, setCreating] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const [createUser] = useCreateUserMutation();
 
+  function reset() {
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setTemporaryPassword("");
+    setConfirmPassword("");
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!name.trim() || !email.trim()) return;
+    setErrorMessage("");
+
+    if (!firstName.trim() || !lastName.trim() || !email.trim()) return;
+    if (temporaryPassword.length < 8) {
+      setErrorMessage("ពាក្យសម្ងាត់បណ្តោះអាសន្នត្រូវមានយ៉ាងហោចណាស់ ៨ តួអក្សរ");
+      return;
+    }
+    if (temporaryPassword !== confirmPassword) {
+      setErrorMessage("ពាក្យសម្ងាត់ និងការបញ្ជាក់ពាក្យសម្ងាត់មិនត្រូវគ្នាឡើយ");
+      return;
+    }
 
     setCreating(true);
-    setErrorMessage("");
     try {
-      await createUser({ name, email, role }).unwrap();
-      setName("");
-      setEmail("");
+      await createUser({
+        firstName,
+        lastName,
+        email,
+        temporaryPassword,
+        confirmPassword,
+        role,
+      }).unwrap();
+      reset();
       onOpenChange(false);
       onSuccess?.();
     } catch (error: unknown) {
-      const apiError = error as { data?: unknown; error?: string; status?: number };
+      const apiError = error as { data?: { message?: string; error?: string }; status?: number };
       const message =
-        typeof apiError.data === "string"
-          ? apiError.data
-          : apiError.error || `មិនអាចបង្កើតអ្នកប្រើប្រាស់បានទេ${apiError.status ? ` (កូដ ${apiError.status})` : ""}.`;
+        apiError.data?.message ||
+        apiError.data?.error ||
+        `មិនអាចបង្កើតអ្នកប្រើប្រាស់បានទេ${apiError.status ? ` (កូដ ${apiError.status})` : ""}.`;
       setErrorMessage(message);
     } finally {
       setCreating(false);
@@ -69,14 +96,26 @@ export default function Createuser({
                 {errorMessage}
               </p>
             )}
-            <div>
-              <label className="block text-sm text-slate-500 mb-2">ឈ្មោះ</label>
-              <input
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="ឈ្មោះអ្នកប្រើប្រាស់"
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
-              />
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm text-slate-500 mb-2">នាមត្រកូល</label>
+                <input
+                  value={firstName}
+                  onChange={(event) => setFirstName(event.target.value)}
+                  placeholder="នាមត្រកូល"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-500 mb-2">នាមខ្លួន</label>
+                <input
+                  value={lastName}
+                  onChange={(event) => setLastName(event.target.value)}
+                  placeholder="នាមខ្លួន"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+                />
+              </div>
             </div>
 
             <div>
@@ -88,6 +127,37 @@ export default function Createuser({
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="user@gmail.com"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-slate-500 mb-2">ពាក្យសម្ងាត់បណ្តោះអាសន្ន</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={temporaryPassword}
+                  onChange={(event) => setTemporaryPassword(event.target.value)}
+                  placeholder="យ៉ាងហោចណាស់ ៨ តួអក្សរ"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm text-slate-500 mb-2">បញ្ជាក់ពាក្យសម្ងាត់</label>
+              <input
+                type={showPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                placeholder="បញ្ចូលពាក្យសម្ងាត់ម្តងទៀត"
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
               />
             </div>

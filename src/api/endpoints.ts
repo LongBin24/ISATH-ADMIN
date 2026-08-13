@@ -17,6 +17,7 @@ export const ENDPOINTS = {
 
   // Admin Users Endpoints
   ADMIN_USERS: "admin/users",
+  ADMIN_USERS_STATISTICS: "admin/users/statistics",
   ADMIN_USER_BY_ID: (userId: string) => `admin/users/${userId}`,
   ADMIN_USER_ONBOARDING: (userId: string) => `admin/users/${userId}/onboarding`,
   ADMIN_USER_SUSPEND: (userId: string) => `admin/users/${userId}/suspend`,

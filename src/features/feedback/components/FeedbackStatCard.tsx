@@ -19,7 +19,7 @@ export default function FeedbackStatCard({
     <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-3 font-google-sans shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:rounded-3xl sm:p-5">
       <div className="flex min-w-0 items-start justify-between gap-2 sm:gap-4">
         <div className="min-w-0">
-          <p className="truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500 dark:text-slate-400 sm:text-xs sm:tracking-[0.16em]">
+          <p className="truncate text-xs font-semibold uppercase tracking-[0.1em] text-slate-500 dark:text-slate-400 sm:text-xs sm:tracking-[0.16em]">
             {title}
           </p>
           <p className="mt-2 text-2xl font-bold text-[#003377] dark:text-white sm:mt-3 sm:text-3xl">

@@ -77,14 +77,14 @@ export function AuthShell({ children }: { children: ReactNode }) {
 
             <motion.div initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: reduceMotion ? 0 : 0.1, delayChildren: 0.65 } } }} className="mt-[clamp(0.75rem,2.2dvh,1.75rem)] flex flex-wrap justify-center gap-2.5">
               {highlights.map(({ icon: Icon, label }) => (
-                <motion.div key={label} variants={{ hidden: { opacity: 0, y: 14, scale: 0.94 }, show: { opacity: 1, y: 0, scale: 1 } }} whileHover={reduceMotion ? undefined : { y: -4, scale: 1.03 }} className="flex items-center gap-2 rounded-full border border-[#003377]/10 bg-white/65 px-3 py-2 text-[10px] font-bold shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.07]">
+                <motion.div key={label} variants={{ hidden: { opacity: 0, y: 14, scale: 0.94 }, show: { opacity: 1, y: 0, scale: 1 } }} whileHover={reduceMotion ? undefined : { y: -4, scale: 1.03 }} className="flex items-center gap-2 rounded-full border border-[#003377]/10 bg-white/65 px-3 py-2 text-xs font-bold shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.07]">
                   <span className="grid size-6 place-items-center rounded-full bg-[#FFC83D] text-[#003377]"><Icon className="size-3.5" /></span>{label}
                 </motion.div>
               ))}
             </motion.div>
           </div>
 
-          <div className="relative z-10 flex items-center justify-between text-[10px] text-[#334155]/60 dark:text-white/40">
+          <div className="relative z-10 flex items-center justify-between text-xs text-[#334155]/60 dark:text-white/40">
             <p>© {new Date().getFullYear()} iSTASH</p>
             <p className="flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" /> ប្រព័ន្ធដំណើរការធម្មតា</p>
           </div>

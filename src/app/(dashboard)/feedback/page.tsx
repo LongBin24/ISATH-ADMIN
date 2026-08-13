@@ -1,4 +1,4 @@
-import FeedbackPage from "@/features/feedback/FeedbackPage";
+import ReviewManager from "@/features/feedback/ReviewManager";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardFeedbackPage() {
-  return <FeedbackPage />;
+  return <ReviewManager />;
 }

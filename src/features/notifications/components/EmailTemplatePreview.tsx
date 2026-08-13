@@ -154,7 +154,7 @@ export default function EmailTemplatePreview() {
                     iStash <span className="text-[#FFC83D]">ការជូនដំណឹង</span>
                   </span>
                 </div>
-                <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-[#FFC83D] backdrop-blur-xs">
+                <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-[#FFC83D] backdrop-blur-xs">
                   {activeConfig.nameKh}
                 </span>
               </div>
@@ -281,7 +281,7 @@ export default function EmailTemplatePreview() {
               </div>
 
               {/* Footer */}
-              <div className="border-t pt-4 border-slate-200 dark:border-slate-800 text-[11px] text-slate-400 text-center space-y-1">
+              <div className="border-t pt-4 border-slate-200 dark:border-slate-800 text-xs text-slate-400 text-center space-y-1">
                 <p>© 2026 iStash. រក្សាសិទ្ធិគ្រប់យ៉ាង severe.</p>
                 <p>ប្រសិនបើអ្នកមិនចង់ទទួលបានអ៊ីមែលនេះទេ សូមចូលទៅកាន់ការកំណត់ប្រព័ន្ធជូនដំណឹងដើម្បីបិទ។</p>
               </div>

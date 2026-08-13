@@ -14,8 +14,14 @@ export default function NotificationBellDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { data: stats } = useGetNotificationStatsQuery(undefined, { pollingInterval: 10000 });
-  const { data: notifications = [] } = useGetNotificationsQuery(undefined, { pollingInterval: 10000 });
+  const liveQueryOptions = {
+    pollingInterval: 5000,
+    skipPollingIfUnfocused: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  } as const;
+  const { data: stats, refetch: refetchStats } = useGetNotificationStatsQuery(undefined, liveQueryOptions);
+  const { data: notifications = [], refetch: refetchNotifications } = useGetNotificationsQuery(undefined, liveQueryOptions);
   const [markAllAsRead] = useMarkAllAsReadMutation();
   const [markAsRead] = useMarkAsReadMutation();
   const { selectNotification } = useNotificationUI();
@@ -34,6 +40,12 @@ export default function NotificationBellDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    refetchStats();
+    refetchNotifications();
+  }, [isOpen, refetchNotifications, refetchStats]);
+
   const unreadCount = stats?.unreadCount || 0;
   const recentNotifications = notifications.slice(0, 5);
 
@@ -48,8 +60,8 @@ export default function NotificationBellDropdown() {
       >
         <Bell size={20} />
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#FFC83D] text-[10px] font-bold text-[#003377] ring-2 ring-white dark:ring-slate-900">
-            {unreadCount > 9 ? "9+" : unreadCount}
+          <span key={unreadCount} className="absolute -right-1.5 -top-1.5 flex min-h-5 min-w-5 animate-in zoom-in-75 items-center justify-center rounded-full bg-[#FFC83D] px-1 text-xs font-bold text-[#003377] ring-2 ring-white dark:ring-slate-900" aria-label={`${unreadCount} unread notifications`}>
+            {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
       </button>
@@ -64,7 +76,7 @@ export default function NotificationBellDropdown() {
                 ការជូនដំណឹង
               </span>
               {unreadCount > 0 && (
-                <span className="rounded-full bg-[#FFC83D]/20 px-2 py-0.5 text-[11px] font-bold text-[#003377] dark:text-[#FFC83D]">
+                <span className="rounded-full bg-[#FFC83D]/20 px-2 py-0.5 text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
                   {unreadCount} ថ្មី
                 </span>
               )}
@@ -74,7 +86,7 @@ export default function NotificationBellDropdown() {
               <button
                 type="button"
                 onClick={() => markAllAsRead()}
-                className="text-[11px] font-semibold text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D] flex items-center gap-1"
+                className="text-xs font-semibold text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D] flex items-center gap-1"
               >
                 <CheckCheck size={14} />
                 <span>អានទាំងអស់</span>
@@ -112,7 +124,7 @@ export default function NotificationBellDropdown() {
                     <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
                       {item.titleKh}
                     </p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
                       {item.messageKh}
                     </p>
                   </div>

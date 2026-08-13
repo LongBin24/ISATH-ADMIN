@@ -106,7 +106,7 @@ export default function PWAInstallPrompt() {
               <p className="text-xs font-bold text-white font-google-sans">
                 ដំឡើងកម្មវិធី iStash លើទូរស័ព្ទដៃ
               </p>
-              <p className="text-[11px] text-slate-300 line-clamp-1">
+              <p className="text-xs text-slate-300 line-clamp-1">
                 ប្រើប្រាស់លឿន ងាយស្រួល និងទទួលបានការជូនដំណឹង
               </p>
             </div>

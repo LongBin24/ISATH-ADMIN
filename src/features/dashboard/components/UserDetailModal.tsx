@@ -35,7 +35,7 @@ export default function UserDetailModal({
   const [suspendUser, { isLoading: isSuspending }] = useSuspendUserMutation();
   const [reactivateUser, { isLoading: isReactivating }] = useReactivateUserMutation();
 
-  const raw = userDetailRes?.data || user?.rawUser;
+  const raw = userDetailRes || user?.rawUser;
   const isSuspended = raw?.accountStatus === "SUSPENDED" || user?.status === "suspended";
   const avatarUrl = raw?.profileImageUrl || user?.avatarUrl;
   const displayName =
@@ -141,7 +141,7 @@ export default function UserDetailModal({
                     <p className="font-semibold text-slate-700 dark:text-slate-200 mt-0.5 flex items-center gap-1">
                       {isOnboardingLoading ? (
                         <span className="text-slate-400">កំពុងទាញយក...</span>
-                      ) : onboardingRes?.data?.onboardingCompleted || raw?.onboardingCompleted ? (
+                      ) : onboardingRes?.onboardingCompleted || raw?.onboardingCompleted ? (
                         <span className="text-emerald-600 flex items-center gap-1">
                           <CheckCircle className="size-3.5" /> រួចរាល់
                         </span>

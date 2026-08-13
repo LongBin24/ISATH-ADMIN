@@ -1,5 +1,5 @@
-import { AlertPage } from "@/features/alert/components/AlertPage";
+import AlertRuleManager from "@/features/alert/AlertRuleManager";
 
 export default function AlertRulesDashboardPage() {
-  return <AlertPage />;
+  return <AlertRuleManager />;
 }

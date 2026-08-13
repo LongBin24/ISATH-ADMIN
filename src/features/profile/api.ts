@@ -1,4 +1,5 @@
 import { baseApi } from "@/api/baseApi";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import {
   UserProfile,
   CurrencyCode,
@@ -14,25 +15,48 @@ type ApiResponse<T> = { data: T };
 type UserMeResponse = {
   profile: {
     id: string;
+    keycloakUserId?: string;
     username: string;
     firstName?: string;
     lastName?: string;
     displayName?: string;
     email?: string;
+    emailVerified?: boolean;
     phoneNumber?: string;
     profileImageUrl?: string;
+    dateOfBirth?: string;
+    gender?: "MALE" | "FEMALE" | "OTHER" | "PREFER_NOT_TO_SAY";
+    occupation?: string;
+    addressLine1?: string;
+    addressLine2?: string;
     city?: string;
+    stateProvince?: string;
+    postalCode?: string;
+    countryCode?: string;
+    profileCompleted?: boolean;
+    onboardingCompleted?: boolean;
     accountStatus?: "ACTIVE" | "SUSPENDED" | "DELETED";
+    termsAcceptedAt?: string;
+    privacyPolicyAcceptedAt?: string;
     createdAt?: string;
+    updatedAt?: string;
+    deletedAt?: string;
   };
   preferences?: {
     preferredCurrencyCode?: string;
+    languageCode?: string;
+    timezone?: string;
+    theme?: string;
     emailNotifications?: boolean;
     inAppNotifications?: boolean;
   };
 };
 
 const supportedCurrencies = new Set<CurrencyCode>(["KHR", "USD", "EUR", "THB", "JPY"]);
+
+function toDateOnly(value?: string): string {
+  return value?.slice(0, 10) ?? "";
+}
 
 function toUserProfile(response: ApiResponse<UserMeResponse>): UserProfile {
   const { profile, preferences } = response.data;
@@ -42,11 +66,13 @@ function toUserProfile(response: ApiResponse<UserMeResponse>): UserProfile {
 
   return {
     id: profile.id,
+    keycloakUserId: profile.keycloakUserId ?? "",
     username: profile.username,
     firstName: profile.firstName ?? "",
     lastName: profile.lastName ?? "",
     displayName: profile.displayName ?? profile.username,
     email: profile.email ?? "",
+    emailVerified: profile.emailVerified ?? false,
     phoneNumber: profile.phoneNumber ?? "",
     avatar: profile.profileImageUrl ?? "https://api.dicebear.com/7.x/initials/svg?seed=" + encodeURIComponent(profile.username),
     isDefaultAvatar: !profile.profileImageUrl,
@@ -54,7 +80,7 @@ function toUserProfile(response: ApiResponse<UserMeResponse>): UserProfile {
     role: "",
     department: "",
     location: profile.city ?? "",
-    joinDate: profile.createdAt ?? "",
+    joinDate: toDateOnly(profile.createdAt),
     lastActive: "",
     status: profile.accountStatus === "ACTIVE" ? "active" : "inactive",
     preferredCurrency,
@@ -66,6 +92,23 @@ function toUserProfile(response: ApiResponse<UserMeResponse>): UserProfile {
       weeklyReport: false,
       sound: false,
     },
+    dateOfBirth: profile.dateOfBirth ?? "",
+    gender: profile.gender ?? "",
+    occupation: profile.occupation ?? "",
+    addressLine1: profile.addressLine1 ?? "",
+    addressLine2: profile.addressLine2 ?? "",
+    stateProvince: profile.stateProvince ?? "",
+    postalCode: profile.postalCode ?? "",
+    countryCode: profile.countryCode ?? "",
+    profileCompleted: profile.profileCompleted ?? false,
+    onboardingCompleted: profile.onboardingCompleted ?? false,
+    termsAcceptedAt: toDateOnly(profile.termsAcceptedAt),
+    privacyPolicyAcceptedAt: toDateOnly(profile.privacyPolicyAcceptedAt),
+    updatedAt: toDateOnly(profile.updatedAt),
+    deletedAt: toDateOnly(profile.deletedAt),
+    languageCode: preferences?.languageCode ?? "",
+    timezone: preferences?.timezone ?? "",
+    theme: preferences?.theme ?? "",
   };
 }
 
@@ -74,25 +117,20 @@ export const profileApi = baseApi.injectEndpoints({
     getProfile: builder.query<UserProfile, void>({
       async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
         const result = await baseQuery("users/me");
-        if (result.data) {
-          try {
-            return { data: toUserProfile(result as any) };
-          } catch {
-            return { data: result.data as UserProfile };
-          }
+        if (result.error) {
+          console.error("[profile] GET users/me failed", result.error);
+          return { error: result.error };
         }
-        return {
-          data: {
-            id: "admin-001",
-            username: "admin",
-            displayName: "អ្នកគ្រប់គ្រងប្រព័ន្ធ",
-            email: "admin@istash.com",
-            role: "ADMIN",
-            avatar: "https://ui-avatars.com/api/?name=Admin&background=003377&color=fff",
-            status: "active",
-            notifications: { email: true, push: true }
-          } as any
-        };
+        try {
+          return { data: toUserProfile(result.data as unknown as ApiResponse<UserMeResponse>) };
+        } catch (parseError) {
+          console.error("[profile] GET users/me returned an unexpected shape", parseError, result.data);
+          const error: FetchBaseQueryError = {
+            status: "CUSTOM_ERROR",
+            error: "Unexpected response shape from /users/me",
+          };
+          return { error };
+        }
       },
       providesTags: ["Profile"],
     }),
@@ -122,13 +160,23 @@ export const profileApi = baseApi.injectEndpoints({
       transformResponse: toUserProfile,
       invalidatesTags: ["Profile"],
     }),
+    uploadAvatarFile: builder.mutation<UserProfile, File>({
+      query: (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        return {
+          url: "users/me/avatar",
+          method: "PUT",
+          body: formData,
+        };
+      },
+      transformResponse: toUserProfile,
+      invalidatesTags: ["Profile"],
+    }),
     resetAvatar: builder.mutation<UserProfile, void>({
       query: () => ({
-        url: "users/me",
-        method: "PATCH",
-        body: {
-          profileImageUrl: "",
-        },
+        url: "users/me/avatar",
+        method: "DELETE",
       }),
       transformResponse: toUserProfile,
       invalidatesTags: ["Profile"],
@@ -168,6 +216,7 @@ export const {
   useGetProfileQuery,
   useUpdateProfileMutation,
   useUploadAvatarMutation,
+  useUploadAvatarFileMutation,
   useResetAvatarMutation,
   useChangePasswordMutation,
   useUpdateCurrencyMutation,
