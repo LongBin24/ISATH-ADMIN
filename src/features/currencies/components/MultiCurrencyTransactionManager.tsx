@@ -209,9 +209,9 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               type="button"
               onClick={onSync}
               disabled={isSyncing}
-              className="flex items-center gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition disabled:opacity-50 border border-slate-200 dark:border-slate-750"
+              className="flex items-center gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 dark:hover:text-white transition disabled:opacity-50 border border-slate-200 dark:border-slate-700"
             >
-              <RefreshCw size={14} className={isSyncing ? "animate-spin text-[#003377]" : ""} />
+              <RefreshCw size={14} className={isSyncing ? "animate-spin text-[#003377] dark:text-[#FFC83D]" : ""} />
               <span>{isSyncing ? "កំពុងធ្វើសមកាលកម្ម..." : "ធ្វើសមកាលកម្មអត្រាប្តូរប្រាក់"}</span>
             </button>
 
@@ -246,7 +246,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                   className={`flex items-center justify-between p-3 rounded-2xl text-xs font-bold transition border ${
                     isSelected
                       ? "bg-[#003377] text-white border-[#003377] shadow-md dark:bg-[#FFC83D] dark:text-[#003377] dark:border-[#FFC83D]"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-750"
+                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-600 dark:hover:text-white"
                   }`}
                 >
                   <div className="flex flex-col text-left">
@@ -558,7 +558,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-2xl border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="rounded-2xl border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
                 >
                   បោះបង់
                 </button>

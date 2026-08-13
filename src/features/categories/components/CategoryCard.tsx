@@ -14,13 +14,13 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
 
   return (
     <article
-      className="group relative flex min-h-[217px] flex-col rounded-[20px] border border-slate-900/10 bg-white p-5 shadow-[0_2px_3px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+      className="group relative flex min-h-[217px] flex-col rounded-[20px] border border-slate-900/10 bg-white p-5 shadow-[0_2px_3px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600"
     >
       <div className="absolute right-4 top-4 z-10 flex gap-1 rounded-xl border border-slate-100 bg-white/95 p-1 opacity-0 shadow-sm transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 dark:border-slate-700 dark:bg-slate-800/95">
-        <button type="button" onClick={() => onEdit(category)} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-[#003377] dark:hover:bg-slate-700" aria-label={`កែសម្រួល ${category.name}`}>
+        <button type="button" onClick={() => onEdit(category)} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-[#003377] dark:hover:bg-slate-600 dark:hover:text-white" aria-label={`កែសម្រួល ${category.name}`}>
           <Pencil className="size-4" />
         </button>
-        <button type="button" onClick={() => onDelete(category)} className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-slate-700" aria-label={`លុប ${category.name}`}>
+        <button type="button" onClick={() => onDelete(category)} className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/60 dark:hover:text-rose-300" aria-label={`លុប ${category.name}`}>
           <Trash2 className="size-4" />
         </button>
       </div>

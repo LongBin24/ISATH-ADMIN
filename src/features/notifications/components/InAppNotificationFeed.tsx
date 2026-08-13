@@ -183,7 +183,7 @@ export default function InAppNotificationFeed() {
             className={`rounded-2xl px-3.5 py-1.5 text-xs font-bold transition ${
               selectedCategoryFilter === "ALL"
                 ? "bg-[#003377] text-white dark:bg-[#FFC83D] dark:text-[#003377]"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-600 dark:hover:text-white"
             }`}
           >
             ទាំងអស់
@@ -197,7 +197,7 @@ export default function InAppNotificationFeed() {
               className={`flex items-center gap-1.5 rounded-2xl px-3 py-1.5 text-xs font-semibold transition ${
                 selectedCategoryFilter === cat.id
                   ? "bg-[#003377] text-white dark:bg-[#FFC83D] dark:text-[#003377]"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-600 dark:hover:text-white"
               }`}
             >
               <span>{cat.nameKh}</span>

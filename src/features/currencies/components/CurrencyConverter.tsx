@@ -132,7 +132,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
             <button
               type="button"
               onClick={handleSwap}
-              className="mt-5 p-2.5 rounded-2xl bg-slate-100 hover:bg-[#FFC83D]/20 text-[#003377] dark:text-[#FFC83D] transition-colors border border-slate-200 dark:bg-slate-800 dark:border-slate-700"
+              className="mt-5 p-2.5 rounded-2xl bg-slate-100 hover:bg-[#FFC83D]/20 text-[#003377] dark:text-[#FFC83D] transition-colors border border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-500 dark:hover:bg-slate-600 dark:hover:text-white"
             >
               <ArrowDownUp className="w-4 h-4" />
             </button>
@@ -163,7 +163,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
       </div>
 
       {/* Result Display Box */}
-      <div className="mt-8 p-6 bg-[#003377] rounded-3xl text-white shadow-md dark:border-slate-800 dark:bg-slate-950">
+      <div className="mt-8 p-6 bg-[#003377] rounded-3xl text-white shadow-md dark:border dark:border-slate-700 dark:bg-slate-800">
         <div className="text-xs text-[#FFC83D] font-bold mb-1">
           លទ្ធផលបំប្លែងទឹកប្រាក់
         </div>

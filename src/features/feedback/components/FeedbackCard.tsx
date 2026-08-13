@@ -49,7 +49,7 @@ export default function FeedbackCard({ feedback, onView }: FeedbackCardProps) {
         <button
           type="button"
           onClick={() => onView(feedback.id)}
-          className="inline-flex w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-[#003377] transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 sm:w-auto sm:self-start sm:rounded-full"
+          className="inline-flex w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-[#003377] transition hover:bg-[#FFC83D] hover:text-[#003377] hover:border-[#FFC83D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-600 dark:hover:text-white dark:hover:border-slate-500 sm:w-auto sm:self-start sm:rounded-full"
         >
           View details <ChevronRight size={16} />
         </button>

@@ -42,9 +42,9 @@ export default function AIConfigForm() {
         <button
           type="button"
           onClick={() => router.push("/dashboard")}
-          className="inline-flex items-center justify-center gap-2 rounded-full  px-5 py-3 text-sm font-semibold text-[#003377] transition hover:bg-[#f7c948] dark:bg-[#003377] dark:text-slate-300"
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-[#003377] transition hover:border-[#FFC83D] hover:bg-[#FFC83D] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D] dark:hover:text-[#003377]"
         >
-          <ChevronLeft size={18} /> Admin{" "}
+          <ChevronLeft size={18} /> ផ្ទាំងគ្រប់គ្រង
         </button>
       </div>
 
@@ -52,8 +52,8 @@ export default function AIConfigForm() {
         onSubmit={handleSubmit}
         className="grid gap-6 xl:grid-cols-[1.4fr_1fr]"
       >
-        <div className="rounded-4xl border  border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950 ">
-          <div className="space-y-4 mb-2​ text-[#003377]">
+        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="space-y-4 mb-2 text-[#003377]">
             {[
               {
                 label: "AI សកម្ម",
@@ -82,7 +82,7 @@ export default function AIConfigForm() {
             ].map((feature) => (
               <div
                 key={feature.label}
-                className="flex items-center justify-between rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-900"
+                className="flex items-center justify-between rounded-3xl border border-slate-200/80 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-800/50"
               >
                 <div>
                   <p className="font-semibold text-[#003377] dark:text-white">
@@ -109,33 +109,33 @@ export default function AIConfigForm() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-4xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+          <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="mb-6 flex items-center justify-between gap-4">
               <div>
                 <h2 className="mt-3 text-2xl font-bold text-[#003377] dark:text-white">
                   កំណត់ Model
                 </h2>
               </div>
-              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">
+              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
                 Default
               </span>
             </div>
 
             <div className="space-y-3">
-              <p className=" text-[#003377] ">Claude Model</p>
+              <p className="text-[#003377] dark:text-slate-300 font-bold text-xs uppercase tracking-wider">Claude Model</p>
               {models.map((option) => (
                 <button
                   key={option}
                   type="button"
                   onClick={() => setModel(option)}
-                  className={`flex w-full items-center justify-between rounded-3xl border px-4 py-4 text-left text-sm transition ${
+                  className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-sm font-semibold transition ${
                     model === option
-                      ? "border-[#FFC83D] bg-[#FEF3C7] text-slate-500"
-                      : "border-slate-200 bg-white text-[#003377] hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
+                      ? "border-[#FFC83D] bg-[#FFC83D]/15 text-[#003377] dark:text-[#FFC83D]"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-[#FFC83D] hover:text-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
                   }`}
                 >
                   <span>{option}</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                     {model === option ? "Selected" : "Select"}
                   </span>
                 </button>
