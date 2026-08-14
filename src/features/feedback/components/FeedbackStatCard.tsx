@@ -21,7 +21,7 @@ export default function FeedbackStatCard({
 
       <div className="flex min-w-0 items-start justify-between gap-2 sm:gap-4">
         <div className="min-w-0">
-          <p className="truncate text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500 dark:text-slate-400 sm:text-xs sm:tracking-[0.16em]">
+          <p className="truncate text-[10px] font-semibold tracking-normal text-slate-500 dark:text-slate-400 sm:text-xs">
             {title}
           </p>
           <p className="mt-2 text-2xl font-bold text-[#003377] dark:text-white sm:mt-3 sm:text-3xl">
