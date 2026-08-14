@@ -57,3 +57,28 @@ Step 3: Run the project
 npm run dev
 ```
 Navigate to `http://localhost:3000` to begin.
+
+## Deploy to Vercel
+
+1. Import `https://github.com/LongBin24/ISATH-ADMIN` in the Vercel dashboard.
+2. Keep the detected framework preset as **Next.js** and the build command as
+   `npm run build`.
+3. Add every variable from `.env.example` under **Project Settings → Environment
+   Variables**. Use real secret values and set these URLs to the production domain:
+
+   ```env
+   BETTER_AUTH_URL=https://your-project.vercel.app
+   NEXT_PUBLIC_BETTER_AUTH_URL=https://your-project.vercel.app
+   ```
+
+4. Add this callback URL to the Keycloak client's allowed redirect URIs:
+
+   ```text
+   https://your-project.vercel.app/api/auth/callback/keycloak
+   ```
+
+5. Deploy. When adding a custom domain later, update both auth URL variables and
+   the Keycloak redirect URI to that domain, then redeploy.
+
+Never commit `.env` files or real secrets. `NEXT_PUBLIC_*` values are included in
+the browser bundle and must not contain credentials.
