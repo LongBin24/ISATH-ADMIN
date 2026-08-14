@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { TrendingUp, TrendingDown, Globe } from "lucide-react";
 import {
@@ -5,6 +7,7 @@ import {
   useActivateCurrencyMutation,
   useDeactivateCurrencyMutation,
 } from "../CurrencyApi";
+import { useI18n } from "@/hooks/use-i18n";
 import toast from "react-hot-toast";
 
 interface ExchangeRateListProps {
@@ -28,6 +31,7 @@ const KHMER_CURRENCY_NAMES: Record<string, string> = {
 };
 
 export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoading }) => {
+  const { dict, isEnglish } = useI18n();
   const [activateCurrency] = useActivateCurrencyMutation();
   const [deactivateCurrency] = useDeactivateCurrencyMutation();
 
@@ -35,13 +39,21 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
     try {
       if (currentActive) {
         await deactivateCurrency(code).unwrap();
-        toast.success(`បានបិទដំណើរការ ${code} ជោគជ័យ`);
+        toast.success(
+          isEnglish
+            ? `Successfully deactivated ${code}`
+            : `បានបិទដំណើរការ ${code} ជោគជ័យ`
+        );
       } else {
         await activateCurrency(code).unwrap();
-        toast.success(`បានបើកដំណើរការ ${code} ជោគជ័យ`);
+        toast.success(
+          isEnglish
+            ? `Successfully activated ${code}`
+            : `បានបើកដំណើរការ ${code} ជោគជ័យ`
+        );
       }
     } catch {
-      toast.error("មានបញ្ហាក្នុងការផ្លាស់ប្តូរស្ថានភាព");
+      toast.error(dict.common.error);
     }
   };
 
@@ -51,7 +63,7 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
         <div className="animate-spin text-[#003377] dark:text-[#FFC83D]">
           <Globe className="w-8 h-8" />
         </div>
-        <p className="text-xs font-bold text-slate-500">កំពុងផ្ទុកអត្រាប្តូរប្រាក់...</p>
+        <p className="text-xs font-bold text-slate-500">{dict.currencies.loadingRates}</p>
       </div>
     );
   }
@@ -65,10 +77,10 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
         </div>
         <div>
           <h2 className="text-lg font-bold text-[#003377] dark:text-white">
-            តារាងអត្រាប្តូរប្រាក់
+            {dict.currencies.exchangeRatesTable}
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            អត្រាប្តូរប្រាក់បច្ចុប្បន្នធៀបនឹង 1 ដុល្លារអាមេរិក (USD)
+            {dict.currencies.exchangeRatesTableSubtitle}
           </p>
         </div>
       </div>
@@ -78,7 +90,9 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
         {rates?.map((item) => {
           const changeVal = item.change ?? 0;
           const isPositive = changeVal >= 0;
-          const khmerName = KHMER_CURRENCY_NAMES[item.code] || item.name;
+          const currencyLabel = isEnglish
+            ? item.name
+            : KHMER_CURRENCY_NAMES[item.code] || item.name;
 
           return (
             <div
@@ -101,11 +115,11 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                           : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                       }`}
                     >
-                      {item.active ? "សកម្ម" : "អសកម្ម"}
+                      {item.active ? dict.common.active : dict.common.inactive}
                     </span>
                   </div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">
-                    {khmerName}
+                    {currencyLabel}
                   </div>
                 </div>
               </div>

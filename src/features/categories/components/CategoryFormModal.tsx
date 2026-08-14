@@ -6,6 +6,7 @@ import { useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { CategoryFormValues } from "../schema";
 import { Category } from "../types";
+import { useI18n } from "@/hooks/use-i18n";
 
 interface CategoryFormModalProps {
   isOpen: boolean;
@@ -43,7 +44,7 @@ const ICONS = [
 
 const DEFAULT_COLOR = "#22c55e";
 const inputClass =
-  "h-12 w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 text-sm text-slate-800 outline-none transition focus:border-[#facc15] focus:ring-2 focus:ring-[#facc15]/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
+  "h-12 w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 text-sm text-slate-800 outline-none transition focus:border-[#facc15] focus:ring-2 focus:ring-[#facc15]/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 font-google-sans";
 
 export function CategoryFormModal({
   isOpen,
@@ -54,6 +55,8 @@ export function CategoryFormModal({
   defaultType,
   isLoading = false,
 }: CategoryFormModalProps) {
+  const { dict, isEnglish } = useI18n();
+
   const {
     register,
     handleSubmit,
@@ -109,7 +112,7 @@ export function CategoryFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm font-google-sans"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !isLoading) onClose();
       }}
@@ -123,13 +126,19 @@ export function CategoryFormModal({
         <header className="flex items-center justify-between border-b border-slate-200 px-6 py-5 dark:border-slate-700">
           <div>
             <h2 id="category-form-title" className="text-2xl font-bold text-[#003377] dark:text-slate-100">
-              {initialData ? "កែសម្រួលប្រភេទ" : "បង្កើតប្រភេទថ្មី"}
+              {initialData ? dict.categories.editCategory : dict.categories.createCategory}
             </h2>
             <p className="mt-1 text-sm text-slate-500">
-              កំណត់ព័ត៌មាន និងរបៀបរៀបចំប្រភេទនេះ។
+              {dict.categories.categoryInfo}
             </p>
           </div>
-          <button type="button" disabled={isLoading} onClick={onClose} aria-label="បិទ" className="rounded-xl p-2 hover:bg-slate-100 disabled:opacity-50 dark:hover:bg-slate-800">
+          <button
+            type="button"
+            disabled={isLoading}
+            onClick={onClose}
+            aria-label={dict.common.close}
+            className="rounded-xl p-2 hover:bg-slate-100 disabled:opacity-50 dark:hover:bg-slate-800"
+          >
             <Image src="/categories/form-close.svg" alt="" width={20} height={20} />
           </button>
         </header>
@@ -145,24 +154,26 @@ export function CategoryFormModal({
               formErrors.defaultCategory?.message ??
               formErrors.color?.message ??
               formErrors.icon?.message ??
-              "សូមពិនិត្យព័ត៌មានដែលបានបន្លិច។";
+              (isEnglish ? "Please check highlighted fields." : "សូមពិនិត្យព័ត៌មានដែលបានបន្លិច។");
 
             toast.error(message, { id: "category-form-validation" });
           })}
           className="space-y-5 p-6"
         >
           <div>
-            <label htmlFor="category-name" className="mb-2 block text-sm font-bold text-[#003377] dark:text-slate-100">ឈ្មោះប្រភេទ</label>
+            <label htmlFor="category-name" className="mb-2 block text-sm font-bold text-[#003377] dark:text-slate-100">
+              {dict.categories.categoryName}
+            </label>
             <input
               id="category-name"
               autoFocus
               maxLength={100}
               {...register("name", {
-                required: "សូមបញ្ចូលឈ្មោះប្រភេទ។",
+                required: isEnglish ? "Please enter category name." : "សូមបញ្ចូលឈ្មោះប្រភេទ។",
                 validate: (value) =>
-                  value.trim().length > 0 || "សូមបញ្ចូលឈ្មោះប្រភេទ។",
+                  value.trim().length > 0 || (isEnglish ? "Please enter category name." : "សូមបញ្ចូលឈ្មោះប្រភេទ។"),
               })}
-              placeholder="ឧទាហរណ៍៖ ការធ្វើដំណើរ"
+              placeholder={dict.categories.categoryNamePlaceholder}
               className={inputClass}
             />
             {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
@@ -170,20 +181,33 @@ export function CategoryFormModal({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <fieldset>
-              <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">ប្រភេទប្រតិបត្តិការ</legend>
+              <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">
+                {dict.categories.transactionType}
+              </legend>
               <div className="grid h-12 grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800">
                 {(["expense", "income"] as const).map((type) => (
-                  <button key={type} type="button" onClick={() => setValue("type", type, { shouldDirty: true })} className={`rounded-xl text-sm font-semibold capitalize transition ${selectedType === type ? "bg-white text-[#003377] shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500"}`}>
-                    {type === "income" ? "ចំណូល" : "ចំណាយ"}
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setValue("type", type, { shouldDirty: true })}
+                    className={`rounded-xl text-sm font-semibold capitalize transition ${
+                      selectedType === type
+                        ? "bg-white text-[#003377] shadow-sm dark:bg-slate-700 dark:text-white"
+                        : "text-slate-500"
+                    }`}
+                  >
+                    {type === "income" ? dict.transactions.income : dict.transactions.expense}
                   </button>
                 ))}
               </div>
             </fieldset>
 
             <div>
-              <label htmlFor="category-parent" className="mb-2 block text-sm font-bold text-[#003377] dark:text-slate-100">ប្រភេទមេ</label>
+              <label htmlFor="category-parent" className="mb-2 block text-sm font-bold text-[#003377] dark:text-slate-100">
+                {dict.categories.parentCategory}
+              </label>
               <select id="category-parent" {...register("parentId", { setValueAs: (value) => value || null })} className={inputClass}>
-                <option value="">គ្មានប្រភេទមេ (ប្រភេទដើម)</option>
+                <option value="">{dict.categories.noParentRoot}</option>
                 {categories.filter((category) => category.id !== initialData?.id).map((category) => (
                   <option key={category.id} value={category.id}>{category.name}</option>
                 ))}
@@ -193,9 +217,15 @@ export function CategoryFormModal({
 
           {!initialData && (
             <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
-              <h3 className="font-bold text-[#003377] dark:text-slate-100">ការកំណត់ប្រភេទ</h3>
-              <p className="mb-4 mt-1 text-xs text-slate-500">លេខកូដនឹងបង្កើតដោយស្វ័យប្រវត្តិ ប្រសិនបើទុកទទេ។</p>
-              <label htmlFor="category-key" className="sr-only">លេខកូដប្រភេទ</label>
+              <h3 className="font-bold text-[#003377] dark:text-slate-100">
+                {dict.categories.categorySettings}
+              </h3>
+              <p className="mb-4 mt-1 text-xs text-slate-500">
+                {dict.categories.keyAutoGenerateNote}
+              </p>
+              <label htmlFor="category-key" className="sr-only">
+                {dict.categories.categoryKeyPlaceholder}
+              </label>
               <input
                 id="category-key"
                 maxLength={100}
@@ -204,9 +234,11 @@ export function CategoryFormModal({
                   validate: (value) =>
                     !value ||
                     /^[A-Z][A-Z0-9_]*$/.test(value) ||
-                    "លេខកូដត្រូវចាប់ផ្តើមដោយអក្សរធំ ហើយប្រើតែអក្សរធំ លេខ ឬសញ្ញាគូសក្រោម។",
+                    (isEnglish
+                      ? "Key must start with uppercase and contain only A-Z, 0-9, or _"
+                      : "លេខកូដត្រូវចាប់ផ្តើមដោយអក្សរធំ ហើយប្រើតែអក្សរធំ លេខ ឬសញ្ញាគូសក្រោម។"),
                 })}
-                placeholder="លេខកូដប្រភេទ (មិនចាំបាច់)"
+                placeholder={dict.categories.categoryKeyPlaceholder}
                 className={`${inputClass} font-mono uppercase`}
               />
               {errors.categoryKey && <p className="mt-1 text-xs text-red-500">{errors.categoryKey.message}</p>}
@@ -214,7 +246,10 @@ export function CategoryFormModal({
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-white p-3 dark:bg-slate-900">
                   <input type="checkbox" {...register("systemCategory")} className="mt-1 size-4 accent-[#003377]" />
-                  <span><span className="block text-sm font-semibold">ប្រភេទប្រព័ន្ធ</span><span className="block text-xs text-slate-500">គ្រប់គ្រងសម្រាប់ប្រព័ន្ធទាំងមូល។</span></span>
+                  <span>
+                    <span className="block text-sm font-semibold">{dict.categories.systemCategoryTitle}</span>
+                    <span className="block text-xs text-slate-500">{dict.categories.systemCategorySubtitle}</span>
+                  </span>
                 </label>
                 <label className={`flex items-start gap-3 rounded-xl bg-white p-3 dark:bg-slate-900 ${isSystemCategory ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}>
                   <input
@@ -227,7 +262,10 @@ export function CategoryFormModal({
                     }}
                     className={`mt-1 size-4 accent-[#003377] ${!isSystemCategory ? "pointer-events-none" : ""}`}
                   />
-                  <span><span className="block text-sm font-semibold">ប្រភេទលំនាំដើម</span><span className="block text-xs text-slate-500">តម្រូវឱ្យជាប្រភេទប្រព័ន្ធ។</span></span>
+                  <span>
+                    <span className="block text-sm font-semibold">{dict.categories.defaultCategoryTitle}</span>
+                    <span className="block text-xs text-slate-500">{dict.categories.defaultCategorySubtitle}</span>
+                  </span>
                 </label>
               </div>
               {errors.defaultCategory && <p className="mt-2 text-xs text-red-500">{errors.defaultCategory.message}</p>}
@@ -235,29 +273,65 @@ export function CategoryFormModal({
           )}
 
           <fieldset>
-            <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">ពណ៌</legend>
+            <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">
+              {dict.categories.color}
+            </legend>
             <div className="flex flex-wrap gap-2.5">
               {COLORS.map((color) => (
-                <button key={color} type="button" aria-label={`ប្រើពណ៌ ${color}`} aria-pressed={selectedColor === color} onClick={() => setValue("color", color, { shouldDirty: true })} className="size-9 rounded-full border-2 transition hover:scale-105" style={{ backgroundColor: color, borderColor: selectedColor === color ? "#0f172a" : "transparent" }} />
+                <button
+                  key={color}
+                  type="button"
+                  aria-label={`${dict.categories.color} ${color}`}
+                  aria-pressed={selectedColor === color}
+                  onClick={() => setValue("color", color, { shouldDirty: true })}
+                  className="size-9 rounded-full border-2 transition hover:scale-105"
+                  style={{ backgroundColor: color, borderColor: selectedColor === color ? "#0f172a" : "transparent" }}
+                />
               ))}
             </div>
           </fieldset>
 
           <fieldset>
-            <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">រូបតំណាង</legend>
+            <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">
+              {dict.categories.icon}
+            </legend>
             <div className="flex flex-wrap gap-2.5">
               {ICONS.map(([name, asset]) => (
-                <button key={name} type="button" aria-label={`ប្រើរូបតំណាង ${name}`} aria-pressed={selectedIcon === name} onClick={() => setValue("icon", name, { shouldDirty: true })} className={`flex size-11 items-center justify-center rounded-2xl border-2 transition ${selectedIcon === name ? "border-[#facc15] bg-[#facc15]/10" : "border-slate-200 dark:border-slate-700"}`}>
+                <button
+                  key={name}
+                  type="button"
+                  aria-label={`${dict.categories.icon} ${name}`}
+                  aria-pressed={selectedIcon === name}
+                  onClick={() => setValue("icon", name, { shouldDirty: true })}
+                  className={`flex size-11 items-center justify-center rounded-2xl border-2 transition ${
+                    selectedIcon === name ? "border-[#facc15] bg-[#facc15]/10" : "border-slate-200 dark:border-slate-700"
+                  }`}
+                >
                   <Image src={asset} alt="" width={20} height={20} />
                 </button>
               ))}
             </div>
           </fieldset>
 
-          <div className="flex gap-3 pt-1">
-            <button type="button" disabled={isLoading} onClick={onClose} className="h-12 flex-1 rounded-2xl border border-slate-200 font-bold hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-slate-800">បោះបង់</button>
-            <button type="submit" disabled={isLoading} className="h-12 flex-1 rounded-2xl bg-[#facc15] font-bold text-slate-900 hover:bg-[#f4c20d] disabled:cursor-wait disabled:opacity-60">
-              {isLoading ? "កំពុងរក្សាទុក..." : initialData ? "កែសម្រួល" : "បង្កើត"}
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={onClose}
+              className="h-12 flex-1 rounded-2xl border border-slate-200 font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 transition whitespace-nowrap"
+            >
+              {dict.common.cancel}
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="h-12 flex-1 rounded-2xl bg-[#facc15] font-bold text-[#003377] hover:bg-[#f4c20d] disabled:cursor-wait disabled:opacity-60 transition shadow-md whitespace-nowrap"
+            >
+              {isLoading
+                ? dict.common.loading
+                : initialData
+                  ? dict.categories.editCategory
+                  : dict.categories.createCategory}
             </button>
           </div>
         </form>

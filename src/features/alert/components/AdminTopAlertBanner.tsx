@@ -4,8 +4,10 @@ import React, { useState, useMemo } from "react";
 import { AlertTriangle, BellRing, X, ArrowRight, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useGetAlertRulesQuery } from "@/features/alert/hooks";
+import { useI18n } from "@/hooks/use-i18n";
 
 export function AdminTopAlertBanner() {
+  const { dict, locale, isEnglish } = useI18n();
   const [dismissedRuleIds, setDismissedRuleIds] = useState<string[]>([]);
   const { data: alertRules = [] } = useGetAlertRulesQuery(undefined, {
     pollingInterval: 15000, // Poll every 15 seconds for real-time alert updates
@@ -69,15 +71,14 @@ export function AdminTopAlertBanner() {
               [{activeAlert.severity}] {activeAlert.ruleName}:
             </span>
             <span className="opacity-95">
-              {activeAlert.ruleConfiguration?.message ||
-                "មានទិន្នន័យការជូនដំណឹងថ្មីសម្រាប់អ្នកគ្រប់គ្រង (New alert data available for admin)"}
+              {activeAlert.ruleConfiguration?.message || dict.alerts.topBannerDefault}
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <Link
-            href="/alert"
+            href={`/${locale}/alert`}
             className={`inline-flex items-center gap-1 rounded-lg px-3 py-1 text-xs font-bold transition hover:opacity-90 ${
               isCritical
                 ? "bg-white text-red-700 hover:bg-red-50"
@@ -86,7 +87,7 @@ export function AdminTopAlertBanner() {
                   : "bg-[#FFC83D] text-[#003377] hover:bg-amber-300"
             }`}
           >
-            <span>មើលការជូនដំណឹង</span>
+            <span>{dict.alerts.topBannerView}</span>
             <ArrowRight className="h-3 w-3" />
           </Link>
 

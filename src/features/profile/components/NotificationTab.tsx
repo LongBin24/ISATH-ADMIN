@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { UserNotificationSettings, UserProfile } from "../types";
 import { useUpdateNotificationsMutation } from "../api";
 import { Bell, Mail, ShieldAlert, Sparkles, Volume2, Calendar, RefreshCw, Save } from "lucide-react";
+import { useI18n } from "@/hooks/use-i18n";
 
 interface NotificationTabProps {
   profile: UserProfile;
@@ -16,6 +17,7 @@ export default function NotificationTab({
   onSuccess,
   onError,
 }: NotificationTabProps) {
+  const { dict, isEnglish } = useI18n();
   const [settings, setSettings] = useState<UserNotificationSettings>(
     profile.notifications
   );
@@ -32,52 +34,52 @@ export default function NotificationTab({
   const handleSave = async () => {
     try {
       await updateNotifications({ notifications: settings }).unwrap();
-      onSuccess("បានធ្វើបច្ចុប្បន្នភាពការកំណត់ជូនដំណឹងដោយជោគជ័យ!");
+      onSuccess(dict.profile.notifSuccess);
     } catch (err) {
-      onError("មិនអាចរក្សាទុកការកំណត់ជូនដំណឹងបានទេ សូមព្យាយាមម្តងទៀត");
+      onError(dict.profile.notifError);
     }
   };
 
   const items: {
     key: keyof UserNotificationSettings;
-    titleKhmer: string;
-    descKhmer: string;
+    title: string;
+    desc: string;
     icon: React.ComponentType<{ className?: string }>;
   }[] = [
     {
       key: "email",
-      titleKhmer: "ការជូនដំណឹងតាមអ៊ីមែល",
-      descKhmer: "ទទួលអ៊ីមែលរាល់ពេលមានបច្ចុប្បន្នភាព ឬសកម្មភាពសំខាន់ៗក្នុងប្រព័ន្ធ",
+      title: dict.profile.notifEmailTitle,
+      desc: dict.profile.notifEmailDesc,
       icon: Mail,
     },
     {
       key: "push",
-      titleKhmer: "ការជូនដំណឹងលើកម្មវិធី",
-      descKhmer: "បង្ហាញផ្ទាំងជូនដំណឹងភ្លាមៗនៅលើកម្មវិធី ឬកុំព្យូទ័រ",
+      title: dict.profile.notifPushTitle,
+      desc: dict.profile.notifPushDesc,
       icon: Bell,
     },
     {
       key: "securityAlerts",
-      titleKhmer: "ការព្រមានសុវត្ថិភាព",
-      descKhmer: "ទទួលបានសារព្រមានភ្លាមៗ ពេលមានការចូលប្រើប្រាស់ពីឧបករណ៍ចម្លែក",
+      title: dict.profile.notifSecurityTitle,
+      desc: dict.profile.notifSecurityDesc,
       icon: ShieldAlert,
     },
     {
       key: "productUpdates",
-      titleKhmer: "សេចក្តីប្រកាស និងបច្ចុប្បន្នភាព",
-      descKhmer: "ទទួលព័ត៌មានអំពីមុខងារថ្មីៗ និងការអភិវឌ្ឍន៍ប្រព័ន្ធ អាយស្តាស",
+      title: dict.profile.notifProductTitle,
+      desc: dict.profile.notifProductDesc,
       icon: Sparkles,
     },
     {
       key: "weeklyReport",
-      titleKhmer: "របាយការណ៍សង្ខេបប្រចាំសប្តាហ៍",
-      descKhmer: "ផ្ញើរាយការណ៍សង្ខេបអំពីសកម្មភាពការងារជារៀងរាល់ដើមសប្តាហ៍",
+      title: dict.profile.notifWeeklyTitle,
+      desc: dict.profile.notifWeeklyDesc,
       icon: Calendar,
     },
     {
       key: "sound",
-      titleKhmer: "សំឡេងជូនដំណឹង",
-      descKhmer: "បន្លឺសំឡេងរាល់ពេលមានសារជូនដំណឹងថ្មីៗចូលមកដល់",
+      title: dict.profile.notifSoundTitle,
+      desc: dict.profile.notifSoundDesc,
       icon: Volume2,
     },
   ];
@@ -87,17 +89,16 @@ export default function NotificationTab({
       <div className="border-b border-slate-100 pb-4 dark:border-slate-800 mb-6">
         <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Bell className="h-5 w-5 text-[#003377] dark:text-[#FFC83D]" />
-          កំណត់ការជូនដំណឹង
+          {dict.profile.notificationsTitle}
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          ជ្រើសរើសប្រភេទការជូនដំណឹងដែលអ្នកចង់ទទួលបាន និងវិធីសាស្ត្រក្នុងការផ្ញើសារជូនដំណឹង
+          {dict.profile.notificationsSubtitle}
         </p>
       </div>
 
       <div className="space-y-4 mb-6">
         {items.map((item) => {
           const Icon = item.icon;
-          // កែសម្រួលត្រង់នេះ៖ ដកសញ្ញាចុចចេញពី settings.[item.key]
           const isChecked = settings?.[item.key] ?? false;
           
           return (
@@ -111,10 +112,10 @@ export default function NotificationTab({
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                    {item.titleKhmer}
+                    {item.title}
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    {item.descKhmer}
+                    {item.desc}
                   </p>
                 </div>
               </div>
@@ -151,7 +152,7 @@ export default function NotificationTab({
           ) : (
             <Save className="h-4 w-4" />
           )}
-          រក្សាទុកការកំណត់ជូនដំណឹង
+          {isLoading ? dict.profile.saving : dict.profile.notifSaveBtn}
         </button>
       </div>
     </div>

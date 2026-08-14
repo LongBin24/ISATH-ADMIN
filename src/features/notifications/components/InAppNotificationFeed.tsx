@@ -5,7 +5,6 @@ import {
   Search,
   Filter,
   Check,
-  Trash2,
   Bell,
   Wallet,
   AlertTriangle,
@@ -25,8 +24,10 @@ import {
 import { useNotificationUI } from "../hook";
 import { CATEGORY_CONFIGS } from "../constants";
 import { NotificationCategory } from "../types";
+import { useI18n } from "@/hooks/use-i18n";
 
 export default function InAppNotificationFeed() {
+  const { dict, isEnglish } = useI18n();
   const {
     selectedCategoryFilter,
     searchQuery,
@@ -40,7 +41,6 @@ export default function InAppNotificationFeed() {
   const [markAsRead] = useMarkAsReadMutation();
   const [retryingId, setRetryingId] = React.useState<string | null>(null);
   const [retrySuccessId, setRetrySuccessId] = React.useState<string | null>(null);
-  const [retryErrorMsg, setRetryErrorMsg] = React.useState<string | null>(null);
 
   // Pagination states matching UserTable
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,15 +53,12 @@ export default function InAppNotificationFeed() {
 
   const handleRetryItem = async (id: string) => {
     setRetryingId(id);
-    setRetryErrorMsg(null);
     try {
       await retryDelivery({ notificationId: id }).unwrap();
       setRetrySuccessId(id);
       setTimeout(() => setRetrySuccessId(null), 3000);
-    } catch (err: any) {
-      const msg = err?.data?.message || err?.message || "No failed deliveries to retry.";
-      setRetryErrorMsg(msg);
-      setTimeout(() => setRetryErrorMsg(null), 4000);
+    } catch {
+      // Ignored
     } finally {
       setRetryingId(null);
     }
@@ -74,9 +71,12 @@ export default function InAppNotificationFeed() {
         selectedCategoryFilter === "ALL" ||
         item.category === selectedCategoryFilter ||
         item.notificationType === selectedCategoryFilter ||
-        (selectedCategoryFilter === "DAILY_EXPENSE" && (item.category === "DAILY_REMINDER" || item.notificationType === "DAILY_REMINDER")) ||
-        (selectedCategoryFilter === "SAVINGS_GOAL" && (item.category === "SAVINGS_REMINDER" || item.notificationType === "SAVINGS_REMINDER")) ||
-        (selectedCategoryFilter === "RECURRING_TX" && (item.category === "RECURRING_REMINDER" || item.notificationType === "RECURRING_REMINDER"));
+        (selectedCategoryFilter === "DAILY_EXPENSE" &&
+          (item.category === "DAILY_REMINDER" || item.notificationType === "DAILY_REMINDER")) ||
+        (selectedCategoryFilter === "SAVINGS_GOAL" &&
+          (item.category === "SAVINGS_REMINDER" || item.notificationType === "SAVINGS_REMINDER")) ||
+        (selectedCategoryFilter === "RECURRING_TX" &&
+          (item.category === "RECURRING_REMINDER" || item.notificationType === "RECURRING_REMINDER"));
 
       const query = searchQuery.toLowerCase().trim();
       const matchesSearch =
@@ -121,21 +121,21 @@ export default function InAppNotificationFeed() {
     }
   };
 
-  // Human friendly time diff in Khmer
-  const formatKhmerTimeAgo = (dateStr: string) => {
+  // Human friendly time diff
+  const formatTimeAgo = (dateStr: string) => {
     const diffMs = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diffMs / (1000 * 60));
-    if (mins < 1) return "ទើបតែឥឡូវនេះ";
-    if (mins < 60) return `${mins} នាទីមុន`;
+    if (mins < 1) return dict.notifications.justNow;
+    if (mins < 60) return dict.notifications.minsAgo.replace("{n}", String(mins));
     const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours} ម៉ោងមុន`;
+    if (hours < 24) return dict.notifications.hoursAgo.replace("{n}", String(hours));
     const days = Math.floor(hours / 24);
-    return `${days} ថ្ងៃមុន`;
+    return dict.notifications.daysAgo.replace("{n}", String(days));
   };
 
   return (
-    <div className="space-y-6">
-      {/* Search Bar & Category Filter Pills */}
+    <div className="space-y-6 font-google-sans">
+      {/* Search Bar & Category Filter Card */}
       <div className="flex flex-col gap-4 rounded-3xl bg-white p-5 shadow-sm dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           {/* Search Box */}
@@ -145,7 +145,7 @@ export default function InAppNotificationFeed() {
               type="text"
               value={searchQuery}
               onChange={(e) => changeSearchQuery(e.target.value)}
-              placeholder="ស្វែងរកការជូនដំណឹង..."
+              placeholder={dict.notifications.searchPlaceholder}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-800 outline-none transition focus:border-[#FFC83D] focus:ring-2 focus:ring-[#FFC83D]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             />
           </div>
@@ -153,23 +153,27 @@ export default function InAppNotificationFeed() {
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
               <Filter size={16} />
-              <span>បង្ហាញ {totalItems} នៃ {notifications.length} ការជូនដំណឹង</span>
+              <span>
+                {dict.notifications.filterCount
+                  .replace("{count}", String(totalItems))
+                  .replace("{total}", String(notifications.length))}
+              </span>
             </div>
 
             <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-              <span>បង្ហាញ:</span>
+              <span>{dict.notifications.showRows}</span>
               <select
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                className="rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 font-bold"
               >
-                <option value={5}>5 ជួរ</option>
-                <option value={10}>10 ជួរ</option>
-                <option value={20}>20 ជួរ</option>
-                <option value={50}>50 ជួរ</option>
+                <option value={5}>5 {dict.notifications.rows}</option>
+                <option value={10}>10 {dict.notifications.rows}</option>
+                <option value={20}>20 {dict.notifications.rows}</option>
+                <option value={50}>50 {dict.notifications.rows}</option>
               </select>
             </div>
           </div>
@@ -186,7 +190,7 @@ export default function InAppNotificationFeed() {
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-600 dark:hover:text-white"
             }`}
           >
-            ទាំងអស់
+            {dict.notifications.filterAll}
           </button>
 
           {Object.values(CATEGORY_CONFIGS).map((cat) => (
@@ -200,7 +204,7 @@ export default function InAppNotificationFeed() {
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-600 dark:hover:text-white"
               }`}
             >
-              <span>{cat.nameKh}</span>
+              <span>{isEnglish ? cat.nameEn : cat.nameKh}</span>
             </button>
           ))}
         </div>
@@ -210,7 +214,7 @@ export default function InAppNotificationFeed() {
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-16 space-y-3">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#FFC83D] border-t-transparent" />
-          <p className="text-sm font-semibold text-slate-500">កំពុងទាញយកទិន្នន័យ...</p>
+          <p className="text-sm font-semibold text-slate-500">{dict.notifications.loading}</p>
         </div>
       ) : filteredNotifications.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-3xl bg-white p-12 text-center shadow-sm dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
@@ -218,10 +222,10 @@ export default function InAppNotificationFeed() {
             <Bell size={32} />
           </div>
           <h3 className="mt-4 text-base font-bold text-slate-800 dark:text-slate-100">
-            មិនមានការជូនដំណឹងទេ
+            {dict.notifications.noNotifications}
           </h3>
           <p className="mt-1 text-xs text-slate-500 max-w-sm">
-            គ្មានការជូនដំណឹងដែលត្រូវគ្នានឹងការស្វែងរករបស់អ្នកឡើយ។ អ្នកអាចបង្កើតការជូនដំណឹងសាកល្បងដោយចុចប៊ូតុងខាងលើ។
+            {dict.notifications.noNotificationsDesc}
           </p>
         </div>
       ) : (
@@ -229,6 +233,11 @@ export default function InAppNotificationFeed() {
           <div className="space-y-3.5">
             {paginatedNotifications.map((item) => {
               const config = CATEGORY_CONFIGS[item.category];
+              const categoryTitle = isEnglish
+                ? config?.nameEn || item.category
+                : config?.nameKh || item.category;
+              const displayTitle = isEnglish ? item.title || item.titleKh : item.titleKh || item.title;
+              const displayMessage = isEnglish ? item.message || item.messageKh : item.messageKh || item.message;
 
               return (
                 <div
@@ -258,39 +267,39 @@ export default function InAppNotificationFeed() {
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
-                          {config?.nameKh || item.category}
+                          {categoryTitle}
                         </span>
                         <span className="text-slate-300 dark:text-slate-700">•</span>
                         <span className="text-xs text-slate-400 font-medium">
-                          {formatKhmerTimeAgo(item.createdAt)}
+                          {formatTimeAgo(item.createdAt)}
                         </span>
 
-                        {/* Priority Tag in Khmer */}
+                        {/* Priority Tag */}
                         {item.priority === "HIGH" && (
                           <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-600 dark:bg-red-950/60 dark:text-red-300">
-                            សំខាន់
+                            {dict.notifications.priorityHigh}
                           </span>
                         )}
                         {item.priority === "URGENT" && (
                           <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                            បន្ទាន់
+                            {dict.notifications.priorityUrgent}
                           </span>
                         )}
                       </div>
 
                       <h4 className={`text-base font-bold leading-snug ${!item.isRead ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-300"}`}>
-                        {item.titleKh}
+                        {displayTitle}
                       </h4>
 
                       <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed font-google-sans">
-                        {item.messageKh}
+                        {displayMessage}
                       </p>
 
                       {/* Metadata pill snippet */}
                       {item.metadata?.amount && (
                         <div className="pt-1">
                           <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                            ទឹកប្រាក់៖ ${item.metadata.amount.toFixed(2)}
+                            {dict.notifications.amount} ${item.metadata.amount.toFixed(2)}
                           </span>
                         </div>
                       )}
@@ -307,7 +316,7 @@ export default function InAppNotificationFeed() {
                       onClick={() => handleRetryItem(item.id)}
                       disabled={retryingId === item.id || retrySuccessId === item.id}
                       className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-600 dark:border-slate-700 dark:hover:bg-slate-800 transition disabled:opacity-50"
-                      title="ព្យាយាមផ្ញើឡើងវិញ (Retry Delivery)"
+                      title={dict.notifications.retryDelivery}
                     >
                       {retryingId === item.id ? (
                         <RefreshCw size={16} className="animate-spin text-amber-500" />
@@ -327,9 +336,10 @@ export default function InAppNotificationFeed() {
           {totalItems > 0 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200/80 dark:border-slate-800 text-xs text-slate-500 font-google-sans">
               <div>
-                បង្ហាញ <span className="font-semibold text-slate-700 dark:text-slate-200">{startItem}</span> ដល់{" "}
-                <span className="font-semibold text-slate-700 dark:text-slate-200">{endItem}</span> នៃ{" "}
-                <span className="font-semibold text-slate-700 dark:text-slate-200">{totalItems}</span> ការជូនដំណឹង
+                {dict.notifications.showingCount
+                  .replace("{start}", String(startItem))
+                  .replace("{end}", String(endItem))
+                  .replace("{total}", String(totalItems))}
               </div>
 
               <div className="flex items-center gap-1.5">
@@ -339,7 +349,7 @@ export default function InAppNotificationFeed() {
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
                 >
-                  <ChevronLeft className="size-4" /> ថយក្រោយ
+                  <ChevronLeft className="size-4" /> {dict.notifications.prev}
                 </button>
 
                 <div className="flex items-center gap-1 px-1">
@@ -365,7 +375,7 @@ export default function InAppNotificationFeed() {
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
                 >
-                  បន្ទាប់ <ChevronRight className="size-4" />
+                  {dict.notifications.next} <ChevronRight className="size-4" />
                 </button>
               </div>
             </div>

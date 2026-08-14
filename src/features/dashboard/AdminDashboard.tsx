@@ -5,6 +5,7 @@ import StatsCard from "./components/StatsCard";
 import UserTable from "./components/UserTable";
 import QuickMenu from "./components/QuickMenu";
 import AIStatus from "./components/AIStatus";
+import { useI18n } from "@/hooks/use-i18n";
 import {
   useGetProcessSummaryQuery,
   useGetStatsQuery,
@@ -20,6 +21,7 @@ import ProcessStatsModal from "./components/ProcessTotal";
 import InActiveStatsModal from "./components/InActiveTotal";
 
 export default function AdminDashboard() {
+  const { dict } = useI18n();
   const { data: stats } = useGetStatsQuery();
   const { data: realUsers = [] } = useGetUsersQuery();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,38 +38,38 @@ export default function AdminDashboard() {
       <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-200/80 dark:bg-slate-900 dark:border-slate-800 sm:flex sm:items-center sm:justify-between sm:gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#003377] dark:text-white">
-            ផ្ទាំងគ្រប់គ្រង
+            {dict.dashboard.title}
           </h1>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-            គ្រប់គ្រងប្រព័ន្ធ iStash
+            {dict.dashboard.subtitle}
           </p>
         </div>
         <button
           type="button"
           onClick={() => setOpenCreate(true)}
-          className="inline-flex items-center justify-center rounded-full bg-[#FFC83D] px-7 py-3 text-sm font-semibold text-[#003377] shadow-sm transition hover:bg-[#f7c948] dark:bg-[#FFC83D] dark:text-[#003377]"
+          className="inline-flex min-w-[160px] h-[46px] items-center justify-center rounded-full bg-[#FFC83D] px-6 py-2.5 text-sm font-semibold text-[#003377] shadow-sm transition hover:bg-[#f7c948] dark:bg-[#FFC83D] dark:text-[#003377] whitespace-nowrap shrink-0"
         >
-          + បង្កើតថ្មី
+          {dict.common.createNew}
         </button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 sm:gap-6">
         <StatsCard
-          title="ប្រតិបត្តិការសរុប"
+          title={dict.dashboard.totalTransactions}
           value={stats?.totalProcess ?? 0}
           icon={CreditCard}
           color="#003377"
           onClick={() => setIsProcessModalOpen(true)}
         />
         <StatsCard
-          title="អ្នកប្រើប្រាស់សរុប"
+          title={dict.dashboard.totalUsers}
           value={stats?.totalUsers ?? 0}
           icon={Users}
           color="#FFC83D"
           onClick={() => setIsModalOpen(true)}
         />
         <StatsCard
-          title="មិនសកម្ម"
+          title={dict.dashboard.inactiveUsers}
           value={stats?.inActiveUsers ?? 0}
           icon={CircleAlert}
           color="#ef4444"
@@ -78,7 +80,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[2fr_1fr]">
         <div className="overflow-hidden rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900 sm:p-6">
           <h2 className="mb-6 text-xl font-bold text-[#003377] dark:text-white">
-            អ្នកប្រើប្រាស់ថ្មី
+            {dict.dashboard.recentUsers}
           </h2>
           <UserTable users={realUsers} />
         </div>

@@ -11,8 +11,10 @@ import CurrencyTab from "./CurrencyTab";
 import NotificationTab from "./NotificationTab";
 import KhmerToast from "./KhmerToast";
 import { RefreshCw, AlertTriangle } from "lucide-react";
+import { useI18n } from "@/hooks/use-i18n";
 
 export default function ProfilePage() {
+  const { dict, isEnglish } = useI18n();
   const { data: profile, isLoading, isError, refetch } = useGetProfileQuery();
 
   const [activeTab, setActiveTab] = useState<ProfileTabKey>("overview");
@@ -39,7 +41,7 @@ export default function ProfilePage() {
           <RefreshCw className="h-7 w-7 animate-spin" />
         </div>
         <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 font-google-sans">
-          កំពុងទាញយកព័ត៌មានគណនី...
+          {dict.profile.loading}
         </p>
       </div>
     );
@@ -53,18 +55,20 @@ export default function ProfilePage() {
         </div>
         <div className="max-w-md font-google-sans">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-            មិនអាចទាញយកព័ត៌មានគណនីបានទេ
+            {dict.profile.errorLoading}
           </h3>
           <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-            មានបញ្ហាក្នុងការតភ្ជាប់ទៅកាន់ម៉ាស៊ីនបម្រើ សូមពិនិត្យមើលអ៊ីនធឺណិត ឬព្យាយាមម្តងទៀត។
+            {isEnglish
+              ? "There was an error connecting to the server. Please check your internet or try again."
+              : "មានបញ្ហាក្នុងការតភ្ជាប់ទៅកាន់ម៉ាស៊ីនបម្រើ សូមពិនិត្យមើលអ៊ីនធឺណិត ឬព្យាយាមម្តងទៀត។"}
           </p>
         </div>
         <button
           onClick={() => refetch()}
-          className="flex items-center gap-2 rounded-xl bg-[#003377] px-5 py-2.5 text-xs font-bold text-white shadow hover:bg-[#002255] transition font-google-sans"
+          className="flex items-center gap-2 rounded-xl bg-[#003377] px-5 py-2.5 text-xs font-bold text-white shadow hover:bg-[#002255] transition font-google-sans dark:bg-[#FFC83D] dark:text-[#003377]"
         >
           <RefreshCw className="h-4 w-4" />
-          ព្យាយាមម្តងទៀត
+          {dict.common.refresh}
         </button>
       </div>
     );

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { X, UserCheck } from "lucide-react";
 import { useCreateUserMutation } from "../api";
+import { useI18n } from "@/hooks/use-i18n";
 
 export default function Createuser({
   open,
@@ -14,6 +15,7 @@ export default function Createuser({
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }) {
+  const { dict, isEnglish } = useI18n();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const role = "user"; // Fixed: Admin can only create User accounts
@@ -39,7 +41,10 @@ export default function Createuser({
       const message =
         typeof apiError.data === "string"
           ? apiError.data
-          : apiError.error || `មិនអាចបង្កើតអ្នកប្រើប្រាស់បានទេ${apiError.status ? ` (កូដ ${apiError.status})` : ""}.`;
+          : apiError.error ||
+            (isEnglish
+              ? `Failed to create user${apiError.status ? ` (Code ${apiError.status})` : ""}.`
+              : `មិនអាចបង្កើតអ្នកប្រើប្រាស់បានទេ${apiError.status ? ` (កូដ ${apiError.status})` : ""}.`);
       setErrorMessage(message);
     } finally {
       setCreating(false);
@@ -52,11 +57,12 @@ export default function Createuser({
         <div className="bg-white dark:bg-slate-900 font-google-sans">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-6 py-4">
             <DialogTitle className="text-lg font-bold text-[#003377] dark:text-white">
-              បង្កើតអ្នកប្រើប្រាស់
+              {dict.users.createUserModalTitle}
             </DialogTitle>
             <button
               type="button"
               onClick={() => onOpenChange(false)}
+              aria-label={dict.common.close}
               className="rounded-full p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               <X className="size-5" />
@@ -70,35 +76,35 @@ export default function Createuser({
               </p>
             )}
             <div>
-              <label className="block text-sm text-slate-500 mb-2">ឈ្មោះ</label>
+              <label className="block text-sm text-slate-500 mb-2">{dict.users.name}</label>
               <input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                placeholder="ឈ្មោះអ្នកប្រើប្រាស់"
+                placeholder={dict.users.enterNamePlaceholder}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
               />
             </div>
 
             <div>
               <label className="block text-sm text-slate-500 mb-2">
-                អ៊ីម៉ែល
+                {dict.users.email}
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="user@gmail.com"
+                placeholder={dict.users.enterEmailPlaceholder}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
               />
             </div>
 
             <div>
-              <p className="mb-2 text-sm text-slate-500">តួនាទី</p>
+              <p className="mb-2 text-sm text-slate-500">{dict.users.role}</p>
               <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-[#003377] dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200">
                 <UserCheck className="size-4 text-emerald-600" />
-                <span>អ្នកប្រើប្រាស់</span>
+                <span>{dict.users.userRoleName}</span>
               </div>
-              <p className="mt-1 text-xs text-slate-400">អ្នកគ្រប់គ្រងអាចបង្កើតបានតែគណនីអ្នកប្រើប្រាស់ប៉ុណ្ណោះ</p>
+              <p className="mt-1 text-xs text-slate-400">{dict.users.adminRoleNotice}</p>
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -107,14 +113,14 @@ export default function Createuser({
                 onClick={() => onOpenChange(false)}
                 className="flex-1 rounded-full border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
               >
-                បិទ
+                {dict.common.close}
               </button>
               <button
                 type="submit"
                 disabled={creating}
-                className="flex-1 rounded-full bg-[#FFC83D] py-3 text-sm font-semibold text-[#003377] hover:bg-[#f7c948] disabled:cursor-not-allowed disabled:opacity-70"
+                className="flex-1 rounded-full bg-[#FFC83D] py-3 text-sm font-semibold text-[#003377] hover:bg-[#f7c948] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#FFC83D] dark:text-[#003377]"
               >
-                {creating ? "កំពុងបង្កើត..." : "+ បង្កើតអ្នកប្រើប្រាស់"}
+                {creating ? dict.users.creatingUser : dict.users.createUserButton}
               </button>
             </div>
           </form>

@@ -12,6 +12,7 @@ import {
   Calendar,
   Coins,
 } from "lucide-react";
+import { useI18n } from "@/hooks/use-i18n";
 
 interface ProfileOverviewTabProps {
   profile: UserProfile;
@@ -22,6 +23,8 @@ export default function ProfileOverviewTab({
   profile,
   onEditClick,
 }: ProfileOverviewTabProps) {
+  const { dict, isEnglish } = useI18n();
+
   return (
     <div className="space-y-6">
       {/* Top Banner / Bio Card */}
@@ -29,23 +32,23 @@ export default function ProfileOverviewTab({
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4 dark:border-slate-800">
           <div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white font-google-sans">
-              ជីវប្រវត្តិ និងសង្ខេបព័ត៌មាន
+              {dict.profile.bioAndSummary}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-google-sans">
-              ព័ត៌មានលម្អិតអំពីគណនីផ្ទាល់ខ្លួនរបស់អ្នកនៅក្នុងប្រព័ន្ធ អាយស្តាស
+              {dict.profile.bioSubtitle}
             </p>
           </div>
           <button
             onClick={onEditClick}
-            className="rounded-xl bg-[#003377] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#002255] transition font-google-sans"
+            className="rounded-xl bg-[#003377] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#002255] transition font-google-sans dark:bg-[#FFC83D] dark:text-[#003377]"
           >
-            កែប្រែព័ត៌មានផ្ទាល់ខ្លួន
+            {dict.profile.editProfileBtn}
           </button>
         </div>
 
         <div className="mt-4">
           <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300 font-google-sans bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
-            {profile.bio || "មិនទាន់មានជីវប្រវត្តិបង្ហាញ..."}
+            {profile.bio || dict.profile.noBio}
           </p>
         </div>
       </div>
@@ -59,41 +62,41 @@ export default function ProfileOverviewTab({
               <User className="h-5 w-5" />
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white font-google-sans">
-              ព័ត៌មានផ្ទាល់ខ្លួន
+              {dict.profile.personalInfo}
             </h3>
           </div>
 
           <div className="space-y-3.5 text-xs sm:text-sm font-google-sans">
             <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800/50">
-              <span className="text-slate-500 dark:text-slate-400">នាមត្រកូល</span>
+              <span className="text-slate-500 dark:text-slate-400">{dict.profile.firstName}</span>
               <span className="font-semibold text-slate-900 dark:text-white">{profile.firstName}</span>
             </div>
             <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800/50">
-              <span className="text-slate-500 dark:text-slate-400">នាមខ្លួន</span>
+              <span className="text-slate-500 dark:text-slate-400">{dict.profile.lastName}</span>
               <span className="font-semibold text-slate-900 dark:text-white">{profile.lastName}</span>
             </div>
             <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800/50">
-              <span className="text-slate-500 dark:text-slate-400">ឈ្មោះបង្ហាញ</span>
+              <span className="text-slate-500 dark:text-slate-400">{dict.profile.displayName}</span>
               <span className="font-semibold text-[#003377] dark:text-[#FFC83D]">{profile.displayName}</span>
             </div>
             <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800/50">
               <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <Mail className="h-3.5 w-3.5 text-slate-400" />
-                អាសយដ្ឋានអ៊ីមែល
+                {dict.profile.email}
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">{profile.email}</span>
             </div>
             <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800/50">
               <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <Phone className="h-3.5 w-3.5 text-slate-400" />
-                លេខទូរស័ព្ទ
+                {dict.profile.phoneNumber}
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">{profile.phoneNumber}</span>
             </div>
             <div className="flex justify-between items-center py-1.5">
               <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5 text-slate-400" />
-                ទីតាំង / អាសយដ្ឋាន
+                {dict.profile.location}
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">{profile.location}</span>
             </div>
@@ -107,46 +110,46 @@ export default function ProfileOverviewTab({
               <Building2 className="h-5 w-5" />
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white font-google-sans">
-              ព័ត៌មានប្រព័ន្ធ
+              {dict.profile.systemInfo}
             </h3>
           </div>
 
           <div className="space-y-3.5 text-xs sm:text-sm font-google-sans">
             <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800/50">
-              <span className="text-slate-500 dark:text-slate-400">អត្តសញ្ញាណលេខ</span>
+              <span className="text-slate-500 dark:text-slate-400">ID</span>
               <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
                 {profile.id}
               </span>
             </div>
             <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800/50">
-              <span className="text-slate-500 dark:text-slate-400">តួនាទីក្នុងប្រព័ន្ធ</span>
+              <span className="text-slate-500 dark:text-slate-400">{dict.users.role}</span>
               <span className="font-semibold text-slate-900 dark:text-white">{profile.role}</span>
             </div>
             <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800/50">
-              <span className="text-slate-500 dark:text-slate-400">នាយកដ្ឋាន</span>
+              <span className="text-slate-500 dark:text-slate-400">{dict.profile.department}</span>
               <span className="font-semibold text-slate-900 dark:text-white">{profile.department}</span>
             </div>
             <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800/50">
               <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5 text-slate-400" />
-                កាលបរិច្ឆេទចូលរួម
+                {dict.profile.createdAt}
               </span>
               <span className="font-semibold text-slate-900 dark:text-white">{profile.joinDate}</span>
             </div>
             <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800/50">
               <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <Coins className="h-3.5 w-3.5 text-slate-400" />
-                រូបិយប័ណ្ណប្រើប្រាស់
+                {dict.profile.selectedCurrency}
               </span>
               <span className="font-bold text-[#003377] dark:text-[#FFC83D]">
                 {profile.preferredCurrency}
               </span>
             </div>
             <div className="flex justify-between items-center py-1.5">
-              <span className="text-slate-500 dark:text-slate-400">ស្ថានភាពសុវត្ថិភាព</span>
+              <span className="text-slate-500 dark:text-slate-400">{dict.profile.accountSecurity}</span>
               <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
                 <ShieldCheck className="h-4 w-4" />
-                សុវត្ថិភាពរឹងមាំ
+                {dict.profile.securityStrength}
               </span>
             </div>
           </div>

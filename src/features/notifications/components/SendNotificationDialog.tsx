@@ -9,12 +9,14 @@ import {
   TriggerNotificationFormData,
 } from "../types";
 import { useCreateAdminNotificationMutation } from "../api";
-import { useGetUsersQuery } from "@/features/user-manager/api";
+import { useGetUsersQuery } from "@/features/users/api";
 import { useNotificationUI } from "../hook";
 import { CATEGORY_CONFIGS } from "../constants";
+import { useI18n } from "@/hooks/use-i18n";
 import toast from "react-hot-toast";
 
 export default function SendNotificationDialog() {
+  const { dict, isEnglish } = useI18n();
   const { isTriggerModalOpen, toggleTriggerModal } = useNotificationUI();
   const [createAdminNotification, { isLoading }] =
     useCreateAdminNotificationMutation();
@@ -40,9 +42,12 @@ export default function SendNotificationDialog() {
     defaultValues: {
       category: "DAILY_REMINDER",
       channel: "BOTH",
-      customTitleKh: "ដល់ម៉ោងកត់ត្រាការចំណាយប្រចាំថ្ងៃ!",
-      customMessageKh:
-        "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រាប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ។",
+      customTitleKh: isEnglish
+        ? "Time to record today's expenses!"
+        : "ដល់ម៉ោងកត់ត្រាការចំណាយប្រចាំថ្ងៃ!",
+      customMessageKh: isEnglish
+        ? "Please take a minute to record your transactions for today."
+        : "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រាប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ។",
       priority: "MEDIUM",
     },
   });
@@ -50,55 +55,106 @@ export default function SendNotificationDialog() {
   const selectedCategory = watch("category");
 
   useEffect(() => {
-    switch (selectedCategory) {
-      case "DAILY_REMINDER":
-        setValue("customTitleKh", "ដល់ម៉ោងកត់ត្រាការចំណាយប្រចាំថ្ងៃ!");
-        setValue(
-          "customMessageKh",
-          "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រាប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ។",
-        );
-        setValue("priority", "MEDIUM");
-        break;
-      case "BUDGET_WARNING":
-        setValue(
-          "customTitleKh",
-          "ការព្រមាន៖ ការចំណាយលើ «អាហារ» ជិតដល់កម្រិតកំណត់!",
-        );
-        setValue(
-          "customMessageKh",
-          "អ្នកបានចំណាយ 85% នៃថវិកាប្រចាំខែដែលបានកំណត់ចំនួន $400.00 ក្នុងខែនេះហើយ។",
-        );
-        setValue("priority", "HIGH");
-        break;
-      case "SAVINGS_REMINDER":
-        setValue("customTitleKh", "អបអរសាទរ! គោលដៅសន្សំសម្រេចបាន 75%");
-        setValue(
-          "customMessageKh",
-          "អ្នកបានសន្សំប្រាក់បាន $750.00 នៃគោលដៅសរុប $1,000.00។",
-        );
-        setValue("priority", "MEDIUM");
-        break;
-      case "RECURRING_REMINDER":
-        setValue(
-          "customTitleKh",
-          "ការរំលឹកបង់ប្រាក់៖ វិក្កយបត្រត្រូវបង់នៅថ្ងៃស្អែក",
-        );
-        setValue(
-          "customMessageKh",
-          "វិក្កយបត្រប្រចាំខែសេវាអ៊ីនធឺណិតចំនួន $35.00 នឹងត្រូវទូទាត់នៅថ្ងៃស្អែក។",
-        );
-        setValue("priority", "HIGH");
-        break;
-      case "MONTHLY_SUMMARY":
-        setValue("customTitleKh", "របាយការណ៍ហិរញ្ញវត្ថុសង្ខេបប្រចាំខែកក្កដា");
-        setValue(
-          "customMessageKh",
-          "ចំណូលសរុប $2,450.00, ចំណាយសរុប $1,280.00, សន្សំសុទ្ធ $1,170.00។",
-        );
-        setValue("priority", "LOW");
-        break;
+    if (isEnglish) {
+      switch (selectedCategory) {
+        case "DAILY_REMINDER":
+          setValue("customTitleKh", "Time to record today's expenses!");
+          setValue(
+            "customMessageKh",
+            "Please take a minute to record your transactions for today."
+          );
+          setValue("priority", "MEDIUM");
+          break;
+        case "BUDGET_WARNING":
+          setValue(
+            "customTitleKh",
+            "Warning: 'Food & Dining' expenses are near the limit!"
+          );
+          setValue(
+            "customMessageKh",
+            "You have spent 85% of your $400.00 monthly budget limit."
+          );
+          setValue("priority", "HIGH");
+          break;
+        case "SAVINGS_REMINDER":
+          setValue("customTitleKh", "Congratulations! Savings goal reached 75%");
+          setValue(
+            "customMessageKh",
+            "You have saved $750.00 towards your $1,000.00 total goal."
+          );
+          setValue("priority", "MEDIUM");
+          break;
+        case "RECURRING_REMINDER":
+          setValue(
+            "customTitleKh",
+            "Payment Reminder: Bill due tomorrow"
+          );
+          setValue(
+            "customMessageKh",
+            "Your monthly internet service bill of $35.00 is due tomorrow."
+          );
+          setValue("priority", "HIGH");
+          break;
+        case "MONTHLY_SUMMARY":
+          setValue("customTitleKh", "July Monthly Financial Summary Report");
+          setValue(
+            "customMessageKh",
+            "Total income $2,450.00, total expenses $1,280.00, net savings $1,170.00."
+          );
+          setValue("priority", "LOW");
+          break;
+      }
+    } else {
+      switch (selectedCategory) {
+        case "DAILY_REMINDER":
+          setValue("customTitleKh", "ដល់ម៉ោងកត់ត្រាការចំណាយប្រចាំថ្ងៃ!");
+          setValue(
+            "customMessageKh",
+            "សូមចំណាយពេល 1 នាទីដើម្បីកត់ត្រាប្រតិបត្តិការចំណាយរបស់អ្នកសម្រាប់ថ្ងៃនេះ។"
+          );
+          setValue("priority", "MEDIUM");
+          break;
+        case "BUDGET_WARNING":
+          setValue(
+            "customTitleKh",
+            "ការព្រមាន៖ ការចំណាយលើ «អាហារ» ជិតដល់កម្រិតកំណត់!"
+          );
+          setValue(
+            "customMessageKh",
+            "អ្នកបានចំណាយ 85% នៃថវិកាប្រចាំខែដែលបានកំណត់ចំនួន $400.00 ក្នុងខែនេះហើយ។"
+          );
+          setValue("priority", "HIGH");
+          break;
+        case "SAVINGS_REMINDER":
+          setValue("customTitleKh", "អបអរសាទរ! គោលដៅសន្សំសម្រេចបាន 75%");
+          setValue(
+            "customMessageKh",
+            "អ្នកបានសន្សំប្រាក់បាន $750.00 នៃគោលដៅសរុប $1,000.00។"
+          );
+          setValue("priority", "MEDIUM");
+          break;
+        case "RECURRING_REMINDER":
+          setValue(
+            "customTitleKh",
+            "ការរំលឹកបង់ប្រាក់៖ វិក្កយបត្រត្រូវបង់នៅថ្ងៃស្អែក"
+          );
+          setValue(
+            "customMessageKh",
+            "វិក្កយបត្រប្រចាំខែសេវាអ៊ីនធឺណិតចំនួន $35.00 នឹងត្រូវទូទាត់នៅថ្ងៃស្អែក។"
+          );
+          setValue("priority", "HIGH");
+          break;
+        case "MONTHLY_SUMMARY":
+          setValue("customTitleKh", "របាយការណ៍ហិរញ្ញវត្ថុសង្ខេបប្រចាំខែកក្កដា");
+          setValue(
+            "customMessageKh",
+            "ចំណូលសរុប $2,450.00, ចំណាយសរុប $1,280.00, សន្សំសុទ្ធ $1,170.00។"
+          );
+          setValue("priority", "LOW");
+          break;
+      }
     }
-  }, [selectedCategory, setValue]);
+  }, [selectedCategory, setValue, isEnglish]);
 
   if (!isTriggerModalOpen) return null;
 
@@ -108,7 +164,11 @@ export default function SendNotificationDialog() {
       selectedUserId || (usersList.length > 0 ? usersList[0].id : "");
 
     if (!targetUser) {
-      setSubmitError("សូមជ្រើសរើស ឬបញ្ចូល User UUID ដែលត្រូវទទួលការជូនដំណឹង");
+      setSubmitError(
+        isEnglish
+          ? "Please select or enter the recipient User UUID."
+          : "សូមជ្រើសរើស ឬបញ្ចូល User UUID ដែលត្រូវទទួលការជូនដំណឹង"
+      );
       return;
     }
 
@@ -122,19 +182,19 @@ export default function SendNotificationDialog() {
     try {
       await createAdminNotification({
         userId: targetUser,
-        title: data.customTitleKh || "ការជូនដំណឹងពីប្រព័ន្ធ",
-        message: data.customMessageKh || "ព័ត៌មានលម្អិតនៃការជូនដំណឹង",
+        title: data.customTitleKh || (isEnglish ? "System Notification" : "ការជូនដំណឹងពីប្រព័ន្ធ"),
+        message: data.customMessageKh || (isEnglish ? "Notification details" : "ព័ត៌មានលម្អិតនៃការជូនដំណឹង"),
         notificationType: data.category || "DAILY_REMINDER",
         channels,
       }).unwrap();
-      toast.success("បានផ្ញើការជូនដំណឹងជោគជ័យ!");
+      toast.success(isEnglish ? "Notification sent successfully!" : "បានផ្ញើការជូនដំណឹងជោគជ័យ!");
       toggleTriggerModal(false);
       reset();
     } catch (e: any) {
       setSubmitError(
         e?.data?.message ||
           e?.message ||
-          "មិនអាចផ្ញើការជូនដំណឹងបានទេ សូមព្យាយាមម្តងទៀត",
+          (isEnglish ? "Failed to send notification. Please try again." : "មិនអាចផ្ញើការជូនដំណឹងបានទេ សូមព្យាយាមម្តងទៀត")
       );
     }
   };
@@ -146,12 +206,13 @@ export default function SendNotificationDialog() {
           <div className="flex items-center gap-2">
             <Sparkles className="text-[#FFC83D]" size={20} />
             <h3 className="text-base font-bold font-google-sans">
-              បង្កើត និងផ្ញើការជូនដំណឹងសាកល្បង
+              {dict.notifications.sendDialogTitle}
             </h3>
           </div>
           <button
             type="button"
             onClick={() => toggleTriggerModal(false)}
+            aria-label={dict.common.close}
             className="rounded-full p-1 text-white/80 hover:bg-white/10 hover:text-white"
           >
             <X size={20} />
@@ -171,7 +232,7 @@ export default function SendNotificationDialog() {
 
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              អ្នកទទួលការជូនដំណឹង (Target Recipient User)
+              {dict.notifications.selectRecipient}
             </label>
             {usersList.length > 0 ? (
               <select
@@ -190,7 +251,7 @@ export default function SendNotificationDialog() {
                 type="text"
                 value={selectedUserId}
                 onChange={(e) => setSelectedUserId(e.target.value)}
-                placeholder="បញ្ចូល User UUID..."
+                placeholder="User UUID..."
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               />
             )}
@@ -198,7 +259,7 @@ export default function SendNotificationDialog() {
 
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              ប្រភេទការជូនដំណឹង
+              {dict.notifications.selectCategory}
             </label>
             <select
               {...register("category")}
@@ -206,7 +267,7 @@ export default function SendNotificationDialog() {
             >
               {Object.values(CATEGORY_CONFIGS).map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.nameKh}
+                  {isEnglish ? cat.nameEn : cat.nameKh}
                 </option>
               ))}
             </select>
@@ -215,43 +276,43 @@ export default function SendNotificationDialog() {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                ប៉ុស្តិ៍ផ្ញើ
+                {dict.notifications.deliveryChannel}
               </label>
               <select
                 {...register("channel")}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >
-                <option value="BOTH">ទាំងពីរ (ក្នុងកម្មវិធី និងអ៊ីមែល)</option>
-                <option value="IN_APP">តែក្នុងកម្មវិធីប៉ុណ្ណោះ</option>
-                <option value="EMAIL">តែអ៊ីមែលប៉ុណ្ណោះ</option>
+                <option value="BOTH">{dict.notifications.channelBoth}</option>
+                <option value="IN_APP">{dict.notifications.channelInApp}</option>
+                <option value="EMAIL">{dict.notifications.channelEmail}</option>
               </select>
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                កម្រិតអាទិភាព
+                {dict.notifications.priorityLabelForm}
               </label>
               <select
                 {...register("priority")}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >
-                <option value="LOW">ទាប</option>
-                <option value="MEDIUM">មធ្យម</option>
-                <option value="HIGH">ខ្ពស់</option>
-                <option value="URGENT">បន្ទាន់</option>
+                <option value="LOW">{dict.notifications.priorityLow}</option>
+                <option value="MEDIUM">{dict.notifications.priorityMedium}</option>
+                <option value="HIGH">{dict.notifications.priorityHigh}</option>
+                <option value="URGENT">{dict.notifications.priorityUrgent}</option>
               </select>
             </div>
           </div>
 
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              ចំណងជើង
+              {dict.notifications.customTitleLabel}
             </label>
             <input
               type="text"
               {...register("customTitleKh")}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              placeholder="បញ្ចូលចំណងជើង..."
+              placeholder={isEnglish ? "Enter title..." : "បញ្ចូលចំណងជើង..."}
             />
             {errors.customTitleKh && (
               <p className="text-[11px] font-bold text-red-500">
@@ -262,13 +323,13 @@ export default function SendNotificationDialog() {
 
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              ខ្លឹមសារសារ
+              {dict.notifications.customMessageLabel}
             </label>
             <textarea
               rows={3}
               {...register("customMessageKh")}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              placeholder="បញ្ចូលខ្លឹមសារសារ..."
+              placeholder={isEnglish ? "Enter message content..." : "បញ្ចូលខ្លឹមសារសារ..."}
             />
             {errors.customMessageKh && (
               <p className="text-[11px] font-bold text-red-500">
@@ -281,17 +342,17 @@ export default function SendNotificationDialog() {
             <button
               type="button"
               onClick={() => toggleTriggerModal(false)}
-              className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="inline-flex min-w-[80px] h-10 items-center justify-center rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 whitespace-nowrap shrink-0"
             >
-              បោះបង់
+              {dict.common.cancel}
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex items-center gap-2 rounded-xl bg-[#003377] px-5 py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#002255] transition active:scale-95 disabled:opacity-50"
+              className="inline-flex min-w-[150px] h-10 items-center justify-center gap-2 rounded-xl bg-[#003377] px-5 py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#002255] transition active:scale-95 disabled:opacity-50 dark:bg-[#FFC83D] dark:text-[#003377] whitespace-nowrap shrink-0"
             >
               <Send size={14} />
-              <span>{isLoading ? "កំពុងផ្ញើ..." : "ផ្ញើការជូនដំណឹង"}</span>
+              <span>{isLoading ? dict.notifications.sendingBtn : dict.notifications.sendBtn}</span>
             </button>
           </div>
         </form>

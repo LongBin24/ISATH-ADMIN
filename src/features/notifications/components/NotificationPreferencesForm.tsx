@@ -27,8 +27,10 @@ import {
   useUpdatePreferencesMutation,
 } from "../api";
 import { CATEGORY_CONFIGS } from "../constants";
+import { useI18n } from "@/hooks/use-i18n";
 
 export default function NotificationPreferencesForm() {
+  const { dict, isEnglish } = useI18n();
   const { data: initialPrefs, isLoading } =
     useGetNotificationPreferencesQuery();
   const [updatePreferences, { isLoading: isSaving }] =
@@ -105,7 +107,7 @@ export default function NotificationPreferencesForm() {
       <div className="flex flex-col items-center justify-center py-16 space-y-3 font-google-sans">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#FFC83D] border-t-transparent" />
         <p className="text-sm font-semibold text-slate-500">
-          កំពុងផ្ទុកការកំណត់...
+          {dict.notifications.prefLoading}
         </p>
       </div>
     );
@@ -120,7 +122,7 @@ export default function NotificationPreferencesForm() {
       {successToast && (
         <div className="flex items-center gap-3 rounded-2xl bg-emerald-500/10 p-4 text-sm font-bold text-emerald-600 border border-emerald-500/30 animate-in fade-in">
           <CheckCircle size={20} />
-          <span>ការកំណត់ប្រព័ន្ធជូនដំណឹងត្រូវបានរក្សាទុកដោយជោគជ័យ!</span>
+          <span>{dict.notifications.prefSavedSuccess}</span>
         </div>
       )}
 
@@ -132,10 +134,10 @@ export default function NotificationPreferencesForm() {
           </div>
           <div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white font-google-sans">
-              អាសយដ្ឋានអ៊ីមែលសម្រាប់ការជូនដំណឹង
+              {dict.notifications.prefEmailSectionTitle}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              កំណត់អ៊ីមែលដើម្បីទទួលបានរបាយការណ៍ និងការរំលឹកហិរញ្ញវត្ថុ
+              {dict.notifications.prefEmailSectionDesc}
             </p>
           </div>
         </div>
@@ -144,7 +146,7 @@ export default function NotificationPreferencesForm() {
           {/* Email input */}
           <div className="space-y-2">
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              អាសយដ្ឋានអ៊ីមែល
+              {dict.notifications.prefEmailLabel}
             </label>
             <input
               type="email"
@@ -163,15 +165,15 @@ export default function NotificationPreferencesForm() {
           {/* Digest Frequency */}
           <div className="space-y-2">
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              កម្រិតប្រេកង់អ៊ីមែល
+              {dict.notifications.prefDigestLabel}
             </label>
             <select
               {...register("digestFrequency")}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#FFC83D] focus:ring-2 focus:ring-[#FFC83D]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
-              <option value="INSTANT">ផ្ញើភ្លាមៗ</option>
-              <option value="DAILY">សង្ខេបប្រចាំថ្ងៃ</option>
-              <option value="WEEKLY">សង្ខេបប្រចាំសប្តាហ៍</option>
+              <option value="INSTANT">{dict.notifications.prefDigestInstant}</option>
+              <option value="DAILY">{dict.notifications.prefDigestDaily}</option>
+              <option value="WEEKLY">{dict.notifications.prefDigestWeekly}</option>
             </select>
           </div>
         </div>
@@ -186,11 +188,10 @@ export default function NotificationPreferencesForm() {
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white font-google-sans">
-                ការរៀបចំប៉ុស្តិ៍ជូនដំណឹងតាមប្រភេទ
+                {dict.notifications.prefChannelsSectionTitle}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                បើក ឬបិទ ការជូនដំណឹងក្នុងកម្មវិធី និងតាមអ៊ីមែល សម្រាប់មុខងារទាំង
-                5
+                {dict.notifications.prefChannelsSectionDesc}
               </p>
             </div>
           </div>
@@ -201,6 +202,12 @@ export default function NotificationPreferencesForm() {
           {fields.map((field, index) => {
             const config = CATEGORY_CONFIGS[field.category];
             const categoryName = field.category;
+            const categoryDisplayName = isEnglish
+              ? config?.nameEn || field.category
+              : config?.nameKh || field.category;
+            const categoryDisplayDesc = isEnglish
+              ? config?.descriptionEn || config?.descriptionKh
+              : config?.descriptionKh;
 
             return (
               <div
@@ -214,10 +221,10 @@ export default function NotificationPreferencesForm() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 dark:text-white font-google-sans">
-                      {config?.nameKh || field.category}
+                      {categoryDisplayName}
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mt-0.5">
-                      {config?.descriptionKh}
+                      {categoryDisplayDesc}
                     </p>
 
                     {/* Conditional sub-settings for daily expense or budget warning */}
@@ -225,7 +232,7 @@ export default function NotificationPreferencesForm() {
                       <div className="mt-3 flex items-center gap-2">
                         <Clock size={14} className="text-[#FFC83D]" />
                         <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
-                          ម៉ោងរំលឹកប្រចាំថ្ងៃ៖
+                          {dict.notifications.prefDailyReminderTime}
                         </span>
                         <input
                           type="time"
@@ -239,7 +246,7 @@ export default function NotificationPreferencesForm() {
                       <div className="mt-3 flex items-center gap-2">
                         <AlertTriangle size={14} className="text-red-500" />
                         <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
-                          កម្រិតព្រមាន (%)៖
+                          {dict.notifications.prefWarningThreshold}
                         </span>
                         <input
                           type="number"
@@ -251,7 +258,7 @@ export default function NotificationPreferencesForm() {
                           className="w-16 rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                         />
                         <span className="text-xs text-slate-400">
-                          % នៃថវិកា
+                          {dict.notifications.prefOfBudget}
                         </span>
                       </div>
                     )}
@@ -272,7 +279,7 @@ export default function NotificationPreferencesForm() {
                         size={14}
                         className="text-[#003377] dark:text-[#FFC83D]"
                       />
-                      ក្នុងកម្មវិធី
+                      {dict.notifications.prefInApp}
                     </span>
                   </label>
 
@@ -285,7 +292,7 @@ export default function NotificationPreferencesForm() {
                     />
                     <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
                       <Mail size={14} className="text-amber-500" />
-                      អ៊ីមែល
+                      {dict.notifications.prefEmail}
                     </span>
                   </label>
                 </div>
@@ -304,10 +311,10 @@ export default function NotificationPreferencesForm() {
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white font-google-sans">
-                ម៉ោងកុំរំខាន
+                {dict.notifications.prefQuietHoursTitle}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                ផ្អាកការផ្ញើសាររំលឹកក្នុងចន្លោះពេលសម្រាក
+                {dict.notifications.prefQuietHoursDesc}
               </p>
             </div>
           </div>
@@ -326,7 +333,7 @@ export default function NotificationPreferencesForm() {
           <div className="grid grid-cols-2 gap-4 pt-2">
             <div>
               <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                ម៉ោងចាប់ផ្តើមផ្អាក
+                {dict.notifications.prefQuietStart}
               </label>
               <input
                 type="time"
@@ -336,7 +343,7 @@ export default function NotificationPreferencesForm() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                ម៉ោងបញ្ចប់
+                {dict.notifications.prefQuietEnd}
               </label>
               <input
                 type="time"
@@ -353,10 +360,10 @@ export default function NotificationPreferencesForm() {
         <button
           type="submit"
           disabled={isSaving}
-          className="flex items-center gap-2 rounded-2xl bg-[#003377] px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-[#003377]/20 hover:bg-[#002255] transition active:scale-95 disabled:opacity-50"
+          className="flex items-center justify-center min-w-[190px] h-[50px] gap-2 rounded-2xl bg-[#003377] px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-[#003377]/20 hover:bg-[#002255] transition active:scale-95 disabled:opacity-50 whitespace-nowrap shrink-0"
         >
           <Save size={18} />
-          <span>{isSaving ? "កំពុងរក្សាទុក..." : "រក្សាទុកការកំណត់"}</span>
+          <span>{isSaving ? dict.notifications.prefSavingBtn : dict.notifications.prefSaveBtn}</span>
         </button>
       </div>
     </form>

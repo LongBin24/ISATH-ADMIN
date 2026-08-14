@@ -5,31 +5,47 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Bell, Settings, UserCog, BarChart3 } from "lucide-react";
 import { useGetNotificationStatsQuery } from "@/features/notifications/api";
+import { getDictionary } from "@/lib/i18n";
 
 export default function MobileBottomNav() {
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
   const { data: stats } = useGetNotificationStatsQuery();
   const unreadCount = stats?.unreadCount || 0;
 
+  const segments = pathname.split("/").filter(Boolean);
+  const locale = segments[0] === "en" ? "en" : "kh";
+  const normalizedPath =
+    "/" +
+    (segments[0] === "en" || segments[0] === "kh"
+      ? segments.slice(1).join("/")
+      : segments.join("/"));
+
+  const dict = getDictionary(locale);
+
   const navItems = [
-    { label: "ផ្ទាំងគ្រប់គ្រង", icon: LayoutDashboard, href: "/dashboard" },
-    { label: "របាយការណ៍", icon: BarChart3, href: "/reports" },
-    { label: "ការជូនដំណឹង", icon: Bell, href: "/notifications", badge: unreadCount },
-    { label: "អ្នកប្រើប្រាស់", icon: UserCog, href: "/user-manager" },
-    { label: "ការកំណត់", icon: Settings, href: "/settings" },
+    { label: dict.nav.dashboard, icon: LayoutDashboard, href: "/dashboard" },
+    { label: dict.nav.reports, icon: BarChart3, href: "/reports" },
+    { label: dict.nav.notifications, icon: Bell, href: "/notifications", badge: unreadCount },
+    { label: dict.nav.users, icon: UserCog, href: "/users" },
+    { label: dict.nav.settings, icon: Settings, href: "/settings" },
   ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-30 block lg:hidden border-t border-slate-200/80 bg-white/90 px-2 py-1.5 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-950/90 shadow-lg font-google-sans">
       <div className="flex items-center justify-around">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const localizedHref = `/${locale}${item.href}`;
+          const isActive =
+            normalizedPath === item.href ||
+            (item.href !== "/" && normalizedPath.startsWith(`${item.href}/`)) ||
+            (item.href === "/dashboard" &&
+              (normalizedPath === "" || normalizedPath === "/"));
           const Icon = item.icon;
 
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={localizedHref}
               className={`relative flex flex-col items-center gap-0.5 rounded-2xl px-3 py-1.5 transition ${
                 isActive
                   ? "text-[#003377] dark:text-[#FFC83D] font-bold"

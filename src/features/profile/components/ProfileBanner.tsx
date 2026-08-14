@@ -13,6 +13,7 @@ import {
   Sparkles,
   Coins,
 } from "lucide-react";
+import { useI18n } from "@/hooks/use-i18n";
 
 interface ProfileBannerProps {
   profile: UserProfile;
@@ -25,6 +26,7 @@ export default function ProfileBanner({
   onSuccess,
   onError,
 }: ProfileBannerProps) {
+  const { dict, isEnglish } = useI18n();
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
   return (
@@ -45,7 +47,7 @@ export default function ProfileBanner({
                 />
                 <button
                   onClick={() => setIsAvatarModalOpen(true)}
-                  title="ផ្លាស់ប្តូររូបថតគណនី"
+                  title={dict.profile.changePhoto}
                   className="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-2xl bg-[#FFC83D] text-[#003377] shadow-lg transition-transform hover:scale-110 active:scale-95 border-2 border-white dark:border-slate-900"
                 >
                   <Camera className="h-4 w-4 stroke-[2.5]" />
@@ -74,7 +76,7 @@ export default function ProfileBanner({
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Calendar className="h-3.5 w-3.5 text-[#003377] dark:text-[#FFC83D]" />
-                    ចូលរួម៖ {profile.joinDate}
+                    {dict.profile.joined} {profile.joinDate}
                   </span>
                 </div>
               </div>
@@ -84,10 +86,10 @@ export default function ProfileBanner({
             <div className="flex items-center justify-center gap-3">
               <button
                 onClick={() => setIsAvatarModalOpen(true)}
-                className="flex items-center gap-2 rounded-2xl bg-[#003377] px-4 py-2.5 text-xs font-bold text-white shadow-lg transition hover:bg-[#002255] active:scale-95 font-google-sans"
+                className="flex items-center gap-2 rounded-2xl bg-[#003377] px-4 py-2.5 text-xs font-bold text-white shadow-lg transition hover:bg-[#002255] active:scale-95 font-google-sans dark:bg-[#FFC83D] dark:text-[#003377]"
               >
-                <Camera className="h-4 w-4 text-[#FFC83D]" />
-                ផ្លាស់ប្តូររូបថត
+                <Camera className="h-4 w-4 text-[#FFC83D] dark:text-[#003377]" />
+                {dict.profile.changePhoto}
               </button>
             </div>
           </div>
@@ -99,8 +101,8 @@ export default function ProfileBanner({
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-google-sans">សុវត្ថិភាពគណនី</p>
-                <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-google-sans">១០០% រឹងមាំ</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-google-sans">{dict.profile.accountSecurity}</p>
+                <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-google-sans">{dict.profile.securityStrength}</p>
               </div>
             </div>
 
@@ -109,7 +111,7 @@ export default function ProfileBanner({
                 <Coins className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-google-sans">រូបិយប័ណ្ណជ្រើសរើស</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-google-sans">{dict.profile.selectedCurrency}</p>
                 <p className="text-sm font-bold text-slate-800 dark:text-white font-google-sans">{profile.preferredCurrency}</p>
               </div>
             </div>
@@ -119,8 +121,10 @@ export default function ProfileBanner({
                 <CheckCircle2 className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-google-sans">ស្ថានភាព</p>
-                <p className="text-sm font-bold text-slate-800 dark:text-white font-google-sans">{profile.lastActive}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-google-sans">{dict.profile.accountStatus}</p>
+                <p className="text-sm font-bold text-slate-800 dark:text-white font-google-sans">
+                  {profile.lastActive === "សកម្ម" ? dict.common.active : profile.lastActive}
+                </p>
               </div>
             </div>
 
@@ -129,8 +133,8 @@ export default function ProfileBanner({
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-google-sans">តួនាទីសិទ្ធិ</p>
-                <p className="text-sm font-bold text-slate-800 dark:text-white font-google-sans">អ្នកគ្រប់គ្រងជាន់ខ្ពស់</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-google-sans">{dict.users.role}</p>
+                <p className="text-sm font-bold text-slate-800 dark:text-white font-google-sans">{dict.profile.adminRole}</p>
               </div>
             </div>
           </div>

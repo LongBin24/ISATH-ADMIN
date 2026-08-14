@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { CurrencyCode, CurrencyOption, UserProfile } from "../types";
 import { useUpdateCurrencyMutation } from "../api";
 import { Coins, Check, RefreshCw, Sparkles } from "lucide-react";
+import { useI18n } from "@/hooks/use-i18n";
 
 interface CurrencyTabProps {
   profile: UserProfile;
@@ -11,10 +12,15 @@ interface CurrencyTabProps {
   onError: (msg: string) => void;
 }
 
-const CURRENCY_OPTIONS: CurrencyOption[] = [
+interface LocalizedCurrencyOption extends CurrencyOption {
+  nameEn: string;
+}
+
+const CURRENCY_OPTIONS: LocalizedCurrencyOption[] = [
   {
     code: "KHR",
     nameKhmer: "រៀលខ្មែរ",
+    nameEn: "Khmer Riel",
     symbol: "៛",
     rateVsUsd: 4100,
     exampleAmount: 1230000,
@@ -22,6 +28,7 @@ const CURRENCY_OPTIONS: CurrencyOption[] = [
   {
     code: "USD",
     nameKhmer: "ដុល្លារអាមេរិក",
+    nameEn: "US Dollar",
     symbol: "$",
     rateVsUsd: 1,
     exampleAmount: 300,
@@ -29,6 +36,7 @@ const CURRENCY_OPTIONS: CurrencyOption[] = [
   {
     code: "EUR",
     nameKhmer: "អឺរ៉ូ",
+    nameEn: "Euro",
     symbol: "€",
     rateVsUsd: 0.92,
     exampleAmount: 276,
@@ -36,6 +44,7 @@ const CURRENCY_OPTIONS: CurrencyOption[] = [
   {
     code: "THB",
     nameKhmer: "បាតថៃ",
+    nameEn: "Thai Baht",
     symbol: "฿",
     rateVsUsd: 35.5,
     exampleAmount: 10650,
@@ -43,6 +52,7 @@ const CURRENCY_OPTIONS: CurrencyOption[] = [
   {
     code: "JPY",
     nameKhmer: "យ៉េនជប៉ុន",
+    nameEn: "Japanese Yen",
     symbol: "¥",
     rateVsUsd: 152,
     exampleAmount: 45600,
@@ -54,6 +64,7 @@ export default function CurrencyTab({
   onSuccess,
   onError,
 }: CurrencyTabProps) {
+  const { dict, isEnglish } = useI18n();
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyCode>(
     profile.preferredCurrency
   );
@@ -63,9 +74,9 @@ export default function CurrencyTab({
   const handleSave = async () => {
     try {
       await updateCurrency({ currency: selectedCurrency }).unwrap();
-      onSuccess("បានកំណត់រូបិយប័ណ្ណដែលពេញចិត្តដោយជោគជ័យ!");
+      onSuccess(dict.profile.currencySuccess);
     } catch (err) {
-      onError("មិនអាចផ្លាស់ប្តូររូបិយប័ណ្ណបានទេ សូមព្យាយាមម្តងទៀត");
+      onError(dict.profile.currencyError);
     }
   };
 
@@ -77,10 +88,10 @@ export default function CurrencyTab({
       <div className="border-b border-slate-100 pb-4 dark:border-slate-800 mb-6">
         <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Coins className="h-5 w-5 text-[#003377] dark:text-[#FFC83D]" />
-          ជ្រើសរើសរូបិយប័ណ្ណដែលពេញចិត្ត
+          {dict.profile.currencyTitle}
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          រូបិយប័ណ្ណនេះនឹងត្រូវបានប្រើប្រាស់សម្រាប់ការបង្ហាញតម្លៃ របាយការណ៍ហិរញ្ញវត្ថុ និងប្រតិបត្តិការទូទាត់របស់អ្នក
+          {dict.profile.currencySubtitle}
         </p>
       </div>
 
@@ -114,7 +125,7 @@ export default function CurrencyTab({
                     {opt.code}
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {opt.nameKhmer}
+                    {isEnglish ? opt.nameEn : opt.nameKhmer}
                   </p>
                 </div>
               </div>
@@ -134,7 +145,7 @@ export default function CurrencyTab({
         <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
           <span className="flex items-center gap-1.5 text-xs text-slate-300">
             <Sparkles className="h-4 w-4 text-[#FFC83D]" />
-            ការបង្ហាញទម្រង់តម្លៃគំរូ
+            {dict.profile.currencyExampleLabel}
           </span>
           <span className="rounded-md bg-[#FFC83D] px-2 py-0.5 text-[10px] font-bold text-[#003377]">
             {activeOption.code}
@@ -143,14 +154,14 @@ export default function CurrencyTab({
 
         <div className="flex items-baseline justify-between">
           <div>
-            <p className="text-xs text-slate-400">សមតុល្យគំរូ</p>
+            <p className="text-xs text-slate-400">{isEnglish ? "Sample Balance" : "សមតុល្យគំរូ"}</p>
             <p className="text-2xl font-extrabold text-[#FFC83D] tracking-tight">
               {activeOption.symbol} {activeOption.exampleAmount.toLocaleString()}
             </p>
           </div>
           <p className="text-xs text-slate-400 text-right">
-            អត្រាប្រៀបធៀប៖ <br />
-            ១ ដុល្លារ &approx; {activeOption.symbol} {activeOption.rateVsUsd.toLocaleString()}
+            {dict.profile.currencyRateLabel} <br />
+            1 USD &approx; {activeOption.symbol} {activeOption.rateVsUsd.toLocaleString()}
           </p>
         </div>
       </div>
@@ -168,7 +179,7 @@ export default function CurrencyTab({
           ) : (
             <Coins className="h-4 w-4" />
           )}
-          រក្សាទុករូបិយប័ណ្ណ
+          {isLoading ? dict.profile.saving : dict.profile.currencySaveBtn}
         </button>
       </div>
     </div>
