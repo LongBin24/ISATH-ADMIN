@@ -16,7 +16,9 @@ export default function FeedbackStatCard({
   accent,
 }: FeedbackStatCardProps) {
   return (
-    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-3 font-google-sans shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:rounded-3xl sm:p-5">
+
+    <div className="min-w-0 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:rounded-3xl sm:p-5">
+
       <div className="flex min-w-0 items-start justify-between gap-2 sm:gap-4">
         <div className="min-w-0">
           <p className="truncate text-xs font-semibold uppercase tracking-[0.1em] text-slate-500 dark:text-slate-400 sm:text-xs sm:tracking-[0.16em]">

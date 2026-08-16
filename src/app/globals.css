@@ -270,6 +270,32 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Smooth View Transitions API theme crossfade */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth 0.25s CSS transition across layout components */
+body,
+header,
+aside,
+main,
+nav,
+div,
+section,
+button,
+input,
+select,
+a,
+span,
+p {
+  transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .font-google-sans {
   font-family: "Google Sans", "Kantumruy Pro", "Noto Sans Khmer", sans-serif;
 }

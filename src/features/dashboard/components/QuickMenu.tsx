@@ -19,20 +19,20 @@ export default function QuickMenu() {
           <Link
             key={item.label}
             href={item.href}
-            className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
+            className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg group-hover:bg-[#FFC83D]/20 transition-colors">
+              <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg group-hover:bg-[#FFC83D]/20 transition-colors">
                 <item.icon
                   size={20}
-                  className="text-slate-600 dark:text-slate-400 group-hover:text-[#003377]"
+                  className="text-slate-600 dark:text-slate-400 group-hover:text-[#003377] dark:group-hover:text-[#FFC83D]"
                 />
               </div>
-              <span className="text-sm font-google-sans text-slate-700 dark:text-slate-300">
+              <span className="text-sm font-google-sans text-slate-700 dark:text-slate-300 dark:group-hover:text-[#FFC83D]">
                 {item.label}
               </span>
             </div>
-            <ChevronRight size={18} className="text-slate-400" />
+            <ChevronRight size={18} className="text-slate-400 dark:group-hover:text-[#FFC83D] transition-colors" />
           </Link>
         ))}
       </div>

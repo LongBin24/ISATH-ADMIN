@@ -63,6 +63,7 @@ export default function Navbar({ onMenuToggle, isSidebarOpen = false, isSidebarC
             onClick={toggleTheme}
             className="size-10 rounded-xl text-slate-600 hover:text-[#003377] dark:text-slate-300"
             aria-label="Toggle theme"
+            title="ផ្លាស់ប្តូររូបរាង (Toggle theme)"
           >
             {mounted && theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </Button>

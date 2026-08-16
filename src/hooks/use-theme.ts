@@ -32,10 +32,28 @@ export function useTheme() {
     window.localStorage.setItem("theme", theme);
   }, [mounted, theme]);
 
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+
+    const updateDOM = () => {
+      document.documentElement.classList.toggle("dark", nextTheme === "dark");
+      document.documentElement.setAttribute("data-theme", nextTheme);
+      window.localStorage.setItem("theme", nextTheme);
+      setTheme(nextTheme);
+    };
+
+    if (typeof document !== "undefined" && "startViewTransition" in document) {
+      (document as any).startViewTransition(() => {
+        updateDOM();
+      });
+    } else {
+      updateDOM();
+    }
+  };
+
   return {
     theme,
     mounted,
-    toggleTheme: () =>
-      setTheme((current) => (current === "dark" ? "light" : "dark")),
+    toggleTheme,
   };
 }
