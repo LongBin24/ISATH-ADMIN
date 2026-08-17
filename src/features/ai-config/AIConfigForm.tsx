@@ -38,7 +38,9 @@ export default function AIConfigForm() {
             {t("AI Configuration")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground font-normal">
-            {t("Manage and configure AI assistant capabilities, models, and OCR.")}
+            {t(
+              "Manage and configure AI assistant capabilities, models, and OCR.",
+            )}
           </p>
         </div>
         <button
@@ -65,25 +67,33 @@ export default function AIConfigForm() {
             {[
               {
                 label: t("Active AI"),
-                description: t("Enable or disable AI output generation across the platform."),
+                description: t(
+                  "Enable or disable AI output generation across the platform.",
+                ),
                 enabled: aiEnabled,
                 setEnabled: setAiEnabled,
               },
               {
                 label: t("OCR Text Processing"),
-                description: t("Automatically extract and parse transaction data from receipt images."),
+                description: t(
+                  "Automatically extract and parse transaction data from receipt images.",
+                ),
                 enabled: ocrEnabled,
                 setEnabled: setOcrEnabled,
               },
               {
                 label: t("Voice-to-Text"),
-                description: t("Convert voice memos and audio recordings into transactions."),
+                description: t(
+                  "Convert voice memos and audio recordings into transactions.",
+                ),
                 enabled: voiceEnabled,
                 setEnabled: setVoiceEnabled,
               },
               {
                 label: t("Smart Tagging"),
-                description: t("Automatically categorize and tag transactions using AI intelligence."),
+                description: t(
+                  "Automatically categorize and tag transactions using AI intelligence.",
+                ),
                 enabled: smartTagEnabled,
                 setEnabled: setSmartTagEnabled,
               },
@@ -130,7 +140,9 @@ export default function AIConfigForm() {
             </div>
 
             <div className="space-y-3">
-              <p className="text-[#003377] dark:text-slate-300 font-bold text-xs uppercase tracking-wider">Claude Model</p>
+              <p className="text-[#003377] dark:text-slate-300 font-bold text-xs uppercase tracking-wider">
+                Claude Model
+              </p>
               {models.map((option) => (
                 <button
                   key={option}

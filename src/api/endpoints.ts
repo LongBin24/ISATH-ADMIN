@@ -31,3 +31,14 @@ export const ENDPOINTS_CATEGORY = {
   UPDATE_CATEGORY: (id: string) => `admin/categories/${id}`,
   DELETE_CATEGORY: (id: string) => `admin/categories/${id}`,
 } as const;
+
+export const ENDPOINTS_PROMPT_TEMPLATE = {
+  PROMPT_TEMPLATES: "admin/ai/prompt-templates",
+  PROMPT_TEMPLATE_BY_ID: (templateId: string) => `admin/ai/prompt-templates/${templateId}`,
+  PROMPT_TEMPLATE_VERSIONS: (templateId: string) => `admin/ai/prompt-templates/${templateId}/versions`,
+  PROMPT_TEMPLATE_TEST: (templateId: string) => `admin/ai/prompt-templates/${templateId}/test`,
+  PROMPT_TEMPLATE_SET_DEFAULT: (templateId: string) => `admin/ai/prompt-templates/${templateId}/set-default`,
+  PROMPT_TEMPLATE_ARCHIVE: (templateId: string) => `admin/ai/prompt-templates/${templateId}/archive`,
+  PROMPT_TEMPLATE_ACTIVATE: (templateId: string) => `admin/ai/prompt-templates/${templateId}/activate`,
+} as const;
+

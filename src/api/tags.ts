@@ -11,6 +11,7 @@ export const API_TAGS = {
   CATEGORY: "Category",
   FEEDBACK: "Feedback",
   ALERT_RULE: "AlertRule",
+  PROMPT_TEMPLATE: "PromptTemplate",
 } as const;
 
 export type ApiTagType = (typeof API_TAGS)[keyof typeof API_TAGS];
