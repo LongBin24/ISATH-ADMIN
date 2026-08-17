@@ -78,9 +78,73 @@ export function PromptTemplateManager() {
     refetch,
   } = useGetAdminPromptTemplatesQuery(queryParams);
 
-  const templates = pageData?.content || [];
-  const totalElements = pageData?.totalElements ?? templates.length;
-  const totalPages = pageData?.totalPages ?? 1;
+  const rawTemplates = pageData?.content || [];
+
+  // Check if any filters are active
+  const hasActiveFilters = Boolean(
+    (filters.search && filters.search.trim() !== "") ||
+      filters.taskType !== "ALL" ||
+      filters.templateScope !== "ALL" ||
+      filters.languageCode !== "ALL" ||
+      filters.templateStatus !== "ALL"
+  );
+
+  // Client-side filtering ensures filters always work immediately and reliably
+  const filteredTemplates = useMemo(() => {
+    if (!hasActiveFilters) return rawTemplates;
+
+    return rawTemplates.filter((item) => {
+      // 1. Search term filter
+      if (filters.search && filters.search.trim() !== "") {
+        const term = filters.search.toLowerCase().trim();
+        const name = (item.templateName || item.name || "").toLowerCase();
+        const key = (item.templateKey || "").toLowerCase();
+        const desc = (item.description || "").toLowerCase();
+        const sys = (item.systemPrompt || "").toLowerCase();
+        const usr = (item.userPromptTemplate || item.template || "").toLowerCase();
+        const model = (item.modelName || "").toLowerCase();
+
+        const match =
+          name.includes(term) ||
+          key.includes(term) ||
+          desc.includes(term) ||
+          sys.includes(term) ||
+          usr.includes(term) ||
+          model.includes(term);
+
+        if (!match) return false;
+      }
+
+      // 2. Task Type filter
+      if (filters.taskType !== "ALL") {
+        if (item.taskType !== filters.taskType) return false;
+      }
+
+      // 3. Template Scope filter
+      if (filters.templateScope !== "ALL") {
+        if (item.templateScope !== filters.templateScope) return false;
+      }
+
+      // 4. Language Code filter
+      if (filters.languageCode !== "ALL") {
+        if (item.languageCode !== filters.languageCode) return false;
+      }
+
+      // 5. Template Status filter
+      if (filters.templateStatus !== "ALL") {
+        const itemStatus = item.templateStatus || item.status;
+        if (itemStatus !== filters.templateStatus) return false;
+      }
+
+      return true;
+    });
+  }, [rawTemplates, filters, hasActiveFilters]);
+
+  const templates = hasActiveFilters ? filteredTemplates : rawTemplates;
+  const totalElements = hasActiveFilters ? filteredTemplates.length : (pageData?.totalElements ?? rawTemplates.length);
+  const totalPages = hasActiveFilters
+    ? Math.max(1, Math.ceil(filteredTemplates.length / pageSize))
+    : (pageData?.totalPages ?? 1);
 
   function handleFilterChange<K extends keyof PromptTemplateFilterValues>(
     key: K,

@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { useGetPromptTemplateByIdQuery } from "../api";
 import type { PromptTemplateItem } from "../types";
 
 interface PromptTemplateDetailsDialogProps {
@@ -33,13 +34,22 @@ interface PromptTemplateDetailsDialogProps {
 }
 
 export function PromptTemplateDetailsDialog({
-  template,
+  template: initialTemplate,
   isOpen,
   onClose,
   onOpenTest,
 }: PromptTemplateDetailsDialogProps) {
   const { t } = useAdminI18n();
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const { data: fetchedTemplate } = useGetPromptTemplateByIdQuery(
+    initialTemplate?.id || "",
+    {
+      skip: !initialTemplate?.id || !isOpen,
+    }
+  );
+
+  const template = fetchedTemplate || initialTemplate;
 
   if (!template) return null;
 

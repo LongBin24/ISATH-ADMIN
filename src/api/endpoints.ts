@@ -35,6 +35,8 @@ export const ENDPOINTS_CATEGORY = {
 export const ENDPOINTS_PROMPT_TEMPLATE = {
   PROMPT_TEMPLATES: "admin/ai/prompt-templates",
   PROMPT_TEMPLATE_BY_ID: (templateId: string) => `admin/ai/prompt-templates/${templateId}`,
+  PROMPT_TEMPLATE_UPDATE: (templateId: string) => `admin/ai/prompt-templates/${templateId}`, // PATCH
+  UPDATE_PROMPT_TEMPLATE: (templateId: string) => `admin/ai/prompt-templates/${templateId}`, // PATCH alias
   PROMPT_TEMPLATE_VERSIONS: (templateId: string) => `admin/ai/prompt-templates/${templateId}/versions`,
   PROMPT_TEMPLATE_TEST: (templateId: string) => `admin/ai/prompt-templates/${templateId}/test`,
   PROMPT_TEMPLATE_SET_DEFAULT: (templateId: string) => `admin/ai/prompt-templates/${templateId}/set-default`,

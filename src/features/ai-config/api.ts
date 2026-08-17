@@ -124,23 +124,50 @@ function unwrapPromptTemplatePage(response: unknown): PromptTemplatePage {
   };
 }
 
+function normalizePromptTemplateVersion(item: PromptTemplateVersion): PromptTemplateVersion {
+  const raw = item as Record<string, unknown>;
+  return {
+    ...item,
+    version: item.version ?? item.versionNumber,
+    templateName: item.templateName || (typeof raw.name === "string" ? raw.name : undefined),
+    templateStatus: item.templateStatus || (typeof raw.status === "string" ? raw.status : undefined),
+    userPromptTemplate: item.userPromptTemplate || (typeof raw.template === "string" ? raw.template : undefined),
+  };
+}
+
+function unwrapPromptTemplateVersion(response: unknown): PromptTemplateVersion {
+  if (isRecord(response) && isRecord(response.data)) {
+    return normalizePromptTemplateVersion(response.data as unknown as PromptTemplateVersion);
+  }
+  if (isRecord(response) && "id" in response) {
+    return normalizePromptTemplateVersion(response as unknown as PromptTemplateVersion);
+  }
+  return (response as PromptTemplateVersion) || ({} as PromptTemplateVersion);
+}
+
 function unwrapPromptTemplateVersions(response: unknown): PromptTemplateVersion[] {
-  if (Array.isArray(response)) return response as PromptTemplateVersion[];
+  if (Array.isArray(response)) return response.map(normalizePromptTemplateVersion);
 
   if (isRecord(response)) {
     if (Array.isArray(response.content)) {
-      return response.content as PromptTemplateVersion[];
+      return (response.content as PromptTemplateVersion[]).map(normalizePromptTemplateVersion);
     }
     if (isRecord(response.data)) {
       if (Array.isArray(response.data.content)) {
-        return response.data.content as PromptTemplateVersion[];
+        return (response.data.content as PromptTemplateVersion[]).map(normalizePromptTemplateVersion);
       }
       if (Array.isArray(response.data)) {
-        return response.data as PromptTemplateVersion[];
+        return (response.data as PromptTemplateVersion[]).map(normalizePromptTemplateVersion);
+      }
+      if ("id" in response.data) {
+        return [normalizePromptTemplateVersion(response.data as unknown as PromptTemplateVersion)];
       }
     }
     if (Array.isArray(response.data)) {
-      return response.data as PromptTemplateVersion[];
+      return (response.data as PromptTemplateVersion[]).map(normalizePromptTemplateVersion);
+    }
+    if ("id" in response) {
+      return [normalizePromptTemplateVersion(response as unknown as PromptTemplateVersion)];
     }
   }
 
@@ -160,26 +187,37 @@ export function buildPromptTemplateQueryParams(params?: PromptTemplateQueryParam
 
   // Pagination params (support both pageNumber/pageSize and page/size)
   const pageNum = params.pageNumber ?? params.page;
-  if (pageNum !== undefined) query.set("pageNumber", String(pageNum));
+  if (pageNum !== undefined) {
+    query.set("pageNumber", String(pageNum));
+  }
 
   const pageSize = params.pageSize ?? params.size;
-  if (pageSize !== undefined) query.set("pageSize", String(pageSize));
+  if (pageSize !== undefined) {
+    query.set("pageSize", String(pageSize));
+  }
 
   if (params.templateKey) query.set("templateKey", params.templateKey);
   if (params.templateName) query.set("templateName", params.templateName);
   if (params.name && !params.templateName) query.set("templateName", params.name);
-  if (params.taskType) query.set("taskType", params.taskType);
-  if (params.templateScope) query.set("templateScope", params.templateScope);
-  if (params.languageCode) query.set("languageCode", params.languageCode);
+  if (params.taskType && params.taskType !== "ALL") query.set("taskType", params.taskType);
+  if (params.templateScope && params.templateScope !== "ALL") query.set("templateScope", params.templateScope);
+  if (params.languageCode && params.languageCode !== "ALL") query.set("languageCode", params.languageCode);
 
   const status = params.templateStatus || params.status;
-  if (status && status !== "ALL") query.set("templateStatus", status);
+  if (status && status !== "ALL") {
+    query.set("templateStatus", status);
+    query.set("status", status);
+  }
 
   if (params.isDefault !== undefined) query.set("isDefault", String(params.isDefault));
   if (params.version !== undefined) query.set("version", String(params.version));
 
   if (params.search || params.query) {
-    query.set("search", params.search || params.query || "");
+    const s = (params.search || params.query || "").trim();
+    if (s) {
+      query.set("search", s);
+      query.set("query", s);
+    }
   }
 
   if (params.sortBy) query.set("sortBy", params.sortBy);
@@ -270,12 +308,7 @@ export const promptTemplatesApi = baseApi.injectEndpoints({
           body,
         };
       },
-      transformResponse: (response: unknown) => {
-        if (isRecord(response) && isRecord(response.data)) {
-          return response.data as unknown as PromptTemplateVersion;
-        }
-        return (response as PromptTemplateVersion) || ({} as PromptTemplateVersion);
-      },
+      transformResponse: unwrapPromptTemplateVersion,
       invalidatesTags: (_result, _error, arg) => {
         const templateId = arg.templateId;
         return [
@@ -308,14 +341,24 @@ export const promptTemplatesApi = baseApi.injectEndpoints({
     // 6. POST /api/v1/admin/ai/prompt-templates/{templateId}/set-default
     setDefaultPromptTemplate: builder.mutation<
       PromptTemplate,
-      string | { templateId: string; versionId?: string; body?: { versionId?: string } }
+      | string
+      | { templateId: string; versionId?: string; body?: Record<string, unknown> }
+      | (Record<string, unknown> & { templateId: string })
     >({
       query: (arg) => {
         const templateId = typeof arg === "string" ? arg : arg.templateId;
-        const body =
-          typeof arg === "object"
-            ? arg.body || (arg.versionId ? { versionId: arg.versionId } : {})
-            : {};
+        let body: Record<string, unknown> = {};
+        if (typeof arg === "object") {
+          const rawArg = arg as Record<string, unknown>;
+          if ("body" in rawArg && rawArg.body && typeof rawArg.body === "object") {
+            body = rawArg.body as Record<string, unknown>;
+          } else if ("versionId" in rawArg && rawArg.versionId) {
+            body = { versionId: rawArg.versionId };
+          } else {
+            const { templateId: _id, ...rest } = rawArg;
+            body = rest;
+          }
+        }
         return {
           url: ENDPOINTS_PROMPT_TEMPLATE.PROMPT_TEMPLATE_SET_DEFAULT(templateId),
           method: "POST",
@@ -328,34 +371,77 @@ export const promptTemplatesApi = baseApi.injectEndpoints({
         return [
           { type: TAG, id: "LIST" },
           { type: TAG, id: templateId },
+          { type: TAG, id: `${templateId}_VERSIONS` },
         ];
       },
     }),
 
     // 7. POST /api/v1/admin/ai/prompt-templates/{templateId}/archive
-    archivePromptTemplate: builder.mutation<PromptTemplate, string>({
-      query: (templateId) => ({
-        url: ENDPOINTS_PROMPT_TEMPLATE.PROMPT_TEMPLATE_ARCHIVE(templateId),
-        method: "POST",
-      }),
+    archivePromptTemplate: builder.mutation<
+      PromptTemplate,
+      string | { templateId: string; body?: Record<string, unknown> } | (Record<string, unknown> & { templateId: string })
+    >({
+      query: (arg) => {
+        const templateId = typeof arg === "string" ? arg : arg.templateId;
+        let body: Record<string, unknown> = {};
+        if (typeof arg === "object") {
+          const rawArg = arg as Record<string, unknown>;
+          if ("body" in rawArg && rawArg.body && typeof rawArg.body === "object") {
+            body = rawArg.body as Record<string, unknown>;
+          } else {
+            const { templateId: _id, ...rest } = rawArg;
+            body = rest;
+          }
+        }
+        return {
+          url: ENDPOINTS_PROMPT_TEMPLATE.PROMPT_TEMPLATE_ARCHIVE(templateId),
+          method: "POST",
+          body,
+        };
+      },
       transformResponse: unwrapPromptTemplate,
-      invalidatesTags: (_result, _error, id) => [
-        { type: TAG, id: "LIST" },
-        { type: TAG, id },
-      ],
+      invalidatesTags: (_result, _error, arg) => {
+        const templateId = typeof arg === "string" ? arg : arg.templateId;
+        return [
+          { type: TAG, id: "LIST" },
+          { type: TAG, id: templateId },
+          { type: TAG, id: `${templateId}_VERSIONS` },
+        ];
+      },
     }),
 
     // 8. POST /api/v1/admin/ai/prompt-templates/{templateId}/activate
-    activatePromptTemplate: builder.mutation<PromptTemplate, string>({
-      query: (templateId) => ({
-        url: ENDPOINTS_PROMPT_TEMPLATE.PROMPT_TEMPLATE_ACTIVATE(templateId),
-        method: "POST",
-      }),
+    activatePromptTemplate: builder.mutation<
+      PromptTemplate,
+      string | { templateId: string; body?: Record<string, unknown> } | (Record<string, unknown> & { templateId: string })
+    >({
+      query: (arg) => {
+        const templateId = typeof arg === "string" ? arg : arg.templateId;
+        let body: Record<string, unknown> = {};
+        if (typeof arg === "object") {
+          const rawArg = arg as Record<string, unknown>;
+          if ("body" in rawArg && rawArg.body && typeof rawArg.body === "object") {
+            body = rawArg.body as Record<string, unknown>;
+          } else {
+            const { templateId: _id, ...rest } = rawArg;
+            body = rest;
+          }
+        }
+        return {
+          url: ENDPOINTS_PROMPT_TEMPLATE.PROMPT_TEMPLATE_ACTIVATE(templateId),
+          method: "POST",
+          body,
+        };
+      },
       transformResponse: unwrapPromptTemplate,
-      invalidatesTags: (_result, _error, id) => [
-        { type: TAG, id: "LIST" },
-        { type: TAG, id },
-      ],
+      invalidatesTags: (_result, _error, arg) => {
+        const templateId = typeof arg === "string" ? arg : arg.templateId;
+        return [
+          { type: TAG, id: "LIST" },
+          { type: TAG, id: templateId },
+          { type: TAG, id: `${templateId}_VERSIONS` },
+        ];
+      },
     }),
 
     // 9. GET /api/v1/admin/ai/prompt-templates/{templateId}
@@ -387,6 +473,7 @@ export const promptTemplatesApi = baseApi.injectEndpoints({
         return [
           { type: TAG, id: "LIST" },
           { type: TAG, id: templateId },
+          { type: TAG, id: `${templateId}_VERSIONS` },
         ];
       },
     }),

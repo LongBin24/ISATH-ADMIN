@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Bot, ChevronLeft, Settings } from "lucide-react";
+import { Bot, ChevronLeft, Settings, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { aiConfigSchema } from "./schemas";
 
 const models = ["claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-4-8"];
 
@@ -16,6 +17,7 @@ export default function AIConfigForm() {
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [smartTagEnabled, setSmartTagEnabled] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -27,6 +29,26 @@ export default function AIConfigForm() {
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setMessage(null);
+    setErrorMessage(null);
+
+    const formData = {
+      model,
+      confidence,
+      aiEnabled,
+      ocrEnabled,
+      voiceEnabled,
+      smartTagEnabled,
+    };
+
+    const result = aiConfigSchema.safeParse(formData);
+
+    if (!result.success) {
+      const firstIssue = result.error.issues[0]?.message || t("Validation failed.");
+      setErrorMessage(firstIssue);
+      return;
+    }
+
     setMessage(t("AI configuration saved successfully."));
   }
 
@@ -53,8 +75,15 @@ export default function AIConfigForm() {
       </div>
 
       {message && (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-base font-medium text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200">
           {message}
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="flex items-center gap-2.5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-800 dark:border-red-900 dark:bg-red-950/50 dark:text-red-200">
+          <AlertCircle className="h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
+          <span>{errorMessage}</span>
         </div>
       )}
 

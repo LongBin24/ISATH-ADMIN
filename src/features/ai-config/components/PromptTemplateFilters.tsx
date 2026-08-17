@@ -66,7 +66,7 @@ export function PromptTemplateFilters({
         {/* Dropdown Selects */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Task Type Filter */}
-          <div className="w-[170px]">
+          <div className="w-[175px]">
             <Select
               value={filters.taskType}
               onValueChange={(val) => onFilterChange("taskType", val)}
@@ -74,16 +74,18 @@ export function PromptTemplateFilters({
               <SelectTrigger className="h-11 rounded-2xl border-slate-200 bg-white text-xs font-semibold dark:border-slate-800 dark:bg-slate-800">
                 <SelectValue placeholder={t("Task Type")} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-2xl">
                 <SelectItem value="ALL">{t("All Tasks")}</SelectItem>
-                <SelectItem value="FINANCIAL_ASSISTANT">Financial Assistant</SelectItem>
                 <SelectItem value="CATEGORY_PREDICTION">Category Prediction</SelectItem>
+                <SelectItem value="FINANCIAL_ASSISTANT">Financial Assistant</SelectItem>
+                <SelectItem value="SAVINGS_GOAL_ANALYSIS">Savings Goal Analysis</SelectItem>
+                <SelectItem value="BUDGET_ADVICE">Budget Advice</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Scope Filter */}
-          <div className="w-[180px]">
+          <div className="w-[190px]">
             <Select
               value={filters.templateScope}
               onValueChange={(val) => onFilterChange("templateScope", val)}
@@ -91,20 +93,20 @@ export function PromptTemplateFilters({
               <SelectTrigger className="h-11 rounded-2xl border-slate-200 bg-white text-xs font-semibold dark:border-slate-800 dark:bg-slate-800">
                 <SelectValue placeholder={t("Scope")} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-2xl">
                 <SelectItem value="ALL">{t("All Scopes")}</SelectItem>
+                <SelectItem value="GENERAL_CONVERSATION">General Conversation</SelectItem>
+                <SelectItem value="GENERAL_QUESTION">General Question</SelectItem>
+                <SelectItem value="MONTHLY_SUMMARY">Monthly Summary</SelectItem>
                 <SelectItem value="SAVINGS_ANALYSIS">Savings Analysis</SelectItem>
                 <SelectItem value="SPENDING_ANALYSIS">Spending Analysis</SelectItem>
                 <SelectItem value="INCOME_ANALYSIS">Income Analysis</SelectItem>
-                <SelectItem value="BUDGET_ANALYSIS">Budget Analysis</SelectItem>
-                <SelectItem value="GENERAL_QUESTION">General Question</SelectItem>
-                <SelectItem value="MONTHLY_SUMMARY">Monthly Summary</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Language Filter */}
-          <div className="w-[130px]">
+          <div className="w-[140px]">
             <Select
               value={filters.languageCode}
               onValueChange={(val) => onFilterChange("languageCode", val)}
@@ -112,7 +114,7 @@ export function PromptTemplateFilters({
               <SelectTrigger className="h-11 rounded-2xl border-slate-200 bg-white text-xs font-semibold dark:border-slate-800 dark:bg-slate-800">
                 <SelectValue placeholder={t("Language")} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-2xl">
                 <SelectItem value="ALL">{t("All Languages")}</SelectItem>
                 <SelectItem value="km">🇰🇭 Khmer (km)</SelectItem>
                 <SelectItem value="en">🇬🇧 English (en)</SelectItem>
@@ -121,7 +123,7 @@ export function PromptTemplateFilters({
           </div>
 
           {/* Status Filter */}
-          <div className="w-[130px]">
+          <div className="w-[140px]">
             <Select
               value={filters.templateStatus}
               onValueChange={(val) => onFilterChange("templateStatus", val)}
@@ -129,11 +131,12 @@ export function PromptTemplateFilters({
               <SelectTrigger className="h-11 rounded-2xl border-slate-200 bg-white text-xs font-semibold dark:border-slate-800 dark:bg-slate-800">
                 <SelectValue placeholder={t("Status")} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-2xl">
                 <SelectItem value="ALL">{t("All Status")}</SelectItem>
                 <SelectItem value="ACTIVE">{t("Active")}</SelectItem>
                 <SelectItem value="DRAFT">{t("Draft")}</SelectItem>
                 <SelectItem value="ARCHIVED">{t("Archived")}</SelectItem>
+                <SelectItem value="INACTIVE">{t("Inactive")}</SelectItem>
               </SelectContent>
             </Select>
           </div>

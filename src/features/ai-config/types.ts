@@ -181,12 +181,14 @@ export interface CreatePromptTemplatePayload {
 }
 
 export interface UpdatePromptTemplatePayload {
+  id?: string;
   templateKey?: string;
   templateName?: string;
   description?: string | null;
   taskType?: TaskType;
   templateScope?: TemplateScope | null;
   languageCode?: LanguageCode;
+  version?: number | string;
   systemPrompt?: string;
   userPromptTemplate?: string;
   inputSchema?: JsonSchema | Record<string, unknown> | null;
@@ -195,6 +197,12 @@ export interface UpdatePromptTemplatePayload {
   generationConfig?: GenerationConfig | Record<string, unknown> | null;
   templateStatus?: PromptTemplateStatus | string;
   isDefault?: boolean;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  activatedAt?: string | null;
+  archivedAt?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
 
   // Compatibility aliases
   name?: string;
@@ -208,22 +216,40 @@ export interface UpdatePromptTemplatePayload {
 }
 
 export interface CreatePromptTemplateVersionPayload {
+  id?: string;
+  templateKey?: string;
+  templateName?: string;
+  description?: string | null;
+  taskType?: TaskType;
+  templateScope?: TemplateScope | null;
+  languageCode?: LanguageCode;
+  version?: number | string;
   systemPrompt?: string;
   userPromptTemplate?: string;
   inputSchema?: JsonSchema | Record<string, unknown> | null;
   outputSchema?: JsonSchema | Record<string, unknown> | null;
-  generationConfig?: GenerationConfig | Record<string, unknown> | null;
   modelName?: string | null;
+  generationConfig?: GenerationConfig | Record<string, unknown> | null;
+  templateStatus?: PromptTemplateStatus | string;
+  isDefault?: boolean;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  activatedAt?: string | null;
+  archivedAt?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
   versionNote?: string | null;
   notes?: string | null;
   changelog?: string | null;
-  isDefault?: boolean;
 
   // Compatibility aliases
+  name?: string;
   template?: string;
   systemMessage?: string;
   variables?: string[] | Record<string, unknown>;
+  model?: string;
   modelConfig?: Record<string, unknown>;
+  status?: PromptTemplateStatus | string;
   [key: string]: unknown;
 }
 

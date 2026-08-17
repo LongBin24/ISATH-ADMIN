@@ -14,6 +14,7 @@ import {
   useCreatePromptTemplateMutation,
   useUpdatePromptTemplateMutation,
 } from "../api";
+import { promptTemplateSchema, type PromptTemplateFormData } from "../schemas";
 import type {
   PromptTemplateItem,
   TaskType,
@@ -59,6 +60,7 @@ export function PromptTemplateCreateDialog({
   const [outputSchemaJson, setOutputSchemaJson] = useState("");
   const [schemaError, setSchemaError] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
   const [createTemplate, { isLoading: isCreating }] = useCreatePromptTemplateMutation();
   const [updateTemplate, { isLoading: isUpdating }] = useUpdatePromptTemplateMutation();
@@ -172,6 +174,7 @@ export function PromptTemplateCreateDialog({
     e.preventDefault();
     setErrorMsg(null);
     setSchemaError(null);
+    setFieldErrors({});
 
     let parsedInputSchema: JsonSchema | null = null;
     let parsedOutputSchema: JsonSchema | null = null;
@@ -194,23 +197,51 @@ export function PromptTemplateCreateDialog({
       }
     }
 
-    const payload = {
-      templateKey,
-      templateName,
-      description: description || null,
+    const formValues = {
+      templateKey: templateKey.trim().toLowerCase(),
+      templateName: templateName.trim(),
+      description: description?.trim() || null,
       taskType,
       templateScope: templateScope || null,
       languageCode,
       templateStatus,
       isDefault,
-      modelName: modelName || null,
-      systemPrompt,
-      userPromptTemplate,
+      modelName: modelName?.trim() || null,
+      systemPrompt: systemPrompt.trim(),
+      userPromptTemplate: userPromptTemplate.trim(),
+      temperature,
+      responseMimeType,
+      inputSchemaJson: inputSchemaJson.trim() || undefined,
+      outputSchemaJson: outputSchemaJson.trim() || undefined,
+    };
+
+    const zodResult = promptTemplateSchema.safeParse(formValues);
+
+    if (!zodResult.success) {
+      const flattened = zodResult.error.flatten();
+      setFieldErrors(flattened.fieldErrors as Record<string, string[]>);
+      const firstIssue = zodResult.error.issues[0]?.message || t("Please correct the form errors.");
+      setErrorMsg(firstIssue);
+      return;
+    }
+
+    const payload = {
+      templateKey: formValues.templateKey,
+      templateName: formValues.templateName,
+      description: formValues.description,
+      taskType: formValues.taskType,
+      templateScope: formValues.templateScope,
+      languageCode: formValues.languageCode,
+      templateStatus: formValues.templateStatus,
+      isDefault: formValues.isDefault,
+      modelName: formValues.modelName,
+      systemPrompt: formValues.systemPrompt,
+      userPromptTemplate: formValues.userPromptTemplate,
       inputSchema: parsedInputSchema,
       outputSchema: parsedOutputSchema,
       generationConfig: {
-        temperature,
-        responseMimeType,
+        temperature: formValues.temperature,
+        responseMimeType: formValues.responseMimeType,
       },
     };
 
@@ -227,11 +258,24 @@ export function PromptTemplateCreateDialog({
       onSuccess?.();
       onClose();
     } catch (err: unknown) {
-      setErrorMsg(
-        typeof err === "object" && err !== null && "data" in err
-          ? JSON.stringify((err as { data: unknown }).data)
-          : t("Failed to save prompt template. Please check all fields.")
-      );
+      if (typeof err === "object" && err !== null && "data" in err) {
+        const data = (err as { data: Record<string, unknown> }).data;
+        if (Array.isArray(data?.fieldErrors) && data.fieldErrors.length > 0) {
+          const formattedErrors = data.fieldErrors
+            .map(
+              (f: { field?: string; message?: string }) =>
+                `${f.field ? `[${f.field}] ` : ""}${f.message}`
+            )
+            .join(" | ");
+          setErrorMsg(formattedErrors);
+          return;
+        }
+        if (typeof data?.message === "string") {
+          setErrorMsg(data.message);
+          return;
+        }
+      }
+      setErrorMsg(t("Failed to save prompt template. Please check all required fields."));
     }
   }
 
@@ -259,15 +303,15 @@ export function PromptTemplateCreateDialog({
         </DialogHeader>
 
         {errorMsg && (
-          <div className="flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+          <div className="flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
+            <AlertCircle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         {schemaError && (
           <div className="flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+            <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
             <span>{schemaError}</span>
           </div>
         )}
@@ -282,25 +326,62 @@ export function PromptTemplateCreateDialog({
               <input
                 type="text"
                 value={templateName}
-                onChange={(e) => setTemplateName(e.target.value)}
+                onChange={(e) => {
+                  setTemplateName(e.target.value);
+                  if (fieldErrors.templateName) {
+                    setFieldErrors((prev) => ({ ...prev, templateName: [] }));
+                  }
+                }}
                 placeholder="iStash Financial Assistant - Intent Classification"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs text-slate-800 focus:border-[#003377] focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                className={`h-10 w-full rounded-xl border bg-slate-50 px-3 text-xs text-slate-800 focus:bg-white focus:outline-none dark:bg-slate-900 dark:text-slate-200 ${
+                  fieldErrors.templateName?.length
+                    ? "border-red-400 focus:border-red-500"
+                    : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
+                }`}
                 required
               />
+              {fieldErrors.templateName?.[0] && (
+                <p className="text-[11px] font-medium text-red-500">
+                  {fieldErrors.templateName[0]}
+                </p>
+              )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                {t("Template Key")} *
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {t("Template Key")} *
+                </label>
+                <span className="text-[10px] text-slate-400">
+                  a-z, 0-9, ., _, -
+                </span>
+              </div>
               <input
                 type="text"
                 value={templateKey}
-                onChange={(e) => setTemplateKey(e.target.value)}
+                onChange={(e) => {
+                  setTemplateKey(e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, "-"));
+                  if (fieldErrors.templateKey) {
+                    setFieldErrors((prev) => ({ ...prev, templateKey: [] }));
+                  }
+                }}
                 placeholder="istash-financial-intent-classifier"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 font-mono text-xs text-slate-800 focus:border-[#003377] focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                className={`h-10 w-full rounded-xl border bg-slate-50 px-3 font-mono text-xs text-slate-800 focus:bg-white focus:outline-none dark:bg-slate-900 dark:text-slate-200 ${
+                  fieldErrors.templateKey?.length
+                    ? "border-red-400 focus:border-red-500"
+                    : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
+                }`}
                 required
               />
+              {fieldErrors.templateKey?.[0] ? (
+                <p className="text-[11px] font-medium text-red-500">
+                  {fieldErrors.templateKey[0]}
+                </p>
+              ) : (
+                <p className="text-[10px] text-slate-400 dark:text-slate-500">
+                  {t("Lowercase letters, numbers, '.', '_' and '-' only (e.g. istash-intent-v1)")}
+                </p>
+              )}
             </div>
           </div>
 
@@ -439,10 +520,24 @@ export function PromptTemplateCreateDialog({
             <textarea
               rows={5}
               value={systemPrompt}
-              onChange={(e) => setSystemPrompt(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 font-mono text-xs leading-relaxed text-slate-800 focus:border-[#003377] focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              onChange={(e) => {
+                setSystemPrompt(e.target.value);
+                if (fieldErrors.systemPrompt) {
+                  setFieldErrors((prev) => ({ ...prev, systemPrompt: [] }));
+                }
+              }}
+              className={`w-full rounded-xl border bg-slate-50 p-3 font-mono text-xs leading-relaxed text-slate-800 focus:bg-white focus:outline-none dark:bg-slate-900 dark:text-slate-200 ${
+                fieldErrors.systemPrompt?.length
+                  ? "border-red-400 focus:border-red-500"
+                  : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
+              }`}
               required
             />
+            {fieldErrors.systemPrompt?.[0] && (
+              <p className="text-[11px] font-medium text-red-500">
+                {fieldErrors.systemPrompt[0]}
+              </p>
+            )}
           </div>
 
           {/* User Prompt Template */}
@@ -453,10 +548,24 @@ export function PromptTemplateCreateDialog({
             <textarea
               rows={4}
               value={userPromptTemplate}
-              onChange={(e) => setUserPromptTemplate(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 font-mono text-xs leading-relaxed text-slate-800 focus:border-[#003377] focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              onChange={(e) => {
+                setUserPromptTemplate(e.target.value);
+                if (fieldErrors.userPromptTemplate) {
+                  setFieldErrors((prev) => ({ ...prev, userPromptTemplate: [] }));
+                }
+              }}
+              className={`w-full rounded-xl border bg-slate-50 p-3 font-mono text-xs leading-relaxed text-slate-800 focus:bg-white focus:outline-none dark:bg-slate-900 dark:text-slate-200 ${
+                fieldErrors.userPromptTemplate?.length
+                  ? "border-red-400 focus:border-red-500"
+                  : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
+              }`}
               required
             />
+            {fieldErrors.userPromptTemplate?.[0] && (
+              <p className="text-[11px] font-medium text-red-500">
+                {fieldErrors.userPromptTemplate[0]}
+              </p>
+            )}
           </div>
 
           {/* Advanced JSON Schemas Accordion */}

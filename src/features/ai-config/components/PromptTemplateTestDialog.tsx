@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Play, Sparkles, AlertCircle, CheckCircle2, Clock, Zap, RotateCcw } from "lucide-react";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 import { useTestPromptTemplateMutation } from "../api";
+import { testPromptTemplateSchema } from "../schemas";
 import type { PromptTemplateItem, TestPromptTemplateResponse } from "../types";
 
 interface PromptTemplateTestDialogProps {
@@ -33,6 +34,7 @@ export function PromptTemplateTestDialog({
   const [maxTokens, setMaxTokens] = useState<number>(800);
   const [testResult, setTestResult] = useState<TestPromptTemplateResponse | null>(null);
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
   const [runTest, { isLoading, error: apiError }] = useTestPromptTemplateMutation();
 
@@ -68,6 +70,7 @@ export function PromptTemplateTestDialog({
       );
       setTestResult(null);
       setJsonError(null);
+      setFieldErrors({});
     }
   }, [template]);
 
@@ -78,6 +81,26 @@ export function PromptTemplateTestDialog({
     if (!template) return;
     setJsonError(null);
     setTestResult(null);
+    setFieldErrors({});
+
+    const formValues = {
+      question: question.trim(),
+      currencyCode: currencyCode.trim(),
+      financialContextJson: financialContextJson.trim() || undefined,
+      temperature,
+      maxTokens,
+    };
+
+    const zodResult = testPromptTemplateSchema.safeParse(formValues);
+
+    if (!zodResult.success) {
+      const flattened = zodResult.error.flatten();
+      setFieldErrors(flattened.fieldErrors as Record<string, string[]>);
+      if (flattened.fieldErrors.financialContextJson?.[0]) {
+        setJsonError(flattened.fieldErrors.financialContextJson[0]);
+      }
+      return;
+    }
 
     let parsedContext: Record<string, unknown> = {};
     if (financialContextJson.trim()) {
@@ -93,12 +116,12 @@ export function PromptTemplateTestDialog({
       const response = await runTest({
         templateId: template.id,
         variables: {
-          question,
-          currencyCode,
+          question: formValues.question,
+          currencyCode: formValues.currencyCode,
           financialContext: parsedContext,
         },
-        temperature,
-        maxTokens,
+        temperature: formValues.temperature,
+        maxTokens: formValues.maxTokens,
       }).unwrap();
 
       setTestResult(response);
@@ -150,10 +173,24 @@ export function PromptTemplateTestDialog({
                 <textarea
                   rows={3}
                   value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs leading-relaxed text-slate-800 focus:border-[#003377] focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                  onChange={(e) => {
+                    setQuestion(e.target.value);
+                    if (fieldErrors.question) {
+                      setFieldErrors((prev) => ({ ...prev, question: [] }));
+                    }
+                  }}
+                  className={`w-full rounded-2xl border bg-slate-50 p-3 text-xs leading-relaxed text-slate-800 focus:bg-white focus:outline-none dark:bg-slate-900 dark:text-slate-200 ${
+                    fieldErrors.question?.length
+                      ? "border-red-400 focus:border-red-500"
+                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
+                  }`}
                   required
                 />
+                {fieldErrors.question?.[0] && (
+                  <p className="text-xs font-medium text-red-600">
+                    {fieldErrors.question[0]}
+                  </p>
+                )}
               </div>
 
               {/* Currency Code */}
