@@ -227,14 +227,14 @@ export default function WelcomeIntro() {
         transition={{ duration: 0.65 }}
         className="mx-auto max-w-[700px] text-center"
       >
-        <span className="inline-flex items-center gap-2 rounded-full border border-[#003377]/10 bg-[#003377]/[0.035] px-4 py-2 text-sm font-bold text-[#003377]/70 dark:border-[#1D2B3D] dark:bg-[#071221] dark:text-[#94A3B8]">
+        <span className="inline-flex items-center gap-2 rounded-full border border-[#003377]/10 bg-[#003377]/[0.035] px-4 py-2 text-xs font-semibold text-[#003377]/70 dark:border-[#1D2B3D] dark:bg-[#071221] dark:text-[#94A3B8]">
           <Sparkles className="size-4 text-[#e3a400] dark:text-[#FEDB55]" aria-hidden="true" />
           {copy.chip[locale]}
         </span>
-        <h1 className="mt-6 text-2xl font-extrabold text-[#003377] dark:text-[#F8FAFC] sm:text-3xl lg:text-4xl">
+        <h1 className="hero-heading mt-6 text-[#003377] dark:text-[#F8FAFC]">
           {copy.heading[locale]}, {displayName}!
         </h1>
-        <p className="mx-auto mt-2 max-w-[700px] text-sm leading-6 text-slate-500 dark:text-[#94A3B8]">
+        <p className="mx-auto mt-2 max-w-[700px] text-sm leading-6 text-slate-500 dark:text-[#94A3B8] font-normal">
           {copy.intro[locale]}
         </p>
       </motion.div>

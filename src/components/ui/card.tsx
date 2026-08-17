@@ -9,7 +9,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-xl border border-border bg-card text-card-foreground shadow-sm transition-colors dark:shadow-black/20",
+      "rounded-xl border border-border bg-card text-card-foreground text-sm shadow-sm transition-colors dark:shadow-black/20",
       className
     )}
     {...props}
@@ -34,7 +34,7 @@ const CardTitle = React.forwardRef<
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, children, ...props }, ref) => {
   const i18n = useOptionalAdminI18n();
-  return <h3 ref={ref} className={cn("font-semibold leading-none tracking-tight text-lg", className)} {...props}>{typeof children === "string" ? i18n?.t(children) ?? children : children}</h3>;
+  return <h3 ref={ref} data-slot="card-title" className={cn("font-semibold leading-tight tracking-tight text-lg md:text-xl", className)} {...props}>{typeof children === "string" ? i18n?.t(children) ?? children : children}</h3>;
 });
 CardTitle.displayName = "CardTitle";
 
@@ -43,7 +43,7 @@ const CardDescription = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
   const i18n = useOptionalAdminI18n();
-  return <p ref={ref} className={cn("text-base text-muted-foreground", className)} {...props}>{typeof children === "string" ? i18n?.t(children) ?? children : children}</p>;
+  return <p ref={ref} data-slot="card-description" className={cn("text-sm text-muted-foreground font-normal leading-normal", className)} {...props}>{typeof children === "string" ? i18n?.t(children) ?? children : children}</p>;
 });
 CardDescription.displayName = "CardDescription";
 
@@ -51,7 +51,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+  <div ref={ref} className={cn("p-6 pt-0 text-sm", className)} {...props} />
 ));
 CardContent.displayName = "CardContent";
 

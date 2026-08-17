@@ -191,8 +191,13 @@ export default function CategoryManager() {
   return (
     <div className="space-y-7 font-google-sans">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><h1 className="text-3xl font-semibold tracking-tight text-foreground">{t("Category Management")}</h1><p className="mt-1 max-w-3xl text-base text-muted-foreground">{t("Manage income, expense, system, default, and hierarchical categories used throughout iStash.")}</p></div>
-        <Button size="lg" onClick={openCreate} className="bg-[#FEDB55] text-[#003377] hover:bg-[#f0ca43]"><Plus className="mr-2 size-4" />{t("Add Category")}</Button>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">{t("Category Management")}</h1>
+          <p className="mt-1 max-w-3xl text-sm text-muted-foreground font-normal">{t("Manage income, expense, system, default, and hierarchical categories used throughout iStash.")}</p>
+        </div>
+        <Button size="lg" onClick={openCreate} className="bg-[#FEDB55] text-base font-medium text-[#003377] hover:bg-[#f0ca43]">
+          <Plus className="mr-2 size-4" />{t("Add Category")}
+        </Button>
       </header>
 
       <div className="admin-stat-grid grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -205,30 +210,81 @@ export default function CategoryManager() {
       </div>
 
       <Card className="rounded-2xl border-border shadow-sm">
-        <CardHeader><CardTitle className="text-xl">Categories</CardTitle><p className="text-base text-muted-foreground">Search, organize, and manage the category hierarchy.</p></CardHeader>
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold md:text-xl">{t("Categories")}</CardTitle>
+          <p className="text-sm text-muted-foreground font-normal">{t("Search, organize, and manage the category hierarchy.")}</p>
+        </CardHeader>
         <CardContent className="space-y-5">
-          <div className="relative"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><Input value={keyword} onChange={(event) => { setKeyword(event.target.value); setPageNumber(0); }} placeholder="Search by category name or keyword..." className="h-11 rounded-xl pl-9 text-base" /></div>
-          <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-            <FilterSelect label="Type" value={type} options={{ ALL: "All Types", INCOME: "Income", EXPENSE: "Expense", BOTH: "Income & Expense" }} onChange={(value) => { setType(value as CategoryType); setPageNumber(0); }} />
-            <FilterSelect label="Status" value={status} options={{ ALL: "All Statuses", ACTIVE: "Active", INACTIVE: "Inactive", DELETED: "Deleted" }} onChange={(value) => { setStatus(value as CategoryStatus); setPageNumber(0); }} />
-            <FilterSelect label="Classification" value={classification} options={{ ALL: "All Categories", SYSTEM: "System Categories", DEFAULT: "Default Categories", CUSTOM: "Custom Categories" }} onChange={(value) => { setClassification(value as Classification); setPageNumber(0); }} />
-            <FilterSelect label="Level" value={level} options={{ ALL: "All Levels", ROOT: "Root Categories" }} onChange={(value) => { setLevel(value as Level); setPageNumber(0); }} />
-            <label className="flex h-11 items-center gap-2 rounded-xl border border-input px-3 text-sm font-medium"><input type="checkbox" checked={includeHidden} onChange={(event) => { setIncludeHidden(event.target.checked); setPageNumber(0); }} className="size-4 accent-[#003377]" /><EyeOff className="size-4 text-muted-foreground" />Include Hidden</label>
-            <Button variant="ghost" onClick={resetFilters}>Reset</Button>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input value={keyword} onChange={(event) => { setKeyword(event.target.value); setPageNumber(0); }} placeholder={t("Search by category name or keyword...")} className="h-11 rounded-xl pl-9 text-base" />
+          </div>
+          <div className="filter-card flex flex-col gap-3 text-base lg:flex-row lg:flex-wrap lg:items-center">
+            <FilterSelect label="Type" value={type} options={{ ALL: t("All Types"), INCOME: t("Income"), EXPENSE: t("Expense"), BOTH: t("Income & Expense") }} onChange={(value) => { setType(value as CategoryType); setPageNumber(0); }} />
+            <FilterSelect label="Status" value={status} options={{ ALL: t("All Statuses"), ACTIVE: t("Active"), INACTIVE: t("Inactive"), DELETED: t("Deleted") }} onChange={(value) => { setStatus(value as CategoryStatus); setPageNumber(0); }} />
+            <FilterSelect label="Classification" value={classification} options={{ ALL: t("All Categories"), SYSTEM: t("System Categories"), DEFAULT: t("Default Categories"), CUSTOM: t("Custom Categories") }} onChange={(value) => { setClassification(value as Classification); setPageNumber(0); }} />
+            <FilterSelect label="Level" value={level} options={{ ALL: t("All Levels"), ROOT: t("Root Categories") }} onChange={(value) => { setLevel(value as Level); setPageNumber(0); }} />
+            <label className="flex h-11 items-center gap-2 rounded-xl border border-input px-3 text-base font-medium">
+              <input type="checkbox" checked={includeHidden} onChange={(event) => { setIncludeHidden(event.target.checked); setPageNumber(0); }} className="size-4 accent-[#003377]" />
+              <EyeOff className="size-4 text-muted-foreground" />
+              {t("Include Hidden")}
+            </label>
+            <Button variant="ghost" className="text-base font-medium" onClick={resetFilters}>{t("Reset")}</Button>
           </div>
 
-          {categoriesQuery.isError ? <ErrorState onRetry={() => categoriesQuery.refetch()} /> : categoriesQuery.isLoading || categoriesQuery.isFetching && !page ? <TableSkeleton /> : categories.length === 0 ? <EmptyState filtered={Boolean(deferredKeyword || type !== "ALL" || status !== "ALL" || classification !== "ALL" || level !== "ALL" || !includeHidden)} onReset={resetFilters} onCreate={openCreate} /> : <>
-            <div className="overflow-x-auto rounded-2xl border border-border">
-              <Table>
-                <TableHeader className="bg-muted/40"><TableRow className="hover:bg-transparent"><TableHead className="min-w-64 text-sm font-semibold">Category</TableHead><TableHead className="text-sm font-semibold">Type</TableHead><TableHead className="min-w-36 text-sm font-semibold">Parent</TableHead><TableHead className="min-w-40 text-sm font-semibold">Classification</TableHead><TableHead className="text-sm font-semibold">Status</TableHead><TableHead className="min-w-40 text-sm font-semibold">Updated</TableHead><TableHead className="w-14 text-right text-sm font-semibold">Actions</TableHead></TableRow></TableHeader>
-                <TableBody>{categories.map((category) => <CategoryRow key={category.id} category={category} onView={() => { setSelected(category); setDetailOpen(true); }} onEdit={() => openEdit(category)} onConfirm={(kind) => setConfirmAction({ kind, category })} />)}</TableBody>
-              </Table>
-            </div>
-            <div className="flex flex-col gap-4 border-t border-border pt-4 text-base lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex flex-col gap-3 text-base text-muted-foreground sm:flex-row sm:items-center"><span>Showing {start}–{end} of {(page?.totalElements ?? 0).toLocaleString()} categories</span><FilterSelect label="Page size" value={String(pageSize)} options={{ "10": "10 per page", "20": "20 per page", "50": "50 per page", "100": "100 per page" }} onChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }} compact /></div>
-              <Pagination className="mx-0 w-auto justify-start lg:justify-end"><PaginationContent><PaginationItem><PaginationPrevious disabled={safePage === 0} onClick={() => setPageNumber(Math.max(0, safePage - 1))} /></PaginationItem>{paginationItems(safePage + 1, page?.totalPages ?? 1).map((item) => <PaginationItem key={item}>{typeof item === "number" ? <PaginationLink isActive={item === safePage + 1} onClick={() => setPageNumber(item - 1)}>{item}</PaginationLink> : <PaginationEllipsis />}</PaginationItem>)}<PaginationItem><PaginationNext disabled={safePage + 1 >= (page?.totalPages ?? 1)} onClick={() => setPageNumber(Math.min((page?.totalPages ?? 1) - 1, safePage + 1))} /></PaginationItem></PaginationContent></Pagination>
-            </div>
-          </>}
+          {categoriesQuery.isError ? (
+            <ErrorState onRetry={() => categoriesQuery.refetch()} />
+          ) : categoriesQuery.isLoading || (categoriesQuery.isFetching && !page) ? (
+            <TableSkeleton />
+          ) : categories.length === 0 ? (
+            <EmptyState filtered={Boolean(deferredKeyword || type !== "ALL" || status !== "ALL" || classification !== "ALL" || level !== "ALL" || !includeHidden)} onReset={resetFilters} onCreate={openCreate} />
+          ) : (
+            <>
+              <div className="overflow-x-auto rounded-2xl border border-border">
+                <Table>
+                  <TableHeader className="bg-muted/40">
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="min-w-64 text-base font-semibold">{t("Category")}</TableHead>
+                      <TableHead className="text-base font-semibold">{t("Type")}</TableHead>
+                      <TableHead className="min-w-36 text-base font-semibold">{t("Parent")}</TableHead>
+                      <TableHead className="min-w-40 text-base font-semibold">{t("Classification")}</TableHead>
+                      <TableHead className="text-base font-semibold">{t("Status")}</TableHead>
+                      <TableHead className="min-w-40 text-base font-semibold">{t("Updated")}</TableHead>
+                      <TableHead className="w-14 text-right text-base font-semibold">{t("Actions")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {categories.map((category) => (
+                      <CategoryRow
+                        key={category.id}
+                        category={category}
+                        onView={() => { setSelected(category); setDetailOpen(true); }}
+                        onEdit={() => openEdit(category)}
+                        onConfirm={(kind) => setConfirmAction({ kind, category })}
+                      />
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="flex flex-col gap-4 border-t border-border pt-4 text-base lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex flex-col gap-3 text-base text-muted-foreground sm:flex-row sm:items-center">
+                  <span>Showing {start}–{end} of {(page?.totalElements ?? 0).toLocaleString()} {t("categories")}</span>
+                  <FilterSelect label="Page size" value={String(pageSize)} options={{ "10": "10 / page", "20": "20 / page", "50": "50 / page", "100": "100 / page" }} onChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }} compact />
+                </div>
+                <Pagination className="mx-0 w-auto justify-start lg:justify-end">
+                  <PaginationContent>
+                    <PaginationItem><PaginationPrevious disabled={safePage === 0} onClick={() => setPageNumber(Math.max(0, safePage - 1))} /></PaginationItem>
+                    {paginationItems(safePage + 1, page?.totalPages ?? 1).map((item) => (
+                      <PaginationItem key={item}>
+                        {typeof item === "number" ? <PaginationLink isActive={item === safePage + 1} onClick={() => setPageNumber(item - 1)}>{item}</PaginationLink> : <PaginationEllipsis />}
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem><PaginationNext disabled={safePage + 1 >= (page?.totalPages ?? 1)} onClick={() => setPageNumber(Math.min((page?.totalPages ?? 1) - 1, safePage + 1))} /></PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 
@@ -240,69 +296,321 @@ export default function CategoryManager() {
 }
 
 function StatCard({ icon: Icon, label, value, helper }: { icon: typeof Tags; label: string; value: React.ReactNode; helper: string }) {
-  return <Card className="rounded-2xl shadow-sm"><CardContent className="flex gap-4 p-5 sm:p-6"><span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#003377]/10 text-[#003377] dark:text-[#FEDB55]"><Icon className="size-5" /></span><div><p className="text-base font-medium text-muted-foreground">{label}</p><p className="mt-1 text-3xl font-semibold text-foreground">{value}</p><p className="mt-1 text-sm text-muted-foreground">{helper}</p></div></CardContent></Card>;
+  return (
+    <Card className="rounded-2xl shadow-sm">
+      <CardContent className="flex gap-4 p-5 sm:p-6">
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#003377]/10 text-[#003377] dark:text-[#FEDB55]">
+          <Icon className="size-5" />
+        </span>
+        <div>
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <p className="mt-1 text-3xl font-bold text-foreground">{value}</p>
+          <p className="mt-1 text-sm text-muted-foreground font-normal">{helper}</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 function FilterSelect({ label, value, options, onChange, compact = false }: { label: string; value: string; options: Record<string, string>; onChange: (value: string) => void; compact?: boolean }) {
-  return <Select value={value} onValueChange={onChange}><SelectTrigger className={`h-11 rounded-xl text-base ${compact ? "admin-page-size w-40" : "w-full lg:w-48"}`}><SelectValue value={options[value]} /></SelectTrigger><SelectContent value={value} onValueChange={onChange}>{Object.entries(options).map(([key, text]) => <SelectItem key={key} value={key}>{text}</SelectItem>)}</SelectContent><span className="sr-only">{label}</span></Select>;
+  return (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className={`h-11 rounded-xl text-base ${compact ? "admin-page-size w-40" : "w-full lg:w-48"}`}>
+        <SelectValue value={options[value]} />
+      </SelectTrigger>
+      <SelectContent value={value} onValueChange={onChange}>
+        {Object.entries(options).map(([key, text]) => (
+          <SelectItem key={key} value={key}>{text}</SelectItem>
+        ))}
+      </SelectContent>
+      <span className="sr-only">{label}</span>
+    </Select>
+  );
 }
 
 function TypeBadge({ type }: { type?: string }) {
+  const { t } = useAdminI18n();
   const income = type?.toLowerCase() === "income";
   const both = type?.toLowerCase() === "both";
-  return <Badge variant="outline" className={income ? "border-emerald-200 bg-emerald-50 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300" : both ? "border-blue-200 bg-blue-50 text-sm text-blue-700 dark:border-blue-900 dark:bg-blue-950/60 dark:text-blue-300" : "border-amber-200 bg-amber-50 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300"}>{friendlyType(type)}</Badge>;
+  return (
+    <Badge
+      variant="outline"
+      className={
+        income
+          ? "border-emerald-200 bg-emerald-50 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300"
+          : both
+            ? "border-blue-200 bg-blue-50 text-sm text-blue-700 dark:border-blue-900 dark:bg-blue-950/60 dark:text-blue-300"
+            : "border-amber-200 bg-amber-50 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300"
+      }
+    >
+      {t(friendlyType(type))}
+    </Badge>
+  );
 }
 
 function StatusBadge({ status }: { status?: string }) {
+  const { t } = useAdminI18n();
   const active = status === "ACTIVE";
-  return <Badge variant="outline" className={active ? "gap-1 border-emerald-200 bg-emerald-50 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300" : status === "DELETED" ? "gap-1 border-red-200 bg-red-50 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/60 dark:text-red-300" : "gap-1 border-slate-200 bg-slate-100 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}>{active ? <CheckCircle2 className="size-3.5" /> : <XCircle className="size-3.5" />}{active ? "Active" : status === "DELETED" ? "Deleted" : "Inactive"}</Badge>;
+  return (
+    <Badge
+      variant="outline"
+      className={
+        active
+          ? "gap-1 border-emerald-200 bg-emerald-50 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300"
+          : status === "DELETED"
+            ? "gap-1 border-red-200 bg-red-50 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/60 dark:text-red-300"
+            : "gap-1 border-slate-200 bg-slate-100 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+      }
+    >
+      {active ? <CheckCircle2 className="size-3.5" /> : <XCircle className="size-3.5" />}
+      {t(active ? "Active" : status === "DELETED" ? "Deleted" : "Inactive")}
+    </Badge>
+  );
 }
 
 function ClassificationBadge({ category }: { category: Category }) {
-  return <div className="flex items-center gap-2"><Badge variant="outline" className="gap-1 text-sm">{category.systemCategory ? <ShieldCheck className="size-3.5" /> : category.defaultCategory ? <Star className="size-3.5" /> : <Tags className="size-3.5" />}{category.systemCategory ? "System" : category.defaultCategory ? "Default" : "Custom"}</Badge>{category.systemCategory && category.defaultCategory && <Tooltip><TooltipTrigger><Star className="size-4 text-amber-500" /></TooltipTrigger><TooltipContent>Default category</TooltipContent></Tooltip>}{category.hiddenForCurrentUser && <Tooltip><TooltipTrigger><EyeOff className="size-4 text-muted-foreground" /></TooltipTrigger><TooltipContent>Hidden</TooltipContent></Tooltip>}</div>;
+  const { t } = useAdminI18n();
+  return (
+    <div className="flex items-center gap-2">
+      <Badge variant="outline" className="gap-1 text-sm">
+        {category.systemCategory ? <ShieldCheck className="size-3.5" /> : category.defaultCategory ? <Star className="size-3.5" /> : <Tags className="size-3.5" />}
+        {t(category.systemCategory ? "System" : category.defaultCategory ? "Default" : "Custom")}
+      </Badge>
+      {category.systemCategory && category.defaultCategory && (
+        <Tooltip>
+          <TooltipTrigger><Star className="size-4 text-amber-500" /></TooltipTrigger>
+          <TooltipContent>{t("Default Category")}</TooltipContent>
+        </Tooltip>
+      )}
+      {category.hiddenForCurrentUser && (
+        <Tooltip>
+          <TooltipTrigger><EyeOff className="size-4 text-muted-foreground" /></TooltipTrigger>
+          <TooltipContent>{t("Hidden")}</TooltipContent>
+        </Tooltip>
+      )}
+    </div>
+  );
 }
 
 function CategoryRow({ category, onView, onEdit, onConfirm }: { category: Category; onView: () => void; onEdit: () => void; onConfirm: (kind: NonNullable<ConfirmAction>["kind"]) => void }) {
+  const { t } = useAdminI18n();
   const deleted = category.status === "DELETED";
-  return <TableRow className="cursor-pointer" onClick={onView}>
-    <TableCell className="py-3.5"><div className={`flex items-center gap-3 ${category.parentId ? "pl-6" : ""}`}>{category.parentId && <span className="text-lg text-muted-foreground">↳</span>}<span className="size-3 shrink-0 rounded-full border border-black/10" style={{ backgroundColor: category.color || "#64748B" }} /><span className="grid size-9 shrink-0 place-items-center rounded-xl bg-muted"><DynamicIcon name={category.icon || "Tags"} className="size-5" /></span><div><p className="text-base font-medium text-foreground">{category.name}</p><p className="text-xs text-muted-foreground">{category.categoryKey || "No category key"}</p></div></div></TableCell>
-    <TableCell className="py-3.5"><TypeBadge type={category.type} /></TableCell><TableCell className="py-3.5 text-sm text-foreground">{category.parentName || "Root"}</TableCell><TableCell className="py-3.5"><ClassificationBadge category={category} /></TableCell><TableCell className="py-3.5"><StatusBadge status={category.status} /></TableCell><TableCell className="py-3.5 text-sm text-muted-foreground">{exactDate(category.updatedAt)}</TableCell>
-    <TableCell className="py-3.5 text-right" onClick={(event) => event.stopPropagation()}><DropdownMenu><DropdownMenuTrigger asChild><Button size="icon" variant="ghost" aria-label={`${category.name} actions`}><MoreHorizontal className="size-4" /></Button></DropdownMenuTrigger><DropdownMenuContent><DropdownMenuItem onClick={onView}><Eye className="size-4" />View Details</DropdownMenuItem>{!deleted && <><DropdownMenuItem onClick={onEdit}><Pencil className="size-4" />Edit Category</DropdownMenuItem><DropdownMenuItem onClick={onEdit}><Move className="size-4" />Move Category</DropdownMenuItem>{category.parentId && <DropdownMenuItem onClick={() => onConfirm("root")}><ArrowUpToLine className="size-4" />Move to Root</DropdownMenuItem>}<DropdownMenuItem onClick={() => onConfirm(category.status === "ACTIVE" ? "deactivate" : "activate")}>{category.status === "ACTIVE" ? <XCircle className="size-4" /> : <CheckCircle2 className="size-4" />}{category.status === "ACTIVE" ? "Deactivate" : "Activate"}</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem destructive onClick={() => onConfirm("delete")}><Trash2 className="size-4" />Delete Category</DropdownMenuItem></>}</DropdownMenuContent></DropdownMenu></TableCell>
-  </TableRow>;
+  return (
+    <TableRow className="cursor-pointer" onClick={onView}>
+      <TableCell className="py-3.5">
+        <div className={`flex items-center gap-3 ${category.parentId ? "pl-6" : ""}`}>
+          {category.parentId && <span className="text-lg text-muted-foreground">↳</span>}
+          <span className="size-3 shrink-0 rounded-full border border-black/10" style={{ backgroundColor: category.color || "#64748B" }} />
+          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-muted">
+            <DynamicIcon name={category.icon || "Tags"} className="size-5" />
+          </span>
+          <div>
+            <p className="text-base font-medium text-foreground">{category.name}</p>
+            <p className="text-sm text-muted-foreground">{category.categoryKey || "—"}</p>
+          </div>
+        </div>
+      </TableCell>
+      <TableCell className="py-3.5"><TypeBadge type={category.type} /></TableCell>
+      <TableCell className="py-3.5 text-base text-foreground">{category.parentName || t("Root")}</TableCell>
+      <TableCell className="py-3.5"><ClassificationBadge category={category} /></TableCell>
+      <TableCell className="py-3.5"><StatusBadge status={category.status} /></TableCell>
+      <TableCell className="py-3.5 text-base text-muted-foreground">{exactDate(category.updatedAt)}</TableCell>
+      <TableCell className="py-3.5 text-right" onClick={(event) => event.stopPropagation()}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="ghost" aria-label={`${category.name} actions`}>
+              <MoreHorizontal className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={onView}>
+              <Eye className="size-4" />{t("View Details")}
+            </DropdownMenuItem>
+            {!deleted && (
+              <>
+                <DropdownMenuItem onClick={onEdit}>
+                  <Pencil className="size-4" />{t("Edit Category")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onEdit}>
+                  <Move className="size-4" />{t("Move Category")}
+                </DropdownMenuItem>
+                {category.parentId && (
+                  <DropdownMenuItem onClick={() => onConfirm("root")}>
+                    <ArrowUpToLine className="size-4" />{t("Move to Root")}
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={() => onConfirm(category.status === "ACTIVE" ? "deactivate" : "activate")}>
+                  {category.status === "ACTIVE" ? <XCircle className="size-4" /> : <CheckCircle2 className="size-4" />}
+                  {t(category.status === "ACTIVE" ? "Deactivate" : "Activate")}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem destructive onClick={() => onConfirm("delete")}>
+                  <Trash2 className="size-4" />{t("Delete Category")}
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </TableCell>
+    </TableRow>
+  );
 }
 
 function CategoryDetailSheet({ category, open, onOpenChange, onEdit }: { category: Category | null; open: boolean; onOpenChange: (open: boolean) => void; onEdit: (category: Category) => void }) {
+  const { t } = useAdminI18n();
   if (!category) return null;
-  return <Sheet open={open} onOpenChange={onOpenChange}><SheetContent className="max-w-xl" onClose={() => onOpenChange(false)}><SheetHeader><SheetTitle>Category Details</SheetTitle></SheetHeader><SheetBody><div className="flex items-center gap-4"><span className="grid size-14 place-items-center rounded-2xl bg-muted"><DynamicIcon name={category.icon || "Tags"} className="size-7" /></span><div><div className="flex items-center gap-2"><span className="size-3 rounded-full" style={{ backgroundColor: category.color || "#64748B" }} /><h3 className="text-2xl font-semibold">{category.name}</h3></div><p className="text-sm text-muted-foreground">{category.categoryKey || "No category key"}</p></div></div><div className="flex flex-wrap gap-2"><TypeBadge type={category.type} /><ClassificationBadge category={category} /><StatusBadge status={category.status} /></div><Separator /><DetailSection title="Category Information"><Detail label="Name" value={category.name} /><Detail label="Type" value={friendlyType(category.type)} /><Detail label="Parent" value={category.parentName || "Root"} /><Detail label="Category Key" value={category.categoryKey || "—"} /><Detail label="Default Category" value={category.defaultCategory ? "Yes" : "No"} /><Detail label="System Category" value={category.systemCategory ? "Yes" : "No"} /><Detail label="Hidden" value={category.hiddenForCurrentUser ? "Yes" : "No"} /></DetailSection><DetailSection title="Appearance"><Detail label="Icon" value={category.icon || "Fallback icon"} /><Detail label="Color" value={category.color || "—"} /></DetailSection><DetailSection title="Timeline"><Detail label="Created" value={exactDate(category.createdAt)} /><Detail label="Updated" value={exactDate(category.updatedAt)} /><Detail label="Deleted" value={exactDate(category.deletedAt)} /></DetailSection></SheetBody>{category.status !== "DELETED" && <SheetFooter><Button onClick={() => onEdit(category)}><Pencil className="mr-2 size-4" />Edit Category</Button></SheetFooter>}</SheetContent></Sheet>;
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="max-w-xl" onClose={() => onOpenChange(false)}>
+        <SheetHeader>
+          <SheetTitle>{t("Category Details")}</SheetTitle>
+        </SheetHeader>
+        <SheetBody>
+          <div className="flex items-center gap-4">
+            <span className="grid size-14 place-items-center rounded-2xl bg-muted">
+              <DynamicIcon name={category.icon || "Tags"} className="size-7" />
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="size-3 rounded-full" style={{ backgroundColor: category.color || "#64748B" }} />
+                <h3 className="text-2xl font-semibold">{category.name}</h3>
+              </div>
+              <p className="text-base text-muted-foreground">{category.categoryKey || "—"}</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <TypeBadge type={category.type} />
+            <ClassificationBadge category={category} />
+            <StatusBadge status={category.status} />
+          </div>
+          <Separator />
+          <DetailSection title={t("Category Information")}>
+            <Detail label={t("Name")} value={category.name} />
+            <Detail label={t("Type")} value={t(friendlyType(category.type))} />
+            <Detail label={t("Parent")} value={category.parentName || t("Root")} />
+            <Detail label={t("Category Key")} value={category.categoryKey || "—"} />
+            <Detail label={t("Default Category")} value={category.defaultCategory ? t("Yes") : t("No")} />
+            <Detail label={t("System Category")} value={category.systemCategory ? t("Yes") : t("No")} />
+            <Detail label={t("Hidden")} value={category.hiddenForCurrentUser ? t("Yes") : t("No")} />
+          </DetailSection>
+          <DetailSection title={t("Appearance")}>
+            <Detail label={t("Icon")} value={category.icon || "Fallback icon"} />
+            <Detail label={t("Color")} value={category.color || "—"} />
+          </DetailSection>
+          <DetailSection title={t("Timeline")}>
+            <Detail label={t("Created")} value={exactDate(category.createdAt)} />
+            <Detail label={t("Updated")} value={exactDate(category.updatedAt)} />
+            <Detail label={t("Deleted")} value={exactDate(category.deletedAt)} />
+          </DetailSection>
+        </SheetBody>
+        {category.status !== "DELETED" && (
+          <SheetFooter>
+            <Button onClick={() => onEdit(category)}>
+              <Pencil className="mr-2 size-4" />{t("Edit Category")}
+            </Button>
+          </SheetFooter>
+        )}
+      </SheetContent>
+    </Sheet>
+  );
 }
 
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) { return <section><h4 className="mb-2 text-lg font-semibold">{title}</h4><div className="divide-y divide-border">{children}</div></section>; }
-function Detail({ label, value }: { label: string; value: React.ReactNode }) { return <div className="flex justify-between gap-4 py-3"><span className="text-sm text-muted-foreground">{label}</span><span className="text-right text-base font-medium">{value}</span></div>; }
+function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <h4 className="mb-2 text-lg font-semibold">{title}</h4>
+      <div className="divide-y divide-border">{children}</div>
+    </section>
+  );
+}
+
+function Detail({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex justify-between gap-4 py-3">
+      <span className="text-base text-muted-foreground">{label}</span>
+      <span className="text-right text-base font-medium">{value}</span>
+    </div>
+  );
+}
 
 function ParentSelector({ value, onChange, excludedId }: { value: string; onChange: (value: string) => void; excludedId?: string }) {
+  const { t } = useAdminI18n();
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
   const rootsQuery = useGetAdminCategoriesQuery({ rootOnly: true, ...(deferredSearch ? { keyword: deferredSearch } : {}), status: "ACTIVE", pageNumber: 0, pageSize: 100, sortBy: "name", sortDirection: "ASC" });
   const options = rootsQuery.data?.content.filter((category) => category.id !== excludedId) ?? [];
   const selectedName = options.find((category) => category.id === value)?.name;
-  return <Popover><PopoverTrigger className="flex h-11 w-full items-center justify-between rounded-xl border border-input px-3 text-left text-base"><span className="truncate">{value ? selectedName || "Selected parent" : "None — Root Category"}</span><ChevronDown className="size-4 text-muted-foreground" /></PopoverTrigger><PopoverContent className="w-[min(24rem,calc(100vw-3rem))] space-y-2 p-2"><div className="relative"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search root categories..." className="pl-9 text-base" /></div><div className="max-h-56 overflow-y-auto"><button type="button" onClick={() => onChange("")} className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm hover:bg-accent"><span>None — Root Category</span>{!value && <Check className="size-4" />}</button>{rootsQuery.isLoading ? <Skeleton className="m-2 h-24" /> : options.map((category) => <button key={category.id} type="button" onClick={() => onChange(category.id)} className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left hover:bg-accent"><span><span className="block text-sm font-medium">{category.name}</span><span className="block text-xs text-muted-foreground">{category.categoryKey || friendlyType(category.type)}</span></span>{value === category.id && <Check className="size-4" />}</button>)}</div></PopoverContent></Popover>;
+
+  return (
+    <Popover>
+      <PopoverTrigger className="flex h-11 w-full items-center justify-between rounded-xl border border-input px-3 text-left text-base">
+        <span className="truncate">{value ? selectedName || t("Selected parent") : t("None — Root Category")}</span>
+        <ChevronDown className="size-4 text-muted-foreground" />
+      </PopoverTrigger>
+      <PopoverContent className="w-[min(24rem,calc(100vw-3rem))] space-y-2 p-2">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("Search root categories...")} className="pl-9 text-base" />
+        </div>
+        <div className="max-h-56 overflow-y-auto">
+          <button type="button" onClick={() => onChange("")} className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm hover:bg-accent">
+            <span>{t("None — Root Category")}</span>
+            {!value && <Check className="size-4" />}
+          </button>
+          {rootsQuery.isLoading ? (
+            <Skeleton className="m-2 h-24" />
+          ) : (
+            options.map((category) => (
+              <button key={category.id} type="button" onClick={() => onChange(category.id)} className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left hover:bg-accent">
+                <span>
+                  <span className="block text-sm font-medium">{category.name}</span>
+                  <span className="block text-xs text-muted-foreground">{category.categoryKey || t(friendlyType(category.type))}</span>
+                </span>
+                {value === category.id && <Check className="size-4" />}
+              </button>
+            ))
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
 }
 
 function CategoryFormDialog({ category, open, onOpenChange, onSaved, createCategory, updateCategory, isLoading }: { category: Category | null; open: boolean; onOpenChange: (open: boolean) => void; onSaved: (category: Category) => void; createCategory: (payload: AdminCreateCategoryPayload) => { unwrap: () => Promise<Category> }; updateCategory: (payload: { id: string; data: UpdateCategoryPayload }) => { unwrap: () => Promise<Category> }; isLoading: boolean }) {
   const initial = useMemo<FormState>(() => category ? { name: category.name, categoryType: categoryTypeValue(category.type), parentId: category.parentId || "", categoryKey: category.categoryKey || "", icon: category.icon || "Box", color: category.color || "#F59E0B", systemCategory: Boolean(category.systemCategory), defaultCategory: Boolean(category.defaultCategory), status: category.status === "INACTIVE" ? "INACTIVE" : "ACTIVE" } : EMPTY_FORM, [category]);
   const formKey = `${category?.id ?? "new"}-${open}`;
-  return <Dialog open={open} onOpenChange={onOpenChange}><DialogContent key={formKey} onClose={() => onOpenChange(false)} className="max-h-[90vh] max-w-2xl overflow-y-auto"><CategoryFormContents initial={initial} category={category} isLoading={isLoading} onCancel={() => onOpenChange(false)} onSubmit={async (current) => {
-    try {
-      const saved = category ? await updateCategory({ id: category.id, data: { name: current.name.trim(), categoryType: current.categoryType, ...(current.parentId ? { parentId: current.parentId } : { moveToRoot: true }), icon: current.icon, color: current.color, defaultCategory: current.defaultCategory, status: current.status } }).unwrap() : await createCategory({ name: current.name.trim(), categoryType: current.categoryType, ...(current.parentId ? { parentId: current.parentId } : {}), categoryKey: current.categoryKey, icon: current.icon, color: current.color, systemCategory: current.systemCategory, defaultCategory: current.defaultCategory }).unwrap();
-      toast.success(category ? "Category updated successfully." : "Category created successfully."); onSaved(saved); onOpenChange(false);
-    } catch (error) { toast.error(errorMessage(error, category ? "Unable to update category." : "Unable to create category.")); }
-  }} /></DialogContent></Dialog>;
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent key={formKey} onClose={() => onOpenChange(false)} className="max-h-[90vh] max-w-2xl overflow-y-auto">
+        <CategoryFormContents
+          initial={initial}
+          category={category}
+          isLoading={isLoading}
+          onCancel={() => onOpenChange(false)}
+          onSubmit={async (current) => {
+            try {
+              const saved = category
+                ? await updateCategory({ id: category.id, data: { name: current.name.trim(), categoryType: current.categoryType, ...(current.parentId ? { parentId: current.parentId } : { moveToRoot: true }), icon: current.icon, color: current.color, defaultCategory: current.defaultCategory, status: current.status } }).unwrap()
+                : await createCategory({ name: current.name.trim(), categoryType: current.categoryType, ...(current.parentId ? { parentId: current.parentId } : {}), categoryKey: current.categoryKey, icon: current.icon, color: current.color, systemCategory: current.systemCategory, defaultCategory: current.defaultCategory }).unwrap();
+              toast.success(category ? "Category updated successfully." : "Category created successfully.");
+              onSaved(saved);
+              onOpenChange(false);
+            } catch (error) {
+              toast.error(errorMessage(error, category ? "Unable to update category." : "Unable to create category."));
+            }
+          }}
+        />
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 function CategoryFormContents({ initial, category, isLoading, onCancel, onSubmit }: { initial: FormState; category: Category | null; isLoading: boolean; onCancel: () => void; onSubmit: (form: FormState) => void }) {
+  const { t } = useAdminI18n();
   const [form, setForm] = useState(initial);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) => { setForm({ ...form, [key]: value }); setErrors({ ...errors, [key]: undefined }); };
+
   const submit = () => {
     const nextErrors: typeof errors = {};
     if (!form.name.trim()) nextErrors.name = "Category name is required.";
@@ -311,26 +619,162 @@ function CategoryFormContents({ initial, category, isLoading, onCancel, onSubmit
     setErrors(nextErrors);
     if (!Object.keys(nextErrors).length) onSubmit(form);
   };
-  return <><DialogHeader><DialogTitle>{category ? "Edit Category" : "Add Category"}</DialogTitle><DialogDescription className="text-base">{category ? "Update category information and hierarchy." : "Create a new root category or subcategory for iStash."}</DialogDescription></DialogHeader><form onSubmit={(event) => { event.preventDefault(); submit(); }} className="space-y-5">
-    <div><Label htmlFor="category-name" className="text-base">Category Name</Label><Input id="category-name" value={form.name} onChange={(event) => update("name", event.target.value)} maxLength={100} className="mt-2 h-11 text-base" />{errors.name && <p className="mt-1 text-sm text-destructive">{errors.name}</p>}</div>
-    <div className="grid gap-4 sm:grid-cols-2"><div><Label className="text-base">Type</Label><div className="mt-2"><FilterSelect label="Type" value={form.categoryType} options={{ INCOME: "Income", EXPENSE: "Expense", BOTH: "Income & Expense" }} onChange={(value) => update("categoryType", value as FormState["categoryType"])} /></div></div><div><Label className="text-base">Parent Category</Label><div className="mt-2"><ParentSelector value={form.parentId} excludedId={category?.id} onChange={(value) => update("parentId", value)} /></div></div></div>
-    {!category && <div><Label htmlFor="category-key" className="text-base">Category Key</Label><Input id="category-key" value={form.categoryKey} onChange={(event) => update("categoryKey", event.target.value.toUpperCase())} maxLength={100} placeholder="FOOD_DINING" className="mt-2 h-11 font-mono text-base uppercase" /><p className="mt-1 text-sm text-muted-foreground">Use uppercase letters, numbers, and underscores. Must begin with a letter.</p>{errors.categoryKey && <p className="mt-1 text-sm text-destructive">{errors.categoryKey}</p>}</div>}
-    <div><Label className="text-base">Icon</Label><div className="mt-2 grid grid-cols-6 gap-2 sm:grid-cols-12">{ICONS.map((icon) => <Tooltip key={icon}><TooltipTrigger><button type="button" onClick={() => update("icon", icon)} className={`grid size-10 place-items-center rounded-xl border ${form.icon === icon ? "border-[#FEDB55] bg-[#FEDB55]/20" : "border-border"}`}><DynamicIcon name={icon} className="size-5" /></button></TooltipTrigger><TooltipContent>{icon}</TooltipContent></Tooltip>)}</div></div>
-    <div><Label htmlFor="category-color" className="text-base">Color</Label><div className="mt-2 flex flex-wrap items-center gap-2">{COLORS.map((color) => <button key={color} type="button" aria-label={`Use ${color}`} onClick={() => update("color", color)} className={`size-9 rounded-full border-2 ${form.color.toUpperCase() === color ? "border-foreground" : "border-transparent"}`} style={{ backgroundColor: color }} />)}<Input id="category-color" value={form.color} onChange={(event) => update("color", event.target.value)} className="h-10 w-36 font-mono text-base" /></div>{errors.color && <p className="mt-1 text-sm text-destructive">{errors.color}</p>}</div>
-    {!category && <div className="grid gap-3 sm:grid-cols-2"><CheckField label="System Category" checked={form.systemCategory} onChange={(checked) => update("systemCategory", checked)} /><CheckField label="Default Category" checked={form.defaultCategory} onChange={(checked) => update("defaultCategory", checked)} /></div>}
-    {category && <div><Label className="text-base">Status</Label><div className="mt-2"><FilterSelect label="Status" value={form.status} options={{ ACTIVE: "Active", INACTIVE: "Inactive" }} onChange={(value) => update("status", value as FormState["status"])} /></div></div>}
-    <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end"><Button type="button" variant="outline" disabled={isLoading} onClick={onCancel}>Cancel</Button><Button type="submit" disabled={isLoading} className="bg-[#FEDB55] text-[#003377] hover:bg-[#f0ca43]">{isLoading ? "Saving..." : category ? "Save Changes" : "Create Category"}</Button></div>
-  </form></>;
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle>{category ? t("Edit Category") : t("Add Category")}</DialogTitle>
+        <DialogDescription className="text-base">
+          {category ? t("Update category information and hierarchy.") : t("Create a new root category or subcategory for iStash.")}
+        </DialogDescription>
+      </DialogHeader>
+      <form onSubmit={(event) => { event.preventDefault(); submit(); }} className="space-y-5">
+        <div>
+          <Label htmlFor="category-name" className="text-base">{t("Category Name")}</Label>
+          <Input id="category-name" value={form.name} onChange={(event) => update("name", event.target.value)} maxLength={100} className="mt-2 h-11 text-base" />
+          {errors.name && <p className="mt-1 text-sm text-destructive">{errors.name}</p>}
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Label className="text-base">{t("Type")}</Label>
+            <div className="mt-2">
+              <FilterSelect label="Type" value={form.categoryType} options={{ INCOME: t("Income"), EXPENSE: t("Expense"), BOTH: t("Income & Expense") }} onChange={(value) => update("categoryType", value as FormState["categoryType"])} />
+            </div>
+          </div>
+          <div>
+            <Label className="text-base">{t("Parent Category")}</Label>
+            <div className="mt-2">
+              <ParentSelector value={form.parentId} excludedId={category?.id} onChange={(value) => update("parentId", value)} />
+            </div>
+          </div>
+        </div>
+        {!category && (
+          <div>
+            <Label htmlFor="category-key" className="text-base">{t("Category Key")}</Label>
+            <Input id="category-key" value={form.categoryKey} onChange={(event) => update("categoryKey", event.target.value.toUpperCase())} maxLength={100} placeholder="FOOD_DINING" className="mt-2 h-11 font-mono text-base uppercase" />
+            <p className="mt-1 text-sm text-muted-foreground">Use uppercase letters, numbers, and underscores. Must begin with a letter.</p>
+            {errors.categoryKey && <p className="mt-1 text-sm text-destructive">{errors.categoryKey}</p>}
+          </div>
+        )}
+        <div>
+          <Label className="text-base">{t("Icon")}</Label>
+          <div className="mt-2 grid grid-cols-6 gap-2 sm:grid-cols-12">
+            {ICONS.map((icon) => (
+              <Tooltip key={icon}>
+                <TooltipTrigger>
+                  <button type="button" onClick={() => update("icon", icon)} className={`grid size-10 place-items-center rounded-xl border ${form.icon === icon ? "border-[#FEDB55] bg-[#FEDB55]/20" : "border-border"}`}>
+                    <DynamicIcon name={icon} className="size-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>{icon}</TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
+        </div>
+        <div>
+          <Label htmlFor="category-color" className="text-base">{t("Color")}</Label>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {COLORS.map((color) => (
+              <button key={color} type="button" aria-label={`Use ${color}`} onClick={() => update("color", color)} className={`size-9 rounded-full border-2 ${form.color.toUpperCase() === color ? "border-foreground" : "border-transparent"}`} style={{ backgroundColor: color }} />
+            ))}
+            <Input id="category-color" value={form.color} onChange={(event) => update("color", event.target.value)} className="h-10 w-36 font-mono text-base" />
+          </div>
+          {errors.color && <p className="mt-1 text-sm text-destructive">{errors.color}</p>}
+        </div>
+        {!category && (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <CheckField label={t("System Category")} checked={form.systemCategory} onChange={(checked) => update("systemCategory", checked)} />
+            <CheckField label={t("Default Category")} checked={form.defaultCategory} onChange={(checked) => update("defaultCategory", checked)} />
+          </div>
+        )}
+        {category && (
+          <div>
+            <Label className="text-base">{t("Status")}</Label>
+            <div className="mt-2">
+              <FilterSelect label="Status" value={form.status} options={{ ACTIVE: t("Active"), INACTIVE: t("Inactive") }} onChange={(value) => update("status", value as FormState["status"])} />
+            </div>
+          </div>
+        )}
+        <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+          <Button type="button" variant="outline" disabled={isLoading} onClick={onCancel}>{t("Cancel")}</Button>
+          <Button type="submit" disabled={isLoading} className="bg-[#FEDB55] text-[#003377] hover:bg-[#f0ca43]">
+            {isLoading ? t("Saving...") : category ? t("Save Changes") : t("Create Category")}
+          </Button>
+        </div>
+      </form>
+    </>
+  );
 }
 
-function CheckField({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) { return <label className="flex items-center gap-3 rounded-xl border border-border p-3 text-base"><input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 accent-[#003377]" />{label}</label>; }
+function CheckField({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) {
+  return (
+    <label className="flex items-center gap-3 rounded-xl border border-border p-3 text-base">
+      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 accent-[#003377]" />
+      {label}
+    </label>
+  );
+}
 
 function ConfirmationDialog({ action, onOpenChange, onConfirm, isLoading }: { action: ConfirmAction; onOpenChange: (open: boolean) => void; onConfirm: () => void; isLoading: boolean }) {
+  const { t } = useAdminI18n();
   if (!action) return null;
-  const copy = action.kind === "delete" ? { title: `Delete “${action.category.name}”?`, text: "This category may be referenced by existing configuration or subcategory relationships. Only continue when you are sure it is safe.", button: "Delete Category" } : action.kind === "root" ? { title: `Move “${action.category.name}” to root?`, text: "This category will no longer be nested under its current parent.", button: "Move to Root" } : action.kind === "activate" ? { title: `Activate “${action.category.name}”?`, text: "This category will become available where active categories are supported.", button: "Activate" } : { title: `Deactivate “${action.category.name}”?`, text: "This category will no longer be available where only active categories can be selected.", button: "Deactivate" };
-  return <AlertDialog open onOpenChange={onOpenChange}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{copy.title}</AlertDialogTitle><AlertDialogDescription>{copy.text}</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={isLoading} onClick={() => onOpenChange(false)}>Cancel</AlertDialogCancel><AlertDialogAction variant={action.kind === "delete" || action.kind === "deactivate" ? "destructive" : "default"} disabled={isLoading} onClick={onConfirm}>{isLoading ? "Updating..." : copy.button}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>;
+  const copy = action.kind === "delete"
+    ? { title: `Delete “${action.category.name}”?`, text: "This category may be referenced by existing configuration or subcategory relationships. Only continue when you are sure it is safe.", button: t("Delete Category") }
+    : action.kind === "root"
+      ? { title: `Move “${action.category.name}” to root?`, text: "This category will no longer be nested under its current parent.", button: t("Move to Root") }
+      : action.kind === "activate"
+        ? { title: `Activate “${action.category.name}”?`, text: "This category will become available where active categories are supported.", button: t("Activate") }
+        : { title: `Deactivate “${action.category.name}”?`, text: "This category will no longer be available where only active categories can be selected.", button: t("Deactivate") };
+
+  return (
+    <AlertDialog open onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{copy.title}</AlertDialogTitle>
+          <AlertDialogDescription>{copy.text}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isLoading} onClick={() => onOpenChange(false)}>{t("Cancel")}</AlertDialogCancel>
+          <AlertDialogAction variant={action.kind === "delete" || action.kind === "deactivate" ? "destructive" : "default"} disabled={isLoading} onClick={onConfirm}>
+            {isLoading ? t("Updating...") : copy.button}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 }
 
-function TableSkeleton() { return <div className="rounded-2xl border border-border p-4"><Skeleton className="mb-4 h-11 w-full" />{Array.from({ length: 7 }).map((_, index) => <Skeleton key={index} className="mb-3 h-14 w-full" />)}</div>; }
-function ErrorState({ onRetry }: { onRetry: () => void }) { return <div className="flex flex-col items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 py-14 text-center"><FolderTree className="size-8 text-destructive" /><p className="text-lg font-semibold">Unable to load categories.</p><p className="text-base text-muted-foreground">Please try again.</p><Button variant="outline" onClick={onRetry}>Retry</Button></div>; }
-function EmptyState({ filtered, onReset, onCreate }: { filtered: boolean; onReset: () => void; onCreate: () => void }) { return <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border py-14 text-center"><FolderTree className="size-8 text-muted-foreground" /><p className="text-lg font-semibold">{filtered ? "No categories found" : "No categories yet"}</p><p className="text-base text-muted-foreground">{filtered ? "Try changing your search or filters." : "Create the first category used by iStash."}</p><Button onClick={filtered ? onReset : onCreate}>{filtered ? "Reset Filters" : "Add Category"}</Button></div>; }
+function TableSkeleton() {
+  return (
+    <div className="rounded-2xl border border-border p-4">
+      <Skeleton className="mb-4 h-11 w-full" />
+      {Array.from({ length: 7 }).map((_, index) => (
+        <Skeleton key={index} className="mb-3 h-14 w-full" />
+      ))}
+    </div>
+  );
+}
+
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  const { t } = useAdminI18n();
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 py-14 text-center">
+      <FolderTree className="size-8 text-destructive" />
+      <p className="text-lg font-semibold">{t("Unable to load categories.")}</p>
+      <p className="text-base text-muted-foreground">{t("Please try again.")}</p>
+      <Button variant="outline" onClick={onRetry}>{t("Retry")}</Button>
+    </div>
+  );
+}
+
+function EmptyState({ filtered, onReset, onCreate }: { filtered: boolean; onReset: () => void; onCreate: () => void }) {
+  const { t } = useAdminI18n();
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border py-14 text-center">
+      <FolderTree className="size-8 text-muted-foreground" />
+      <p className="text-lg font-semibold">{filtered ? t("No categories found") : t("No categories yet")}</p>
+      <p className="text-base text-muted-foreground">{filtered ? t("Try changing your search or filters.") : t("Create the first category used by iStash.")}</p>
+      <Button onClick={filtered ? onReset : onCreate}>{filtered ? t("Reset Filters") : t("Add Category")}</Button>
+    </div>
+  );
+}

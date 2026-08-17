@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AdminUser } from "@/features/user-manager/types";
 import { useReactivateUserMutation } from "@/features/user-manager/api";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface ReactivateUserDialogProps {
   user: AdminUser | null;
@@ -25,6 +26,7 @@ function displayName(user: AdminUser) {
 }
 
 export default function ReactivateUserDialog({ user, open, onOpenChange }: ReactivateUserDialogProps) {
+  const { t } = useAdminI18n();
   const [reactivateUser, { isLoading }] = useReactivateUserMutation();
 
   async function handleConfirm() {
@@ -45,15 +47,15 @@ export default function ReactivateUserDialog({ user, open, onOpenChange }: React
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Reactivate this user?</AlertDialogTitle>
+          <AlertDialogTitle>{t("Reactivate this user?")}</AlertDialogTitle>
           <AlertDialogDescription>
-            {displayName(user)} will regain access to their iStash account.
+            {displayName(user)} {t("will regain access to their iStash account.")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => onOpenChange(false)}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={() => onOpenChange(false)}>{t("Cancel")}</AlertDialogCancel>
           <AlertDialogAction disabled={isLoading} onClick={handleConfirm}>
-            {isLoading ? "Reactivating..." : "Reactivate"}
+            {isLoading ? t("Reactivating...") : t("Reactivate User")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -81,10 +81,10 @@ export default function NotificationManager() {
     <div className="space-y-7 font-google-sans">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">{t("Notifications")}</h1>
-          <p className="mt-1 text-base text-muted-foreground">{t("Monitor notification activity, delivery, and system messages.")}</p>
+          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">{t("Notifications")}</h1>
+          <p className="mt-1 text-sm text-muted-foreground font-normal">{t("Monitor notification activity, delivery, and system messages.")}</p>
         </div>
-        <Button size="lg" onClick={() => setSendOpen(true)} className="bg-[#FFC83D] text-[#003377] hover:bg-[#f0ba33]">
+        <Button size="lg" onClick={() => setSendOpen(true)} className="bg-[#FFC83D] text-base font-medium text-[#003377] hover:bg-[#f0ba33]">
           <BellPlus className="mr-2 size-4" />
           {t("Send Notification")}
         </Button>
@@ -98,22 +98,24 @@ export default function NotificationManager() {
             <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 py-16 text-center">
               <AlertCircle className="size-8 text-destructive" />
               <div>
-                <p className="text-lg font-semibold text-foreground">Unable to load notifications.</p>
-                <p className="mt-1 text-base text-muted-foreground">Please try again.</p>
+                <p className="text-lg font-semibold text-foreground">{t("Unable to load notifications.")}</p>
+                <p className="mt-1 text-sm text-muted-foreground font-normal">{t("Please try again.")}</p>
               </div>
-              <Button variant="outline" onClick={() => refetch()}><RefreshCw className="mr-2 size-4" />Retry</Button>
+              <Button variant="outline" onClick={() => refetch()} className="text-sm font-medium">
+                <RefreshCw className="mr-2 size-3.5" />{t("Retry")}
+              </Button>
             </div>
           ) : !isLoading && notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border py-16 text-center">
               <span className="grid size-12 place-items-center rounded-2xl bg-muted"><BellOff className="size-6 text-muted-foreground" /></span>
               <div>
-                <p className="text-lg font-semibold text-foreground">{hasFilters ? "No notifications found" : "No notifications yet"}</p>
-                <p className="mt-1 text-base text-muted-foreground">
-                  {hasFilters ? "There are no notifications matching the current filters." : "System notifications will appear here."}
+                <p className="text-lg font-semibold text-foreground">{hasFilters ? t("No notifications found") : t("No notifications yet")}</p>
+                <p className="mt-1 text-sm text-muted-foreground font-normal">
+                  {hasFilters ? t("There are no notifications matching the current filters.") : t("System notifications will appear here.")}
                 </p>
               </div>
-              <Button variant={hasFilters ? "outline" : "default"} onClick={hasFilters ? resetFilters : () => setSendOpen(true)} className={!hasFilters ? "bg-[#FFC83D] text-[#003377] hover:bg-[#f0ba33]" : ""}>
-                {hasFilters ? "Reset Filters" : "Send Notification"}
+              <Button variant={hasFilters ? "outline" : "default"} onClick={hasFilters ? resetFilters : () => setSendOpen(true)} className={!hasFilters ? "bg-[#FFC83D] text-base font-medium text-[#003377] hover:bg-[#f0ba33]" : "text-base font-medium"}>
+                {hasFilters ? t("Reset Filters") : t("Send Notification")}
               </Button>
             </div>
           ) : (
@@ -133,16 +135,18 @@ export default function NotificationManager() {
               <div className="flex flex-col items-center justify-between gap-4 pt-1 text-base sm:flex-row">
                 <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
                   <span>
-                    Showing <span className="font-medium text-foreground">{startItem}</span>–<span className="font-medium text-foreground">{endItem}</span> of <span className="font-medium text-foreground">{totalElements.toLocaleString()}</span> notifications
+                    Showing <span className="font-medium text-foreground">{startItem}</span>–<span className="font-medium text-foreground">{endItem}</span> of <span className="font-medium text-foreground">{totalElements.toLocaleString()}</span> {t("Notifications")}
                   </span>
-                  <div className="admin-page-size"><Select value={String(pageSize)} onValueChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }}>
-                    <SelectTrigger className="h-10 w-32 text-base"><SelectValue value={`${pageSize} / page`} /></SelectTrigger>
-                    <SelectContent value={String(pageSize)} onValueChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }}>
-                      <SelectItem value="10">10 / page</SelectItem>
-                      <SelectItem value="20">20 / page</SelectItem>
-                      <SelectItem value="50">50 / page</SelectItem>
-                    </SelectContent>
-                  </Select></div>
+                  <div className="admin-page-size">
+                    <Select value={String(pageSize)} onValueChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }}>
+                      <SelectTrigger className="h-10 w-32 text-sm"><SelectValue value={`${pageSize} / page`} /></SelectTrigger>
+                      <SelectContent value={String(pageSize)} onValueChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }}>
+                        <SelectItem value="10">10 / page</SelectItem>
+                        <SelectItem value="20">20 / page</SelectItem>
+                        <SelectItem value="50">50 / page</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {totalPages > 1 && (

@@ -125,13 +125,25 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground transition-colors duration-300 font-google-sans;
+    @apply bg-background text-foreground transition-colors duration-300 font-google-sans text-base;
   }
   html {
     @apply font-sans;
   }
+  h1 {
+    color: #003377;
+  }
+  .dark h1 {
+    color: #FFC83D;
+  }
 }
 
 .font-google-sans {
-  font-family: 'Google Sans', sans-serif;
+  font-family: 'Google Sans', 'Battambang', 'Khmer OS', sans-serif;
+}
+
+.filter-card,
+.filter-card :where(input, select, textarea, button, [data-slot="select-trigger"], [data-slot="popover-trigger"], [data-slot="select-value"]) {
+  font-size: 1rem !important; /* 16px */
+  line-height: 1.5rem !important;
 }

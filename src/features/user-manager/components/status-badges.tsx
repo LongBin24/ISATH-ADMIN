@@ -1,9 +1,13 @@
+"use client";
+
 import { CheckCircle2, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { AccountStatus } from "@/features/user-manager/types";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 export function AccountStatusBadge({ status }: { status: AccountStatus }) {
+  const { t } = useAdminI18n();
   const normalized = status.toUpperCase();
   const styles: Record<string, string> = {
     ACTIVE: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
@@ -18,12 +22,13 @@ export function AccountStatusBadge({ status }: { status: AccountStatus }) {
 
   return (
     <Badge className={cn("border-transparent text-sm font-medium", styles[normalized] ?? styles.DELETED)}>
-      {label[normalized] ?? normalized}
+      {t(label[normalized] ?? normalized)}
     </Badge>
   );
 }
 
 export function VerifiedBadge({ verified }: { verified: boolean }) {
+  const { t } = useAdminI18n();
   return (
     <span
       className={cn(
@@ -32,12 +37,13 @@ export function VerifiedBadge({ verified }: { verified: boolean }) {
       )}
     >
       {verified ? <CheckCircle2 className="size-4" /> : <XCircle className="size-4" />}
-      {verified ? "Verified" : "Not Verified"}
+      {t(verified ? "Verified" : "Not Verified")}
     </span>
   );
 }
 
 export function OnboardingBadge({ completed }: { completed: boolean }) {
+  const { t } = useAdminI18n();
   return (
     <Badge
       variant="outline"
@@ -48,7 +54,7 @@ export function OnboardingBadge({ completed }: { completed: boolean }) {
           : "border-amber-200 text-amber-700 dark:border-amber-900 dark:text-amber-300"
       )}
     >
-      {completed ? "Completed" : "Pending"}
+      {t(completed ? "Completed" : "Pending")}
     </Badge>
   );
 }

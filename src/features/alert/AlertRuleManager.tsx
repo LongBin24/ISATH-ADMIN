@@ -86,35 +86,386 @@ export default function AlertRuleManager() {
   const first = totalElements ? safePage * pageSize + 1 : 0;
   const last = Math.min((safePage + 1) * pageSize, totalElements);
 
-  return <div className="space-y-7 font-google-sans">
-    <header><h1 className="text-3xl font-semibold tracking-tight">{t("Alert Rules")}</h1><p className="mt-1 max-w-3xl text-base text-muted-foreground">{t("Monitor user alert rules, trigger conditions, severity, references, and execution schedules.")}</p></header>
-    <div className="admin-stat-grid grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{statsLoading ? Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-36 rounded-2xl" />) : <><StatCard icon={BellRing} label={t("Total Rules")} value={totalQuery.data?.page.totalElements ?? "—"} helper={t("All alert rules")} /><StatCard icon={CircleCheck} label={t("Enabled")} value={enabledQuery.data?.page.totalElements ?? "—"} helper={t("Currently active")} /><StatCard icon={ShieldAlert} label={t("Critical")} value={criticalQuery.data?.page.totalElements ?? "—"} helper={t("High-priority rules")} /><StatCard icon={TriangleAlert} label={t("Warning")} value={warningQuery.data?.page.totalElements ?? "—"} helper={t("Warning-level rules")} /></>}</div>
-    <Card className="rounded-2xl shadow-sm"><CardHeader><CardTitle className="text-xl">Alert Rules</CardTitle><p className="text-base text-muted-foreground">Read-only monitoring of user notification rules and schedules.</p></CardHeader><CardContent className="space-y-5">
-      <div className="flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center"><UserFilter value={userId} users={users} loading={usersQuery.isLoading} onChange={(value) => { setUserId(value); setPageNumber(0); }} /><RuleSelect value={alertType} options={{ ALL: t("All Alert Types"), DAILY_EXPENSE_REMINDER: t("Daily Expense Reminder"), BUDGET_THRESHOLD: t("Budget Threshold"), SAVINGS_REMINDER: t("Savings Reminder"), RECURRING_REMINDER: t("Recurring Reminder"), MONTHLY_SUMMARY: t("Monthly Summary") }} onChange={(value) => { setAlertType(value as FilterValue<AlertType>); setPageNumber(0); }} /><RuleSelect value={triggerType} options={{ ALL: t("All Triggers"), TIME: t("Time"), THRESHOLD: t("Threshold"), EVENT: t("Event"), SCHEDULE: t("Schedule") }} onChange={(value) => { setTriggerType(value as FilterValue<TriggerType>); setPageNumber(0); }} /><RuleSelect value={severity} options={{ ALL: t("All Severities"), INFO: t("Info"), WARNING: t("Warning"), CRITICAL: t("Critical") }} onChange={(value) => { setSeverity(value as FilterValue<Severity>); setPageNumber(0); }} /><RuleSelect value={enabled} options={{ ALL: t("All Statuses"), ENABLED: t("Enabled"), DISABLED: t("Disabled") }} onChange={(value) => { setEnabled(value as EnabledFilter); setPageNumber(0); }} /><RuleSelect value={referenceType} options={{ ALL: t("All References"), BUDGET: t("Budget"), SAVINGS_GOAL: t("Savings Goal"), RECURRING_TRANSACTION: t("Recurring Transaction") }} onChange={(value) => { setReferenceType(value as FilterValue<ReferenceType>); setPageNumber(0); }} /><Button variant="ghost" onClick={resetFilters}>{t("Reset Filters")}</Button></div>
-      {rulesQuery.isError ? <ErrorState onRetry={() => rulesQuery.refetch()} /> : rulesQuery.isLoading ? <TableSkeleton /> : rules.length === 0 ? <EmptyState filtered={hasFilters} onReset={resetFilters} /> : <><div className="overflow-x-auto rounded-2xl border border-border"><Table><TableHeader className="bg-muted/40"><TableRow className="hover:bg-transparent"><TableHead className="min-w-60 text-sm font-semibold">Rule</TableHead><TableHead className="min-w-48 text-sm font-semibold">User</TableHead><TableHead className="min-w-44 text-sm font-semibold">Alert Type</TableHead><TableHead className="text-sm font-semibold">Trigger</TableHead><TableHead className="text-sm font-semibold">Severity</TableHead><TableHead className="min-w-32 text-sm font-semibold">Status</TableHead><TableHead className="min-w-36 text-sm font-semibold">Next Trigger</TableHead><TableHead className="w-14 text-right text-sm font-semibold">Actions</TableHead></TableRow></TableHeader><TableBody>{rules.map((rule) => <RuleRow key={rule.id} rule={rule} user={usersById.get(rule.userId)} onView={() => openDetails(rule)} />)}</TableBody></Table></div><div className="flex flex-col gap-4 border-t border-border pt-4 lg:flex-row lg:items-center lg:justify-between"><div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground"><span>Showing {first}–{last} of {totalElements.toLocaleString()} alert rules</span><RuleSelect value={String(pageSize)} options={{ "10": "10 / page", "20": "20 / page", "50": "50 / page", "100": "100 / page" }} onChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }} compact /></div><Pagination className="mx-0 w-auto justify-start lg:justify-end"><PaginationContent><PaginationItem><PaginationPrevious disabled={safePage === 0} onClick={() => setPageNumber(Math.max(0, safePage - 1))} /></PaginationItem>{pages(safePage, totalPages).map((item) => <PaginationItem key={item}>{typeof item === "number" ? <PaginationLink isActive={item === safePage} onClick={() => setPageNumber(item)}>{item + 1}</PaginationLink> : <PaginationEllipsis />}</PaginationItem>)}<PaginationItem><PaginationNext disabled={safePage + 1 >= totalPages} onClick={() => setPageNumber(Math.min(totalPages - 1, safePage + 1))} /></PaginationItem></PaginationContent></Pagination></div></>}
-    </CardContent></Card>
-    <RuleDetailDialog ruleId={selectedId} open={detailOpen} onOpenChange={setDetailOpen} usersById={usersById} />
-  </div>;
+  return (
+    <div className="space-y-7 font-google-sans">
+      <header>
+        <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">{t("Alert Rules")}</h1>
+        <p className="mt-1 max-w-3xl text-sm text-muted-foreground font-normal">{t("Monitor user alert rules, trigger conditions, severity, references, and execution schedules.")}</p>
+      </header>
+      <div className="admin-stat-grid grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {statsLoading ? Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-36 rounded-2xl" />) : <>
+          <StatCard icon={BellRing} label={t("Total Rules")} value={totalQuery.data?.page.totalElements ?? "—"} helper={t("All alert rules")} />
+          <StatCard icon={CircleCheck} label={t("Enabled")} value={enabledQuery.data?.page.totalElements ?? "—"} helper={t("Currently active")} />
+          <StatCard icon={ShieldAlert} label={t("Critical")} value={criticalQuery.data?.page.totalElements ?? "—"} helper={t("High-priority rules")} />
+          <StatCard icon={TriangleAlert} label={t("Warning")} value={warningQuery.data?.page.totalElements ?? "—"} helper={t("Warning-level rules")} />
+        </>}
+      </div>
+      <Card className="rounded-2xl shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold md:text-xl">{t("Alert Rules")}</CardTitle>
+          <p className="text-sm text-muted-foreground font-normal">{t("Read-only monitoring of user notification rules and schedules.")}</p>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="filter-card flex flex-col gap-3 text-base xl:flex-row xl:flex-wrap xl:items-center">
+            <UserFilter value={userId} users={users} loading={usersQuery.isLoading} onChange={(value) => { setUserId(value); setPageNumber(0); }} />
+            <RuleSelect value={alertType} options={{ ALL: t("All Alert Types"), DAILY_EXPENSE_REMINDER: t("Daily Expense Reminder"), BUDGET_THRESHOLD: t("Budget Threshold"), SAVINGS_REMINDER: t("Savings Reminder"), RECURRING_REMINDER: t("Recurring Reminder"), MONTHLY_SUMMARY: t("Monthly Summary") }} onChange={(value) => { setAlertType(value as FilterValue<AlertType>); setPageNumber(0); }} />
+            <RuleSelect value={triggerType} options={{ ALL: t("All Triggers"), TIME: t("Time"), THRESHOLD: t("Threshold"), EVENT: t("Event"), SCHEDULE: t("Schedule") }} onChange={(value) => { setTriggerType(value as FilterValue<TriggerType>); setPageNumber(0); }} />
+            <RuleSelect value={severity} options={{ ALL: t("All Severities"), INFO: t("Info"), WARNING: t("Warning"), CRITICAL: t("Critical") }} onChange={(value) => { setSeverity(value as FilterValue<Severity>); setPageNumber(0); }} />
+            <RuleSelect value={enabled} options={{ ALL: t("All Statuses"), ENABLED: t("Enabled"), DISABLED: t("Disabled") }} onChange={(value) => { setEnabled(value as EnabledFilter); setPageNumber(0); }} />
+            <RuleSelect value={referenceType} options={{ ALL: t("All References"), BUDGET: t("Budget"), SAVINGS_GOAL: t("Savings Goal"), RECURRING_TRANSACTION: t("Recurring Transaction") }} onChange={(value) => { setReferenceType(value as FilterValue<ReferenceType>); setPageNumber(0); }} />
+            <Button variant="ghost" className="text-base font-medium" onClick={resetFilters}>{t("Reset Filters")}</Button>
+          </div>
+          {rulesQuery.isError ? (
+            <ErrorState onRetry={() => rulesQuery.refetch()} />
+          ) : rulesQuery.isLoading ? (
+            <TableSkeleton />
+          ) : rules.length === 0 ? (
+            <EmptyState filtered={hasFilters} onReset={resetFilters} />
+          ) : (
+            <>
+              <div className="overflow-x-auto rounded-2xl border border-border">
+                <Table>
+                  <TableHeader className="bg-muted/40">
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="min-w-60 text-base font-semibold">{t("Rule")}</TableHead>
+                      <TableHead className="min-w-48 text-base font-semibold">{t("User")}</TableHead>
+                      <TableHead className="min-w-44 text-base font-semibold">{t("Alert Type")}</TableHead>
+                      <TableHead className="text-base font-semibold">{t("Trigger")}</TableHead>
+                      <TableHead className="text-base font-semibold">{t("Severity")}</TableHead>
+                      <TableHead className="min-w-32 text-base font-semibold">{t("Status")}</TableHead>
+                      <TableHead className="min-w-36 text-base font-semibold">{t("Next Trigger")}</TableHead>
+                      <TableHead className="w-14 text-right text-base font-semibold">{t("Actions")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {rules.map((rule) => (
+                      <RuleRow key={rule.id} rule={rule} user={usersById.get(rule.userId)} onView={() => openDetails(rule)} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="flex flex-col gap-4 border-t border-border pt-4 text-base lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
+                  <span>Showing {first}–{last} of {totalElements.toLocaleString()} {t("Alert Rules")}</span>
+                  <RuleSelect value={String(pageSize)} options={{ "10": "10 / page", "20": "20 / page", "50": "50 / page", "100": "100 / page" }} onChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }} compact />
+                </div>
+                <Pagination className="mx-0 w-auto justify-start lg:justify-end">
+                  <PaginationContent>
+                    <PaginationItem><PaginationPrevious disabled={safePage === 0} onClick={() => setPageNumber(Math.max(0, safePage - 1))} /></PaginationItem>
+                    {pages(safePage, totalPages).map((item) => (
+                      <PaginationItem key={item}>
+                        {typeof item === "number" ? <PaginationLink isActive={item === safePage} onClick={() => setPageNumber(item)}>{item + 1}</PaginationLink> : <PaginationEllipsis />}
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem><PaginationNext disabled={safePage + 1 >= totalPages} onClick={() => setPageNumber(Math.min(totalPages - 1, safePage + 1))} /></PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+      <RuleDetailDialog ruleId={selectedId} open={detailOpen} onOpenChange={setDetailOpen} usersById={usersById} />
+    </div>
+  );
 }
 
-function StatCard({ icon: Icon, label, value, helper }: { icon: typeof BellRing; label: string; value: React.ReactNode; helper: string }) { return <Card className="rounded-2xl shadow-sm"><CardContent className="flex gap-4 p-5 sm:p-6"><span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#003377]/10 text-[#003377] dark:text-[#FEDB55]"><Icon className="size-5" /></span><div><p className="text-base font-medium text-muted-foreground">{label}</p><p className="mt-1 text-3xl font-semibold">{value}</p><p className="mt-1 text-sm text-muted-foreground">{helper}</p></div></CardContent></Card>; }
-function RuleSelect({ value, options, onChange, compact = false }: { value: string; options: Record<string, string>; onChange: (value: string) => void; compact?: boolean }) { return <Select value={value} onValueChange={onChange}><SelectTrigger className={`h-11 rounded-xl text-base ${compact ? "admin-page-size w-32" : "w-full xl:w-44"}`}><SelectValue value={options[value]} /></SelectTrigger><SelectContent value={value} onValueChange={onChange}>{Object.entries(options).map(([key, label]) => <SelectItem key={key} value={key}>{label}</SelectItem>)}</SelectContent></Select>; }
+function StatCard({ icon: Icon, label, value, helper }: { icon: typeof BellRing; label: string; value: React.ReactNode; helper: string }) {
+  return (
+    <Card className="rounded-2xl shadow-sm">
+      <CardContent className="flex gap-4 p-5 sm:p-6">
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#003377]/10 text-[#003377] dark:text-[#FEDB55]">
+          <Icon className="size-5" />
+        </span>
+        <div>
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <p className="mt-1 text-3xl font-bold">{value}</p>
+          <p className="mt-1 text-sm text-muted-foreground font-normal">{helper}</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
-function UserFilter({ value, users, loading, onChange }: { value: string; users: AdminUser[]; loading: boolean; onChange: (value: string) => void }) { const labels = Object.fromEntries(users.map((user) => [user.id, `${userName(user)} · ${user.email}`])); return <Select value={value || "ALL"} onValueChange={(next) => onChange(next === "ALL" ? "" : next)}><SelectTrigger className="h-11 w-full rounded-xl text-sm xl:w-56"><SelectValue value={value ? labels[value] || "Selected User" : loading ? "Loading users..." : "All Users"} /></SelectTrigger><SelectContent value={value || "ALL"} onValueChange={(next) => onChange(next === "ALL" ? "" : next)}><SelectItem value="ALL">All Users</SelectItem>{users.map((user) => <SelectItem key={user.id} value={user.id}>{userName(user)} · {user.email}</SelectItem>)}</SelectContent></Select>; }
+function RuleSelect({ value, options, onChange, compact = false }: { value: string; options: Record<string, string>; onChange: (value: string) => void; compact?: boolean }) {
+  return (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className={`h-11 rounded-xl text-base ${compact ? "admin-page-size w-32" : "w-full xl:w-44"}`}>
+        <SelectValue value={options[value]} />
+      </SelectTrigger>
+      <SelectContent value={value} onValueChange={onChange}>
+        {Object.entries(options).map(([key, label]) => (
+          <SelectItem key={key} value={key}>{label}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
 
-function UserCell({ user }: { user?: AdminUser }) { return <div className="flex items-center gap-3"><Avatar className="size-9"><AvatarImage src={user?.profileImageUrl ?? undefined} /><AvatarFallback>{initials(user)}</AvatarFallback></Avatar><div className="min-w-0"><p className="truncate text-sm font-medium">{userName(user)}</p><p className="truncate text-xs text-muted-foreground">{user?.email || "User details unavailable"}</p></div></div>; }
-function AlertTypeBadge({ type }: { type: AlertType }) { return <Badge variant="outline" className="text-sm">{ALERT_LABELS[type] || friendlyEnum(type)}</Badge>; }
-function SeverityBadge({ severity }: { severity: Severity }) { const classes = severity === "CRITICAL" ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/60 dark:text-red-300" : severity === "WARNING" ? "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300" : "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/60 dark:text-blue-300"; return <Badge variant="outline" className={`text-sm ${classes}`}>{friendlyEnum(severity)}</Badge>; }
-function EnabledBadge({ rule }: { rule: AlertRule }) { return <div className="flex items-center gap-2"><Badge variant="outline" className={rule.enabled ? "gap-1 border-emerald-200 bg-emerald-50 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300" : "gap-1 border-slate-200 bg-slate-100 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}>{rule.enabled ? <CircleCheck className="size-3.5" /> : <CircleX className="size-3.5" />}{rule.enabled ? "Enabled" : "Disabled"}</Badge>{!rule.canDisable && <Tooltip><TooltipTrigger><LockKeyhole className="size-4 text-muted-foreground" /></TooltipTrigger><TooltipContent>User cannot disable this rule</TooltipContent></Tooltip>}</div>; }
-function Trigger({ type }: { type: TriggerType }) { const Icon = type === "TIME" ? Clock3 : type === "THRESHOLD" ? Gauge : type === "SCHEDULE" ? CalendarClock : BellRing; return <span className="inline-flex items-center gap-1.5 text-sm"><Icon className="size-4 text-muted-foreground" />{TRIGGER_LABELS[type] || friendlyEnum(type)}</span>; }
+function UserFilter({ value, users, loading, onChange }: { value: string; users: AdminUser[]; loading: boolean; onChange: (value: string) => void }) {
+  const { t } = useAdminI18n();
+  const labels = Object.fromEntries(users.map((user) => [user.id, `${userName(user)} · ${user.email}`]));
+  return (
+    <Select value={value || "ALL"} onValueChange={(next) => onChange(next === "ALL" ? "" : next)}>
+      <SelectTrigger className="h-11 w-full rounded-xl text-base xl:w-56">
+        <SelectValue value={value ? labels[value] || t("Selected User") : loading ? t("Loading users...") : t("All Users")} />
+      </SelectTrigger>
+      <SelectContent value={value || "ALL"} onValueChange={(next) => onChange(next === "ALL" ? "" : next)}>
+        <SelectItem value="ALL">{t("All Users")}</SelectItem>
+        {users.map((user) => (
+          <SelectItem key={user.id} value={user.id}>{userName(user)} · {user.email}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
 
-function RuleRow({ rule, user, onView }: { rule: AlertRule; user?: AdminUser; onView: () => void }) { const secondary = rule.thresholdPercentage != null ? `${rule.thresholdPercentage}% threshold` : rule.reminderTime ? `Reminder at ${rule.reminderTime}` : rule.referenceType ? REFERENCE_LABELS[rule.referenceType] : friendlyEnum(rule.triggerType); return <TableRow className="cursor-pointer" onClick={onView}><TableCell className="py-4"><p className="text-base font-semibold">{rule.ruleName}</p><p className="mt-1 text-sm text-muted-foreground">{secondary}</p></TableCell><TableCell className="py-4"><UserCell user={user} /></TableCell><TableCell className="py-4"><AlertTypeBadge type={rule.alertType} /></TableCell><TableCell className="py-4"><Trigger type={rule.triggerType} /></TableCell><TableCell className="py-4"><SeverityBadge severity={rule.severity} /></TableCell><TableCell className="py-4"><EnabledBadge rule={rule} /></TableCell><TableCell className="py-4 text-sm text-muted-foreground">{rule.nextTriggerAt ? <Tooltip><TooltipTrigger>{relativeDate(rule.nextTriggerAt)}</TooltipTrigger><TooltipContent>{exactDate(rule.nextTriggerAt)}</TooltipContent></Tooltip> : "—"}</TableCell><TableCell className="py-4 text-right" onClick={(event) => event.stopPropagation()}><DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label={`${rule.ruleName} actions`}><MoreHorizontal className="size-4" /></Button></DropdownMenuTrigger><DropdownMenuContent><DropdownMenuItem onClick={onView}><Eye className="size-4" />View Details</DropdownMenuItem></DropdownMenuContent></DropdownMenu></TableCell></TableRow>; }
+function UserCell({ user }: { user?: AdminUser }) {
+  const { t } = useAdminI18n();
+  return (
+    <div className="flex items-center gap-3">
+      <Avatar className="size-9">
+        <AvatarImage src={user?.profileImageUrl ?? undefined} />
+        <AvatarFallback>{initials(user)}</AvatarFallback>
+      </Avatar>
+      <div className="min-w-0">
+        <p className="truncate text-base font-medium">{userName(user)}</p>
+        <p className="truncate text-sm text-muted-foreground font-normal">{user?.email || t("User details unavailable")}</p>
+      </div>
+    </div>
+  );
+}
 
-function RuleDetailDialog({ ruleId, open, onOpenChange, usersById }: { ruleId: string | null; open: boolean; onOpenChange: (open: boolean) => void; usersById: Map<string, AdminUser> }) { const query = useGetAlertRuleByIdQuery(ruleId ?? "", { skip: !ruleId || !open }); return <Dialog open={open} onOpenChange={onOpenChange}><DialogContent className="max-h-[90vh] max-w-[720px] overflow-hidden p-0" onClose={() => onOpenChange(false)}><DialogHeader className="mb-0 px-6 pb-4 pt-6"><DialogTitle className="text-xl">Alert Rule Details</DialogTitle><DialogDescription className="text-base">Read-only rule configuration and execution information.</DialogDescription></DialogHeader><div className="max-h-[calc(90vh-110px)] overflow-y-auto px-6 pb-6">{query.isLoading ? <DetailSkeleton /> : query.isError || !query.data ? <ErrorState onRetry={() => query.refetch()} /> : <RuleDetail rule={query.data} user={usersById.get(query.data.userId)} />}</div></DialogContent></Dialog>; }
-function RuleDetail({ rule, user }: { rule: AlertRule; user?: AdminUser }) { return <div className="space-y-6"><section><h2 className="text-2xl font-semibold">{rule.ruleName}</h2><div className="mt-3 flex flex-wrap gap-2"><AlertTypeBadge type={rule.alertType} /><SeverityBadge severity={rule.severity} /><EnabledBadge rule={rule} /></div><div className="mt-5"><p className="mb-2 text-sm text-muted-foreground">User</p><UserCell user={user} /></div></section><Separator /><DetailSection title="Rule Configuration"><Detail label="Alert Type" value={ALERT_LABELS[rule.alertType]} /><Detail label="Trigger Type" value={TRIGGER_LABELS[rule.triggerType]} /><Detail label="Severity" value={friendlyEnum(rule.severity)} />{rule.frequency && <Detail label="Frequency" value={friendlyEnum(rule.frequency)} />}{rule.thresholdPercentage != null && <Detail label="Threshold" value={`${rule.thresholdPercentage}%`} />}{rule.reminderTime && <Detail label="Reminder Time" value={rule.reminderTime} />}{rule.daysBefore != null && <Detail label="Days Before" value={`${rule.daysBefore} ${rule.daysBefore === 1 ? "day" : "days"}`} />}</DetailSection><DetailSection title="Reference"><Detail label="Type" value={rule.referenceType ? REFERENCE_LABELS[rule.referenceType] : "No reference"} /></DetailSection><DetailSection title="Schedule"><Detail label="Next Trigger" value={rule.nextTriggerAt ? exactDate(rule.nextTriggerAt) : "No next trigger scheduled"} /><Detail label="Last Trigger" value={rule.lastTriggeredAt ? exactDate(rule.lastTriggeredAt) : "Never triggered"} /></DetailSection><DetailSection title="Rule Status"><Detail label="Enabled" value={rule.enabled ? "Yes" : "No"} /><Detail label="User Can Disable" value={<span className="inline-flex items-center gap-2">{rule.canDisable ? "Yes" : "No"}{!rule.canDisable && <LockKeyhole className="size-4" />}</span>} /></DetailSection><DetailSection title="Timeline"><Detail label="Created" value={exactDate(rule.createdAt)} /><Detail label="Updated" value={exactDate(rule.updatedAt)} /></DetailSection></div>; }
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) { return <section><h3 className="mb-2 text-lg font-semibold">{title}</h3><div className="divide-y">{children}</div></section>; }
-function Detail({ label, value }: { label: string; value: React.ReactNode }) { return <div className="flex justify-between gap-4 py-3"><span className="text-sm text-muted-foreground">{label}</span><span className="text-right text-base font-medium">{value}</span></div>; }
-function DetailSkeleton() { return <div className="space-y-5"><Skeleton className="h-10 w-3/4" /><Skeleton className="h-24 w-full" /><Skeleton className="h-56 w-full" /><Skeleton className="h-40 w-full" /></div>; }
-function TableSkeleton() { return <div className="rounded-2xl border p-4"><Skeleton className="mb-4 h-11 w-full" />{Array.from({ length: 7 }).map((_, index) => <Skeleton key={index} className="mb-3 h-16 w-full" />)}</div>; }
-function ErrorState({ onRetry }: { onRetry: () => void }) { return <div className="flex flex-col items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 py-14 text-center"><CircleAlert className="size-8 text-destructive" /><p className="text-lg font-semibold">Unable to load alert rules.</p><p className="text-base text-muted-foreground">Please try again.</p><Button variant="outline" onClick={onRetry}><RefreshCw className="mr-2 size-4" />Retry</Button></div>; }
-function EmptyState({ filtered, onReset }: { filtered: boolean; onReset: () => void }) { return <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed py-14 text-center"><BellRing className="size-8 text-muted-foreground" /><p className="text-lg font-semibold">{filtered ? "No alert rules match these filters" : "No alert rules found"}</p><p className="text-base text-muted-foreground">{filtered ? "Try changing your filters." : "User alert rules will appear here once they are configured."}</p>{filtered && <Button variant="outline" onClick={onReset}>Reset Filters</Button>}</div>; }
+function AlertTypeBadge({ type }: { type: AlertType }) {
+  const { t } = useAdminI18n();
+  return <Badge variant="outline" className="text-sm">{t(ALERT_LABELS[type] || friendlyEnum(type))}</Badge>;
+}
+
+function SeverityBadge({ severity }: { severity: Severity }) {
+  const { t } = useAdminI18n();
+  const classes = severity === "CRITICAL"
+    ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/60 dark:text-red-300"
+    : severity === "WARNING"
+      ? "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300"
+      : "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/60 dark:text-blue-300";
+  return <Badge variant="outline" className={`text-sm ${classes}`}>{t(friendlyEnum(severity))}</Badge>;
+}
+
+function EnabledBadge({ rule }: { rule: AlertRule }) {
+  const { t } = useAdminI18n();
+  return (
+    <div className="flex items-center gap-2">
+      <Badge variant="outline" className={rule.enabled ? "gap-1 border-emerald-200 bg-emerald-50 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300" : "gap-1 border-slate-200 bg-slate-100 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}>
+        {rule.enabled ? <CircleCheck className="size-3.5" /> : <CircleX className="size-3.5" />}
+        {t(rule.enabled ? "Enabled" : "Disabled")}
+      </Badge>
+      {!rule.canDisable && (
+        <Tooltip>
+          <TooltipTrigger><LockKeyhole className="size-4 text-muted-foreground" /></TooltipTrigger>
+          <TooltipContent>{t("User cannot disable this rule")}</TooltipContent>
+        </Tooltip>
+      )}
+    </div>
+  );
+}
+
+function Trigger({ type }: { type: TriggerType }) {
+  const { t } = useAdminI18n();
+  const Icon = type === "TIME" ? Clock3 : type === "THRESHOLD" ? Gauge : type === "SCHEDULE" ? CalendarClock : BellRing;
+  return (
+    <span className="inline-flex items-center gap-1.5 text-sm">
+      <Icon className="size-3.5 text-muted-foreground" />
+      {t(TRIGGER_LABELS[type] || friendlyEnum(type))}
+    </span>
+  );
+}
+
+function RuleRow({ rule, user, onView }: { rule: AlertRule; user?: AdminUser; onView: () => void }) {
+  const { t } = useAdminI18n();
+  const secondary = rule.thresholdPercentage != null
+    ? `${rule.thresholdPercentage}% threshold`
+    : rule.reminderTime
+      ? `Reminder at ${rule.reminderTime}`
+      : rule.referenceType
+        ? t(REFERENCE_LABELS[rule.referenceType])
+        : t(friendlyEnum(rule.triggerType));
+
+  return (
+    <TableRow className="cursor-pointer" onClick={onView}>
+      <TableCell className="py-4">
+        <p className="text-base font-semibold">{rule.ruleName}</p>
+        <p className="mt-1 text-sm text-muted-foreground font-normal">{secondary}</p>
+      </TableCell>
+      <TableCell className="py-4"><UserCell user={user} /></TableCell>
+      <TableCell className="py-4"><AlertTypeBadge type={rule.alertType} /></TableCell>
+      <TableCell className="py-4"><Trigger type={rule.triggerType} /></TableCell>
+      <TableCell className="py-4"><SeverityBadge severity={rule.severity} /></TableCell>
+      <TableCell className="py-4"><EnabledBadge rule={rule} /></TableCell>
+      <TableCell className="py-4 text-sm text-muted-foreground font-normal">
+        {rule.nextTriggerAt ? (
+          <Tooltip>
+            <TooltipTrigger>{relativeDate(rule.nextTriggerAt)}</TooltipTrigger>
+            <TooltipContent>{exactDate(rule.nextTriggerAt)}</TooltipContent>
+          </Tooltip>
+        ) : "—"}
+      </TableCell>
+      <TableCell className="py-4 text-right" onClick={(event) => event.stopPropagation()}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label={`${rule.ruleName} actions`}>
+              <MoreHorizontal className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={onView}>
+              <Eye className="size-4" />{t("View Details")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function RuleDetailDialog({ ruleId, open, onOpenChange, usersById }: { ruleId: string | null; open: boolean; onOpenChange: (open: boolean) => void; usersById: Map<string, AdminUser> }) {
+  const { t } = useAdminI18n();
+  const query = useGetAlertRuleByIdQuery(ruleId ?? "", { skip: !ruleId || !open });
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90vh] max-w-[720px] overflow-hidden p-0" onClose={() => onOpenChange(false)}>
+        <DialogHeader className="mb-0 px-6 pb-4 pt-6">
+          <DialogTitle className="text-2xl">{t("Alert Rule Details")}</DialogTitle>
+          <DialogDescription className="text-base font-normal">{t("Read-only rule configuration and execution information.")}</DialogDescription>
+        </DialogHeader>
+        <div className="max-h-[calc(90vh-110px)] overflow-y-auto px-6 pb-6">
+          {query.isLoading ? (
+            <DetailSkeleton />
+          ) : query.isError || !query.data ? (
+            <ErrorState onRetry={() => query.refetch()} />
+          ) : (
+            <RuleDetail rule={query.data} user={usersById.get(query.data.userId)} />
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function RuleDetail({ rule, user }: { rule: AlertRule; user?: AdminUser }) {
+  const { t } = useAdminI18n();
+  return (
+    <div className="space-y-6">
+      <section>
+        <h2 className="text-2xl font-semibold">{rule.ruleName}</h2>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <AlertTypeBadge type={rule.alertType} />
+          <SeverityBadge severity={rule.severity} />
+          <EnabledBadge rule={rule} />
+        </div>
+        <div className="mt-5">
+          <p className="mb-2 text-sm text-muted-foreground font-normal">{t("User")}</p>
+          <UserCell user={user} />
+        </div>
+      </section>
+      <Separator />
+      <DetailSection title={t("Rule Configuration")}>
+        <Detail label={t("Alert Type")} value={t(ALERT_LABELS[rule.alertType])} />
+        <Detail label={t("Trigger Type")} value={t(TRIGGER_LABELS[rule.triggerType])} />
+        <Detail label={t("Severity")} value={t(friendlyEnum(rule.severity))} />
+        {rule.frequency && <Detail label={t("Frequency")} value={t(friendlyEnum(rule.frequency))} />}
+        {rule.thresholdPercentage != null && <Detail label={t("Threshold")} value={`${rule.thresholdPercentage}%`} />}
+        {rule.reminderTime && <Detail label={t("Reminder Time")} value={rule.reminderTime} />}
+        {rule.daysBefore != null && <Detail label={t("Days Before")} value={`${rule.daysBefore} ${rule.daysBefore === 1 ? "day" : "days"}`} />}
+      </DetailSection>
+      <Separator />
+      <DetailSection title={t("Reference")}>
+        <Detail label={t("Type")} value={rule.referenceType ? t(REFERENCE_LABELS[rule.referenceType]) : t("No reference")} />
+      </DetailSection>
+      <Separator />
+      <DetailSection title={t("Schedule")}>
+        <Detail label={t("Next Trigger")} value={rule.nextTriggerAt ? exactDate(rule.nextTriggerAt) : t("No next trigger scheduled")} />
+        <Detail label={t("Last Trigger")} value={rule.lastTriggeredAt ? exactDate(rule.lastTriggeredAt) : t("Never triggered")} />
+      </DetailSection>
+      <Separator />
+      <DetailSection title={t("Rule Status")}>
+        <Detail label={t("Enabled")} value={rule.enabled ? t("Yes") : t("No")} />
+        <Detail label={t("User Can Disable")} value={<span className="inline-flex items-center gap-2">{rule.canDisable ? t("Yes") : t("No")}{!rule.canDisable && <LockKeyhole className="size-4" />}</span>} />
+      </DetailSection>
+      <Separator />
+      <DetailSection title={t("Timeline")}>
+        <Detail label={t("Created")} value={exactDate(rule.createdAt)} />
+        <Detail label={t("Updated")} value={exactDate(rule.updatedAt)} />
+      </DetailSection>
+    </div>
+  );
+}
+
+function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
+      <div className="divide-y">{children}</div>
+    </section>
+  );
+}
+
+function Detail({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex justify-between gap-4 py-3">
+      <span className="text-base text-muted-foreground font-normal">{label}</span>
+      <span className="text-right text-base font-medium text-foreground">{value}</span>
+    </div>
+  );
+}
+
+function DetailSkeleton() {
+  return (
+    <div className="space-y-5">
+      <Skeleton className="h-10 w-3/4" />
+      <Skeleton className="h-24 w-full" />
+      <Skeleton className="h-56 w-full" />
+      <Skeleton className="h-40 w-full" />
+    </div>
+  );
+}
+
+function TableSkeleton() {
+  return (
+    <div className="rounded-2xl border p-4">
+      <Skeleton className="mb-4 h-11 w-full" />
+      {Array.from({ length: 7 }).map((_, index) => (
+        <Skeleton key={index} className="mb-3 h-16 w-full" />
+      ))}
+    </div>
+  );
+}
+
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  const { t } = useAdminI18n();
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 py-14 text-center">
+      <CircleAlert className="size-8 text-destructive" />
+      <p className="text-lg font-semibold">{t("Unable to load alert rules.")}</p>
+      <p className="text-sm text-muted-foreground font-normal">{t("Please try again.")}</p>
+      <Button variant="outline" onClick={onRetry} className="text-sm font-medium">
+        <RefreshCw className="mr-2 size-3.5" />{t("Retry")}
+      </Button>
+    </div>
+  );
+}
+
+function EmptyState({ filtered, onReset }: { filtered: boolean; onReset: () => void }) {
+  const { t } = useAdminI18n();
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed py-14 text-center">
+      <BellRing className="size-8 text-muted-foreground" />
+      <p className="text-lg font-semibold">{filtered ? t("No alert rules match these filters") : t("No alert rules found")}</p>
+      <p className="text-sm text-muted-foreground font-normal">{filtered ? t("Try changing your filters.") : t("User alert rules will appear here once they are configured.")}</p>
+      {filtered && (
+        <Button variant="outline" onClick={onReset} className="text-sm font-medium">
+          {t("Reset Filters")}
+        </Button>
+      )}
+    </div>
+  );
+}

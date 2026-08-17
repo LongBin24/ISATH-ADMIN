@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { UserProfile } from "../types";
 import { useUploadAvatarMutation, useUploadAvatarFileMutation, useResetAvatarMutation } from "../api";
 import { Camera, RefreshCw, Upload, Check, X } from "lucide-react";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface ProfileAvatarModalProps {
   profile: UserProfile;
@@ -31,6 +32,7 @@ export default function ProfileAvatarModal({
   onSuccess,
   onError,
 }: ProfileAvatarModalProps) {
+  const { t } = useAdminI18n();
   const [selectedAvatar, setSelectedAvatar] = useState<string>(profile.avatar);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [customUrl, setCustomUrl] = useState<string>("");
@@ -86,10 +88,10 @@ export default function ProfileAvatarModal({
           isDefault: isDefault,
         }).unwrap();
       }
-      onSuccess("បានផ្លាស់ប្តូររូបថតគណនីដោយជោគជ័យ!");
+      onSuccess(t("Avatar updated successfully."));
       onClose();
-    } catch (err) {
-      onError("មិនអាចផ្លាស់ប្តូររូបថតបានទេ សូមព្យាយាមម្តងទៀត");
+    } catch {
+      onError(t("Unable to update profile photo. Please try again."));
     }
   };
 
@@ -98,10 +100,10 @@ export default function ProfileAvatarModal({
       const res = await resetAvatar().unwrap();
       setSelectedAvatar(res.avatar);
       setIsDefault(true);
-      onSuccess("បានកំណត់រូបថតទៅជា រូបតំណាងដើម ជោគជ័យ!");
+      onSuccess(t("Reset to default avatar successfully."));
       onClose();
-    } catch (err) {
-      onError("មានបញ្ហាក្នុងការកំណត់ទៅជា រូបតំណាងដើម");
+    } catch {
+      onError(t("Unable to reset avatar."));
     }
   };
 
@@ -116,15 +118,16 @@ export default function ProfileAvatarModal({
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white font-google-sans">
-                ផ្លាស់ប្តូររូបភាពគណនី
+                {t("Change Profile Photo")}
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-google-sans">
-                ជ្រើសរើសរូបថតផ្ទាល់ខ្លួន ឬប្រើប្រាស់រូបតំណាងដើម
+                {t("Choose a custom photo or use default avatar.")}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
+            aria-label={t("Close")}
             className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
           >
             <X className="h-5 w-5" />
@@ -137,24 +140,24 @@ export default function ProfileAvatarModal({
             <img
               key={selectedAvatar}
               src={selectedAvatar}
-              alt="រូបតំណាង"
+              alt={t("Avatar")}
               className="h-28 w-28 rounded-full border-4 border-[#FFC83D] object-cover shadow-md dark:border-[#003377]"
             />
             {isDefault && (
               <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-[#003377] px-2 py-0.5 text-xs font-semibold text-[#FFC83D] shadow">
-                រូបតំណាងដើម
+                {t("Default Avatar")}
               </span>
             )}
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-google-sans">
-            រូបភាពទម្រង់បែបបទបច្ចុប្បន្ន
+            {t("Current photo preview")}
           </p>
         </div>
 
         {/* Option 1: Presets & Default Avatars */}
         <div className="mb-4">
           <label className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-300 font-google-sans">
-            ជ្រើសរើសរូបតំណាងដែលមានស្រាប់
+            {t("Choose from Presets")}
           </label>
           <div className="grid grid-cols-4 gap-3">
             {PRESET_AVATARS.map((url, idx) => (
@@ -162,6 +165,7 @@ export default function ProfileAvatarModal({
                 key={idx}
                 type="button"
                 onClick={() => handleSelectPreset(url)}
+                aria-label={`${t("Avatar Preset")} ${idx + 1}`}
                 className={`relative flex h-14 w-14 items-center justify-center rounded-xl border-2 transition-all hover:scale-105 ${
                   selectedAvatar === url
                     ? "border-[#FFC83D] bg-[#FFC83D]/10 dark:border-[#FFC83D]"
@@ -170,7 +174,7 @@ export default function ProfileAvatarModal({
               >
                 <img
                   src={url}
-                  alt={`រូបតំណាង ${idx + 1}`}
+                  alt={`Avatar ${idx + 1}`}
                   className="h-10 w-10 rounded-full object-cover"
                 />
                 {selectedAvatar === url && (
@@ -186,12 +190,12 @@ export default function ProfileAvatarModal({
         {/* Option 2: Upload File / Custom URL */}
         <div className="mb-6 space-y-3">
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 font-google-sans">
-            ផ្ទុកឡើងរូបថតផ្ទាល់ខ្លួន
+            {t("Upload Photo")}
           </label>
           <div className="flex items-center gap-3">
             <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-2.5 text-xs font-medium text-slate-700 transition hover:border-[#003377] hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:bg-slate-800 font-google-sans">
               <Upload className="h-4 w-4 text-[#003377] dark:text-[#FFC83D]" />
-              ជ្រើសរើសរូបភាពពីម៉ាស៊ីន
+              {t("Select from computer")}
               <input
                 type="file"
                 accept="image/*"
@@ -206,7 +210,7 @@ export default function ProfileAvatarModal({
               type="text"
               value={customUrl}
               onChange={(e) => setCustomUrl(e.target.value)}
-              placeholder="ឬបញ្ចូលតំណភ្ជាប់រូបភាព..."
+              placeholder={t("Or enter image URL...")}
               className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 outline-none focus:border-[#003377] focus:ring-1 focus:ring-[#003377] dark:border-slate-800 dark:bg-slate-950 dark:text-white font-google-sans"
             />
             <button
@@ -214,7 +218,7 @@ export default function ProfileAvatarModal({
               onClick={handleApplyCustomUrl}
               className="rounded-xl bg-[#003377] px-3 py-2 text-xs font-medium text-white transition hover:bg-[#002255] font-google-sans"
             >
-              អនុវត្ត
+              {t("Apply")}
             </button>
           </div>
         </div>
@@ -228,7 +232,7 @@ export default function ProfileAvatarModal({
             className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 font-google-sans disabled:opacity-50"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isResetting ? "animate-spin" : ""}`} />
-            ប្រើប្រាស់រូបតំណាងដើម
+            {t("Use Default Avatar")}
           </button>
 
           <div className="flex items-center gap-2">
@@ -237,7 +241,7 @@ export default function ProfileAvatarModal({
               onClick={onClose}
               className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 font-google-sans"
             >
-              បោះបង់
+              {t("Cancel")}
             </button>
             <button
               type="button"
@@ -250,7 +254,7 @@ export default function ProfileAvatarModal({
               ) : (
                 <Check className="h-4 w-4 stroke-[3]" />
               )}
-              រក្សាទុក
+              {t("Save Changes")}
             </button>
           </div>
         </div>

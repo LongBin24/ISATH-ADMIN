@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowDownUp, Calculator, AlertCircle } from "lucide-react";
 import { ExchangeRate } from "../CurrencyApi";
 import { converterSchema, ConverterFormData } from "../schema";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface CurrencyConverterProps {
   rates: ExchangeRate[] | undefined;
@@ -21,6 +22,7 @@ const DEFAULT_CURRENCIES: ExchangeRate[] = [
 ];
 
 export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) => {
+  const { t } = useAdminI18n();
   const activeRates = useMemo(() => {
     return rates && rates.length > 0 ? rates : DEFAULT_CURRENCIES;
   }, [rates]);
@@ -68,10 +70,10 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
           </div>
           <div>
             <h2 className="text-lg font-bold text-[#003377] dark:text-white">
-              ឧបករណ៍គណនាអត្រាប្តូរប្រាក់
+              {t("Currency Converter")}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              គណនាបំប្លែងទឹកប្រាក់រវាងរូបិយប័ណ្ណផ្សេងៗតាមអត្រាប្តូរប្រាក់ជាក់ស្តែង
+              {t("Calculate currency conversion according to live exchange rates.")}
             </p>
           </div>
         </div>
@@ -81,7 +83,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
           {/* Amount Input */}
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-              ចំនួនទឹកប្រាក់
+              {t("Amount")}
             </label>
             <Controller
               name="amount"
@@ -93,7 +95,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
                   {...field}
                   onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                   className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-[#FFC83D] text-base font-bold text-slate-800 dark:text-white"
-                  placeholder="សូមបញ្ចូលចំនួនទឹកប្រាក់"
+                  placeholder={t("Enter amount")}
                 />
               )}
             />
@@ -109,7 +111,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
           <div className="grid grid-cols-[1fr,auto,1fr] gap-3 items-center">
             <div>
               <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">
-                ពីរូបិយប័ណ្ណ
+                {t("From Currency")}
               </label>
               <Controller
                 name="fromCurrency"
@@ -132,6 +134,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
             <button
               type="button"
               onClick={handleSwap}
+              aria-label={t("Swap currencies")}
               className="mt-5 p-2.5 rounded-2xl bg-slate-100 hover:bg-[#FFC83D]/20 text-[#003377] dark:text-[#FFC83D] transition-colors border border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-500 dark:hover:bg-slate-600 dark:hover:text-white"
             >
               <ArrowDownUp className="w-4 h-4" />
@@ -139,7 +142,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
 
             <div>
               <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">
-                ទៅរូបិយប័ណ្ណ
+                {t("To Currency")}
               </label>
               <Controller
                 name="toCurrency"
@@ -165,7 +168,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
       {/* Result Display Box */}
       <div className="mt-8 p-6 bg-[#003377] rounded-3xl text-white shadow-md dark:border dark:border-slate-700 dark:bg-slate-800">
         <div className="text-xs text-[#FFC83D] font-bold mb-1">
-          លទ្ធផលបំប្លែងទឹកប្រាក់
+          {t("Conversion Result")}
         </div>
         <div className="text-3xl font-black tracking-tight">
           {new Intl.NumberFormat("en-US", {

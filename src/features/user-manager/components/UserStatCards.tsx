@@ -8,6 +8,7 @@ import {
   useGetAdminUsersQuery,
   useGetUserStatisticsQuery,
 } from "@/features/user-manager/api";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface StatCardProps {
   icon: React.ElementType;
@@ -20,6 +21,7 @@ interface StatCardProps {
 }
 
 function StatCard({ icon: Icon, label, value, helperText, iconClassName, isLoading, isError }: StatCardProps) {
+  const { t } = useAdminI18n();
   return (
     <Card className="rounded-2xl border-border shadow-sm">
       <CardContent className="flex flex-col gap-3 p-6">
@@ -32,15 +34,15 @@ function StatCard({ icon: Icon, label, value, helperText, iconClassName, isLoadi
           ) : isError ? (
             <p className="flex items-center gap-1.5 text-sm font-medium text-destructive">
               <AlertCircle className="size-4" />
-              Failed to load
+              {t("Failed to load")}
             </p>
           ) : (
             <p className="text-3xl font-semibold text-foreground">
               {value !== null ? value.toLocaleString() : "—"}
             </p>
           )}
-          <p className="mt-1 text-base font-medium text-foreground">{label}</p>
-          <p className="text-sm text-muted-foreground">{helperText}</p>
+          <p className="mt-1 text-sm font-medium text-foreground">{t(label)}</p>
+          <p className="text-sm text-muted-foreground">{t(helperText)}</p>
         </div>
       </CardContent>
     </Card>

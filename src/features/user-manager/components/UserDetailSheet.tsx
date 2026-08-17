@@ -14,6 +14,7 @@ import {
   useGetUserByIdQuery,
   useGetUserOnboardingQuery,
 } from "@/features/user-manager/api";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface UserDetailSheetProps {
   userId: string | null;
@@ -35,14 +36,14 @@ function displayDate(value: string | null | undefined) {
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-4 py-1.5">
-      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-base text-muted-foreground">{label}</span>
       <span className="text-base font-medium text-foreground text-right">{value}</span>
     </div>
   );
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h3 className="text-lg font-semibold text-foreground">{children}</h3>;
+  return <h3 className="text-lg md:text-xl font-semibold text-foreground">{children}</h3>;
 }
 
 export default function UserDetailSheet({
@@ -52,6 +53,7 @@ export default function UserDetailSheet({
   onSuspend,
   onReactivate,
 }: UserDetailSheetProps) {
+  const { t } = useAdminI18n();
   const [showTechnical, setShowTechnical] = useState(false);
   const {
     data: user,
@@ -75,7 +77,7 @@ export default function UserDetailSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent onClose={() => onOpenChange(false)}>
         <SheetHeader>
-          <SheetTitle>User Details</SheetTitle>
+          <SheetTitle>{t("User Details")}</SheetTitle>
         </SheetHeader>
 
         <SheetBody>
@@ -95,12 +97,12 @@ export default function UserDetailSheet({
             <div className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-center">
               <AlertCircle className="size-8 text-destructive" />
               <div>
-                <p className="text-lg font-semibold text-foreground">Unable to load user details.</p>
-                <p className="mt-1 text-base text-muted-foreground">Please try again.</p>
+                <p className="text-lg font-semibold text-foreground">{t("Unable to load user details.")}</p>
+                <p className="mt-1 text-base text-muted-foreground">{t("Please try again.")}</p>
               </div>
               <Button variant="outline" onClick={() => refetchUser()}>
                 <RefreshCw className="mr-2 size-4" />
-                Retry
+                {t("Retry")}
               </Button>
             </div>
           ) : (
@@ -122,19 +124,19 @@ export default function UserDetailSheet({
               <Separator />
 
               <div>
-                <SectionTitle>Account</SectionTitle>
+                <SectionTitle>{t("Account")}</SectionTitle>
                 <div className="mt-2 divide-y divide-border">
-                  <Field label="Account Status" value={<AccountStatusBadge status={user.accountStatus} />} />
-                  <Field label="Email Verified" value={user.emailVerified ? "Yes" : "No"} />
-                  <Field label="Profile Completed" value={user.profileCompleted ? "Yes" : "No"} />
+                  <Field label={t("Account Status")} value={<AccountStatusBadge status={user.accountStatus} />} />
+                  <Field label={t("Email Verified")} value={user.emailVerified ? t("Yes") : t("No")} />
+                  <Field label={t("Profile Completed")} value={user.profileCompleted ? t("Yes") : t("No")} />
                   <Field
-                    label="Onboarding"
+                    label={t("Onboarding")}
                     value={
                       isOnboardingLoading
-                        ? "Loading..."
+                        ? t("Loading...")
                         : (onboardingRes?.onboardingCompleted ?? user.onboardingCompleted)
-                          ? "Completed"
-                          : "Not Completed"
+                          ? t("Completed")
+                          : t("Not Completed")
                     }
                   />
                 </div>
@@ -143,36 +145,36 @@ export default function UserDetailSheet({
               <Separator />
 
               <div>
-                <SectionTitle>Personal Information</SectionTitle>
+                <SectionTitle>{t("Personal Information")}</SectionTitle>
                 <div className="mt-2 divide-y divide-border">
-                  <Field label="Phone" value={user.phoneNumber || "—"} />
-                  <Field label="Gender" value={formatGender(user.gender)} />
-                  <Field label="Date of Birth" value={displayDate(user.dateOfBirth)} />
-                  <Field label="Occupation" value={user.occupation || "—"} />
-                  <Field label="Country" value={user.countryCode || "—"} />
+                  <Field label={t("Phone")} value={user.phoneNumber || "—"} />
+                  <Field label={t("Gender")} value={t(formatGender(user.gender))} />
+                  <Field label={t("Date of Birth")} value={displayDate(user.dateOfBirth)} />
+                  <Field label={t("Occupation")} value={user.occupation || "—"} />
+                  <Field label={t("Country")} value={user.countryCode || "—"} />
                 </div>
               </div>
 
               <Separator />
 
               <div>
-                <SectionTitle>Address</SectionTitle>
+                <SectionTitle>{t("Address")}</SectionTitle>
                 <div className="mt-2 divide-y divide-border">
-                  <Field label="Address Line 1" value={user.addressLine1 || "—"} />
-                  <Field label="Address Line 2" value={user.addressLine2 || "—"} />
-                  <Field label="City" value={user.city || "—"} />
-                  <Field label="State / Province" value={user.stateProvince || "—"} />
-                  <Field label="Postal Code" value={user.postalCode || "—"} />
+                  <Field label={t("Address Line 1")} value={user.addressLine1 || "—"} />
+                  <Field label={t("Address Line 2")} value={user.addressLine2 || "—"} />
+                  <Field label={t("City")} value={user.city || "—"} />
+                  <Field label={t("State / Province")} value={user.stateProvince || "—"} />
+                  <Field label={t("Postal Code")} value={user.postalCode || "—"} />
                 </div>
               </div>
 
               <Separator />
 
               <div>
-                <SectionTitle>Account Timeline</SectionTitle>
+                <SectionTitle>{t("Account Timeline")}</SectionTitle>
                 <div className="mt-2 divide-y divide-border">
-                  <Field label="Created" value={displayDate(user.createdAt)} />
-                  <Field label="Updated" value={displayDate(user.updatedAt)} />
+                  <Field label={t("Created")} value={displayDate(user.createdAt)} />
+                  <Field label={t("Updated")} value={displayDate(user.updatedAt)} />
                 </div>
               </div>
 
@@ -184,14 +186,14 @@ export default function UserDetailSheet({
                   onClick={() => setShowTechnical((v) => !v)}
                   className="flex w-full items-center justify-between text-sm font-medium text-muted-foreground hover:text-foreground"
                 >
-                  Technical Details
+                  {t("Technical Details")}
                   <ChevronDown className={`size-4 transition-transform ${showTechnical ? "rotate-180" : ""}`} />
                 </button>
                 {showTechnical && (
                   <div className="mt-2 divide-y divide-border">
-                    <Field label="User ID" value={<span className="font-mono text-sm">{user.id}</span>} />
+                    <Field label={t("User ID")} value={<span className="font-mono text-sm">{user.id}</span>} />
                     <Field
-                      label="Keycloak User ID"
+                      label={t("Keycloak User ID")}
                       value={<span className="font-mono text-sm">{user.keycloakUserId || "—"}</span>}
                     />
                   </div>
@@ -206,12 +208,12 @@ export default function UserDetailSheet({
             {isSuspended ? (
               <Button onClick={() => onReactivate(user)} className="bg-emerald-600 text-white hover:bg-emerald-700">
                 <ShieldCheck className="mr-2 size-4" />
-                Reactivate User
+                {t("Reactivate User")}
               </Button>
             ) : isActive ? (
               <Button variant="destructive" onClick={() => onSuspend(user)}>
                 <ShieldAlert className="mr-2 size-4" />
-                Suspend User
+                {t("Suspend User")}
               </Button>
             ) : null}
           </SheetFooter>

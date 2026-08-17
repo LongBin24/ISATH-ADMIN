@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { CurrencyItem, TransactionRecord } from "../types";
 import { transactionSchema, TransactionFormData } from "../schema";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface MultiCurrencyTransactionManagerProps {
   currencies: CurrencyItem[] | undefined;
@@ -27,20 +28,11 @@ interface MultiCurrencyTransactionManagerProps {
   isSyncing: boolean;
 }
 
-const KHMER_CURRENCY_NAMES: Record<string, string> = {
-  USD: "ដុល្លារអាមេរិក",
-  KHR: "រៀលខ្មែរ",
-  THB: "បាតថៃ",
-  EUR: "អឺរ៉ូ",
-  JPY: "យ៉េនជប៉ុន",
-  GBP: "ផោនអង់គ្លេស",
-};
-
 const INITIAL_TRANSACTIONS: TransactionRecord[] = [
   {
     id: "tx-1",
-    title: "ប្រាក់ខែប្រចាំខែ",
-    category: "ចំណូលប្រាក់ខែ",
+    title: "Monthly Salary",
+    category: "Salary",
     type: "INCOME",
     originalAmount: 1200,
     originalCurrency: "USD",
@@ -48,8 +40,8 @@ const INITIAL_TRANSACTIONS: TransactionRecord[] = [
   },
   {
     id: "tx-2",
-    title: "ទិញឥវ៉ាន់ផ្សារ",
-    category: "អាហារ និងភេសជ្ជៈ",
+    title: "Grocery Shopping",
+    category: "Food & Dining",
     type: "EXPENSE",
     originalAmount: 205000,
     originalCurrency: "KHR",
@@ -57,8 +49,8 @@ const INITIAL_TRANSACTIONS: TransactionRecord[] = [
   },
   {
     id: "tx-3",
-    title: "សេវាអ៊ីនធឺណិតប្រចាំខែ",
-    category: "វិក្កយបត្រសេវាកម្ម",
+    title: "Internet Subscription",
+    category: "Bills & Utilities",
     type: "EXPENSE",
     originalAmount: 35,
     originalCurrency: "USD",
@@ -66,8 +58,8 @@ const INITIAL_TRANSACTIONS: TransactionRecord[] = [
   },
   {
     id: "tx-4",
-    title: "ទិញសម្ភារៈប្រើប្រាស់",
-    category: "ទិញទំនិញ",
+    title: "Equipment Supplies",
+    category: "Shopping",
     type: "EXPENSE",
     originalAmount: 3550,
     originalCurrency: "THB",
@@ -75,8 +67,8 @@ const INITIAL_TRANSACTIONS: TransactionRecord[] = [
   },
   {
     id: "tx-5",
-    title: "ប្រាក់ឧបត្ថម្ភគម្រោង",
-    category: "ប្រាក់ឧបត្ថម្ភ",
+    title: "Project Bonus",
+    category: "Bonus",
     type: "INCOME",
     originalAmount: 410000,
     originalCurrency: "KHR",
@@ -91,6 +83,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
   onSync,
   isSyncing,
 }) => {
+  const { t } = useAdminI18n();
   const [transactions, setTransactions] = useState<TransactionRecord[]>(INITIAL_TRANSACTIONS);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -109,7 +102,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
       amount: undefined,
       currency: "USD",
       type: "EXPENSE",
-      category: "ចំណាយទូទៅ",
+      category: "General Expense",
     },
   });
 
@@ -120,7 +113,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
   const activeBaseItem = useMemo(() => {
     return currencies.find((c) => c.code === baseCurrency) || {
       code: "USD",
-      name: "ដុល្លារអាមេរិក",
+      name: "US Dollar",
       rate: 1,
       symbol: "$",
       flag: "🇺🇸",
@@ -196,11 +189,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                 <Coins size={18} />
               </span>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                រូបិយប័ណ្ណមូលដ្ឋាន
+                {t("Base Currency")}
               </h2>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              ជ្រើសរើសរូបិយប័ណ្ណមូលដ្ឋានសម្រាប់បំប្លែង និងបង្ហាញតម្លៃប្រតិបត្តិការហិរញ្ញវត្ថុទាំងអស់
+              {t("Select the base currency used for valuation and converting financial transactions.")}
             </p>
           </div>
 
@@ -212,7 +205,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               className="flex items-center gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 dark:hover:text-white transition disabled:opacity-50 border border-slate-200 dark:border-slate-700"
             >
               <RefreshCw size={14} className={isSyncing ? "animate-spin text-[#003377] dark:text-[#FFC83D]" : ""} />
-              <span>{isSyncing ? "កំពុងធ្វើសមកាលកម្ម..." : "ធ្វើសមកាលកម្មអត្រាប្តូរប្រាក់"}</span>
+              <span>{isSyncing ? t("Synchronizing...") : t("Synchronize")}</span>
             </button>
 
             <button
@@ -224,7 +217,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               className="flex items-center gap-2 rounded-2xl bg-[#003377] dark:bg-[#FFC83D] px-5 py-2.5 text-xs font-bold text-white dark:text-[#003377] shadow-md hover:bg-[#002255] dark:hover:bg-[#e6b437] transition active:scale-95"
             >
               <Plus size={16} />
-              <span>កត់ត្រាប្រតិបត្តិការ</span>
+              <span>{t("Record Transaction")}</span>
             </button>
           </div>
         </div>
@@ -232,12 +225,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
         {/* Base Currency Selection */}
         <div>
           <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-3">
-            រូបិយប័ណ្ណមូលដ្ឋានសកម្ម៖
+            {t("Active base currency:")}
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {currencies.map((curr) => {
               const isSelected = baseCurrency === curr.code;
-              const khmerName = KHMER_CURRENCY_NAMES[curr.code] || curr.name;
               return (
                 <button
                   key={`base-${curr.code}`}
@@ -254,7 +246,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                       <span>{curr.flag || "🌐"}</span>
                       <span>{curr.code}</span>
                     </div>
-                    <span className="text-xs font-normal opacity-80 mt-0.5">{khmerName}</span>
+                    <span className="text-xs font-normal opacity-80 mt-0.5">{t(curr.name)}</span>
                   </div>
                   {isSelected && <CheckCircle2 size={14} className="text-[#FFC83D] dark:text-[#003377]" />}
                 </button>
@@ -270,7 +262,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
         <div className="rounded-3xl bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-5 border border-emerald-500/20 dark:border-emerald-500/30">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-              ចំណូលសរុប
+              {t("Total Income")}
             </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
               <ArrowUpRight size={18} />
@@ -281,7 +273,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
             {stats.income.toLocaleString("en-US", { maximumFractionDigits: 2 })}
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            បំប្លែងស្វ័យប្រវត្តិជា {KHMER_CURRENCY_NAMES[baseCurrency] || baseCurrency}
+            {t("Converted to")} {t(activeBaseItem.name)}
           </p>
         </div>
 
@@ -289,7 +281,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
         <div className="rounded-3xl bg-gradient-to-br from-rose-500/10 via-rose-500/5 to-transparent p-5 border border-rose-500/20 dark:border-rose-500/30">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-rose-600 dark:text-rose-400">
-              ចំណាយសរុប
+              {t("Total Expense")}
             </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400">
               <ArrowDownRight size={18} />
@@ -300,7 +292,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
             {stats.expense.toLocaleString("en-US", { maximumFractionDigits: 2 })}
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            បំប្លែងស្វ័យប្រវត្តិជា {KHMER_CURRENCY_NAMES[baseCurrency] || baseCurrency}
+            {t("Converted to")} {t(activeBaseItem.name)}
           </p>
         </div>
 
@@ -308,7 +300,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
         <div className="rounded-3xl bg-gradient-to-br from-[#003377]/10 via-[#003377]/5 to-transparent p-5 border border-[#003377]/20 dark:border-slate-800">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
-              សមតុល្យសុទ្ធ
+              {t("Net Balance")}
             </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#003377]/20 text-[#003377] dark:text-[#FFC83D]">
               <TrendingUp size={18} />
@@ -319,7 +311,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
             {stats.balance.toLocaleString("en-US", { maximumFractionDigits: 2 })}
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            សមតុល្យតាមអត្រាប្តូរប្រាក់បច្ចុប្បន្ន
+            {t("Balance based on live rates")}
           </p>
         </div>
       </div>
@@ -330,15 +322,15 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <CreditCard size={18} className="text-[#003377] dark:text-[#FFC83D]" />
-              បញ្ជីប្រតិបត្តិការច្រើនរូបិយប័ណ្ណ
+              {t("Multi-Currency Transactions")}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              បង្ហាញតម្លៃដើមដែលបានកត់ត្រា និងតម្លៃបំប្លែងស្វ័យប្រវត្តិជា {KHMER_CURRENCY_NAMES[baseCurrency] || baseCurrency}
+              {t("Showing recorded amount and auto-converted value in")} {t(activeBaseItem.name)}
             </p>
           </div>
 
           <span className="rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
-            {transactions.length} ប្រតិបត្តិការ
+            {transactions.length} {t("Transactions")}
           </span>
         </div>
 
@@ -368,11 +360,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                   </div>
                   <div>
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                      {tx.title}
+                      {t(tx.title)}
                     </h4>
                     <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       <span className="rounded-md bg-slate-200/60 dark:bg-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                        {tx.category}
+                        {t(tx.category)}
                       </span>
                       <span className="flex items-center gap-1">
                         <Calendar size={12} />
@@ -394,14 +386,14 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                     {activeBaseItem.symbol}{" "}
                     {converted.toLocaleString("en-US", { maximumFractionDigits: 2 })}
                     <span className="ml-1 text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
-                      ({KHMER_CURRENCY_NAMES[baseCurrency] || baseCurrency})
+                      ({t(activeBaseItem.name)})
                     </span>
                   </div>
 
                   <div className="flex items-center sm:justify-end gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     <ArrowRightLeft size={12} className="text-slate-400" />
                     <span>
-                      តម្លៃដើម៖ {currObj.symbol} {tx.originalAmount.toLocaleString()}{" "}
+                      {t("Original:")} {currObj.symbol} {tx.originalAmount.toLocaleString()}{" "}
                       <span className="font-bold text-slate-700 dark:text-slate-300">
                         {tx.originalCurrency}
                       </span>
@@ -424,7 +416,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                   <Plus size={18} />
                 </div>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white font-google-sans">
-                  កត់ត្រាប្រតិបត្តិការថ្មី
+                  {t("Record New Transaction")}
                 </h3>
               </div>
               <button
@@ -448,7 +440,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                       : "text-slate-600 dark:text-slate-400"
                   }`}
                 >
-                  ចំណាយ
+                  {t("Expense")}
                 </button>
                 <button
                   type="button"
@@ -459,19 +451,19 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                       : "text-slate-600 dark:text-slate-400"
                   }`}
                 >
-                  ចំណូល
+                  {t("Income")}
                 </button>
               </div>
 
               {/* Title */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  បរិយាយប្រតិបត្តិការ
+                  {t("Description")}
                 </label>
                 <input
                   type="text"
                   {...register("title")}
-                  placeholder="ឧ. ទិញអាហារ, សេវាអ៊ីនធឺណិត..."
+                  placeholder={t("e.g. Dining, Internet...")}
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none focus:border-[#FFC83D] focus:ring-2 focus:ring-[#FFC83D]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                 />
                 {errors.title && (
@@ -486,7 +478,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    ចំនួនទឹកប្រាក់
+                    {t("Amount")}
                   </label>
                   <input
                     type="number"
@@ -505,7 +497,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    រូបិយប័ណ្ណ
+                    {t("Currency")}
                   </label>
                   <select
                     {...register("currency")}
@@ -524,7 +516,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               {Number(formAmount) > 0 && (
                 <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-[#FFC83D]/30 flex items-center justify-between text-xs">
                   <span className="text-slate-600 dark:text-slate-300 font-semibold">
-                    តម្លៃបំប្លែងស្វ័យប្រវត្តិ ({KHMER_CURRENCY_NAMES[baseCurrency] || baseCurrency}):
+                    {t("Converted to")} ({t(activeBaseItem.name)}):
                   </span>
                   <span className="font-black text-[#003377] dark:text-[#FFC83D] text-sm">
                     {activeBaseItem.symbol}{" "}
@@ -538,18 +530,18 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               {/* Category */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  ប្រភេទប្រតិបត្តិការ
+                  {t("Category")}
                 </label>
                 <select
                   {...register("category")}
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                 >
-                  <option value="ចំណាយទូទៅ">ចំណាយទូទៅ</option>
-                  <option value="អាហារ និងភេសជ្ជៈ">អាហារ និងភេសជ្ជៈ</option>
-                  <option value="វិក្កយបត្រសេវាកម្ម">វិក្កយបត្រសេវាកម្ម</option>
-                  <option value="ទិញទំនិញ">ទិញទំនិញ</option>
-                  <option value="ចំណូលប្រាក់ខែ">ចំណូលប្រាក់ខែ</option>
-                  <option value="ប្រាក់ឧបត្ថម្ភ">ប្រាក់ឧបត្ថម្ភ</option>
+                  <option value="General Expense">{t("General Expense")}</option>
+                  <option value="Food & Dining">{t("Food & Dining")}</option>
+                  <option value="Bills & Utilities">{t("Bills & Utilities")}</option>
+                  <option value="Shopping">{t("Shopping")}</option>
+                  <option value="Salary">{t("Salary")}</option>
+                  <option value="Bonus">{t("Bonus")}</option>
                 </select>
               </div>
 
@@ -560,13 +552,13 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                   onClick={() => setIsModalOpen(false)}
                   className="rounded-2xl border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
                 >
-                  បោះបង់
+                  {t("Cancel")}
                 </button>
                 <button
                   type="submit"
                   className="rounded-2xl bg-[#003377] dark:bg-[#FFC83D] px-6 py-2.5 text-xs font-bold text-white dark:text-[#003377] shadow-md hover:bg-[#002255] dark:hover:bg-[#e6b437]"
                 >
-                  កត់ត្រាប្រតិបត្តិការ
+                  {t("Record Transaction")}
                 </button>
               </div>
             </form>

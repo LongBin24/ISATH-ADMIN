@@ -76,7 +76,7 @@ export function DialogTitle({
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h2
-      className={cn("text-lg font-bold tracking-tight text-slate-900 dark:text-white font-google-sans", className)}
+      className={cn("text-xl md:text-2xl font-semibold tracking-tight text-slate-900 dark:text-white font-google-sans", className)}
       {...props}
     />
   );
@@ -88,7 +88,7 @@ export function DialogDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("text-base text-muted-foreground font-google-sans", className)}
+      className={cn("text-base text-muted-foreground font-normal font-google-sans", className)}
       {...props}
     />
   );

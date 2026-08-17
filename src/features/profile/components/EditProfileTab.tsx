@@ -7,6 +7,7 @@ import { editProfileSchema, EditProfileFormValues } from "../schema";
 import { UserProfile } from "../types";
 import { useUpdateProfileMutation } from "../api";
 import { User, Mail, Phone, MapPin, FileText, Save, RefreshCw, AlertCircle } from "lucide-react";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface EditProfileTabProps {
   profile: UserProfile;
@@ -19,6 +20,7 @@ export default function EditProfileTab({
   onSuccess,
   onError,
 }: EditProfileTabProps) {
+  const { t } = useAdminI18n();
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
 
   const {
@@ -54,9 +56,9 @@ export default function EditProfileTab({
   const onSubmit = async (values: EditProfileFormValues) => {
     try {
       await updateProfile(values).unwrap();
-      onSuccess("បានធ្វើបច្ចុប្បន្នភាពព័ត៌មានផ្ទាល់ខ្លួនដោយជោគជ័យ!");
-    } catch (err) {
-      onError("មិនអាចរក្សាទុកការប្រែប្រួលបានទេ សូមពិនិត្យឡើងវិញ");
+      onSuccess(t("Profile updated successfully."));
+    } catch {
+      onError(t("Unable to save profile changes. Please try again."));
     }
   };
 
@@ -65,10 +67,10 @@ export default function EditProfileTab({
       <div className="border-b border-slate-100 pb-4 dark:border-slate-800 mb-6">
         <h2 className="text-lg font-bold text-slate-900 dark:text-white font-google-sans flex items-center gap-2">
           <User className="h-5 w-5 text-[#003377] dark:text-[#FFC83D]" />
-          កែប្រែព័ត៌មានផ្ទាល់ខ្លួន
+          {t("Edit Profile")}
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 font-google-sans">
-          ធ្វើបច្ចុប្បន្នភាពឈ្មោះ អាសយដ្ឋាន អ៊ីមែល លេខទូរស័ព្ទ និងជីវប្រវត្តិរបស់អ្នក
+          {t("Update your personal identity, contact details, and biography.")}
         </p>
       </div>
 
@@ -77,12 +79,12 @@ export default function EditProfileTab({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              នាមត្រកូល <span className="text-rose-500">*</span>
+              {t("First Name")} <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
               {...register("firstName")}
-              placeholder="បញ្ចូលនាមត្រកូល..."
+              placeholder={t("Enter first name")}
               className={`w-full rounded-xl border px-3.5 py-2.5 text-sm transition outline-none dark:bg-slate-950 dark:text-white ${
                 errors.firstName
                   ? "border-rose-500 focus:ring-1 focus:ring-rose-500"
@@ -99,12 +101,12 @@ export default function EditProfileTab({
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              នាមខ្លួន <span className="text-rose-500">*</span>
+              {t("Last Name")} <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
               {...register("lastName")}
-              placeholder="បញ្ចូលនាមខ្លួន..."
+              placeholder={t("Enter last name")}
               className={`w-full rounded-xl border px-3.5 py-2.5 text-sm transition outline-none dark:bg-slate-950 dark:text-white ${
                 errors.lastName
                   ? "border-rose-500 focus:ring-1 focus:ring-rose-500"
@@ -123,12 +125,12 @@ export default function EditProfileTab({
         {/* Display Name */}
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            ឈ្មោះបង្ហាញ <span className="text-rose-500">*</span>
+            {t("Display Name")} <span className="text-rose-500">*</span>
           </label>
           <input
             type="text"
             {...register("displayName")}
-            placeholder="បញ្ចូលឈ្មោះដែលត្រូវបង្ហាញនៅលើប្រព័ន្ធ..."
+            placeholder={t("Enter display name")}
             className={`w-full rounded-xl border px-3.5 py-2.5 text-sm transition outline-none dark:bg-slate-950 dark:text-white ${
               errors.displayName
                 ? "border-rose-500 focus:ring-1 focus:ring-rose-500"
@@ -148,12 +150,12 @@ export default function EditProfileTab({
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1">
               <Mail className="h-3.5 w-3.5 text-slate-400" />
-              អាសយដ្ឋានអ៊ីមែល <span className="text-rose-500">*</span>
+              {t("Email Address")} <span className="text-rose-500">*</span>
             </label>
             <input
               type="email"
               {...register("email")}
-              placeholder="បញ្ចូលអាសយដ្ឋានអ៊ីមែល..."
+              placeholder={t("Enter email address")}
               className={`w-full rounded-xl border px-3.5 py-2.5 text-sm transition outline-none dark:bg-slate-950 dark:text-white ${
                 errors.email
                   ? "border-rose-500 focus:ring-1 focus:ring-rose-500"
@@ -171,7 +173,7 @@ export default function EditProfileTab({
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1">
               <Phone className="h-3.5 w-3.5 text-slate-400" />
-              លេខទូរស័ព្ទ <span className="text-rose-500">*</span>
+              {t("Phone Number")} <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
@@ -196,12 +198,12 @@ export default function EditProfileTab({
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1">
             <MapPin className="h-3.5 w-3.5 text-slate-400" />
-            ទីតាំងរស់នៅ ឬអាសយដ្ឋាន <span className="text-rose-500">*</span>
+            {t("Location")} <span className="text-rose-500">*</span>
           </label>
           <input
             type="text"
             {...register("location")}
-            placeholder="រាជធានីភ្នំពេញ, កម្ពុជា..."
+            placeholder="Phnom Penh, Cambodia"
             className={`w-full rounded-xl border px-3.5 py-2.5 text-sm transition outline-none dark:bg-slate-950 dark:text-white ${
               errors.location
                 ? "border-rose-500 focus:ring-1 focus:ring-rose-500"
@@ -220,12 +222,12 @@ export default function EditProfileTab({
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1">
             <FileText className="h-3.5 w-3.5 text-slate-400" />
-            ជីវប្រវត្តិសង្ខេប
+            {t("Biography")}
           </label>
           <textarea
             rows={4}
             {...register("bio")}
-            placeholder="សរសេរជីវប្រវត្តិសង្ខេបអំពីខ្លួនអ្នក..."
+            placeholder={t("Tell us a little bit about yourself...")}
             className={`w-full rounded-xl border px-3.5 py-2.5 text-sm transition outline-none dark:bg-slate-950 dark:text-white ${
               errors.bio
                 ? "border-rose-500 focus:ring-1 focus:ring-rose-500"
@@ -248,7 +250,7 @@ export default function EditProfileTab({
             disabled={!isDirty || isLoading}
             className="rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 disabled:opacity-50"
           >
-            កំណត់ឡើងវិញ
+            {t("Reset")}
           </button>
           <button
             type="submit"
@@ -260,7 +262,7 @@ export default function EditProfileTab({
             ) : (
               <Save className="h-4 w-4" />
             )}
-            រក្សាទុកព័ត៌មាន
+            {t("Save Changes")}
           </button>
         </div>
       </form>

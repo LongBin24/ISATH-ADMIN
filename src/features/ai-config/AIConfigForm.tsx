@@ -3,16 +3,12 @@
 import { useState } from "react";
 import { Bot, ChevronLeft, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 const models = ["claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-4-8"];
 
-const stats = [
-  { label: "ចំណូល", value: "12,450 requests", status: "98.2%" },
-  { label: "OCR", value: "3,210 requests", status: "96.4%" },
-  { label: "Voice", value: "890 requests", status: "91.7%" },
-];
-
 export default function AIConfigForm() {
+  const { t } = useAdminI18n();
   const [model, setModel] = useState(models[0]);
   const [confidence, setConfidence] = useState(90);
   const [aiEnabled, setAiEnabled] = useState(true);
@@ -23,30 +19,42 @@ export default function AIConfigForm() {
 
   const router = useRouter();
 
+  const stats = [
+    { label: t("Income"), value: "12,450 requests", status: "98.2%" },
+    { label: "OCR", value: "3,210 requests", status: "96.4%" },
+    { label: "Voice", value: "890 requests", status: "91.7%" },
+  ];
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage("ការកំណត់ AI រក្សាទុកដោយជោគជ័យ។");
+    setMessage(t("AI configuration saved successfully."));
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-google-sans">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-[#003377] dark:text-white">
-            កំណត់មុខងារ AI
-          </h2>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            គ្រប់គ្រង Ai feature
+          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
+            {t("AI Configuration")}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground font-normal">
+            {t("Manage and configure AI assistant capabilities, models, and OCR.")}
           </p>
         </div>
         <button
           type="button"
           onClick={() => router.push("/dashboard")}
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-[#003377] transition hover:border-[#FFC83D] hover:bg-[#FFC83D] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D] dark:hover:text-[#003377]"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-base font-medium text-[#003377] transition hover:border-[#FFC83D] hover:bg-[#FFC83D] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D] dark:hover:text-[#003377]"
         >
-          <ChevronLeft size={18} /> ផ្ទាំងគ្រប់គ្រង
+          <ChevronLeft size={18} /> {t("Dashboard")}
         </button>
       </div>
+
+      {message && (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-base font-medium text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200">
+          {message}
+        </div>
+      )}
 
       <form
         onSubmit={handleSubmit}
@@ -56,26 +64,26 @@ export default function AIConfigForm() {
           <div className="space-y-4 mb-2 text-[#003377]">
             {[
               {
-                label: "AI សកម្ម",
-                description: "បើក/បិទ AI រួមទាំងការបញ្ចេញលទ្ធផល។",
+                label: t("Active AI"),
+                description: t("Enable or disable AI output generation across the platform."),
                 enabled: aiEnabled,
                 setEnabled: setAiEnabled,
               },
               {
-                label: "OCR រៀបចំអត្ថបទ",
-                description: "បម្លែងរូបភាពទៅអត្ថបទដោយស្វ័យប្រវត្តិ",
+                label: t("OCR Text Processing"),
+                description: t("Automatically extract and parse transaction data from receipt images."),
                 enabled: ocrEnabled,
                 setEnabled: setOcrEnabled,
               },
               {
-                label: "Voice-to-text",
-                description: "បម្លែងសំឡេងទៅអត្ថបទ",
+                label: t("Voice-to-Text"),
+                description: t("Convert voice memos and audio recordings into transactions."),
                 enabled: voiceEnabled,
                 setEnabled: setVoiceEnabled,
               },
               {
-                label: "Tag ស្វ័យប្រវត្តិ",
-                description: "បង្កើតស្លាកដោយស្វ័យប្រវត្តិ",
+                label: t("Smart Tagging"),
+                description: t("Automatically categorize and tag transactions using AI intelligence."),
                 enabled: smartTagEnabled,
                 setEnabled: setSmartTagEnabled,
               },
@@ -101,7 +109,7 @@ export default function AIConfigForm() {
                       : "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
                   }`}
                 >
-                  {feature.enabled ? "On" : "Off"}
+                  {feature.enabled ? t("On") : t("Off")}
                 </button>
               </div>
             ))}
@@ -113,11 +121,11 @@ export default function AIConfigForm() {
             <div className="mb-6 flex items-center justify-between gap-4">
               <div>
                 <h2 className="mt-3 text-2xl font-bold text-[#003377] dark:text-white">
-                  កំណត់ Model
+                  {t("Model Configuration")}
                 </h2>
               </div>
               <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                Default
+                {t("Default")}
               </span>
             </div>
 
@@ -136,7 +144,7 @@ export default function AIConfigForm() {
                 >
                   <span>{option}</span>
                   <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    {model === option ? "Selected" : "Select"}
+                    {model === option ? t("Selected") : t("Select")}
                   </span>
                 </button>
               ))}
@@ -144,7 +152,7 @@ export default function AIConfigForm() {
 
             <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
-                <span>Confidence Threshold</span>
+                <span>{t("Confidence Threshold")}</span>
                 <span>{confidence}%</span>
               </div>
               <input
@@ -165,10 +173,10 @@ export default function AIConfigForm() {
               </div>
               <div>
                 <p className="text-sm font-semibold text-[#003377]">
-                  ស្ថានភាព AI
+                  {t("AI Status")}
                 </p>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                  ទិន្នន័យស្ថិតិ និងស្ថានភាពប្រតិបត្តិការ។
+                  {t("Statistical data and operational status.")}
                 </p>
               </div>
             </div>
@@ -180,7 +188,7 @@ export default function AIConfigForm() {
                   className="flex items-center justify-between rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 dark:border-slate-800 dark:bg-slate-900"
                 >
                   <div>
-                    <p className="font-semibold text-[#003377]      dark:text-white">
+                    <p className="font-semibold text-[#003377] dark:text-white">
                       {item.label}
                     </p>
                     <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
@@ -199,7 +207,7 @@ export default function AIConfigForm() {
             type="submit"
             className="w-full rounded-full bg-[#FFC83D] px-6 py-4 text-sm font-semibold text-[#003377] transition hover:bg-[#f7c948]"
           >
-            រក្សាទុកការកំណត់ AI
+            {t("Save AI Configuration")}
           </button>
         </div>
       </form>

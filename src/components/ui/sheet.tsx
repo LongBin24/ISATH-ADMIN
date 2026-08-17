@@ -67,11 +67,11 @@ export function SheetHeader({ className, ...props }: React.HTMLAttributes<HTMLDi
 }
 
 export function SheetTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn("text-xl font-bold text-foreground", className)} {...props} />;
+  return <h2 className={cn("text-xl md:text-2xl font-semibold text-foreground", className)} {...props} />;
 }
 
 export function SheetDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("mt-1 text-base text-muted-foreground", className)} {...props} />;
+  return <p className={cn("mt-1 text-base text-muted-foreground font-normal", className)} {...props} />;
 }
 
 export function SheetBody({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {

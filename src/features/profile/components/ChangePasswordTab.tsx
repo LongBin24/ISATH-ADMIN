@@ -40,10 +40,10 @@ export default function ChangePasswordTab({ onSuccess, onError }: { onSuccess: (
   }
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] font-google-sans">
       <Card className="rounded-2xl shadow-sm">
         <CardHeader>
-          <div className="flex items-start gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#003377]/10 text-[#003377] dark:bg-[#FEDB55]/10 dark:text-[#FEDB55]"><KeyRound className="size-5" /></span><div><CardTitle className="text-xl">Change Password</CardTitle><CardDescription className="mt-1">Choose a strong password that you do not use for another account.</CardDescription></div></div>
+          <div className="flex items-start gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#003377]/10 text-[#003377] dark:bg-[#FEDB55]/10 dark:text-[#FEDB55]"><KeyRound className="size-5" /></span><div><CardTitle className="text-xl font-bold">{t("Change Password")}</CardTitle><CardDescription className="mt-1">{t("Choose a strong password that you do not use for another account.")}</CardDescription></div></div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(submit)} className="space-y-5">
@@ -62,7 +62,7 @@ export default function ChangePasswordTab({ onSuccess, onError }: { onSuccess: (
       </Card>
 
       <Card className="h-fit rounded-2xl shadow-sm">
-        <CardHeader><CardTitle className="flex items-center gap-2 text-xl"><ShieldCheck className="size-5 text-[#003377] dark:text-[#FEDB55]" />Password Requirements</CardTitle><CardDescription>Use these guidelines to keep your administrator account secure.</CardDescription></CardHeader>
+        <CardHeader><CardTitle className="flex items-center gap-2 text-xl font-bold"><ShieldCheck className="size-5 text-[#003377] dark:text-[#FEDB55]" />{t("Password Requirements")}</CardTitle><CardDescription>{t("Use these guidelines to keep your administrator account secure.")}</CardDescription></CardHeader>
         <CardContent className="space-y-3">{rules.map((rule) => <div key={rule.label} className="flex items-center gap-3 rounded-xl border border-border bg-muted/25 p-3"><CheckCircle2 className={`size-5 shrink-0 ${rule.met ? "text-emerald-500" : "text-muted-foreground/50"}`} /><span className={`text-base ${rule.met ? "font-medium text-foreground" : "text-muted-foreground"}`}>{rule.label}</span></div>)}<div className="mt-2 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-800 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-200">{t("After changing your password, use the new password the next time you sign in.")}</div></CardContent>
       </Card>
     </div>

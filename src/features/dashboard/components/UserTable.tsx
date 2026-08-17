@@ -152,7 +152,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
     <div className="space-y-4 font-google-sans">
       {/* Top Search & Filter Toggle Bar */}
       {showSearch && (
-        <div className="flex flex-col gap-3">
+        <div className="filter-card flex flex-col gap-3 text-base">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
@@ -164,7 +164,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                   setCurrentPage(1);
                 }}
                 placeholder="ស្វែងរកតាម ឈ្មោះ អ៊ីម៉ែល ឬ លេខសម្គាល់..."
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-base text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
               />
             </div>
 
@@ -172,7 +172,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
               <button
                 type="button"
                 onClick={() => setShowFilters(!showFilters)}
-                className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-xs font-semibold transition ${
+                className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-base font-semibold transition ${
                   showFilters || hasActiveFilters
                     ? "border-[#003377] bg-[#003377] text-white"
                     : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
@@ -190,14 +190,14 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                   type="button"
                   onClick={handleResetFilters}
                   title="លុបតម្រង"
-                  className="inline-flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:border-slate-800 dark:bg-slate-900"
+                  className="inline-flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-base font-semibold text-rose-600 hover:bg-rose-50 dark:border-slate-800 dark:bg-slate-900"
                 >
                   <RotateCcw className="size-3.5" />
                   <span>លុបតម្រង</span>
                 </button>
               )}
 
-              <div className="flex items-center gap-2 text-xs text-slate-500 ml-2">
+              <div className="flex items-center gap-2 text-base text-slate-500 ml-2">
                 <span>បង្ហាញ:</span>
                 <select
                   value={pageSize}
@@ -205,7 +205,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                     setPageSize(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="rounded-xl border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                  className="rounded-xl border border-slate-200 bg-white px-2 py-1 text-base text-slate-700 outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
                 >
                   <option value={5}>5 នាក់</option>
                   <option value={10}>10 នាក់</option>
@@ -218,7 +218,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
 
           {/* Expandable Query Filter Panel */}
           {showFilters && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-base">
               {/* accountStatus */}
               <div>
                 <label className="block text-slate-500 font-medium mb-1">
@@ -230,7 +230,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                     setAccountStatusFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-xs font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                 >
                   <option value="ALL">ទាំងអស់</option>
                   <option value="ACTIVE">សកម្ម</option>
@@ -250,7 +250,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                     setOnboardingFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-xs font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                 >
                   <option value="ALL">ទាំងអស់</option>
                   <option value="COMPLETED">រួចរាល់</option>
@@ -269,7 +269,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                     setEmailVerifiedFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-xs font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                 >
                   <option value="ALL">ទាំងអស់</option>
                   <option value="VERIFIED">ផ្ទៀងផ្ទាត់រួចរាល់</option>

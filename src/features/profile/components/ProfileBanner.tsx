@@ -35,20 +35,20 @@ export default function ProfileBanner({ profile, onSuccess, onError }: { profile
             </div>
             <div className="pb-1">
               <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-                <h1 className="text-3xl font-semibold tracking-tight text-foreground">{profile.displayName || profile.username}</h1>
+                <h2 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">{profile.displayName || profile.username}</h2>
                 <Badge variant="outline" className={profile.status === "active" ? "gap-1 border-emerald-200 bg-emerald-50 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300" : "text-sm"}><CheckCircle2 className="size-3.5" />{t(profile.status === "active" ? "Active" : "Inactive")}</Badge>
               </div>
-              <p className="mt-1 text-base text-muted-foreground">@{profile.username}</p>
-              <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground sm:justify-start">
-                <span className="inline-flex items-center gap-2"><Mail className="size-4" />{profile.email || "—"}</span>
-                <span className="inline-flex items-center gap-2"><MapPin className="size-4" />{profile.location || t("Location not provided")}</span>
-                <span className="inline-flex items-center gap-2"><CalendarDays className="size-4" />{profile.joinDate ? `${t("Joined")} ${profile.joinDate}` : t("Join date unavailable")}</span>
+              <p className="mt-1 text-sm text-muted-foreground font-normal">@{profile.username}</p>
+              <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground font-normal sm:justify-start">
+                <span className="inline-flex items-center gap-2"><Mail className="size-3.5" />{profile.email || "—"}</span>
+                <span className="inline-flex items-center gap-2"><MapPin className="size-3.5" />{profile.location || t("Location not provided")}</span>
+                <span className="inline-flex items-center gap-2"><CalendarDays className="size-3.5" />{profile.joinDate ? `${t("Joined")} ${profile.joinDate}` : t("Join date unavailable")}</span>
               </div>
             </div>
           </div>
           <div className="flex flex-wrap justify-center gap-2 sm:justify-end">
-            {profile.emailVerified && <Badge variant="secondary" className="gap-1.5 px-3 py-1.5 text-sm"><ShieldCheck className="size-4" />{t("Email verified")}</Badge>}
-            <Badge variant="secondary" className="gap-1.5 px-3 py-1.5 text-sm"><UserRound className="size-4" />{t("Administrator")}</Badge>
+            {profile.emailVerified && <Badge variant="secondary" className="gap-1.5 px-3 py-1.5 text-sm font-semibold"><ShieldCheck className="size-3.5" />{t("Email verified")}</Badge>}
+            <Badge variant="secondary" className="gap-1.5 px-3 py-1.5 text-sm font-semibold"><UserRound className="size-3.5" />{t("Administrator")}</Badge>
           </div>
         </div>
       </CardContent>

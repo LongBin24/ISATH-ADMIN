@@ -12,6 +12,7 @@ import type { AdminUser } from "@/features/user-manager/types";
 import { useGetAdminNotificationByIdQuery } from "../api";
 import { NOTIFICATION_TYPE_UI, notificationTypeLabel, referenceTypeLabel } from "../presentation";
 import type { AdminNotificationItem } from "../types";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 function userName(user?: AdminUser) {
   return user
@@ -39,6 +40,7 @@ export default function NotificationDetailSheet({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useAdminI18n();
   const notificationId = notification?.id ?? "";
   const { data, isLoading, isError, refetch } = useGetAdminNotificationByIdQuery(notificationId, {
     skip: !open || !notificationId,
@@ -50,8 +52,8 @@ export default function NotificationDetailSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="max-w-xl" onClose={() => onOpenChange(false)}>
         <SheetHeader>
-          <SheetTitle>Notification Details</SheetTitle>
-          <p className="mt-1 text-base text-muted-foreground">Review the message, recipient, and technical context.</p>
+          <SheetTitle>{t("Notification Details")}</SheetTitle>
+          <p className="mt-1 text-base text-muted-foreground">{t("Review the message, recipient, and technical context.")}</p>
         </SheetHeader>
         <SheetBody>
           {isLoading ? (
@@ -63,8 +65,8 @@ export default function NotificationDetailSheet({
           ) : isError || !detail ? (
             <div className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-center">
               <AlertCircle className="size-8 text-destructive" />
-              <p className="text-lg font-semibold text-foreground">Unable to load notification details.</p>
-              <Button variant="outline" onClick={() => refetch()}><RefreshCw className="mr-2 size-4" />Retry</Button>
+              <p className="text-lg font-semibold text-foreground">{t("Unable to load notification details.")}</p>
+              <Button variant="outline" onClick={() => refetch()}><RefreshCw className="mr-2 size-4" />{t("Retry")}</Button>
             </div>
           ) : (
             <>
@@ -77,8 +79,8 @@ export default function NotificationDetailSheet({
                   <div className="min-w-0">
                     <h3 className="text-xl font-semibold text-foreground">{detail.title}</h3>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      <Badge variant="outline" className={NOTIFICATION_TYPE_UI[detail.notificationType]?.badgeClassName}>{notificationTypeLabel(detail.notificationType)}</Badge>
-                      <Badge variant="outline">{detail.read ? "Read" : "Unread"}</Badge>
+                      <Badge variant="outline" className={NOTIFICATION_TYPE_UI[detail.notificationType]?.badgeClassName}>{t(notificationTypeLabel(detail.notificationType))}</Badge>
+                      <Badge variant="outline">{t(detail.read ? "Read" : "Unread")}</Badge>
                     </div>
                   </div>
                 </div>
@@ -88,7 +90,7 @@ export default function NotificationDetailSheet({
               <Separator />
 
               <section>
-                <h3 className="text-lg font-semibold text-foreground">Recipient</h3>
+                <h3 className="text-lg font-semibold text-foreground">{t("Recipient")}</h3>
                 <div className="mt-3 flex items-center gap-3 rounded-2xl border border-border p-4">
                   <Avatar className="size-11">
                     <AvatarImage src={user?.profileImageUrl ?? undefined} alt={name} />
@@ -104,14 +106,14 @@ export default function NotificationDetailSheet({
               <Separator />
 
               <section>
-                <h3 className="text-lg font-semibold text-foreground">Notification Information</h3>
+                <h3 className="text-lg font-semibold text-foreground">{t("Notification Information")}</h3>
                 <div className="mt-2 divide-y divide-border">
-                  <DetailField label="Type">{notificationTypeLabel(detail.notificationType)}</DetailField>
-                  <DetailField label="Reference">{referenceTypeLabel(detail.referenceType)}</DetailField>
-                  {detail.referenceId && <DetailField label="Reference ID"><span className="font-mono text-sm">{detail.referenceId}</span></DetailField>}
-                  <DetailField label="Created">{format(new Date(detail.createdAt), "PPp")}</DetailField>
-                  <DetailField label="Expires">{detail.expiresAt ? format(new Date(detail.expiresAt), "PPp") : "—"}</DetailField>
-                  <DetailField label="Action URL">
+                  <DetailField label={t("Type")}>{t(notificationTypeLabel(detail.notificationType))}</DetailField>
+                  <DetailField label={t("Reference")}>{t(referenceTypeLabel(detail.referenceType))}</DetailField>
+                  {detail.referenceId && <DetailField label={t("Reference ID")}><span className="font-mono text-sm">{detail.referenceId}</span></DetailField>}
+                  <DetailField label={t("Created")}>{format(new Date(detail.createdAt), "PPp")}</DetailField>
+                  <DetailField label={t("Expires")}>{detail.expiresAt ? format(new Date(detail.expiresAt), "PPp") : "—"}</DetailField>
+                  <DetailField label={t("Action URL")}>
                     {detail.actionUrl ? <a href={detail.actionUrl} className="inline-flex items-center gap-1 text-[#003377] hover:underline dark:text-[#FFC83D]"><span className="break-all">{detail.actionUrl}</span><ExternalLink className="size-4 shrink-0" /></a> : "—"}
                   </DetailField>
                 </div>
@@ -120,10 +122,10 @@ export default function NotificationDetailSheet({
               <Separator />
 
               <section>
-                <h3 className="text-lg font-semibold text-foreground">Delivery</h3>
+                <h3 className="text-lg font-semibold text-foreground">{t("Delivery")}</h3>
                 <div className="mt-3 rounded-2xl border border-dashed border-border bg-muted/30 p-4">
-                  <p className="text-base text-muted-foreground">Delivery details are not available from the current API.</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Retry actions appear only when a failed delivery and its channel are known.</p>
+                  <p className="text-base text-muted-foreground">{t("Delivery details are not available from the current API.")}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{t("Retry actions appear only when a failed delivery and its channel are known.")}</p>
                 </div>
               </section>
             </>

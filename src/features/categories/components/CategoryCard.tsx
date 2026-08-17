@@ -1,6 +1,7 @@
 import { FolderTree, KeyRound, Pencil, Trash2 } from "lucide-react";
 import { Category } from "../types";
 import { DynamicIcon } from "./DynamicIcon";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface CategoryCardProps {
   category: Category;
@@ -9,38 +10,19 @@ interface CategoryCardProps {
 }
 
 export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) {
+  const { t } = useAdminI18n();
   const type = (category.type ?? "expense").toLowerCase();
   const color = category.color?.startsWith("#") ? category.color : "#3b82f6";
 
   return (
     <article
-// <<<<<<< HEAD
-//       role="button"
-//       tabIndex={0}
-//       onClick={() => onEdit(category)}
-//       onKeyDown={(event) => {
-//         if (event.target !== event.currentTarget) return;
-//         if (event.key === "Enter" || event.key === " ") {
-//           event.preventDefault();
-//           onEdit(category);
-//         }
-//       }}
-//       className="group relative flex min-h-[217px] cursor-pointer flex-col rounded-[20px] border border-slate-900/10 bg-white p-5 shadow-[0_2px_3px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003377] focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900"
-//     >
-//       <div className="absolute right-4 top-4 z-10 flex gap-1 rounded-xl border border-slate-100 bg-white/95 p-1 opacity-0 shadow-sm transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 dark:border-slate-700 dark:bg-slate-800/95">
-//         <button type="button" onClick={(event) => { event.stopPropagation(); onEdit(category); }} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-[#003377] dark:hover:bg-slate-700" aria-label={`កែសម្រួល ${category.name}`}>
-//           <Pencil className="size-4" />
-//         </button>
-//         <button type="button" onClick={(event) => { event.stopPropagation(); onDelete(category); }} className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-slate-700" aria-label={`លុប ${category.name}`}>
-//  =======
       className="group relative flex min-h-[217px] flex-col rounded-[20px] border border-slate-900/10 bg-white p-5 shadow-[0_2px_3px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600"
     >
       <div className="absolute right-4 top-4 z-10 flex gap-1 rounded-xl border border-slate-100 bg-white/95 p-1 opacity-0 shadow-sm transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 dark:border-slate-700 dark:bg-slate-800/95">
-        <button type="button" onClick={() => onEdit(category)} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-[#003377] dark:hover:bg-slate-600 dark:hover:text-white" aria-label={`កែសម្រួល ${category.name}`}>
+        <button type="button" onClick={() => onEdit(category)} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-[#003377] dark:hover:bg-slate-600 dark:hover:text-white" aria-label={`${t("Edit Category")} ${category.name}`}>
           <Pencil className="size-4" />
         </button>
-        <button type="button" onClick={() => onDelete(category)} className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/60 dark:hover:text-rose-300" aria-label={`លុប ${category.name}`}>
-
+        <button type="button" onClick={() => onDelete(category)} className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/60 dark:hover:text-rose-300" aria-label={`${t("Delete Category")} ${category.name}`}>
           <Trash2 className="size-4" />
         </button>
       </div>
@@ -56,7 +38,7 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
           <DynamicIcon name={category.icon} className="size-6" />
         </div>
         <span className={`mt-1 rounded-full px-2.5 py-1 text-xs font-semibold ${type === "income" ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}>
-          {type === "income" ? "ចំណូល" : "ចំណាយ"}
+          {type === "income" ? t("Income") : t("Expense")}
         </span>
       </div>
 
@@ -65,15 +47,15 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
       <div className="mt-auto space-y-2 pt-3 text-xs text-slate-500 dark:text-slate-400">
         <div className="flex items-center gap-2">
           <FolderTree className="size-3.5" />
-          <span className="truncate">{category.parentName ? `ប្រភេទរងនៃ ${category.parentName}` : "ប្រភេទដើម"}</span>
+          <span className="truncate">{category.parentName ? `${t("Subcategory of")} ${category.parentName}` : t("Root Category")}</span>
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="flex min-w-0 items-center gap-2">
             <KeyRound className="size-3.5 shrink-0" />
-            <span className="truncate font-mono">{category.categoryKey || "គ្មានលេខកូដ"}</span>
+            <span className="truncate font-mono">{category.categoryKey || t("No Key")}</span>
           </span>
           <span className={`shrink-0 rounded-full px-2 py-0.5 font-semibold ${category.systemCategory ? "bg-violet-100 text-violet-700" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"}`}>
-            {category.systemCategory ? "ប្រព័ន្ធ" : "ផ្ទាល់ខ្លួន"}
+            {category.systemCategory ? t("System") : t("Custom")}
           </span>
         </div>
       </div>

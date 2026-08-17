@@ -77,7 +77,7 @@ export const SelectTrigger = React.forwardRef<
       aria-expanded={open}
       aria-haspopup="listbox"
       className={cn(
-        "flex h-9 w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none transition-colors hover:border-primary/40 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-10 w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-base text-foreground shadow-sm outline-none transition-colors hover:border-primary/40 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       onClick={(event) => {
@@ -134,7 +134,7 @@ export function SelectItem({ value, children }: { value: string; children: React
       role="option"
       aria-selected={selected}
       className={cn(
-        "flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-base outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground",
+        "flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-base font-normal outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground",
         selected && "bg-accent font-medium text-accent-foreground"
       )}
       onClick={() => context.select(value)}

@@ -1,6 +1,9 @@
+"use client";
+
 import * as React from "react";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useOptionalAdminI18n } from "@/i18n/admin-i18n";
 
 function Pagination({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
   return (
@@ -47,11 +50,18 @@ function PaginationLink({
   );
 }
 
-function PaginationPrevious({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+function PaginationPrevious({
+  className,
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const i18n = useOptionalAdminI18n();
+  const t = i18n?.t ?? ((str: string) => str);
+
   return (
     <button
       type="button"
-      aria-label="Go to previous page"
+      aria-label={t("Go to previous page")}
       className={cn(
         "flex h-10 items-center gap-1.5 rounded-lg border border-border bg-background px-3.5 text-base font-medium text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-40",
         className
@@ -59,23 +69,30 @@ function PaginationPrevious({ className, ...props }: React.ButtonHTMLAttributes<
       {...props}
     >
       <ChevronLeft className="size-4" />
-      <span>Previous</span>
+      <span>{children ?? t("Previous")}</span>
     </button>
   );
 }
 
-function PaginationNext({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+function PaginationNext({
+  className,
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const i18n = useOptionalAdminI18n();
+  const t = i18n?.t ?? ((str: string) => str);
+
   return (
     <button
       type="button"
-      aria-label="Go to next page"
+      aria-label={t("Go to next page")}
       className={cn(
         "flex h-10 items-center gap-1.5 rounded-lg border border-border bg-background px-3.5 text-base font-medium text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-40",
         className
       )}
       {...props}
     >
-      <span>Next</span>
+      <span>{children ?? t("Next")}</span>
       <ChevronRight className="size-4" />
     </button>
   );

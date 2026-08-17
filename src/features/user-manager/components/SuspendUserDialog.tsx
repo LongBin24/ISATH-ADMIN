@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AdminUser } from "@/features/user-manager/types";
 import { useSuspendUserMutation } from "@/features/user-manager/api";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface SuspendUserDialogProps {
   user: AdminUser | null;
@@ -25,6 +26,7 @@ function displayName(user: AdminUser) {
 }
 
 export default function SuspendUserDialog({ user, open, onOpenChange }: SuspendUserDialogProps) {
+  const { t } = useAdminI18n();
   const [suspendUser, { isLoading }] = useSuspendUserMutation();
 
   async function handleConfirm() {
@@ -45,16 +47,15 @@ export default function SuspendUserDialog({ user, open, onOpenChange }: SuspendU
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Suspend this user?</AlertDialogTitle>
+          <AlertDialogTitle>{t("Suspend this user?")}</AlertDialogTitle>
           <AlertDialogDescription>
-            {displayName(user)} will no longer be able to use their account until an administrator
-            reactivates it.
+            {displayName(user)} {t("will no longer be able to use their account until an administrator reactivates it.")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => onOpenChange(false)}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={() => onOpenChange(false)}>{t("Cancel")}</AlertDialogCancel>
           <AlertDialogAction variant="destructive" disabled={isLoading} onClick={handleConfirm}>
-            {isLoading ? "Suspending..." : "Suspend User"}
+            {isLoading ? t("Suspending...") : t("Suspend User")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

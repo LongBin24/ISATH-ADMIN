@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { AdminUser } from "@/features/user-manager/types";
 import { AccountStatusBadge, OnboardingBadge, VerifiedBadge } from "./status-badges";
 import UserRowActions from "./UserRowActions";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface UserTableProps {
   users: AdminUser[];
@@ -29,18 +30,20 @@ function displayName(user: AdminUser) {
 }
 
 export default function UserTable({ users, isLoading, onViewDetails, onSuspend, onReactivate }: UserTableProps) {
+  const { t } = useAdminI18n();
+
   return (
     <div className="overflow-x-auto rounded-2xl border border-border">
       <Table>
         <TableHeader className="bg-muted/40">
           <TableRow className="hover:bg-transparent">
-            <TableHead className="text-sm font-semibold">User</TableHead>
-            <TableHead className="text-sm font-semibold">Email</TableHead>
-            <TableHead className="text-sm font-semibold">Status</TableHead>
-            <TableHead className="text-sm font-semibold">Verified</TableHead>
-            <TableHead className="text-sm font-semibold">Onboarding</TableHead>
-            <TableHead className="text-sm font-semibold">Created</TableHead>
-            <TableHead className="w-12 text-right text-sm font-semibold">Action</TableHead>
+            <TableHead className="text-base font-semibold">{t("User")}</TableHead>
+            <TableHead className="text-base font-semibold">{t("Email")}</TableHead>
+            <TableHead className="text-base font-semibold">{t("Status")}</TableHead>
+            <TableHead className="text-base font-semibold">{t("Verified")}</TableHead>
+            <TableHead className="text-base font-semibold">{t("Onboarding")}</TableHead>
+            <TableHead className="text-base font-semibold">{t("Created")}</TableHead>
+            <TableHead className="w-12 text-right text-base font-semibold">{t("Action")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -55,7 +58,7 @@ export default function UserTable({ users, isLoading, onViewDetails, onSuspend, 
           ) : users.length === 0 ? (
             <TableRow>
               <TableCell colSpan={7} className="py-16 text-center text-base text-muted-foreground">
-                No users found.
+                {t("No users found.")}
               </TableCell>
             </TableRow>
           ) : (

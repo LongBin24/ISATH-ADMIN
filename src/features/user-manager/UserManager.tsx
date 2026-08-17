@@ -108,7 +108,7 @@ export default function UserManagerPage() {
       <UserStatCards />
 
       <div>
-        <h2 className="mb-4 text-xl font-semibold text-foreground">{t("User Distribution")}</h2>
+        <h2 className="mb-4 text-xl md:text-2xl font-semibold text-foreground">{t("User Distribution")}</h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <UserGenderChart />
           <UserAgeChart />
@@ -116,7 +116,7 @@ export default function UserManagerPage() {
       </div>
 
       <div>
-        <h2 className="mb-4 text-xl font-semibold text-foreground">{t("Users")}</h2>
+        <h2 className="mb-4 text-xl md:text-2xl font-semibold text-foreground">{t("Users")}</h2>
 
         <Card className="rounded-2xl border-border shadow-sm">
           <CardContent className="space-y-4 p-4 sm:p-6">
@@ -125,11 +125,11 @@ export default function UserManagerPage() {
             {isError ? (
               <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 py-16 text-center">
                 <AlertCircle className="size-8 text-destructive" />
-                <p className="text-lg font-semibold text-foreground">Unable to load users.</p>
-                <p className="text-base text-muted-foreground">Please try again.</p>
-                <Button onClick={() => refetch()} variant="outline" className="mt-2">
-                  <RefreshCw className="mr-2 size-4" />
-                  Retry
+                <p className="text-lg font-semibold text-foreground">{t("Unable to load users.")}</p>
+                <p className="text-sm text-muted-foreground font-normal">{t("Please try again.")}</p>
+                <Button onClick={() => refetch()} variant="outline" className="mt-2 text-sm font-medium">
+                  <RefreshCw className="mr-2 size-3.5" />
+                  {t("Retry")}
                 </Button>
               </div>
             ) : !isLoading && totalElements === 0 ? (
@@ -137,19 +137,19 @@ export default function UserManagerPage() {
                 <UsersIcon className="size-8 text-muted-foreground" />
                 {hasActiveFilters ? (
                   <>
-                    <p className="text-lg font-semibold text-foreground">No users found</p>
-                    <p className="text-base text-muted-foreground">Try changing your search or filters.</p>
-                    <Button variant="outline" onClick={() => handleFiltersChange(DEFAULT_USER_FILTERS)} className="mt-2">
-                      Reset Filters
+                    <p className="text-lg font-semibold text-foreground">{t("No users found")}</p>
+                    <p className="text-sm text-muted-foreground font-normal">{t("Try changing your search or filters.")}</p>
+                    <Button variant="outline" onClick={() => handleFiltersChange(DEFAULT_USER_FILTERS)} className="mt-2 text-sm font-medium">
+                      {t("Reset Filters")}
                     </Button>
                   </>
                 ) : (
                   <>
-                    <p className="text-lg font-semibold text-foreground">No users yet</p>
-                    <p className="text-base text-muted-foreground">Create the first user account.</p>
-                    <Button onClick={() => setAddUserOpen(true)} className="mt-2 bg-[#FFC83D] text-[#003377] hover:bg-[#f0ba33]">
+                    <p className="text-lg font-semibold text-foreground">{t("No users yet")}</p>
+                    <p className="text-sm text-muted-foreground font-normal">{t("Create the first user account.")}</p>
+                    <Button onClick={() => setAddUserOpen(true)} className="mt-2 bg-[#FFC83D] text-base font-medium text-[#003377] hover:bg-[#f0ba33]">
                       <UserPlus className="mr-2 size-4" />
-                      Add User
+                      {t("Add User")}
                     </Button>
                   </>
                 )}
@@ -169,7 +169,7 @@ export default function UserManagerPage() {
                     <span>
                       Showing <span className="font-medium text-foreground">{startItem}</span>–
                       <span className="font-medium text-foreground">{endItem}</span> of{" "}
-                      <span className="font-medium text-foreground">{totalElements.toLocaleString()}</span> users
+                      <span className="font-medium text-foreground">{totalElements.toLocaleString()}</span> {t("Users")}
                     </span>
                     <div className="admin-page-size"><Select
                       value={String(pageSize)}
@@ -178,7 +178,7 @@ export default function UserManagerPage() {
                         setPageNumber(0);
                       }}
                     >
-                      <SelectTrigger className="h-10 w-32 text-base">
+                      <SelectTrigger className="h-10 w-32 text-sm">
                         <SelectValue value={`${pageSize} / page`} />
                       </SelectTrigger>
                       <SelectContent

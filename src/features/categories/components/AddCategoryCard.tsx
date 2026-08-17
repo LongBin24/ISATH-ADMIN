@@ -1,11 +1,14 @@
-import React from 'react';
-import { Plus } from 'lucide-react';
+import React from "react";
+import { Plus } from "lucide-react";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface AddCategoryCardProps {
   onClick: () => void;
 }
 
 export const AddCategoryCard: React.FC<AddCategoryCardProps> = ({ onClick }) => {
+  const { t } = useAdminI18n();
+
   return (
     <button
       onClick={onClick}
@@ -16,10 +19,10 @@ export const AddCategoryCard: React.FC<AddCategoryCardProps> = ({ onClick }) => 
       </div>
       <div className="text-center">
         <span className="block font-bold text-[#003377] font-google-sans text-sm">
-          ប្រភេទថ្មី
+          {t("Add Category")}
         </span>
         <span className="text-xs text-slate-400 font-google-sans">
-          Add New Category
+          {t("Create Category")}
         </span>
       </div>
     </button>

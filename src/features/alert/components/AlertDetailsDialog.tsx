@@ -24,6 +24,7 @@ import {
 import { useGetAlertRuleByIdQuery } from "@/features/alert/hooks";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface AlertDetailsDialogProps {
   isOpen?: boolean;
@@ -38,39 +39,16 @@ interface DetailCardProps {
   className?: string;
 }
 
-const valueTranslations: Record<string, string> = {
-  DAILY_EXPENSE_REMINDER: "រំលឹកការចំណាយប្រចាំថ្ងៃ",
-  BUDGET_THRESHOLD: "កម្រិតថវិកា",
-  SAVINGS_REMINDER: "រំលឹកការសន្សំ",
-  RECURRING_REMINDER: "រំលឹកប្រតិបត្តិការប្រចាំ",
-  MONTHLY_SUMMARY: "សេចក្តីសង្ខេបប្រចាំខែ",
-  THRESHOLD_EXCEEDED: "លើសកម្រិតកំណត់",
-  CUSTOM: "កំណត់ដោយផ្ទាល់",
-  TIME: "តាមម៉ោង",
-  THRESHOLD: "តាមកម្រិតកំណត់",
-  EVENT: "តាមព្រឹត្តិការណ៍",
-  SCHEDULE: "តាមកាលវិភាគ",
-  MANUAL: "ដោយផ្ទាល់",
-  BUDGET: "ថវិកា",
-  SAVINGS_GOAL: "គោលដៅសន្សំ",
-  RECURRING_TRANSACTION: "ប្រតិបត្តិការប្រចាំ",
-  TRANSACTION_CATEGORY: "ប្រភេទប្រតិបត្តិការ",
-  ACCOUNT_BALANCE: "សមតុល្យគណនី",
-  NONE: "គ្មាន",
-};
-
-function translateValue(value?: string | null) {
-  if (!value) return null;
-  return valueTranslations[value] ?? value.replaceAll("_", " ");
-}
-
 function formatDate(value?: string | null) {
   if (!value) return null;
-
-  return new Intl.DateTimeFormat("km-KH", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(value));
+  } catch {
+    return value;
+  }
 }
 
 function DetailCard({ icon: Icon, label, value, className = "" }: DetailCardProps) {
@@ -95,7 +73,7 @@ function DetailCard({ icon: Icon, label, value, className = "" }: DetailCardProp
 
 function LoadingState() {
   return (
-    <div className="grid gap-3 py-1 sm:grid-cols-2" aria-label="កំពុងទាញយកព័ត៌មាន">
+    <div className="grid gap-3 py-1 sm:grid-cols-2">
       {[0, 1, 2, 3, 4, 5].map((item) => (
         <div key={item} className="space-y-3 rounded-2xl border border-slate-200 p-4 dark:border-slate-700">
           <Skeleton className="h-3 w-24" />
@@ -111,6 +89,7 @@ export function AlertDetailsDialog({
   onClose,
   ruleId,
 }: AlertDetailsDialogProps) {
+  const { t } = useAdminI18n();
   const {
     data: alertRule,
     isLoading,
@@ -123,12 +102,6 @@ export function AlertDetailsDialog({
   });
 
   const severity = alertRule?.severity;
-  const severityLabel =
-    severity === "CRITICAL"
-      ? "ធ្ងន់ធ្ងរ"
-      : severity === "WARNING"
-        ? "ប្រុងប្រយ័ត្ន"
-        : "ព័ត៌មាន";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -143,12 +116,12 @@ export function AlertDetailsDialog({
             </span>
             <div className="min-w-0">
               <DialogTitle className="text-lg font-bold text-[#003377] dark:text-[#FFC83D] sm:text-xl">
-                ព័ត៌មានលម្អិតនៃច្បាប់ជូនដំណឹង
+                {t("Alert Rule Details")}
               </DialogTitle>
               <DialogDescription className="mt-1 truncate text-sm text-slate-500 dark:text-slate-400">
                 {alertRule?.ruleName
-                  ? `ព័ត៌មានសម្រាប់៖ ${alertRule.ruleName}`
-                  : "ព័ត៌មានសង្ខេបនៃច្បាប់ជូនដំណឹង"}
+                  ? `${t("Details for:")} ${alertRule.ruleName}`
+                  : t("Read-only rule configuration and execution information.")}
               </DialogDescription>
             </div>
           </div>
@@ -163,10 +136,10 @@ export function AlertDetailsDialog({
                 <AlertCircle className="size-6" />
               </span>
               <h3 className="font-bold text-slate-900 dark:text-white">
-                មិនអាចទាញយកព័ត៌មានបានទេ
+                {t("Unable to load alert rules.")}
               </h3>
               <p className="mt-1 max-w-sm text-sm leading-6 text-slate-500 dark:text-slate-400">
-                សូមពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្តងទៀត។
+                {t("Please try again.")}
               </p>
               <Button
                 type="button"
@@ -174,14 +147,14 @@ export function AlertDetailsDialog({
                 className="mt-5 gap-2 rounded-xl bg-[#FFC83D] px-5 font-bold text-[#003377] hover:bg-[#eab52f]"
               >
                 <RefreshCw className="size-4" />
-                ព្យាយាមម្តងទៀត
+                {t("Retry")}
               </Button>
             </div>
           ) : alertRule ? (
             <div className="space-y-4">
               <div className="flex flex-col gap-3 rounded-2xl bg-[#003377] p-4 text-white shadow-sm sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
-                  <p className="text-xs font-medium text-white/65">ឈ្មោះច្បាប់</p>
+                  <p className="text-xs font-medium text-white/65">{t("Rule Name")}</p>
                   <p className="mt-1 truncate font-bold">{alertRule.ruleName}</p>
                 </div>
                 <span
@@ -194,48 +167,48 @@ export function AlertDetailsDialog({
                   }`}
                 >
                   <ShieldAlert className="size-3.5" />
-                  {severityLabel}
+                  {t(severity ?? "INFO")}
                 </span>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <DetailCard
                   icon={BellRing}
-                  label="ប្រភេទការជូនដំណឹង"
-                  value={translateValue(alertRule.alertType)}
+                  label={t("Alert Type")}
+                  value={t(alertRule.alertType)}
                 />
                 <DetailCard
                   icon={TimerReset}
-                  label="ប្រភេទលក្ខខណ្ឌ"
-                  value={translateValue(alertRule.triggerType)}
+                  label={t("Trigger")}
+                  value={t(alertRule.triggerType)}
                 />
                 <DetailCard
                   icon={CheckCircle2}
-                  label="ស្ថានភាព"
+                  label={t("Status")}
                   value={
                     <span className={alertRule.enabled ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500"}>
-                      {alertRule.enabled ? "បានបើកដំណើរការ" : "បានបិទដំណើរការ"}
+                      {t(alertRule.enabled ? "Enabled" : "Disabled")}
                     </span>
                   }
                 />
                 <DetailCard
                   icon={Tag}
-                  label="ប្រភេទយោង"
-                  value={translateValue(alertRule.referenceType)}
+                  label={t("Reference")}
+                  value={alertRule.referenceType ? t(alertRule.referenceType) : t("No reference")}
                 />
                 <DetailCard
                   icon={CalendarDays}
-                  label="ចំនួនថ្ងៃជូនដំណឹងមុន"
-                  value={alertRule.daysBefore !== null ? `${alertRule.daysBefore} ថ្ងៃ` : null}
+                  label={t("Days Before")}
+                  value={alertRule.daysBefore !== null ? `${alertRule.daysBefore} ${t(alertRule.daysBefore > 1 ? "days" : "day")}` : null}
                 />
                 <DetailCard
                   icon={Clock3}
-                  label="ម៉ោងរំលឹក"
+                  label={t("Reminder Time")}
                   value={alertRule.reminderTime}
                 />
                 <DetailCard
                   icon={MessageSquareText}
-                  label="សារជូនដំណឹង"
+                  label={t("Notification")}
                   value={alertRule.ruleConfiguration?.message}
                   className="sm:col-span-2"
                 />
@@ -243,18 +216,18 @@ export function AlertDetailsDialog({
 
               <div className="grid gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400 sm:grid-cols-2">
                 <div>
-                  <span className="font-semibold">បានបង្កើត៖</span>{" "}
+                  <span className="font-semibold">{t("Created")}:</span>{" "}
                   {formatDate(alertRule.createdAt)}
                 </div>
                 <div className="sm:text-right">
-                  <span className="font-semibold">បានកែប្រែចុងក្រោយ៖</span>{" "}
+                  <span className="font-semibold">{t("Updated")}:</span>{" "}
                   {formatDate(alertRule.updatedAt)}
                 </div>
               </div>
             </div>
           ) : (
             <div className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">
-              ពុំមានព័ត៌មានលម្អិតនៃច្បាប់ជូនដំណឹងទេ។
+              {t("No alert rules found")}
             </div>
           )}
         </div>
@@ -265,7 +238,7 @@ export function AlertDetailsDialog({
             onClick={onClose}
             className="min-w-28 rounded-xl bg-[#FFC83D] font-bold text-[#003377] shadow-sm hover:bg-[#eab52f]"
           >
-            បិទ
+            {t("Close")}
           </Button>
         </DialogClose>
       </DialogContent>

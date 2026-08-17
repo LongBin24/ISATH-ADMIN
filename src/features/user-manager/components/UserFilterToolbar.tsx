@@ -15,6 +15,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar, type DateRange } from "@/components/ui/calendar";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 export interface UserFilters {
   query: string;
@@ -40,6 +41,7 @@ interface UserFilterToolbarProps {
 }
 
 export default function UserFilterToolbar({ filters, onFiltersChange }: UserFilterToolbarProps) {
+  const { t } = useAdminI18n();
   const [searchInput, setSearchInput] = useState(filters.query);
   const debouncedSearch = useDebounce(searchInput, 400);
 
@@ -68,15 +70,28 @@ export default function UserFilterToolbar({ filters, onFiltersChange }: UserFilt
     onFiltersChange(DEFAULT_USER_FILTERS);
   }
 
+  function statusLabel(value: string) {
+    const raw = { ALL: "All Statuses", ACTIVE: "Active", SUSPENDED: "Suspended", DELETED: "Deleted" }[value] ?? value;
+    return t(raw);
+  }
+  function verifiedLabel(value: string) {
+    const raw = { ALL: "All", VERIFIED: "Verified", UNVERIFIED: "Not Verified" }[value] ?? value;
+    return t(raw);
+  }
+  function onboardingLabel(value: string) {
+    const raw = { ALL: "All", COMPLETED: "Completed", INCOMPLETE: "Not Completed" }[value] ?? value;
+    return t(raw);
+  }
+
   return (
-    <div className="flex flex-col gap-3">
+    <div className="filter-card flex flex-col gap-3 text-base">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:flex-wrap">
         <div className="relative w-full lg:max-w-xs">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search by name, username, or email..."
+            placeholder={t("Search by name, username, or email...")}
             className="h-10 rounded-xl pl-9 text-base"
           />
         </div>
@@ -85,17 +100,17 @@ export default function UserFilterToolbar({ filters, onFiltersChange }: UserFilt
           value={filters.accountStatus}
           onValueChange={(value) => onFiltersChange({ ...filters, accountStatus: value })}
         >
-          <SelectTrigger className="h-10 w-full rounded-xl text-sm lg:w-[160px]">
-            <SelectValue placeholder="Status" value={statusLabel(filters.accountStatus)} />
+          <SelectTrigger className="h-10 w-full rounded-xl text-base lg:w-[170px]">
+            <SelectValue placeholder={t("Status")} value={statusLabel(filters.accountStatus)} />
           </SelectTrigger>
           <SelectContent
             value={filters.accountStatus}
             onValueChange={(value) => onFiltersChange({ ...filters, accountStatus: value })}
           >
-            <SelectItem value="ALL">All Statuses</SelectItem>
-            <SelectItem value="ACTIVE">Active</SelectItem>
-            <SelectItem value="SUSPENDED">Suspended</SelectItem>
-            <SelectItem value="DELETED">Deleted</SelectItem>
+            <SelectItem value="ALL">{t("All Statuses")}</SelectItem>
+            <SelectItem value="ACTIVE">{t("Active")}</SelectItem>
+            <SelectItem value="SUSPENDED">{t("Suspended")}</SelectItem>
+            <SelectItem value="DELETED">{t("Deleted")}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -103,16 +118,16 @@ export default function UserFilterToolbar({ filters, onFiltersChange }: UserFilt
           value={filters.emailVerified}
           onValueChange={(value) => onFiltersChange({ ...filters, emailVerified: value })}
         >
-          <SelectTrigger className="h-10 w-full rounded-xl text-sm lg:w-[160px]">
-            <SelectValue placeholder="Verification" value={verifiedLabel(filters.emailVerified)} />
+          <SelectTrigger className="h-10 w-full rounded-xl text-base lg:w-[170px]">
+            <SelectValue placeholder={t("Verification")} value={verifiedLabel(filters.emailVerified)} />
           </SelectTrigger>
           <SelectContent
             value={filters.emailVerified}
             onValueChange={(value) => onFiltersChange({ ...filters, emailVerified: value })}
           >
-            <SelectItem value="ALL">All</SelectItem>
-            <SelectItem value="VERIFIED">Verified</SelectItem>
-            <SelectItem value="UNVERIFIED">Not Verified</SelectItem>
+            <SelectItem value="ALL">{t("All")}</SelectItem>
+            <SelectItem value="VERIFIED">{t("Verified")}</SelectItem>
+            <SelectItem value="UNVERIFIED">{t("Not Verified")}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -120,28 +135,28 @@ export default function UserFilterToolbar({ filters, onFiltersChange }: UserFilt
           value={filters.onboardingCompleted}
           onValueChange={(value) => onFiltersChange({ ...filters, onboardingCompleted: value })}
         >
-          <SelectTrigger className="h-10 w-full rounded-xl text-sm lg:w-[170px]">
-            <SelectValue placeholder="Onboarding" value={onboardingLabel(filters.onboardingCompleted)} />
+          <SelectTrigger className="h-10 w-full rounded-xl text-base lg:w-[180px]">
+            <SelectValue placeholder={t("Onboarding")} value={onboardingLabel(filters.onboardingCompleted)} />
           </SelectTrigger>
           <SelectContent
             value={filters.onboardingCompleted}
             onValueChange={(value) => onFiltersChange({ ...filters, onboardingCompleted: value })}
           >
-            <SelectItem value="ALL">All</SelectItem>
-            <SelectItem value="COMPLETED">Completed</SelectItem>
-            <SelectItem value="INCOMPLETE">Not Completed</SelectItem>
+            <SelectItem value="ALL">{t("All")}</SelectItem>
+            <SelectItem value="COMPLETED">{t("Completed")}</SelectItem>
+            <SelectItem value="INCOMPLETE">{t("Not Completed")}</SelectItem>
           </SelectContent>
         </Select>
 
         <Popover>
-          <PopoverTrigger className="flex h-10 w-full items-center justify-between gap-2 rounded-xl border border-input bg-transparent px-3 text-sm text-foreground shadow-sm hover:bg-accent lg:w-[220px]">
+          <PopoverTrigger className="flex h-10 w-full items-center justify-between gap-2 rounded-xl border border-input bg-transparent px-3 text-base text-foreground shadow-sm hover:bg-accent lg:w-[240px]">
             <span className="flex items-center gap-2 truncate">
               <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
               {dateRange.from
                 ? dateRange.to
                   ? `${format(dateRange.from, "MMM d")} – ${format(dateRange.to, "MMM d, yyyy")}`
                   : format(dateRange.from, "MMM d, yyyy")
-                : "Created Date"}
+                : t("Created Date")}
             </span>
             {(dateRange.from || dateRange.to) && (
               <X
@@ -170,22 +185,12 @@ export default function UserFilterToolbar({ filters, onFiltersChange }: UserFilt
         </Popover>
 
         {hasActiveFilters && (
-          <Button variant="outline" size="sm" onClick={handleReset} className="h-10 rounded-xl">
+          <Button variant="outline" size="sm" onClick={handleReset} className="h-10 rounded-xl text-base font-medium">
             <RotateCcw className="mr-1.5 size-3.5" />
-            Reset
+            {t("Reset")}
           </Button>
         )}
       </div>
     </div>
   );
-}
-
-function statusLabel(value: string) {
-  return { ALL: "All Statuses", ACTIVE: "Active", SUSPENDED: "Suspended", DELETED: "Deleted" }[value] ?? value;
-}
-function verifiedLabel(value: string) {
-  return { ALL: "All", VERIFIED: "Verified", UNVERIFIED: "Not Verified" }[value] ?? value;
-}
-function onboardingLabel(value: string) {
-  return { ALL: "All", COMPLETED: "Completed", INCOMPLETE: "Not Completed" }[value] ?? value;
 }

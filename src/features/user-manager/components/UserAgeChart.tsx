@@ -6,10 +6,12 @@ import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetUserStatisticsQuery } from "@/features/user-manager/api";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 const AGE_COLORS = ["#003377", "#0EA5E9", "#10B981", "#FEDB55", "#F59E0B", "#8B5CF6", "#64748B"];
 
 export default function UserAgeChart() {
+  const { t } = useAdminI18n();
   const { data: statsRes, isLoading, isError, error } = useGetUserStatisticsQuery();
   const ageGroups = statsRes?.ageGroups;
 
@@ -19,13 +21,13 @@ export default function UserAgeChart() {
 
   const rows = ageGroups
     ? [
-        { name: "Under 15", value: ageGroups.under15 },
+        { name: t("Under 15"), value: ageGroups.under15 },
         { name: "15–24", value: ageGroups.age15To24 },
         { name: "25–44", value: ageGroups.age25To44 },
         { name: "45–59", value: ageGroups.age45To59 },
         { name: "60–74", value: ageGroups.age60To74 },
         { name: "75+", value: ageGroups.age75Plus },
-        { name: "Unknown", value: ageGroups.unknown },
+        { name: t("Unknown"), value: ageGroups.unknown },
       ]
     : [];
   const total = rows.reduce((sum, r) => sum + r.value, 0);
@@ -33,7 +35,7 @@ export default function UserAgeChart() {
   return (
     <Card className="rounded-2xl border-border shadow-sm">
       <CardHeader>
-        <CardTitle className="text-lg">Age Distribution</CardTitle>
+        <CardTitle className="text-lg">{t("Age Distribution")}</CardTitle>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -41,10 +43,10 @@ export default function UserAgeChart() {
         ) : isError ? (
           <div className="flex flex-col items-center gap-2 py-16 text-center">
             <AlertCircle className="size-6 text-destructive" />
-            <p className="text-base text-muted-foreground">Unable to load age distribution.</p>
+            <p className="text-base text-muted-foreground">{t("Unable to load age distribution.")}</p>
           </div>
         ) : total === 0 ? (
-          <p className="py-16 text-center text-base text-muted-foreground">No age data available.</p>
+          <p className="py-16 text-center text-base text-muted-foreground">{t("No age data available.")}</p>
         ) : (
           <div className="h-56 w-full">
             <ResponsiveContainer width="100%" height="100%">

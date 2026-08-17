@@ -9,12 +9,12 @@ export default function UserManagementHeader({ onAddUser }: { onAddUser: () => v
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-3xl font-semibold text-foreground sm:text-3xl">{t("User Management")}</h1>
-        <p className="mt-1 text-base text-muted-foreground">
+        <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">{t("User Management")}</h1>
+        <p className="mt-1 text-sm text-muted-foreground font-normal">
           {t("Manage, monitor, and control iStash user accounts.")}
         </p>
       </div>
-      <Button size="lg" onClick={onAddUser} className="bg-[#FFC83D] text-[#003377] hover:bg-[#f0ba33]">
+      <Button size="lg" onClick={onAddUser} className="bg-[#FFC83D] text-base font-medium text-[#003377] hover:bg-[#f0ba33]">
         <UserPlus className="mr-2 size-4" />
         {t("Add User")}
       </Button>

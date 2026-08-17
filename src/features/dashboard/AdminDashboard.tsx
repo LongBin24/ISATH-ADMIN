@@ -49,27 +49,56 @@ export default function AdminDashboard() {
   const usersById = useMemo(() => new Map((users.data?.content ?? []).map((user) => [user.id, user])), [users.data?.content]);
   const adminName = profileQuery.data?.displayName || profileQuery.data?.firstName || t("Administrator");
 
-  return <div className="space-y-8 font-google-sans">
-    <header><h1 className="text-3xl font-semibold tracking-tight text-foreground">{t(greeting())}, {adminName}</h1><p className="mt-1 text-base text-muted-foreground">{t("Here’s what’s happening across iStash today.")}</p></header>
+  return (
+    <div className="space-y-8 font-google-sans">
+      <header>
+        <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
+          {t(greeting())}, {adminName}
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground font-normal">
+          {t("Here’s what’s happening across iStash today.")}
+        </p>
+      </header>
 
-    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <KpiCard tone="blue" icon={Users} title={t("Total Users")} value={userStats.data?.totalUsers} loading={userStats.isLoading} error={userStats.isError} description={t("Registered accounts")} href="/user-manager" />
-      <KpiCard tone="violet" icon={BellRing} title={t("Alert Rules")} value={rulesTotal.data?.page.totalElements} loading={rulesTotal.isLoading} error={rulesTotal.isError} description={t("Configured rules")} href="/alert" />
-      <KpiCard tone="amber" icon={MessageSquareText} title={t("Reviews")} value={reviewsTotal.data?.totalElements} loading={reviewsTotal.isLoading} error={reviewsTotal.isError} description={t("User submissions")} href="/feedback" />
-      <KpiCard tone="teal" icon={Bell} title={t("Notifications")} value={notificationsTotal.data?.page.totalElements} loading={notificationsTotal.isLoading} error={notificationsTotal.isError} description={t("System notifications")} href="/notifications" />
-    </section>
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <KpiCard tone="blue" icon={Users} title={t("Total Users")} value={userStats.data?.totalUsers} loading={userStats.isLoading} error={userStats.isError} description={t("Registered accounts")} href="/user-manager" />
+        <KpiCard tone="violet" icon={BellRing} title={t("Alert Rules")} value={rulesTotal.data?.page.totalElements} loading={rulesTotal.isLoading} error={rulesTotal.isError} description={t("Configured rules")} href="/alert" />
+        <KpiCard tone="amber" icon={MessageSquareText} title={t("Reviews")} value={reviewsTotal.data?.totalElements} loading={reviewsTotal.isLoading} error={reviewsTotal.isError} description={t("User submissions")} href="/feedback" />
+        <KpiCard tone="teal" icon={Bell} title={t("Notifications")} value={notificationsTotal.data?.page.totalElements} loading={notificationsTotal.isLoading} error={notificationsTotal.isError} description={t("System notifications")} href="/notifications" />
+      </section>
 
-    <section className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]">
-      <UserOverview stats={userStats.data} loading={userStats.isLoading} error={userStats.isError} tab={chartTab} setTab={setChartTab} retry={() => userStats.refetch()} />
-      <SystemHealth data={provider.data} loading={provider.isLoading} error={provider.isError} retry={() => provider.refetch()} />
-    </section>
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]">
+        <UserOverview stats={userStats.data} loading={userStats.isLoading} error={userStats.isError} tab={chartTab} setTab={setChartTab} retry={() => userStats.refetch()} />
+        <SystemHealth data={provider.data} loading={provider.isLoading} error={provider.isError} retry={() => provider.refetch()} />
+      </section>
 
-    <section><SectionHeader title={t("Needs Attention")} description={t("Items that may require administrator attention.")} /><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"><AttentionCard tone="amber" icon={MessageSquareText} title={t("Pending Reviews")} value={pendingReviews.data?.totalElements} loading={pendingReviews.isLoading} description={t("Awaiting review")} href="/feedback" /><AttentionCard tone="rose" icon={ShieldAlert} title={t("Critical Alert Rules")} value={criticalRules.data?.page.totalElements} loading={criticalRules.isLoading} description={t("Need attention")} href="/alert" /><AttentionCard tone={provider.data?.status === "HEALTHY" && !provider.data?.stale ? "emerald" : "amber"} icon={provider.data?.status === "HEALTHY" && !provider.data?.stale ? CircleCheck : TriangleAlert} title={t("Currency Provider")} value={provider.isLoading ? undefined : provider.data?.status === "HEALTHY" && !provider.data?.stale ? t("Healthy") : t("Issue")} loading={provider.isLoading} description={provider.data?.stale ? t("Data may be outdated") : t("System health")} href="/currencies" /></div></section>
+      <section>
+        <SectionHeader title={t("Needs Attention")} description={t("Items that may require administrator attention.")} />
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <AttentionCard tone="amber" icon={MessageSquareText} title={t("Pending Reviews")} value={pendingReviews.data?.totalElements} loading={pendingReviews.isLoading} description={t("Awaiting review")} href="/feedback" />
+          <AttentionCard tone="rose" icon={ShieldAlert} title={t("Critical Alert Rules")} value={criticalRules.data?.page.totalElements} loading={criticalRules.isLoading} description={t("Need attention")} href="/alert" />
+          <AttentionCard tone={provider.data?.status === "HEALTHY" && !provider.data?.stale ? "emerald" : "amber"} icon={provider.data?.status === "HEALTHY" && !provider.data?.stale ? CircleCheck : TriangleAlert} title={t("Currency Provider")} value={provider.isLoading ? undefined : provider.data?.status === "HEALTHY" && !provider.data?.stale ? t("Healthy") : t("Issue")} loading={provider.isLoading} description={provider.data?.stale ? t("Data may be outdated") : t("System health")} href="/currencies" />
+        </div>
+      </section>
 
-    <section className="grid gap-6 xl:grid-cols-2"><RecentReviews data={recentReviews.data?.content ?? []} users={usersById} loading={recentReviews.isLoading} error={recentReviews.isError} retry={() => recentReviews.refetch()} /><RecentNotifications data={recentNotifications.data?.content ?? []} users={usersById} loading={recentNotifications.isLoading} error={recentNotifications.isError} retry={() => recentNotifications.refetch()} /></section>
+      <section className="grid gap-6 xl:grid-cols-2">
+        <RecentReviews data={recentReviews.data?.content ?? []} users={usersById} loading={recentReviews.isLoading} error={recentReviews.isError} retry={() => recentReviews.refetch()} />
+        <RecentNotifications data={recentNotifications.data?.content ?? []} users={usersById} loading={recentNotifications.isLoading} error={recentNotifications.isError} retry={() => recentNotifications.refetch()} />
+      </section>
 
-    <section><SectionHeader title={t("Quick Management")} description={t("Open frequently used administration areas.")} /><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"><QuickLink icon={Users} title={t("Users")} description={t("Manage user accounts")} href="/user-manager" /><QuickLink icon={Tags} title={t("Categories")} description={t("Organize financial categories")} href="/categories" /><QuickLink icon={Coins} title={t("Currencies")} description={t("Monitor currencies and rates")} href="/currencies" /><QuickLink icon={Bell} title={t("Notifications")} description={t("Monitor and send notifications")} href="/notifications" /><QuickLink icon={MessageSquareText} title={t("Reviews")} description={t("Review user feedback")} href="/feedback" /><QuickLink icon={BellRing} title={t("Alert Rules")} description={t("Inspect notification rules")} href="/alert" /></div></section>
-  </div>;
+      <section>
+        <SectionHeader title={t("Quick Management")} description={t("Open frequently used administration areas.")} />
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <QuickLink icon={Users} title={t("Users")} description={t("Manage user accounts")} href="/user-manager" />
+          <QuickLink icon={Tags} title={t("Categories")} description={t("Organize financial categories")} href="/categories" />
+          <QuickLink icon={Coins} title={t("Currencies")} description={t("Monitor currencies and rates")} href="/currencies" />
+          <QuickLink icon={Bell} title={t("Notifications")} description={t("Monitor and send notifications")} href="/notifications" />
+          <QuickLink icon={MessageSquareText} title={t("Reviews")} description={t("Review user feedback")} href="/feedback" />
+          <QuickLink icon={BellRing} title={t("Alert Rules")} description={t("Inspect notification rules")} href="/alert" />
+        </div>
+      </section>
+    </div>
+  );
 }
 
 const KPI_TONES = {
@@ -78,33 +107,430 @@ const KPI_TONES = {
   amber: { card: "border-amber-200/80 bg-amber-50/50 hover:border-amber-300 dark:border-amber-900/70 dark:bg-amber-950/20", icon: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300", value: "text-amber-800 dark:text-amber-200", arrow: "hover:bg-amber-100 hover:text-amber-700 dark:hover:bg-amber-950 dark:hover:text-amber-300" },
   teal: { card: "border-teal-200/80 bg-teal-50/45 hover:border-teal-300 dark:border-teal-900/70 dark:bg-teal-950/20", icon: "bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300", value: "text-teal-800 dark:text-teal-200", arrow: "hover:bg-teal-100 hover:text-teal-700 dark:hover:bg-teal-950 dark:hover:text-teal-300" },
 } as const;
-function KpiCard({ tone, icon: Icon, title, value, loading, error, description, href }: { tone: keyof typeof KPI_TONES; icon: typeof Users; title: string; value?: number; loading: boolean; error: boolean; description: string; href: string }) { const styles = KPI_TONES[tone]; return <Card className={`group rounded-2xl shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${styles.card}`}><CardContent className="p-5 sm:p-6">{loading ? <Skeleton className="h-24 w-full" /> : <><div className="flex items-start justify-between"><span className={`grid size-12 place-items-center rounded-xl ${styles.icon}`}><Icon className="size-6" /></span><Link href={href} aria-label={title} className={`rounded-lg p-2 text-muted-foreground transition ${styles.arrow}`}><ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" /></Link></div><p className="mt-4 text-lg font-semibold text-foreground">{title}</p>{error ? <p className="mt-1 text-lg text-destructive">Unavailable</p> : <p className={`mt-1 text-4xl font-semibold tracking-tight ${styles.value}`}>{value?.toLocaleString() ?? "—"}</p>}<p className="mt-2 text-base text-muted-foreground">{description}</p></>}</CardContent></Card>; }
-function SectionHeader({ title, description }: { title: string; description: string }) { return <div className="mb-4"><h2 className="text-xl font-semibold">{title}</h2><p className="mt-1 text-base text-muted-foreground">{description}</p></div>; }
+
+function KpiCard({ tone, icon: Icon, title, value, loading, error, description, href }: { tone: keyof typeof KPI_TONES; icon: typeof Users; title: string; value?: number; loading: boolean; error: boolean; description: string; href: string }) {
+  const { t } = useAdminI18n();
+  const styles = KPI_TONES[tone];
+  return (
+    <Card className={`group rounded-2xl shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${styles.card}`}>
+      <CardContent className="p-5 sm:p-6">
+        {loading ? (
+          <Skeleton className="h-24 w-full" />
+        ) : (
+          <>
+            <div className="flex items-start justify-between">
+              <span className={`grid size-12 place-items-center rounded-xl ${styles.icon}`}>
+                <Icon className="size-6" />
+              </span>
+              <Link href={href} aria-label={title} className={`rounded-lg p-2 text-muted-foreground transition ${styles.arrow}`}>
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+            <p className="mt-4 text-sm font-semibold text-foreground md:text-base">{title}</p>
+            {error ? (
+              <p className="mt-1 text-sm text-destructive">{t("Unavailable")}</p>
+            ) : (
+              <p className={`mt-1 text-3xl font-bold tracking-tight card-number ${styles.value}`}>
+                {value?.toLocaleString() ?? "—"}
+              </p>
+            )}
+            <p className="mt-2 text-sm text-muted-foreground font-normal">{description}</p>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function SectionHeader({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="mb-4">
+      <h2 className="text-xl font-semibold text-foreground md:text-2xl">{title}</h2>
+      <p className="mt-1 text-sm text-muted-foreground font-normal">{description}</p>
+    </div>
+  );
+}
 
 type UserStats = ReturnType<typeof useGetUserStatisticsQuery>["data"];
+
 function UserOverview({ stats, loading, error, tab, setTab, retry }: { stats: UserStats; loading: boolean; error: boolean; tab: string; setTab: (value: string) => void; retry: () => void }) {
-  const genderRows = stats ? [{ name: "Male", value: stats.gender.male }, { name: "Female", value: stats.gender.female }, { name: "Other", value: stats.gender.other }, { name: "Prefer Not To Say", value: stats.gender.preferNotToSay }, { name: "Unspecified", value: stats.gender.unspecified }] : [];
-  const ageRows = stats ? [{ name: "Under 15", value: stats.ageGroups.under15 }, { name: "15–24", value: stats.ageGroups.age15To24 }, { name: "25–44", value: stats.ageGroups.age25To44 }, { name: "45–59", value: stats.ageGroups.age45To59 }, { name: "60–74", value: stats.ageGroups.age60To74 }, { name: "75+", value: stats.ageGroups.age75Plus }, { name: "Unknown", value: stats.ageGroups.unknown }] : [];
-  return <Card className="rounded-2xl"><CardHeader><CardTitle className="text-xl">User Overview</CardTitle><CardDescription>Understand the current iStash user distribution.</CardDescription></CardHeader><CardContent>{loading ? <Skeleton className="h-72" /> : error ? <WidgetError message="Unable to load user statistics." retry={retry} /> : <Tabs value={tab} onValueChange={setTab}><TabsList><TabsTrigger value="gender">Gender</TabsTrigger><TabsTrigger value="age">Age</TabsTrigger></TabsList><TabsContent value="gender"><div className="grid min-h-64 items-center gap-4 sm:grid-cols-[minmax(220px,1fr)_minmax(180px,1fr)]"><div className="h-64"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={genderRows} dataKey="value" nameKey="name" innerRadius={58} outerRadius={90} paddingAngle={2} strokeWidth={0}>{genderRows.map((row, index) => <Cell key={row.name} fill={COLORS[index]} />)}</Pie><ChartTooltip contentStyle={{ borderRadius: 12, fontSize: 14 }} /></PieChart></ResponsiveContainer></div><div className="space-y-2">{genderRows.map((row, index) => <div key={row.name} className="flex justify-between gap-4 text-sm"><span className="flex items-center gap-2"><span className="size-2.5 rounded-full" style={{ backgroundColor: COLORS[index] }} />{row.name}</span><strong>{row.value.toLocaleString()}</strong></div>)}</div></div></TabsContent><TabsContent value="age"><div className="h-64"><ResponsiveContainer width="100%" height="100%"><BarChart data={ageRows} margin={{ left: -18, right: 8 }}><CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border" /><XAxis dataKey="name" tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} /><YAxis tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} /><ChartTooltip contentStyle={{ borderRadius: 12, fontSize: 14 }} /><Bar dataKey="value" radius={[6, 6, 0, 0]}>{ageRows.map((row, index) => <Cell key={row.name} fill={AGE_COLORS[index % AGE_COLORS.length]} />)}</Bar></BarChart></ResponsiveContainer></div></TabsContent><p className="mt-4 text-base text-muted-foreground">Total Users: <span className="font-semibold text-foreground">{stats?.totalUsers.toLocaleString()}</span></p></Tabs>}</CardContent></Card>;
+  const { t } = useAdminI18n();
+  const genderRows = stats
+    ? [
+        { name: "Male", label: t("Male"), value: stats.gender.male },
+        { name: "Female", label: t("Female"), value: stats.gender.female },
+        { name: "Other", label: t("Other"), value: stats.gender.other },
+        { name: "Prefer Not To Say", label: t("Prefer Not To Say"), value: stats.gender.preferNotToSay },
+        { name: "Unspecified", label: t("Unspecified"), value: stats.gender.unspecified },
+      ]
+    : [];
+
+  const ageRows = stats
+    ? [
+        { name: "Under 15", label: t("Under 15"), value: stats.ageGroups.under15 },
+        { name: "15–24", label: "15–24", value: stats.ageGroups.age15To24 },
+        { name: "25–44", label: "25–44", value: stats.ageGroups.age25To44 },
+        { name: "45–59", label: "45–59", value: stats.ageGroups.age45To59 },
+        { name: "60–74", label: "60–74", value: stats.ageGroups.age60To74 },
+        { name: "75+", label: "75+", value: stats.ageGroups.age75Plus },
+        { name: "Unknown", label: t("Unknown"), value: stats.ageGroups.unknown },
+      ]
+    : [];
+
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold md:text-xl">{t("User Overview")}</CardTitle>
+        <CardDescription>{t("Understand the current iStash user distribution.")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <Skeleton className="h-72" />
+        ) : error ? (
+          <WidgetError message={t("Unable to load user statistics.")} retry={retry} />
+        ) : (
+          <Tabs value={tab} onValueChange={setTab}>
+            <TabsList>
+              <TabsTrigger value="gender">{t("Gender")}</TabsTrigger>
+              <TabsTrigger value="age">{t("Age")}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="gender">
+              <div className="grid min-h-64 items-center gap-4 sm:grid-cols-[minmax(220px,1fr)_minmax(180px,1fr)]">
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={genderRows} dataKey="value" nameKey="label" innerRadius={58} outerRadius={90} paddingAngle={2} strokeWidth={0}>
+                        {genderRows.map((row, index) => (
+                          <Cell key={row.name} fill={COLORS[index]} />
+                        ))}
+                      </Pie>
+                      <ChartTooltip contentStyle={{ borderRadius: 12, fontSize: 13 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="space-y-2">
+                  {genderRows.map((row, index) => (
+                    <div key={row.name} className="flex justify-between gap-4 text-sm">
+                      <span className="flex items-center gap-2">
+                        <span className="size-2.5 rounded-full" style={{ backgroundColor: COLORS[index] }} />
+                        {row.label}
+                      </span>
+                      <strong>{row.value.toLocaleString()}</strong>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="age">
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={ageRows} margin={{ left: -18, right: 8 }}>
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis dataKey="label" tick={{ fontSize: 13, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 13, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
+                    <ChartTooltip contentStyle={{ borderRadius: 12, fontSize: 13 }} />
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                      {ageRows.map((row, index) => (
+                        <Cell key={row.name} fill={AGE_COLORS[index % AGE_COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </TabsContent>
+            <p className="mt-4 text-sm text-muted-foreground font-normal">
+              {t("Total Users")}: <span className="font-semibold text-foreground">{stats?.totalUsers.toLocaleString()}</span>
+            </p>
+          </Tabs>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 
 type Provider = ReturnType<typeof useGetProviderStatusQuery>["data"];
-function SystemHealth({ data, loading, error, retry }: { data: Provider; loading: boolean; error: boolean; retry: () => void }) { const healthy = data?.status === "HEALTHY" && !data?.stale && !data?.lastError; return <Card className="rounded-2xl"><CardHeader><CardTitle className="flex items-center gap-2 text-xl"><Activity className="size-5" />System Health</CardTitle><CardDescription>Currency provider availability and synchronization.</CardDescription></CardHeader><CardContent>{loading ? <Skeleton className="h-72" /> : error || !data ? <WidgetError message="Unable to load provider status." retry={retry} /> : <div className="space-y-4"><Badge variant="outline" className={healthy ? "gap-1 border-emerald-200 bg-emerald-50 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300" : "gap-1 border-amber-200 bg-amber-50 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300"}>{healthy ? <CircleCheck className="size-4" /> : <TriangleAlert className="size-4" />}{healthy ? "Healthy" : "Provider Issue"}</Badge>{data.lastError && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-base text-amber-900 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-200">{data.lastError}</div>}<div className="divide-y"><Info label="Provider" value={data.provider || "—"} /><Info label="Last Successful Sync" value={exact(data.lastSuccessfulSyncAt)} /><Info label="Currencies Received" value={data.currenciesReceived?.toLocaleString() ?? "—"} /><Info label="Rates Updated" value={data.ratesUpdated?.toLocaleString() ?? "—"} /><Info label="Data Status" value={data.stale ? "Data may be outdated" : "Up to date"} /></div><Button variant="outline"><Link href="/currencies" className="inline-flex items-center">View Currencies <ArrowRight className="ml-2 size-4" /></Link></Button></div>}</CardContent></Card>; }
-function Info({ label, value }: { label: string; value: string }) { return <div className="flex justify-between gap-4 py-3"><span className="text-sm text-muted-foreground">{label}</span><span className="text-right text-base font-medium">{value}</span></div>; }
+
+function SystemHealth({ data, loading, error, retry }: { data: Provider; loading: boolean; error: boolean; retry: () => void }) {
+  const { t } = useAdminI18n();
+  const healthy = data?.status === "HEALTHY" && !data?.stale && !data?.lastError;
+
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold md:text-xl">
+          <Activity className="size-5" />
+          {t("System Health")}
+        </CardTitle>
+        <CardDescription>{t("Currency provider availability and synchronization.")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <Skeleton className="h-72" />
+        ) : error || !data ? (
+          <WidgetError message={t("Unable to load provider status.")} retry={retry} />
+        ) : (
+          <div className="space-y-4">
+            <Badge
+              variant="outline"
+              className={
+                healthy
+                  ? "gap-1 border-emerald-200 bg-emerald-50 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300"
+                  : "gap-1 border-amber-200 bg-amber-50 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300"
+              }
+            >
+              {healthy ? <CircleCheck className="size-3.5" /> : <TriangleAlert className="size-3.5" />}
+              {healthy ? t("Healthy") : t("Provider Issue")}
+            </Badge>
+            {data.lastError && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-200">
+                {data.lastError}
+              </div>
+            )}
+            <div className="divide-y">
+              <Info label={t("Provider")} value={data.provider || "—"} />
+              <Info label={t("Last Successful Sync")} value={exact(data.lastSuccessfulSyncAt)} />
+              <Info label={t("Currencies Received")} value={data.currenciesReceived?.toLocaleString() ?? "—"} />
+              <Info label={t("Rates Updated")} value={data.ratesUpdated?.toLocaleString() ?? "—"} />
+              <Info label={t("Data Status")} value={data.stale ? t("Data may be outdated") : t("Up to date")} />
+            </div>
+            <Link
+              href="/currencies"
+              className="inline-flex h-9 items-center justify-center rounded-xl border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              {t("View Currencies")} <ArrowRight className="ml-2 size-4" />
+            </Link>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function Info({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-4 py-3">
+      <span className="text-sm text-muted-foreground font-normal">{label}</span>
+      <span className="text-right text-sm font-medium text-foreground">{value}</span>
+    </div>
+  );
+}
+
 const ATTENTION_TONES = {
   amber: { card: "border-amber-200/80 bg-amber-50/45 dark:border-amber-900/60 dark:bg-amber-950/15", icon: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300", value: "text-amber-800 dark:text-amber-200", link: "text-amber-800 hover:bg-amber-100 dark:text-amber-200 dark:hover:bg-amber-950" },
   rose: { card: "border-rose-200/80 bg-rose-50/40 dark:border-rose-900/60 dark:bg-rose-950/15", icon: "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300", value: "text-rose-800 dark:text-rose-200", link: "text-rose-800 hover:bg-rose-100 dark:text-rose-200 dark:hover:bg-rose-950" },
   emerald: { card: "border-emerald-200/80 bg-emerald-50/40 dark:border-emerald-900/60 dark:bg-emerald-950/15", icon: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300", value: "text-emerald-800 dark:text-emerald-200", link: "text-emerald-800 hover:bg-emerald-100 dark:text-emerald-200 dark:hover:bg-emerald-950" },
 } as const;
-function AttentionCard({ tone, icon: Icon, title, value, loading, description, href }: { tone: keyof typeof ATTENTION_TONES; icon: typeof Users; title: string; value?: number | string; loading: boolean; description: string; href: string }) { const styles = ATTENTION_TONES[tone]; return <Card className={`group overflow-hidden rounded-2xl shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${styles.card}`}><CardContent className="p-5 sm:p-6">{loading ? <Skeleton className="h-32" /> : <><div className="flex items-start justify-between gap-4"><span className={`grid size-12 shrink-0 place-items-center rounded-2xl ${styles.icon}`}><Icon className="size-6" /></span><Link href={href} aria-label={`View ${title}`} className={`grid size-10 place-items-center rounded-xl transition ${styles.link}`}><ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" /></Link></div><p className="mt-5 text-lg font-semibold text-foreground">{title}</p><p className={`mt-2 text-3xl font-semibold tracking-tight ${styles.value}`}>{typeof value === "number" ? value.toLocaleString() : value ?? "—"}</p><div className="mt-3 flex items-center gap-2 text-base text-muted-foreground"><span className={`size-2 rounded-full ${tone === "emerald" ? "bg-emerald-500" : tone === "rose" ? "bg-rose-500" : "bg-amber-500"}`} />{description}</div></>}</CardContent></Card>; }
 
-function RecentReviews({ data, users, loading, error, retry }: { data: Array<{ id: string; reviewType: ReviewType; reviewStatus: ReviewStatus; title: string; userId: string; createdAt: string }>; users: Map<string, AdminUser>; loading: boolean; error: boolean; retry: () => void }) { return <ActivityCard icon={MessageSquareText} title="Recent Reviews" description="Latest feedback submitted by users." href="/feedback" footer="View All Reviews"><ActivityContent loading={loading} error={error} retry={retry} empty={data.length === 0} emptyTitle="No reviews yet" emptyDescription="User feedback will appear here when submitted.">{data.map((review) => <ActivityRow key={review.id} href="/feedback" icon={MessageSquareText} iconClass="bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300" badges={<><Badge variant="outline" className="border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-900 dark:bg-violet-950/60 dark:text-violet-300">{REVIEW_TYPES[review.reviewType]}</Badge><Badge variant="secondary">{REVIEW_STATUS[review.reviewStatus]}</Badge></>} title={review.title} user={name(users.get(review.userId))} time={relative(review.createdAt)} />)}</ActivityContent></ActivityCard>; }
-function RecentNotifications({ data, users, loading, error, retry }: { data: AdminNotificationItem[]; users: Map<string, AdminUser>; loading: boolean; error: boolean; retry: () => void }) { return <ActivityCard icon={BellRing} title="Recent Notifications" description="Latest system messages sent to users." href="/notifications" footer="View All Notifications"><ActivityContent loading={loading} error={error} retry={retry} empty={data.length === 0} emptyTitle="No notifications yet" emptyDescription="System notifications will appear here.">{data.map((item) => <ActivityRow key={item.id} href="/notifications" icon={Bell} iconClass={item.read ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300" : "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"} badges={<><Badge variant="outline" className="border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/60 dark:text-blue-300">{NOTIFICATION_TYPES[item.notificationType] || item.notificationType.replaceAll("_", " ")}</Badge><Badge variant={item.read ? "secondary" : "outline"} className={item.read ? "" : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300"}>{item.read ? "Read" : "Unread"}</Badge></>} title={item.title} user={name(users.get(item.userId))} time={relative(item.createdAt)} />)}</ActivityContent></ActivityCard>; }
-function ActivityCard({ icon: Icon, title, description, href, footer, children }: { icon: typeof Bell; title: string; description: string; href: string; footer: string; children: React.ReactNode }) { return <Card className="overflow-hidden rounded-2xl shadow-sm"><CardHeader className="border-b border-border/60 bg-muted/20"><div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-xl bg-[#003377]/10 text-[#003377] dark:bg-[#FEDB55]/15 dark:text-[#FEDB55]"><Icon className="size-5" /></span><div><CardTitle className="text-xl">{title}</CardTitle><CardDescription>{description}</CardDescription></div></div></CardHeader><CardContent className="p-4 sm:p-5">{children}<Link href={href} className="mt-4 flex h-10 w-full items-center justify-between rounded-xl border border-border/70 bg-background px-4 text-base font-semibold text-[#003377] transition-colors hover:bg-muted dark:text-[#FEDB55]">{footer}<ArrowRight className="size-4" /></Link></CardContent></Card>; }
-function ActivityContent({ loading, error, retry, empty, emptyTitle, emptyDescription, children }: { loading: boolean; error: boolean; retry: () => void; empty: boolean; emptyTitle: string; emptyDescription: string; children: React.ReactNode }) { if (loading) return <ListSkeleton />; if (error) return <WidgetError message="Unable to load recent activity." retry={retry} />; if (empty) return <Empty message={emptyTitle} description={emptyDescription} />; return <div className="space-y-3">{children}</div>; }
-function ActivityRow({ href, icon: Icon, iconClass, badges, title, user, time }: { href: string; icon: typeof Bell; iconClass: string; badges: React.ReactNode; title: string; user: string; time: string }) { return <Link href={href} className="group flex gap-3 rounded-2xl border border-border/60 bg-muted/20 p-4 transition-all hover:-translate-y-0.5 hover:border-[#FEDB55]/70 hover:bg-background hover:shadow-sm"><span className={`grid size-11 shrink-0 place-items-center rounded-xl ${iconClass}`}><Icon className="size-5" /></span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2">{badges}</div><p className="mt-2 truncate text-base font-semibold text-foreground">{title}</p><div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-base text-muted-foreground"><span className="font-medium text-foreground/80">{user}</span><span className="inline-flex items-center gap-1.5"><Clock3 className="size-4" />{time}</span></div></div><ChevronRight className="mt-2 size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" /></Link>; }
-const QUICK_TONES = ["bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300", "bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300", "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300", "bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300", "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300", "bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"];
-function QuickLink({ icon: Icon, title, description, href }: { icon: typeof Users; title: string; description: string; href: string }) { const index = ["/user-manager", "/categories", "/currencies", "/notifications", "/feedback", "/alert"].indexOf(href); return <Link href={href} className="group"><Card className="h-full overflow-hidden rounded-2xl border-border/70 shadow-sm transition-all hover:-translate-y-1 hover:border-[#FEDB55] hover:shadow-md"><CardContent className="flex h-full items-center gap-4 p-5 sm:p-6"><span className={`grid size-12 shrink-0 place-items-center rounded-2xl ${QUICK_TONES[Math.max(0, index)]}`}><Icon className="size-6" /></span><div className="min-w-0 flex-1"><p className="text-lg font-semibold text-foreground">{title}</p><p className="mt-1 text-base text-muted-foreground">{description}</p></div><span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground transition group-hover:bg-[#FEDB55] group-hover:text-[#003377]"><ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" /></span></CardContent></Card></Link>; }
-function WidgetError({ message, retry }: { message: string; retry: () => void }) { return <div className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-5 text-center"><TriangleAlert className="size-6 text-destructive" /><p className="text-base">{message}</p><Button size="sm" variant="outline" onClick={retry}><RefreshCw className="mr-2 size-4" />Retry</Button></div>; }
-function Empty({ message, description }: { message: string; description: string }) { return <div className="py-10 text-center"><p className="text-lg font-semibold">{message}</p><p className="mt-1 text-base text-muted-foreground">{description}</p></div>; }
-function ListSkeleton() { return <div className="space-y-3">{Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-20 w-full" />)}</div>; }
+function AttentionCard({ tone, icon: Icon, title, value, loading, description, href }: { tone: keyof typeof ATTENTION_TONES; icon: typeof Users; title: string; value?: number | string; loading: boolean; description: string; href: string }) {
+  const styles = ATTENTION_TONES[tone];
+  return (
+    <Card className={`group overflow-hidden rounded-2xl shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${styles.card}`}>
+      <CardContent className="p-5 sm:p-6">
+        {loading ? (
+          <Skeleton className="h-32" />
+        ) : (
+          <>
+            <div className="flex items-start justify-between gap-4">
+              <span className={`grid size-12 shrink-0 place-items-center rounded-2xl ${styles.icon}`}>
+                <Icon className="size-6" />
+              </span>
+              <Link href={href} aria-label={`View ${title}`} className={`grid size-10 place-items-center rounded-xl transition ${styles.link}`}>
+                <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+            <p className="mt-5 text-sm font-semibold text-foreground md:text-base">{title}</p>
+            <p className={`mt-2 text-3xl font-bold tracking-tight card-number ${styles.value}`}>
+              {typeof value === "number" ? value.toLocaleString() : value ?? "—"}
+            </p>
+            <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground font-normal">
+              <span className={`size-2 rounded-full ${tone === "emerald" ? "bg-emerald-500" : tone === "rose" ? "bg-rose-500" : "bg-amber-500"}`} />
+              {description}
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function RecentReviews({ data, users, loading, error, retry }: { data: Array<{ id: string; reviewType: ReviewType; reviewStatus: ReviewStatus; title: string; userId: string; createdAt: string }>; users: Map<string, AdminUser>; loading: boolean; error: boolean; retry: () => void }) {
+  const { t } = useAdminI18n();
+  return (
+    <ActivityCard icon={MessageSquareText} title={t("Recent Reviews")} description={t("Latest feedback submitted by users.")} href="/feedback" footer={t("View All Reviews")}>
+      <ActivityContent loading={loading} error={error} retry={retry} empty={data.length === 0} emptyTitle={t("No reviews yet")} emptyDescription={t("User feedback will appear here when submitted.")}>
+        {data.map((review) => (
+          <ActivityRow
+            key={review.id}
+            href="/feedback"
+            icon={MessageSquareText}
+            iconClass="bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300"
+            badges={
+              <>
+                <Badge variant="outline" className="border-violet-200 bg-violet-50 text-sm text-violet-700 dark:border-violet-900 dark:bg-violet-950/60 dark:text-violet-300">
+                  {t(REVIEW_TYPES[review.reviewType] || review.reviewType)}
+                </Badge>
+                <Badge variant="secondary" className="text-sm">
+                  {t(REVIEW_STATUS[review.reviewStatus] || review.reviewStatus)}
+                </Badge>
+              </>
+            }
+            title={review.title}
+            user={name(users.get(review.userId))}
+            time={relative(review.createdAt)}
+          />
+        ))}
+      </ActivityContent>
+    </ActivityCard>
+  );
+}
+
+function RecentNotifications({ data, users, loading, error, retry }: { data: AdminNotificationItem[]; users: Map<string, AdminUser>; loading: boolean; error: boolean; retry: () => void }) {
+  const { t } = useAdminI18n();
+  return (
+    <ActivityCard icon={BellRing} title={t("Recent Notifications")} description={t("Latest system messages sent to users.")} href="/notifications" footer={t("View All Notifications")}>
+      <ActivityContent loading={loading} error={error} retry={retry} empty={data.length === 0} emptyTitle={t("No notifications yet")} emptyDescription={t("System notifications will appear here.")}>
+        {data.map((item) => (
+          <ActivityRow
+            key={item.id}
+            href="/notifications"
+            icon={Bell}
+            iconClass={item.read ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300" : "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"}
+            badges={
+              <>
+                <Badge variant="outline" className="border-blue-200 bg-blue-50 text-sm text-blue-700 dark:border-blue-900 dark:bg-blue-950/60 dark:text-blue-300">
+                  {t(NOTIFICATION_TYPES[item.notificationType] || item.notificationType.replaceAll("_", " "))}
+                </Badge>
+                <Badge variant={item.read ? "secondary" : "outline"} className={item.read ? "text-sm" : "border-amber-200 bg-amber-50 text-sm text-amber-700 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300"}>
+                  {t(item.read ? "Read" : "Unread")}
+                </Badge>
+              </>
+            }
+            title={item.title}
+            user={name(users.get(item.userId))}
+            time={relative(item.createdAt)}
+          />
+        ))}
+      </ActivityContent>
+    </ActivityCard>
+  );
+}
+
+function ActivityCard({ icon: Icon, title, description, href, footer, children }: { icon: typeof Bell; title: string; description: string; href: string; footer: string; children: React.ReactNode }) {
+  return (
+    <Card className="overflow-hidden rounded-2xl shadow-sm">
+      <CardHeader className="border-b border-border/60 bg-muted/20">
+        <div className="flex items-center gap-3">
+          <span className="grid size-11 place-items-center rounded-xl bg-[#003377]/10 text-[#003377] dark:bg-[#FEDB55]/15 dark:text-[#FEDB55]">
+            <Icon className="size-5" />
+          </span>
+          <div>
+            <CardTitle className="text-lg font-semibold md:text-xl">{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="p-4 sm:p-5">
+        {children}
+        <Link href={href} className="mt-4 flex h-11 w-full items-center justify-between rounded-xl border border-border/70 bg-background px-4 text-sm font-semibold text-[#003377] transition-colors hover:bg-muted dark:text-[#FEDB55]">
+          {footer}
+          <ArrowRight className="size-4" />
+        </Link>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ActivityContent({ loading, error, retry, empty, emptyTitle, emptyDescription, children }: { loading: boolean; error: boolean; retry: () => void; empty: boolean; emptyTitle: string; emptyDescription: string; children: React.ReactNode }) {
+  const { t } = useAdminI18n();
+  if (loading) return <ListSkeleton />;
+  if (error) return <WidgetError message={t("Unable to load recent activity.")} retry={retry} />;
+  if (empty) return <Empty message={emptyTitle} description={emptyDescription} />;
+  return <div className="space-y-3">{children}</div>;
+}
+
+function ActivityRow({ href, icon: Icon, iconClass, badges, title, user, time }: { href: string; icon: typeof Bell; iconClass: string; badges: React.ReactNode; title: string; user: string; time: string }) {
+  return (
+    <Link href={href} className="group flex gap-3 rounded-2xl border border-border/60 bg-muted/20 p-4 transition-all hover:-translate-y-0.5 hover:border-[#FEDB55]/70 hover:bg-background hover:shadow-sm">
+      <span className={`grid size-11 shrink-0 place-items-center rounded-xl ${iconClass}`}>
+        <Icon className="size-5" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">{badges}</div>
+        <p className="mt-2 truncate text-sm font-semibold text-foreground">{title}</p>
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground font-normal">
+          <span className="font-medium text-foreground/80">{user}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <Clock3 className="size-3.5" />
+            {time}
+          </span>
+        </div>
+      </div>
+      <ChevronRight className="mt-2 size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
+    </Link>
+  );
+}
+
+const QUICK_TONES = [
+  "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
+  "bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300",
+  "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
+  "bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300",
+  "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300",
+  "bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300",
+];
+
+function QuickLink({ icon: Icon, title, description, href }: { icon: typeof Users; title: string; description: string; href: string }) {
+  const { t } = useAdminI18n();
+  const index = ["/user-manager", "/categories", "/currencies", "/notifications", "/feedback", "/alert"].indexOf(href);
+  return (
+    <Link href={href} className="group">
+      <Card className="h-full overflow-hidden rounded-2xl border-border/70 shadow-sm transition-all hover:-translate-y-1 hover:border-[#FEDB55] hover:shadow-md">
+        <CardContent className="flex h-full items-center gap-4 p-5 sm:p-6">
+          <span className={`grid size-12 shrink-0 place-items-center rounded-2xl ${QUICK_TONES[Math.max(0, index)]}`}>
+            <Icon className="size-6" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-foreground md:text-base">{t(title)}</p>
+            <p className="mt-1 text-sm text-muted-foreground font-normal">{t(description)}</p>
+          </div>
+          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground transition group-hover:bg-[#FEDB55] group-hover:text-[#003377]">
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+          </span>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
+function WidgetError({ message, retry }: { message: string; retry: () => void }) {
+  const { t } = useAdminI18n();
+  return (
+    <div className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-5 text-center">
+      <TriangleAlert className="size-6 text-destructive" />
+      <p className="text-sm font-medium">{message}</p>
+      <Button size="sm" variant="outline" onClick={retry} className="text-sm font-medium">
+        <RefreshCw className="mr-2 size-3.5" />
+        {t("Retry")}
+      </Button>
+    </div>
+  );
+}
+
+function Empty({ message, description }: { message: string; description: string }) {
+  return (
+    <div className="py-10 text-center">
+      <p className="text-base font-semibold">{message}</p>
+      <p className="mt-1 text-sm text-muted-foreground font-normal">{description}</p>
+    </div>
+  );
+}
+
+function ListSkeleton() {
+  return (
+    <div className="space-y-3">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <Skeleton key={index} className="h-20 w-full" />
+      ))}
+    </div>
+  );
+}

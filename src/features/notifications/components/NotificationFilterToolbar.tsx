@@ -15,6 +15,7 @@ import {
 } from "../types";
 import { notificationTypeLabel, referenceTypeLabel } from "../presentation";
 import NotificationUserSelector from "./NotificationUserSelector";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 export interface NotificationFilters {
   user: AdminUser | null;
@@ -41,6 +42,7 @@ export default function NotificationFilterToolbar({
   onChange: (filters: NotificationFilters) => void;
   onReset: () => void;
 }) {
+  const { t } = useAdminI18n();
   const dateRange: DateRange = {
     from: filters.createdFrom ? new Date(filters.createdFrom) : undefined,
     to: filters.createdTo ? new Date(filters.createdTo) : undefined,
@@ -54,11 +56,11 @@ export default function NotificationFilterToolbar({
     !!filters.createdTo;
 
   return (
-    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1.35fr)_repeat(3,minmax(150px,0.8fr))_minmax(210px,1fr)_auto]">
+    <div className="filter-card grid gap-3 text-base md:grid-cols-2 xl:grid-cols-[minmax(220px,1.35fr)_repeat(3,minmax(150px,0.8fr))_minmax(210px,1fr)_auto]">
       <NotificationUserSelector
         value={filters.user}
         onChange={(user) => onChange({ ...filters, user })}
-        placeholder="All recipients"
+        placeholder={t("All recipients")}
       />
 
       <Select
@@ -66,11 +68,11 @@ export default function NotificationFilterToolbar({
         onValueChange={(value) => onChange({ ...filters, notificationType: value as NotificationFilters["notificationType"] })}
       >
         <SelectTrigger className="h-11 rounded-xl text-base">
-          <SelectValue value={filters.notificationType === "ALL" ? "All types" : notificationTypeLabel(filters.notificationType)} />
+          <SelectValue value={filters.notificationType === "ALL" ? t("All types") : t(notificationTypeLabel(filters.notificationType))} />
         </SelectTrigger>
         <SelectContent value={filters.notificationType} onValueChange={(value) => onChange({ ...filters, notificationType: value as NotificationFilters["notificationType"] })}>
-          <SelectItem value="ALL">All types</SelectItem>
-          {ADMIN_NOTIFICATION_TYPES.map((type) => <SelectItem key={type} value={type}>{notificationTypeLabel(type)}</SelectItem>)}
+          <SelectItem value="ALL">{t("All types")}</SelectItem>
+          {ADMIN_NOTIFICATION_TYPES.map((type) => <SelectItem key={type} value={type}>{t(notificationTypeLabel(type))}</SelectItem>)}
         </SelectContent>
       </Select>
 
@@ -79,22 +81,22 @@ export default function NotificationFilterToolbar({
         onValueChange={(value) => onChange({ ...filters, referenceType: value as NotificationFilters["referenceType"] })}
       >
         <SelectTrigger className="h-11 rounded-xl text-base">
-          <SelectValue value={filters.referenceType === "ALL" ? "All references" : referenceTypeLabel(filters.referenceType)} />
+          <SelectValue value={filters.referenceType === "ALL" ? t("All references") : t(referenceTypeLabel(filters.referenceType))} />
         </SelectTrigger>
         <SelectContent value={filters.referenceType} onValueChange={(value) => onChange({ ...filters, referenceType: value as NotificationFilters["referenceType"] })}>
-          <SelectItem value="ALL">All references</SelectItem>
-          {ADMIN_REFERENCE_TYPES.map((type) => <SelectItem key={type} value={type}>{referenceTypeLabel(type)}</SelectItem>)}
+          <SelectItem value="ALL">{t("All references")}</SelectItem>
+          {ADMIN_REFERENCE_TYPES.map((type) => <SelectItem key={type} value={type}>{t(referenceTypeLabel(type))}</SelectItem>)}
         </SelectContent>
       </Select>
 
       <Select value={filters.read} onValueChange={(value) => onChange({ ...filters, read: value as NotificationFilters["read"] })}>
         <SelectTrigger className="h-11 rounded-xl text-base">
-          <SelectValue value={{ ALL: "All read statuses", READ: "Read", UNREAD: "Unread" }[filters.read]} />
+          <SelectValue value={{ ALL: t("All read statuses"), READ: t("Read"), UNREAD: t("Unread") }[filters.read]} />
         </SelectTrigger>
         <SelectContent value={filters.read} onValueChange={(value) => onChange({ ...filters, read: value as NotificationFilters["read"] })}>
-          <SelectItem value="ALL">All read statuses</SelectItem>
-          <SelectItem value="READ">Read</SelectItem>
-          <SelectItem value="UNREAD">Unread</SelectItem>
+          <SelectItem value="ALL">{t("All read statuses")}</SelectItem>
+          <SelectItem value="READ">{t("Read")}</SelectItem>
+          <SelectItem value="UNREAD">{t("Unread")}</SelectItem>
         </SelectContent>
       </Select>
 
@@ -106,11 +108,11 @@ export default function NotificationFilterToolbar({
               ? dateRange.to
                 ? `${format(dateRange.from, "MMM d")} – ${format(dateRange.to, "MMM d, yyyy")}`
                 : format(dateRange.from, "MMM d, yyyy")
-              : "Created date"}
+              : t("Created Date")}
           </span>
           {(dateRange.from || dateRange.to) && (
             <X
-              className="size-4 shrink-0 text-muted-foreground"
+              className="size-4 shrink-0 text-muted-foreground hover:text-foreground"
               onClick={(event) => {
                 event.stopPropagation();
                 onChange({ ...filters, createdFrom: undefined, createdTo: undefined });
@@ -134,9 +136,9 @@ export default function NotificationFilterToolbar({
         </PopoverContent>
       </Popover>
 
-      <Button type="button" variant="outline" className="h-11 rounded-xl" disabled={!hasFilters} onClick={onReset}>
+      <Button type="button" variant="outline" className="h-11 rounded-xl text-base font-medium" disabled={!hasFilters} onClick={onReset}>
         <RotateCcw className="mr-2 size-4" />
-        Reset
+        {t("Reset")}
       </Button>
     </div>
   );

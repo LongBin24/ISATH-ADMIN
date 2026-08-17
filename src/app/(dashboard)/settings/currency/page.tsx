@@ -20,10 +20,10 @@ export default function CurrencySettingsPage() {
   return (
     <div className="space-y-6 font-google-sans max-w-4xl">
       <div>
-        <h1 className="text-2xl font-extrabold text-[#003377] dark:text-white">
+        <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
           ការកំណត់រូបិយប័ណ្ណ
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-sm text-muted-foreground font-normal mt-1">
           កំណត់រូបិយប័ណ្ណចំបងសម្រាប់ការបង្ហាញរបាយការណ៍ និងការគណនាហិរញ្ញវត្ថុ
         </p>
       </div>

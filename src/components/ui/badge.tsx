@@ -22,7 +22,7 @@ function Badge({ className, variant = "default", children, title, ...props }: Ba
       data-slot="badge"
       title={title ?? (React.Children.toArray(children).filter((child) => typeof child === "string" || typeof child === "number").join(" ") || undefined)}
       className={cn(
-        "inline-flex min-w-0 items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        "inline-flex min-w-0 items-center whitespace-nowrap rounded-full border px-3 py-1 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
         variants[variant],
         className
       )}

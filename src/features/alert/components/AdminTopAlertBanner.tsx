@@ -4,14 +4,15 @@ import React, { useState, useMemo } from "react";
 import { AlertTriangle, BellRing, X, ArrowRight, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useGetAlertRulesQuery } from "@/features/alert/hooks";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 export function AdminTopAlertBanner() {
+  const { t } = useAdminI18n();
   const [dismissedRuleIds, setDismissedRuleIds] = useState<string[]>([]);
   const { data: alertRules = [] } = useGetAlertRulesQuery(undefined, {
-    pollingInterval: 15000, // Poll every 15 seconds for real-time alert updates
+    pollingInterval: 15000,
   });
 
-  // Find the highest priority active alert rule that hasn't been dismissed
   const activeAlert = useMemo(() => {
     if (!alertRules || alertRules.length === 0) return null;
 
@@ -21,7 +22,6 @@ export function AdminTopAlertBanner() {
 
     if (undismissed.length === 0) return null;
 
-    // Sort by severity priority: CRITICAL > WARNING > INFO
     const critical = undismissed.find((r) => r.severity === "CRITICAL");
     if (critical) return critical;
 
@@ -66,11 +66,10 @@ export function AdminTopAlertBanner() {
 
           <div className="truncate">
             <span className="font-bold mr-2">
-              [{activeAlert.severity}] {activeAlert.ruleName}:
+              [{t(activeAlert.severity)}] {activeAlert.ruleName}:
             </span>
             <span className="opacity-95">
-              {activeAlert.ruleConfiguration?.message ||
-                "មានទិន្នន័យការជូនដំណឹងថ្មីសម្រាប់អ្នកគ្រប់គ្រង (New alert data available for admin)"}
+              {activeAlert.ruleConfiguration?.message || t("New alert data available for administrator.")}
             </span>
           </div>
         </div>
@@ -86,7 +85,7 @@ export function AdminTopAlertBanner() {
                   : "bg-[#FFC83D] text-[#003377] hover:bg-amber-300"
             }`}
           >
-            <span>មើលការជូនដំណឹង</span>
+            <span>{t("View Alerts")}</span>
             <ArrowRight className="h-3 w-3" />
           </Link>
 
@@ -94,7 +93,7 @@ export function AdminTopAlertBanner() {
             type="button"
             onClick={handleDismiss}
             className="rounded-md p-1 hover:bg-black/10 transition opacity-80 hover:opacity-100"
-            aria-label="Dismiss alert"
+            aria-label={t("Dismiss alert")}
           >
             <X className="h-4 w-4" />
           </button>
