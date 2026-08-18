@@ -233,6 +233,8 @@ const km: Record<string, string> = {
   "Found": "បានរកឃើញ",
   "Showing": "បង្ហាញ",
   "of": "នៃ",
+  "Rows per page": "ជួរដេកក្នុងមួយទំព័រ",
+  "Rows per page:": "ជួរដេកក្នុងមួយទំព័រ៖",
 
   // Review Types & Statuses
   "Suggestion": "សំណើ",
@@ -635,6 +637,8 @@ const km: Record<string, string> = {
   "Click 'Run Test' to generate and evaluate AI output.": "ចុច 'ដំណើរការសាកល្បង' ដើម្បីបង្កើត និងវាយតម្លៃលទ្ធផល AI។",
   "Running...": "កំពុងដំណើរការ...",
   "Run Test": "ដំណើរការសាកល្បង",
+  "Refresh": "ផ្ទុកឡើងវិញ",
+  "Refresh Data": "ផ្ទុកទិន្នន័យឡើងវិញ",
   "Version History & Management": "ប្រវត្តិជំនាន់ និងការគ្រប់គ្រង",
   "Refresh versions": "ផ្ទុកជំនាន់ឡើងវិញ",
   "History": "ប្រវត្តិ",

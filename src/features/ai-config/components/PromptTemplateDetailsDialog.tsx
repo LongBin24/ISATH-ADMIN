@@ -70,60 +70,62 @@ export function PromptTemplateDetailsDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="flex max-h-[90vh] max-w-4xl flex-col overflow-hidden rounded-3xl p-0 font-google-sans">
         {/* Fixed Header */}
-        <DialogHeader className="relative shrink-0 border-b border-slate-100 bg-white/95 px-6 py-4.5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 sm:px-8 sm:py-5 z-10 space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-3 pr-11 sm:pr-12">
-            <div className="flex items-center gap-2.5">
-              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#003377] text-[#FFC83D]">
-                <Sparkles className="h-5 w-5" />
-              </span>
-              <div>
-                <DialogTitle className="text-xl font-bold text-[#003377] dark:text-white sm:text-2xl">
-                  {template.templateName}
-                </DialogTitle>
+        <DialogHeader className="relative shrink-0 border-b border-slate-100 bg-white/95 px-6 py-4.5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 sm:px-8 sm:py-5 z-10 space-y-2.5">
+          <div className="flex items-start gap-3 pr-11 sm:pr-12">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#003377] text-[#FFC83D] mt-0.5 shadow-sm">
+              <Sparkles className="h-5 w-5" />
+            </span>
+            <div className="space-y-1.5 flex-1 min-w-0">
+              <DialogTitle className="text-xl font-bold text-[#003377] dark:text-white sm:text-2xl leading-tight">
+                {template.templateName}
+              </DialogTitle>
+              <div className="flex items-center gap-2">
                 <code className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                   {template.templateKey}
                 </code>
               </div>
-            </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge
-                variant="outline"
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                  template.templateStatus === "ACTIVE"
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
-                    : template.templateStatus === "DRAFT"
-                    ? "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
-                    : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
-                }`}
-              >
-                {template.templateStatus ? t(template.templateStatus) : "—"}
-              </Badge>
+              {/* Sub-header Badges: Status, Language with GB/KH, Version */}
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <Badge
+                  variant="outline"
+                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                    template.templateStatus === "ACTIVE"
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
+                      : template.templateStatus === "DRAFT"
+                      ? "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
+                      : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
+                  }`}
+                >
+                  {template.templateStatus ? t(template.templateStatus) : "—"}
+                </Badge>
 
-              <Badge
-                variant="outline"
-                className="rounded-full border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300"
-              >
-                {isKhmer ? t("Khmer (km)") : t("English (en)")}
-              </Badge>
+                <Badge
+                  variant="outline"
+                  className="rounded-full border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300 inline-flex items-center gap-1.5"
+                >
+                  <span className="font-bold text-[11px]">{isKhmer ? "🇰🇭 KH" : "🇬🇧 GB"}</span>
+                  <span>{isKhmer ? t("Khmer (km)") : t("English (en)")}</span>
+                </Badge>
 
-              <Badge
-                variant="outline"
-                className="rounded-full border-[#FFC83D] bg-[#FFC83D]/15 px-3 py-1 text-xs font-bold text-[#003377] transition-all duration-150 hover:bg-[#FFC83D]/30 hover:border-[#FFC83D] dark:text-[#FFC83D]"
-              >
-                v{template.version}
-              </Badge>
+                <Badge
+                  variant="outline"
+                  className="rounded-full border-[#FFC83D] bg-[#FFC83D]/15 px-3 py-1 text-xs font-bold text-[#003377] transition-all duration-150 hover:bg-[#FFC83D]/30 hover:border-[#FFC83D] dark:text-[#FFC83D]"
+                >
+                  v{template.version}
+                </Badge>
 
-              {template.isDefault && (
-                <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                  {t("Default")}
-                </span>
-              )}
+                {template.isDefault && (
+                  <span className="rounded-full border border-emerald-200 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:border-emerald-800 dark:text-emerald-400">
+                    {t("Default")}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
           {template.description && (
-            <p className="text-sm text-slate-600 dark:text-slate-300 pr-11 sm:pr-12">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 pr-11 sm:pr-12 pt-0.5">
               {template.description}
             </p>
           )}
