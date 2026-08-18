@@ -1,23 +1,28 @@
+"use client";
+
 import { ChevronRight, UserCog, Bot, Tags, Globe } from "lucide-react";
 import Link from "next/link";
-
-const menuItems = [
-  { label: "ការគ្រប់គ្រងអ្នកប្រើប្រាស់", icon: UserCog, href: "/user-manager" },
-  { label: "ការកំណត់ AI", icon: Bot, href: "/ai-config" },
-  { label: "ប្រភេទ", icon: Tags, href: "/categories" },
-  { label: "រូបិយបណ្ណ", icon: Globe, href: "/currencies" },
-];
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 export default function QuickMenu() {
+  const { t } = useAdminI18n();
+
+  const menuItems = [
+    { label: t("User Management"), icon: UserCog, href: "/user-manager" },
+    { label: t("AI Configuration"), icon: Bot, href: "/ai-config" },
+    { label: t("Categories"), icon: Tags, href: "/categories" },
+    { label: t("Currencies"), icon: Globe, href: "/currencies" },
+  ];
+
   return (
     <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
       <h3 className="text-lg font-bold mb-4 font-google-sans text-[#003377] dark:text-white">
-        Quick Module
+        {t("Quick Module")}
       </h3>
       <div className="space-y-2">
         {menuItems.map((item) => (
           <Link
-            key={item.label}
+            key={item.href}
             href={item.href}
             className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors group"
           >

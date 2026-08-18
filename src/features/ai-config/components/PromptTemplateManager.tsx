@@ -1,23 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  Sparkles,
-  Plus,
-  RefreshCw,
-  SlidersHorizontal,
-  Layers,
-} from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { useAdminI18n } from "@/i18n/admin-i18n";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetAdminPromptTemplatesQuery } from "../api";
 import type { PromptTemplateItem, PromptTemplateQueryParams } from "../types";
@@ -78,7 +63,7 @@ export function PromptTemplateManager() {
     refetch,
   } = useGetAdminPromptTemplatesQuery(queryParams);
 
-  const rawTemplates = pageData?.content || [];
+  const rawTemplates = useMemo(() => pageData?.content || [], [pageData?.content]);
 
   // Check if any filters are active
   const hasActiveFilters = Boolean(
@@ -142,9 +127,17 @@ export function PromptTemplateManager() {
 
   const templates = hasActiveFilters ? filteredTemplates : rawTemplates;
   const totalElements = hasActiveFilters ? filteredTemplates.length : (pageData?.totalElements ?? rawTemplates.length);
-  const totalPages = hasActiveFilters
-    ? Math.max(1, Math.ceil(filteredTemplates.length / pageSize))
-    : (pageData?.totalPages ?? 1);
+  const totalPages = Math.max(1, Math.ceil(totalElements / pageSize));
+  const safePageNumber = Math.min(pageNumber, Math.max(0, totalPages - 1));
+
+  // Slice templates for current page navigation
+  const paginatedTemplates = useMemo(() => {
+    if (!hasActiveFilters && pageData && typeof pageData.totalPages === "number" && pageData.totalPages > 1 && rawTemplates.length <= pageSize) {
+      return rawTemplates;
+    }
+    const start = safePageNumber * pageSize;
+    return templates.slice(start, start + pageSize);
+  }, [templates, safePageNumber, pageSize, hasActiveFilters, pageData, rawTemplates]);
 
   function handleFilterChange<K extends keyof PromptTemplateFilterValues>(
     key: K,
@@ -197,12 +190,12 @@ export function PromptTemplateManager() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             type="button"
             onClick={() => refetch()}
             disabled={isFetching}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-semibold text-[#003377] shadow-sm transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-semibold text-[#003377] shadow-sm transition-all duration-150 hover:bg-slate-50 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:text-[#003377] active:border-[#FFC83D] disabled:opacity-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} />
             {t("Refresh")}
@@ -211,9 +204,9 @@ export function PromptTemplateManager() {
           <button
             type="button"
             onClick={openCreate}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#003377] px-5 text-xs font-bold text-white shadow-md transition hover:bg-[#002255] dark:bg-[#FFC83D] dark:text-[#003377] dark:hover:bg-[#f7c948]"
+            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#FFC83D] px-5 text-sm font-bold text-[#003377] shadow-md shadow-[#FFC83D]/20 transition-all duration-150 hover:bg-[#f0ba33] hover:shadow-lg hover:scale-[1.02] active:scale-95 active:bg-[#003377] active:text-[#FFC83D] active:shadow-inner dark:bg-[#FFC83D] dark:text-[#003377] dark:hover:bg-[#f7c948] dark:active:bg-[#002255] dark:active:text-[#FFC83D]"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 stroke-[2.5]" />
             {t("Create Template")}
           </button>
         </div>
@@ -236,7 +229,7 @@ export function PromptTemplateManager() {
 
       {/* Table view */}
       <PromptTemplateTable
-        templates={templates}
+        templates={paginatedTemplates}
         isLoading={isLoading}
         onViewDetails={openDetails}
         onTest={openTest}
@@ -245,23 +238,23 @@ export function PromptTemplateManager() {
       />
 
       {/* Pagination Bar */}
-      {totalPages > 1 && (
+      {totalElements > 0 && (
         <div className="flex flex-col items-center justify-between gap-4 rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row">
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
             <span>{t("Showing")}</span>
             <span className="font-semibold text-slate-900 dark:text-slate-100">
-              {pageNumber * pageSize + 1}
+              {safePageNumber * pageSize + 1}
             </span>
             <span>-</span>
             <span className="font-semibold text-slate-900 dark:text-slate-100">
-              {Math.min((pageNumber + 1) * pageSize, totalElements)}
+              {Math.min((safePageNumber + 1) * pageSize, totalElements)}
             </span>
             <span>{t("of")}</span>
             <span className="font-semibold text-slate-900 dark:text-slate-100">
               {totalElements}
             </span>
 
-            <span className="ml-4">{t("Rows per page")}:</span>
+            <span className="ml-2 sm:ml-4 font-medium">{t("Rows per page")}:</span>
             <Select
               value={String(pageSize)}
               onValueChange={(val) => {
@@ -269,10 +262,10 @@ export function PromptTemplateManager() {
                 setPageNumber(0);
               }}
             >
-              <SelectTrigger className="h-8 w-16 rounded-xl text-xs">
-                <SelectValue />
+              <SelectTrigger className="h-8 w-20 rounded-xl px-2.5 text-xs font-semibold transition-all duration-150 hover:border-[#FFC83D] dark:hover:border-[#FFC83D] data-[state=open]:border-[#003377] dark:data-[state=open]:border-[#FFC83D]">
+                <SelectValue value={String(pageSize)} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="min-w-20 rounded-xl">
                 <SelectItem value="10">10</SelectItem>
                 <SelectItem value="20">20</SelectItem>
                 <SelectItem value="50">50</SelectItem>
@@ -280,23 +273,56 @@ export function PromptTemplateManager() {
             </Select>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
-              disabled={pageNumber === 0}
+              disabled={safePageNumber === 0}
               onClick={() => setPageNumber((p) => Math.max(0, p - 1))}
-              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-50 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] disabled:opacity-30 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
             >
               {t("Previous")}
             </button>
-            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              {pageNumber + 1} / {totalPages}
-            </span>
+
+            {Array.from({ length: totalPages }, (_, i) => i).map((pageIdx) => {
+              // Only display around current page if totalPages is large
+              if (
+                totalPages > 7 &&
+                pageIdx !== 0 &&
+                pageIdx !== totalPages - 1 &&
+                Math.abs(pageIdx - safePageNumber) > 1
+              ) {
+                if (pageIdx === 1 || pageIdx === totalPages - 2) {
+                  return (
+                    <span key={pageIdx} className="px-1 text-xs text-slate-400">
+                      ...
+                    </span>
+                  );
+                }
+                return null;
+              }
+
+              const isCurrent = pageIdx === safePageNumber;
+              return (
+                <button
+                  key={pageIdx}
+                  type="button"
+                  onClick={() => setPageNumber(pageIdx)}
+                  className={`grid h-8 min-w-8 place-items-center rounded-xl px-2 text-xs font-bold transition-all duration-150 active:scale-95 ${
+                    isCurrent
+                      ? "bg-[#FFC83D] text-[#003377] shadow-sm shadow-[#FFC83D]/20"
+                      : "border border-slate-200 bg-white text-slate-700 hover:border-[#FFC83D] hover:text-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
+                  }`}
+                >
+                  {pageIdx + 1}
+                </button>
+              );
+            })}
+
             <button
               type="button"
-              disabled={pageNumber >= totalPages - 1}
+              disabled={safePageNumber >= totalPages - 1}
               onClick={() => setPageNumber((p) => Math.min(totalPages - 1, p + 1))}
-              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-50 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] disabled:opacity-30 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
             >
               {t("Next")}
             </button>

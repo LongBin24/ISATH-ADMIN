@@ -334,7 +334,7 @@ export default function CurrencyManager() {
           {!currenciesQuery.isLoading && !currenciesQuery.isError && filteredCurrencies.length > 0 && (
             <div className="flex flex-col gap-3 border-t border-border pt-4 text-base lg:flex-row lg:items-center lg:justify-between">
               <p className="text-base text-muted-foreground font-normal">
-                Showing {firstVisibleCurrency}–{lastVisibleCurrency} of {filteredCurrencies.length.toLocaleString()} currencies
+                {t("Showing")} {firstVisibleCurrency}–{lastVisibleCurrency} {t("of")} {filteredCurrencies.length.toLocaleString()} {t("currencies")}
               </p>
               <Pagination className="mx-0 w-auto justify-start lg:justify-end">
                 <PaginationContent>
@@ -366,13 +366,39 @@ function CurrencyDetailSheet({ currency, open, onOpenChange, onAction }: { curre
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent onClose={() => onOpenChange(false)}>
-        <SheetHeader><SheetTitle>{t("Currency Details")}</SheetTitle><p className="mt-1 text-sm text-muted-foreground font-normal">Provider and synchronization information for {currency.code}.</p></SheetHeader>
+        <SheetHeader>
+          <SheetTitle>{t("Currency Details")}</SheetTitle>
+          <p className="mt-1 text-sm text-muted-foreground font-normal">
+            {t("Provider and synchronization information for")} {currency.code}.
+          </p>
+        </SheetHeader>
         <SheetBody>
-          <div className="flex items-center gap-4"><span className="grid size-14 place-items-center rounded-2xl bg-[#003377]/10 text-xl font-semibold text-[#003377] dark:text-[#FEDB55]">{currency.symbol}</span><div><h3 className="text-2xl font-semibold text-foreground">{currency.code}</h3><p className="text-base text-muted-foreground font-normal">{currency.name}</p></div></div>
+          <div className="flex items-center gap-4">
+            <span className="grid size-14 place-items-center rounded-2xl bg-[#003377]/10 text-xl font-semibold text-[#003377] dark:text-[#FEDB55]">
+              {currency.symbol}
+            </span>
+            <div>
+              <h3 className="text-2xl font-semibold text-foreground">{currency.code}</h3>
+              <p className="text-base text-muted-foreground font-normal">{currency.name ? t(currency.name) : ""}</p>
+            </div>
+          </div>
           <Separator />
-          <div className="divide-y divide-border"><DetailField label={t("Status")}><CurrencyStatusBadge active={currency.active} /></DetailField><DetailField label={t("Symbol")}>{currency.symbol}</DetailField><DetailField label={t("Decimal Places")}>{currency.decimalPlaces ?? 2}</DetailField><DetailField label={t("Provider")}>{currency.provider || "—"}</DetailField><DetailField label={t("Last Synced")}>{safeDate(currency.lastSyncedAt, true)}</DetailField><DetailField label={t("Created")}>{currency.createdAt ? safeDate(currency.createdAt, true) : "—"}</DetailField><DetailField label={t("Updated")}>{currency.updatedAt ? safeDate(currency.updatedAt, true) : "—"}</DetailField></div>
+          <div className="divide-y divide-border">
+            <DetailField label={t("Status")}><CurrencyStatusBadge active={currency.active} /></DetailField>
+            <DetailField label={t("Symbol")}>{currency.symbol}</DetailField>
+            <DetailField label={t("Decimal Places")}>{currency.decimalPlaces ?? 2}</DetailField>
+            <DetailField label={t("Provider")}>{currency.provider || "—"}</DetailField>
+            <DetailField label={t("Last Synced")}>{safeDate(currency.lastSyncedAt, true)}</DetailField>
+            <DetailField label={t("Created")}>{currency.createdAt ? safeDate(currency.createdAt, true) : "—"}</DetailField>
+            <DetailField label={t("Updated")}>{currency.updatedAt ? safeDate(currency.updatedAt, true) : "—"}</DetailField>
+          </div>
         </SheetBody>
-        <SheetFooter><Button variant={currency.active ? "destructive" : "default"} onClick={() => onAction(currency)} className="text-base font-medium">{currency.active ? <PowerOff className="mr-2 size-4" /> : <Power className="mr-2 size-4" />}{t(currency.active ? "Deactivate Currency" : "Activate Currency")}</Button></SheetFooter>
+        <SheetFooter>
+          <Button variant={currency.active ? "destructive" : "default"} onClick={() => onAction(currency)} className="text-base font-medium">
+            {currency.active ? <PowerOff className="mr-2 size-4" /> : <Power className="mr-2 size-4" />}
+            {t(currency.active ? "Deactivate Currency" : "Activate Currency")}
+          </Button>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );
@@ -389,8 +415,23 @@ function CurrencyActionDialog({ action, open, onOpenChange, onConfirm, isLoading
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
-        <AlertDialogHeader><AlertDialogTitle>{activating ? t("Activate") : t("Deactivate")} {action.currency.code}?</AlertDialogTitle><AlertDialogDescription>{activating ? "This currency will become available where active currencies are supported." : `This will disable ${action.currency.code} for operations where only active currencies can be selected. Review backend business rules for downstream effects.`}</AlertDialogDescription></AlertDialogHeader>
-        <AlertDialogFooter><AlertDialogCancel disabled={isLoading} onClick={() => onOpenChange(false)}>{t("Cancel")}</AlertDialogCancel><AlertDialogAction variant={activating ? "default" : "destructive"} disabled={isLoading} onClick={onConfirm}>{isLoading ? <RefreshCw className="mr-2 size-4 animate-spin" /> : activating ? <Power className="mr-2 size-4" /> : <PowerOff className="mr-2 size-4" />}{isLoading ? t("Updating...") : activating ? t("Activate Currency") : t("Deactivate Currency")}</AlertDialogAction></AlertDialogFooter>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {activating ? t("Activate Currency") : t("Deactivate Currency")} ({action.currency.code})
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {activating
+              ? t("This currency will become available where active currencies are supported.")
+              : t("This will disable this currency for operations where only active currencies can be selected. Review backend business rules for downstream effects.")}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isLoading} onClick={() => onOpenChange(false)}>{t("Cancel")}</AlertDialogCancel>
+          <AlertDialogAction variant={activating ? "default" : "destructive"} disabled={isLoading} onClick={onConfirm}>
+            {isLoading ? <RefreshCw className="mr-2 size-4 animate-spin" /> : activating ? <Power className="mr-2 size-4" /> : <PowerOff className="mr-2 size-4" />}
+            {isLoading ? t("Updating...") : activating ? t("Activate Currency") : t("Deactivate Currency")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );

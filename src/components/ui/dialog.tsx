@@ -1,7 +1,10 @@
+"use client";
+
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
+import { useBodyScrollLock } from "@/lib/useBodyScrollLock";
 
 export interface DialogProps {
   open?: boolean;
@@ -10,6 +13,8 @@ export interface DialogProps {
 }
 
 export function Dialog({ open, onOpenChange, children }: DialogProps) {
+  useBodyScrollLock(Boolean(open));
+
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(

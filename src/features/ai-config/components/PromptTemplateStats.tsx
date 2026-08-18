@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, CheckCircle2, FileText, Globe, Layers } from "lucide-react";
+import { Sparkles, CheckCircle2, Globe, Layers } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 import type { PromptTemplateItem } from "../types";
@@ -75,7 +75,7 @@ export function PromptTemplateStats({
         return (
           <div
             key={stat.label}
-            className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+            className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:shadow-md hover:border-[#FFC83D]/60 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-[#FFC83D]/60"
           >
             <div className="space-y-1">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">

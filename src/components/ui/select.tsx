@@ -95,9 +95,11 @@ SelectTrigger.displayName = "SelectTrigger";
 
 export function SelectValue({ placeholder, value }: { placeholder?: string; value?: string }) {
   const i18n = useOptionalAdminI18n();
-  const display = value !== undefined && value !== "" ? value : placeholder;
+  const context = useSelectContext();
+  const display = value !== undefined && value !== "" ? value : context?.value || placeholder;
+  const isPlaceholder = !value && (!context?.value || display === placeholder);
   return (
-    <span className={cn("block truncate text-left", !display && "text-muted-foreground")}>
+    <span className={cn("block truncate text-left", isPlaceholder && "text-muted-foreground")}>
       {typeof display === "string" ? i18n?.t(display) ?? display : display}
     </span>
   );
@@ -134,13 +136,13 @@ export function SelectItem({ value, children }: { value: string; children: React
       role="option"
       aria-selected={selected}
       className={cn(
-        "flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-base font-normal outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground",
-        selected && "bg-accent font-medium text-accent-foreground"
+        "flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl px-3.5 py-2.5 text-left text-xs font-medium outline-none transition-all duration-150 hover:bg-slate-100 hover:text-[#003377] dark:hover:bg-slate-800 dark:hover:text-[#FFC83D] active:scale-[0.98]",
+        selected && "bg-[#003377]/10 font-bold text-[#003377] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D]"
       )}
       onClick={() => context.select(value)}
     >
       <span className="min-w-0 truncate">{label}</span>
-      <Check className={cn("size-4 shrink-0", selected ? "opacity-100" : "opacity-0")} />
+      <Check className={cn("size-4 shrink-0 text-[#003377] dark:text-[#FFC83D]", selected ? "opacity-100" : "opacity-0")} />
     </button>
   );
 }

@@ -4,6 +4,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
+import { useBodyScrollLock } from "@/lib/useBodyScrollLock";
 
 export interface SheetProps {
   open?: boolean;
@@ -12,6 +13,8 @@ export interface SheetProps {
 }
 
 export function Sheet({ open, onOpenChange, children }: SheetProps) {
+  useBodyScrollLock(Boolean(open));
+
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(

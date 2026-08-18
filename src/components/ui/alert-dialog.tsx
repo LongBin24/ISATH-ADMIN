@@ -4,6 +4,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { Button, type ButtonProps } from "@/components/ui/button";
+import { useBodyScrollLock } from "@/lib/useBodyScrollLock";
 
 export interface AlertDialogProps {
   open?: boolean;
@@ -12,6 +13,8 @@ export interface AlertDialogProps {
 }
 
 export function AlertDialog({ open, onOpenChange, children }: AlertDialogProps) {
+  useBodyScrollLock(Boolean(open));
+
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
