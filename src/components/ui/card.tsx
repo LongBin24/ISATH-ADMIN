@@ -34,7 +34,7 @@ const CardTitle = React.forwardRef<
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, children, ...props }, ref) => {
   const i18n = useOptionalAdminI18n();
-  return <h3 ref={ref} data-slot="card-title" className={cn("font-semibold leading-tight tracking-tight text-lg md:text-xl", className)} {...props}>{typeof children === "string" ? i18n?.t(children) ?? children : children}</h3>;
+  return <h3 ref={ref} data-slot="card-title" className={cn("font-semibold leading-tight tracking-tight text-lg md:text-xl ", className)} {...props}>{typeof children === "string" ? i18n?.t(children) ?? children : children}</h3>;
 });
 CardTitle.displayName = "CardTitle";
 
