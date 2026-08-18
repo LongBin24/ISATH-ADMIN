@@ -10,13 +10,60 @@ function clearTemporaryCookies(response: NextResponse) {
   for (const name of ["keycloak_pkce_verifier", "keycloak_oauth_state", "keycloak_return_path", "keycloak_redirect_uri"]) response.cookies.delete(name);
 }
 
-function loginError(request: NextRequest, status?: number) {
+function loginError(request: NextRequest, status?: number, reason: string = "keycloak", idToken?: string) {
   const loginUrl = new URL("/login", request.url);
-  loginUrl.searchParams.set("authError", "keycloak");
+  loginUrl.searchParams.set("authError", reason);
   if (status) loginUrl.searchParams.set("status", String(status));
+
+  // If rejected due to lack of admin privileges, terminate the Keycloak SSO session
+  // so the user is not trapped in an auto-login loop with the non-admin account.
+  if (reason === "unauthorized" || status === 403) {
+    const issuer = process.env.KEYCLOAK_CLIENT_ISSUER ?? process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER;
+    const clientId =
+      process.env.KEYCLOAK_CLIENT_ID ??
+      process.env.KEYCLOAK_WEB_CLIENT_ID ??
+      process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ??
+      process.env.KEYCLOAK_ADMIN_CLIENT_ID ??
+      "istash-client";
+
+    if (issuer) {
+      const logoutUrl = new URL(`${issuer.replace(/\/$/, "")}/protocol/openid-connect/logout`);
+      logoutUrl.searchParams.set("client_id", clientId);
+      logoutUrl.searchParams.set("post_logout_redirect_uri", loginUrl.toString());
+      if (idToken) logoutUrl.searchParams.set("id_token_hint", idToken);
+      const response = NextResponse.redirect(logoutUrl);
+      response.cookies.delete("istash_session");
+      response.cookies.delete("accessToken");
+      clearTemporaryCookies(response);
+      return response;
+    }
+  }
+
   const response = NextResponse.redirect(loginUrl);
   clearTemporaryCookies(response);
   return response;
+}
+
+function hasAdminRole(accessToken: string): boolean {
+  try {
+    const parts = accessToken.split(".");
+    if (parts.length < 2) return false;
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const decoded = JSON.parse(Buffer.from(base64, "base64").toString("utf-8"));
+    const realmRoles = (decoded.realm_access?.roles || []).map((r: unknown) => String(r).toUpperCase());
+    const clientRoles = Object.values(decoded.resource_access || {})
+      .flatMap((r: any) => ((r?.roles || []) as unknown[]))
+      .map((r: unknown) => String(r).toUpperCase());
+    const allRoles = [...realmRoles, ...clientRoles];
+    return (
+      allRoles.includes("ADMIN") ||
+      allRoles.includes("ADMINISTRATOR") ||
+      allRoles.includes("SUPER_ADMIN") ||
+      allRoles.includes("MANAGE-USERS")
+    );
+  } catch {
+    return false;
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -88,7 +135,25 @@ export async function GET(request: NextRequest) {
       return loginError(request, tokenResponse.status);
     }
     const tokens = (await tokenResponse.json()) as { access_token?: string; refresh_token?: string; id_token?: string; expires_in?: number };
-    if (!tokens.access_token) return loginError(request);
+    if (!tokens.access_token) return loginError(request, 401, "keycloak");
+
+    try {
+      const parts = tokens.access_token.split(".");
+      const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      const decoded = JSON.parse(Buffer.from(base64, "base64").toString("utf-8"));
+      console.log("[Keycloak Callback] User signed in:", {
+        username: decoded?.preferred_username,
+        email: decoded?.email,
+        realmRoles: decoded?.realm_access?.roles,
+      });
+    } catch {
+      // ignore logging error
+    }
+
+    if (!hasAdminRole(tokens.access_token)) {
+      console.warn("Keycloak login rejected: authenticated user lacks ADMIN role");
+      return loginError(request, 403, "unauthorized", tokens.id_token);
+    }
 
     const returnPath = safeReturnPath(request.cookies.get("keycloak_return_path")?.value);
     const payload = JSON.stringify({ accessToken: tokens.access_token, refreshToken: tokens.refresh_token, idToken: tokens.id_token, returnPath }).replace(/</g, "\\u003c");

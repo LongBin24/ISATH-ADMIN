@@ -17,10 +17,42 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useGetProfileQuery } from "@/features/profile/api";
 import { useTheme } from "@/hooks/use-theme";
 import { useLocale, type Locale } from "@/hooks/use-locale";
 import { useSignOut } from "@/features/auth/hook";
+
+function checkAdminRole(): boolean {
+  if (typeof window === "undefined") return true;
+  const token =
+    window.localStorage.getItem("accessToken") ||
+    window.localStorage.getItem("token") ||
+    window.sessionStorage.getItem("accessToken") ||
+    window.sessionStorage.getItem("token");
+
+  if (!token) return true;
+  try {
+    const parts = token.split(".");
+    if (parts.length < 2) return true;
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const decoded = JSON.parse(window.atob(base64));
+    const realmRoles = (decoded.realm_access?.roles || []).map((r: unknown) => String(r).toUpperCase());
+    const clientRoles = Object.values(decoded.resource_access || {})
+      .flatMap((r: any) => ((r?.roles || []) as unknown[]))
+      .map((r: unknown) => String(r).toUpperCase());
+    const allRoles = [...realmRoles, ...clientRoles];
+    return (
+      allRoles.includes("ADMIN") ||
+      allRoles.includes("ADMINISTRATOR") ||
+      allRoles.includes("SUPER_ADMIN") ||
+      allRoles.includes("MANAGE-USERS")
+    );
+  } catch {
+    return true;
+  }
+}
 
 type LocalizedText = Record<Locale, string>;
 
@@ -124,7 +156,14 @@ const ORBIT_RADIUS = 210;
 
 function orbitOffset(angleDeg: number) {
   const rad = (angleDeg * Math.PI) / 180;
-  return { x: Math.cos(rad) * ORBIT_RADIUS, y: Math.sin(rad) * ORBIT_RADIUS };
+  return {
+    x: Math.round(Math.cos(rad) * ORBIT_RADIUS),
+    y: Math.round(Math.sin(rad) * ORBIT_RADIUS),
+  };
+}
+
+function getCalcPosition(offset: number): string {
+  return offset < 0 ? `calc(50% - ${Math.abs(offset)}px)` : `calc(50% + ${offset}px)`;
 }
 
 const reveal: Variants = {
@@ -146,7 +185,13 @@ function OrbitCard({ feature, index, locale }: { feature: FeatureCard; index: nu
   const isLeft = feature.forceIconLeft ? false : x < 0;
 
   return (
-    <div style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }} className="absolute -translate-x-1/2 -translate-y-1/2">
+    <div
+      style={{
+        left: getCalcPosition(x),
+        top: getCalcPosition(y),
+      }}
+      className="absolute -translate-x-1/2 -translate-y-1/2"
+    >
       <MotionLink
         href={feature.href}
         custom={index}
@@ -179,12 +224,26 @@ function OrbitCard({ feature, index, locale }: { feature: FeatureCard; index: nu
 }
 
 export default function WelcomeIntro() {
+  const router = useRouter();
   const reducedMotion = useReducedMotion();
   const { data: profile } = useGetProfileQuery();
   const signOut = useSignOut();
   const { theme, mounted: themeMounted, toggleTheme } = useTheme();
   const { locale, mounted: localeMounted, setLocale } = useLocale();
   const displayName = profile?.displayName || copy.fallbackName[locale];
+
+  useEffect(() => {
+    if (!checkAdminRole()) {
+      window.localStorage.removeItem("accessToken");
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("refreshToken");
+      window.localStorage.removeItem("idToken");
+      window.sessionStorage.removeItem("accessToken");
+      window.sessionStorage.removeItem("token");
+      document.cookie = "accessToken=; Max-Age=0; path=/";
+      router.replace("/login?authError=unauthorized&status=403");
+    }
+  }, [router]);
 
   return (
     <main className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-y-auto bg-[linear-gradient(135deg,#f8fafc_0%,#f2f6fb_48%,#f8fafc_100%)] px-4 py-4 text-slate-900 transition-colors duration-500 dark:bg-[radial-gradient(circle_at_50%_-10%,#0a1830_0%,#050D1B_55%)] dark:text-[#F8FAFC] sm:px-8 sm:py-6 lg:h-[100dvh] lg:overflow-hidden">

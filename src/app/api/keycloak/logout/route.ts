@@ -5,7 +5,10 @@ export const dynamic = "force-dynamic";
 export function GET(request: NextRequest) {
   const issuer = process.env.KEYCLOAK_CLIENT_ISSUER ?? process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER;
   const clientId = process.env.KEYCLOAK_CLIENT_ID ?? process.env.KEYCLOAK_WEB_CLIENT_ID ?? "istash-client";
+  const nextParam = request.nextUrl.searchParams.get("next");
   const loginUrl = new URL("/login", request.url);
+  if (nextParam) loginUrl.searchParams.set("next", nextParam);
+
   const destination = issuer
     ? new URL(`${issuer.replace(/\/$/, "")}/protocol/openid-connect/logout`)
     : loginUrl;
