@@ -23,11 +23,25 @@ async function codeChallenge(verifier: string) {
   return base64UrlEncode(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier))));
 }
 
+function getOrigin(request: NextRequest): string {
+  const customOrigin = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL;
+  if (customOrigin) {
+    const withProto = customOrigin.startsWith("http") ? customOrigin : `https://${customOrigin}`;
+    return withProto.replace(/\/$/, "");
+  }
+  const proto = request.headers.get("x-forwarded-proto") || (request.nextUrl.protocol.replace(":", "") || "https");
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || request.nextUrl.host;
+  return `${proto}://${host}`;
+}
+
 export async function GET(request: NextRequest) {
   const issuer = process.env.KEYCLOAK_CLIENT_ISSUER ?? process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER;
-  // The admin-service client is for server-to-server operations. Browser sign-in
-  // must use the Keycloak web client, which supports the authorization-code flow.
-  const clientId = process.env.KEYCLOAK_CLIENT_ID ?? process.env.KEYCLOAK_WEB_CLIENT_ID ?? "istash-client";
+  const clientId =
+    process.env.KEYCLOAK_CLIENT_ID ??
+    process.env.KEYCLOAK_WEB_CLIENT_ID ??
+    process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ??
+    process.env.KEYCLOAK_ADMIN_CLIENT_ID ??
+    "istash-client";
   const returnPath = safeReturnPath(request.nextUrl.searchParams.get("next"));
 
   if (!issuer || !clientId) {
@@ -36,16 +50,12 @@ export async function GET(request: NextRequest) {
 
   const verifier = randomValue(64);
   const state = randomValue();
-  // This is the Keycloak callback registered by the user-login application.
-  // The verification route forwards the authorization response to the private
-  // token-exchange endpoint below.
-  const callbackUrl = new URL("/auth/verified", request.url).toString();
+  const origin = getOrigin(request);
+  const callbackUrl = `${origin}/auth/verified`;
   const authorizationUrl = new URL(`${issuer.replace(/\/$/, "")}/protocol/openid-connect/auth`);
   authorizationUrl.searchParams.set("client_id", clientId);
   authorizationUrl.searchParams.set("response_type", "code");
   authorizationUrl.searchParams.set("scope", "openid profile email");
-  // Admin access should always require a fresh Keycloak authentication instead
-  // of silently reusing a browser SSO session.
   authorizationUrl.searchParams.set("prompt", "login");
   authorizationUrl.searchParams.set("redirect_uri", callbackUrl);
   authorizationUrl.searchParams.set("state", state);
@@ -55,7 +65,7 @@ export async function GET(request: NextRequest) {
   if (loginHint) authorizationUrl.searchParams.set("login_hint", loginHint);
 
   const response = NextResponse.redirect(authorizationUrl);
-  const cookie = { httpOnly: true, sameSite: "lax" as const, secure: request.nextUrl.protocol === "https:", path: "/", maxAge: 600 };
+  const cookie = { httpOnly: true, sameSite: "lax" as const, secure: request.nextUrl.protocol === "https:" || origin.startsWith("https:"), path: "/", maxAge: 600 };
   response.cookies.set(verifierCookie, verifier, cookie);
   response.cookies.set(stateCookie, state, cookie);
   response.cookies.set("keycloak_return_path", returnPath, cookie);

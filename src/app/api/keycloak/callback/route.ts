@@ -21,26 +21,70 @@ function loginError(request: NextRequest, status?: number) {
 
 export async function GET(request: NextRequest) {
   const issuer = process.env.KEYCLOAK_CLIENT_ISSUER ?? process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER;
-  const clientId = process.env.KEYCLOAK_CLIENT_ID ?? process.env.KEYCLOAK_WEB_CLIENT_ID ?? "istash-client";
-  const clientSecret = process.env.KEYCLOAK_CLIENT_SECRET ?? process.env.KEYCLOAK_WEB_CLIENT_SECRET;
+  const clientId =
+    process.env.KEYCLOAK_CLIENT_ID ??
+    process.env.KEYCLOAK_WEB_CLIENT_ID ??
+    process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ??
+    process.env.KEYCLOAK_ADMIN_CLIENT_ID ??
+    "istash-client";
+  const clientSecret =
+    process.env.KEYCLOAK_CLIENT_SECRET ??
+    process.env.KEYCLOAK_WEB_CLIENT_SECRET ??
+    process.env.KEYCLOAK_ADMIN_CLIENT_SECRET;
   const code = request.nextUrl.searchParams.get("code");
   const state = request.nextUrl.searchParams.get("state");
   const expectedState = request.cookies.get("keycloak_oauth_state")?.value;
   const verifier = request.cookies.get("keycloak_pkce_verifier")?.value;
   const redirectUri = request.cookies.get("keycloak_redirect_uri")?.value;
 
-  if (!issuer || !clientId || !code || !state || state !== expectedState || !verifier || !redirectUri) return loginError(request);
+  if (!issuer || !clientId || !code || !state || state !== expectedState || !verifier || !redirectUri) {
+    console.warn("Keycloak callback validation failed", {
+      hasIssuer: Boolean(issuer),
+      hasClientId: Boolean(clientId),
+      hasCode: Boolean(code),
+      hasState: Boolean(state),
+      stateMatch: state === expectedState,
+      hasVerifier: Boolean(verifier),
+      hasRedirectUri: Boolean(redirectUri),
+    });
+    return loginError(request);
+  }
 
-  const body = new URLSearchParams({ grant_type: "authorization_code", client_id: clientId, code, redirect_uri: redirectUri, code_verifier: verifier });
-  if (clientSecret) body.set("client_secret", clientSecret);
+  const body = new URLSearchParams({
+    grant_type: "authorization_code",
+    client_id: clientId,
+    code,
+    redirect_uri: redirectUri,
+    code_verifier: verifier,
+  });
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/x-www-form-urlencoded",
+    Accept: "application/json",
+  };
+
+  if (clientSecret) {
+    body.set("client_secret", clientSecret);
+    const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+    headers["Authorization"] = `Basic ${basicAuth}`;
+  }
 
   try {
-    const tokenResponse = await fetch(`${issuer.replace(/\/$/, "")}/protocol/openid-connect/token`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" }, body, cache: "no-store" });
+    const tokenResponse = await fetch(`${issuer.replace(/\/$/, "")}/protocol/openid-connect/token`, {
+      method: "POST",
+      headers,
+      body,
+      cache: "no-store",
+    });
     if (!tokenResponse.ok) {
-      // Log the provider response for local diagnosis. OAuth tokens and secrets
-      // are deliberately never included in this log.
       const error = await tokenResponse.text();
-      console.error("Keycloak token exchange failed", { status: tokenResponse.status, error: error.slice(0, 500) });
+      console.error("Keycloak token exchange failed", {
+        status: tokenResponse.status,
+        clientId,
+        hasClientSecret: Boolean(clientSecret),
+        redirectUri,
+        error: error.slice(0, 500),
+      });
       return loginError(request, tokenResponse.status);
     }
     const tokens = (await tokenResponse.json()) as { access_token?: string; refresh_token?: string; id_token?: string; expires_in?: number };
