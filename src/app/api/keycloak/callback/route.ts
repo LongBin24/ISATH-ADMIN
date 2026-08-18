@@ -1,16 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  CLIENT_ID_COOKIE,
+  REDIRECT_URI_COOKIE,
+  RETURN_PATH_COOKIE,
+  STATE_COOKIE,
+  VERIFIER_COOKIE,
+  resolveKeycloakConfig,
+  safeReturnPath,
+} from "@/lib/auth/keycloak-config";
 
 export const dynamic = "force-dynamic";
 
-function safeReturnPath(value: string | undefined) {
-  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/welcome";
-}
-
 function clearTemporaryCookies(response: NextResponse) {
-  for (const name of ["keycloak_pkce_verifier", "keycloak_oauth_state", "keycloak_return_path", "keycloak_redirect_uri"]) response.cookies.delete(name);
+  for (const name of [
+    VERIFIER_COOKIE,
+    STATE_COOKIE,
+    RETURN_PATH_COOKIE,
+    REDIRECT_URI_COOKIE,
+    CLIENT_ID_COOKIE,
+  ]) {
+    response.cookies.delete(name);
+  }
 }
 
-function loginError(request: NextRequest, status?: number, reason: string = "keycloak", idToken?: string) {
+function loginError(request: NextRequest, status?: number, reason: string = "keycloak", idToken?: string, activeClientId?: string) {
   const loginUrl = new URL("/login", request.url);
   loginUrl.searchParams.set("authError", reason);
   if (status) loginUrl.searchParams.set("status", String(status));
@@ -18,16 +31,12 @@ function loginError(request: NextRequest, status?: number, reason: string = "key
   // If rejected due to lack of admin privileges, terminate the Keycloak SSO session
   // so the user is not trapped in an auto-login loop with the non-admin account.
   if (reason === "unauthorized" || status === 403) {
-    const issuer = process.env.KEYCLOAK_CLIENT_ISSUER ?? process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER;
-    const clientId =
-      process.env.KEYCLOAK_CLIENT_ID ??
-      process.env.KEYCLOAK_WEB_CLIENT_ID ??
-      process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ??
-      process.env.KEYCLOAK_ADMIN_CLIENT_ID ??
-      "istash-client";
+    const config = resolveKeycloakConfig(request);
+    const issuer = config.issuer;
+    const clientId = activeClientId ?? config.clientId;
 
     if (issuer) {
-      const logoutUrl = new URL(`${issuer.replace(/\/$/, "")}/protocol/openid-connect/logout`);
+      const logoutUrl = new URL(`${issuer}/protocol/openid-connect/logout`);
       logoutUrl.searchParams.set("client_id", clientId);
       logoutUrl.searchParams.set("post_logout_redirect_uri", loginUrl.toString());
       if (idToken) logoutUrl.searchParams.set("id_token_hint", idToken);
@@ -67,22 +76,20 @@ function hasAdminRole(accessToken: string): boolean {
 }
 
 export async function GET(request: NextRequest) {
-  const issuer = process.env.KEYCLOAK_CLIENT_ISSUER ?? process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER;
-  const clientId =
-    process.env.KEYCLOAK_CLIENT_ID ??
-    process.env.KEYCLOAK_WEB_CLIENT_ID ??
-    process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ??
-    process.env.KEYCLOAK_ADMIN_CLIENT_ID ??
-    "istash-client";
+  const config = resolveKeycloakConfig(request);
+  const cookieClientId = request.cookies.get(CLIENT_ID_COOKIE)?.value;
+  const clientId = cookieClientId || config.clientId;
   const clientSecret =
-    process.env.KEYCLOAK_CLIENT_SECRET ??
-    process.env.KEYCLOAK_WEB_CLIENT_SECRET ??
-    process.env.KEYCLOAK_ADMIN_CLIENT_SECRET;
+    clientId === "istash-client"
+      ? (process.env.KEYCLOAK_LOCAL_CLIENT_SECRET ?? "3myEb9EFPZAi2wyrbGmFdH9A391299GC")
+      : (process.env.KEYCLOAK_CLIENT_SECRET ?? config.clientSecret);
+  const issuer = config.issuer;
+
   const code = request.nextUrl.searchParams.get("code");
   const state = request.nextUrl.searchParams.get("state");
-  const expectedState = request.cookies.get("keycloak_oauth_state")?.value;
-  const verifier = request.cookies.get("keycloak_pkce_verifier")?.value;
-  const redirectUri = request.cookies.get("keycloak_redirect_uri")?.value;
+  const expectedState = request.cookies.get(STATE_COOKIE)?.value;
+  const verifier = request.cookies.get(VERIFIER_COOKIE)?.value;
+  const redirectUri = request.cookies.get(REDIRECT_URI_COOKIE)?.value || config.callbackUrl;
 
   if (!issuer || !clientId || !code || !state || state !== expectedState || !verifier || !redirectUri) {
     console.warn("Keycloak callback validation failed", {
@@ -94,7 +101,7 @@ export async function GET(request: NextRequest) {
       hasVerifier: Boolean(verifier),
       hasRedirectUri: Boolean(redirectUri),
     });
-    return loginError(request);
+    return loginError(request, undefined, "keycloak", undefined, clientId);
   }
 
   const body = new URLSearchParams({
@@ -117,7 +124,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const tokenResponse = await fetch(`${issuer.replace(/\/$/, "")}/protocol/openid-connect/token`, {
+    const tokenResponse = await fetch(`${issuer}/protocol/openid-connect/token`, {
       method: "POST",
       headers,
       body,
@@ -132,10 +139,10 @@ export async function GET(request: NextRequest) {
         redirectUri,
         error: error.slice(0, 500),
       });
-      return loginError(request, tokenResponse.status);
+      return loginError(request, tokenResponse.status, "keycloak", undefined, clientId);
     }
     const tokens = (await tokenResponse.json()) as { access_token?: string; refresh_token?: string; id_token?: string; expires_in?: number };
-    if (!tokens.access_token) return loginError(request, 401, "keycloak");
+    if (!tokens.access_token) return loginError(request, 401, "keycloak", undefined, clientId);
 
     try {
       const parts = tokens.access_token.split(".");
@@ -152,10 +159,10 @@ export async function GET(request: NextRequest) {
 
     if (!hasAdminRole(tokens.access_token)) {
       console.warn("Keycloak login rejected: authenticated user lacks ADMIN role");
-      return loginError(request, 403, "unauthorized", tokens.id_token);
+      return loginError(request, 403, "unauthorized", tokens.id_token, clientId);
     }
 
-    const returnPath = safeReturnPath(request.cookies.get("keycloak_return_path")?.value);
+    const returnPath = safeReturnPath(request.cookies.get(RETURN_PATH_COOKIE)?.value);
     const payload = JSON.stringify({ accessToken: tokens.access_token, refreshToken: tokens.refresh_token, idToken: tokens.id_token, returnPath }).replace(/</g, "\\u003c");
     const html = `<!doctype html><html><head><title>Signing in…</title></head><body>
 <p style="font-family:sans-serif;padding:24px;text-align:center;color:#003377;font-weight:bold;">Completing sign in to iStash Admin...</p>
@@ -186,6 +193,6 @@ export async function GET(request: NextRequest) {
     clearTemporaryCookies(response);
     return response;
   } catch {
-    return loginError(request);
+    return loginError(request, undefined, "keycloak", undefined, clientId);
   }
 }
