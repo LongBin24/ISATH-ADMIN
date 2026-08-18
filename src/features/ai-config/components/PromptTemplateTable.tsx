@@ -11,7 +11,7 @@ import {
   Star,
   Sparkles,
 } from "lucide-react";
-import { formatDistanceToNow, format } from "date-fns";
+import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -102,26 +102,26 @@ export function PromptTemplateTable({
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="border-b border-slate-100 bg-slate-50/75 hover:bg-slate-50/75 dark:border-slate-800 dark:bg-slate-800/40">
-              <TableHead className="py-4 pl-6 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <TableRow className="border-b border-slate-100 bg-slate-50/75 transition-colors hover:bg-slate-100/80 dark:border-slate-800 dark:bg-slate-800/40 dark:hover:bg-slate-800/80">
+              <TableHead className="py-4 pl-6 text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
                 {t("Template")}
               </TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
                 {t("Task & Scope")}
               </TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
                 {t("Language")}
               </TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
                 {t("Version")}
               </TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
                 {t("Status")}
               </TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
                 {t("Updated")}
               </TableHead>
-              <TableHead className="pr-6 text-right text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <TableHead className="pr-6 text-right text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
                 {t("Actions")}
               </TableHead>
             </TableRow>
@@ -169,11 +169,11 @@ export function PromptTemplateTable({
                   <TableCell>
                     <div className="space-y-1">
                       <span className="inline-block rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                        {tmpl.taskType || "—"}
+                        {tmpl.taskType ? t(tmpl.taskType) : "—"}
                       </span>
                       {tmpl.templateScope && (
                         <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                          {tmpl.templateScope}
+                          {t(tmpl.templateScope)}
                         </p>
                       )}
                     </div>
@@ -198,10 +198,10 @@ export function PromptTemplateTable({
                     <button
                       type="button"
                       onClick={() => onVersionHistory(tmpl)}
-                      className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-700 transition hover:border-[#003377] hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-[#FFC83D]"
+                      className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/15 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:hover:shadow-[0_0_10px_rgba(255,200,61,0.2)] dark:active:bg-[#FFC83D]/20"
                     >
                       <span>v{tmpl.version}</span>
-                      <History className="h-3 w-3 text-slate-400" />
+                      <History className="h-3.5 w-3.5 text-slate-400 transition-colors" />
                     </button>
                   </TableCell>
 
@@ -217,7 +217,7 @@ export function PromptTemplateTable({
                           : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
                       }`}
                     >
-                      {tmpl.templateStatus}
+                      {tmpl.templateStatus ? t(tmpl.templateStatus) : "—"}
                     </Badge>
                   </TableCell>
 
@@ -233,7 +233,7 @@ export function PromptTemplateTable({
                       <button
                         type="button"
                         onClick={() => onTest(tmpl)}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition hover:border-[#FFC83D] hover:bg-[#FFC83D]/20 hover:text-[#003377] dark:border-slate-800 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-all duration-150 hover:border-[#FFC83D] hover:bg-[#FFC83D]/20 hover:text-[#003377] active:scale-95 active:bg-[#FFC83D] active:text-[#003377] dark:border-slate-800 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D] dark:active:text-[#003377]"
                         title={t("Test Prompt")}
                       >
                         <Play className="h-3.5 w-3.5 fill-current" />
@@ -244,36 +244,36 @@ export function PromptTemplateTable({
                         <DropdownMenuTrigger asChild>
                           <button
                             type="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-all duration-150 hover:bg-slate-100 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D] active:text-[#003377] dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D] dark:active:text-[#003377]"
                           >
                             <MoreHorizontal className="h-4 w-4" />
                           </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48 rounded-2xl p-1.5 font-google-sans">
+                        <DropdownMenuContent align="end" className="w-48 rounded-2xl p-1.5 font-google-sans dark:border-slate-800 dark:bg-slate-900">
                           <DropdownMenuItem
                             onClick={() => onViewDetails(tmpl)}
-                            className="cursor-pointer gap-2 rounded-xl text-xs"
+                            className="cursor-pointer gap-2 rounded-xl text-xs dark:hover:text-[#FFC83D] dark:focus:text-[#FFC83D]"
                           >
                             <Eye className="h-4 w-4" /> {t("View Details")}
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
                             onClick={() => onTest(tmpl)}
-                            className="cursor-pointer gap-2 rounded-xl text-xs"
+                            className="cursor-pointer gap-2 rounded-xl text-xs dark:hover:text-[#FFC83D] dark:focus:text-[#FFC83D]"
                           >
                             <Play className="h-4 w-4" /> {t("Test Prompt")}
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
                             onClick={() => onVersionHistory(tmpl)}
-                            className="cursor-pointer gap-2 rounded-xl text-xs"
+                            className="cursor-pointer gap-2 rounded-xl text-xs dark:hover:text-[#FFC83D] dark:focus:text-[#FFC83D]"
                           >
                             <History className="h-4 w-4" /> {t("Version History")}
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
                             onClick={() => onEdit(tmpl)}
-                            className="cursor-pointer gap-2 rounded-xl text-xs"
+                            className="cursor-pointer gap-2 rounded-xl text-xs dark:hover:text-[#FFC83D] dark:focus:text-[#FFC83D]"
                           >
                             <Edit className="h-4 w-4" /> {t("Edit Template")}
                           </DropdownMenuItem>
@@ -283,7 +283,7 @@ export function PromptTemplateTable({
                           {!tmpl.isDefault && (
                             <DropdownMenuItem
                               onClick={() => setDefault(tmpl.id)}
-                              className="cursor-pointer gap-2 rounded-xl text-xs text-emerald-600 dark:text-emerald-400"
+                              className="cursor-pointer gap-2 rounded-xl text-xs text-emerald-600 dark:text-emerald-400 dark:hover:text-emerald-300"
                             >
                               <Star className="h-4 w-4" /> {t("Set as Default")}
                             </DropdownMenuItem>
@@ -292,14 +292,14 @@ export function PromptTemplateTable({
                           {!isActive ? (
                             <DropdownMenuItem
                               onClick={() => activateTemplate(tmpl.id)}
-                              className="cursor-pointer gap-2 rounded-xl text-xs text-emerald-600 dark:text-emerald-400"
+                              className="cursor-pointer gap-2 rounded-xl text-xs text-emerald-600 dark:text-emerald-400 dark:hover:text-emerald-300"
                             >
                               <CheckCircle2 className="h-4 w-4" /> {t("Activate")}
                             </DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem
                               onClick={() => archiveTemplate(tmpl.id)}
-                              className="cursor-pointer gap-2 rounded-xl text-xs text-amber-600 dark:text-amber-400"
+                              className="cursor-pointer gap-2 rounded-xl text-xs text-amber-600 dark:text-amber-400 dark:hover:text-amber-300"
                             >
                               <Archive className="h-4 w-4" /> {t("Archive")}
                             </DropdownMenuItem>

@@ -22,6 +22,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Layers,
+  X,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useAdminI18n } from "@/i18n/admin-i18n";
@@ -138,10 +139,12 @@ export function PromptTemplateVersionHistoryDialog({
 
   useEffect(() => {
     if (template && isOpen) {
-      populateFormFromSource(template);
-      setSuccessMsg(null);
-      setErrorMsg(null);
-      setSchemaError(null);
+      queueMicrotask(() => {
+        populateFormFromSource(template);
+        setSuccessMsg(null);
+        setErrorMsg(null);
+        setSchemaError(null);
+      });
     }
   }, [template, isOpen]);
 
@@ -304,9 +307,10 @@ export function PromptTemplateVersionHistoryDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto rounded-3xl p-6 sm:p-8 font-google-sans">
-        <DialogHeader className="space-y-2 pb-4 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+      <DialogContent className="flex max-h-[90vh] max-w-4xl flex-col overflow-hidden rounded-3xl p-0 font-google-sans">
+        {/* Fixed Header */}
+        <DialogHeader className="relative shrink-0 border-b border-slate-100 bg-white/95 px-6 py-4.5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 sm:px-8 sm:py-5 z-10 space-y-0">
+          <div className="flex flex-wrap items-center justify-between gap-3 pr-11 sm:pr-12">
             <div className="flex items-center gap-2.5">
               <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#003377] text-[#FFC83D]">
                 <History className="h-5 w-5" />
@@ -315,13 +319,13 @@ export function PromptTemplateVersionHistoryDialog({
                 <DialogTitle className="text-xl font-bold text-[#003377] dark:text-white sm:text-2xl">
                   {t("Version History & Management")}
                 </DialogTitle>
-                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   <span className="font-semibold text-slate-700 dark:text-slate-300">{template.templateName}</span>
                   <span>•</span>
                   <code className="font-mono text-[11px] text-slate-400">{template.templateKey}</code>
                   <span>•</span>
                   <Badge variant="outline" className="text-[10px] py-0 px-1.5 border-[#FFC83D] bg-[#FFC83D]/10 text-[#003377] dark:text-[#FFC83D] font-bold">
-                    Active: v{template.version}
+                    {t("Active")}: v{template.version}
                   </Badge>
                 </div>
               </div>
@@ -333,9 +337,9 @@ export function PromptTemplateVersionHistoryDialog({
                 onClick={() => refetch()}
                 disabled={isFetching}
                 title={t("Refresh versions")}
-                className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+                className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 transition-all duration-150 hover:bg-slate-50 hover:border-[#FFC83D] hover:text-[#003377] active:scale-90 active:bg-[#FFC83D]/20 active:border-[#FFC83D] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20"
               >
-                <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} />
+                <RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
               </button>
 
               <button
@@ -345,10 +349,10 @@ export function PromptTemplateVersionHistoryDialog({
                   setSuccessMsg(null);
                   setErrorMsg(null);
                 }}
-                className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
+                className={`rounded-xl px-3.5 py-2 text-xs font-semibold transition-all duration-150 active:scale-95 ${
                   activeTab === "list"
-                    ? "bg-[#003377] text-white dark:bg-[#FFC83D] dark:text-[#003377]"
-                    : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+                    ? "bg-[#FFC83D] text-[#003377] font-bold shadow-sm active:bg-[#003377] active:text-[#FFC83D]"
+                    : "border border-slate-200 bg-white text-slate-700 hover:border-[#FFC83D] hover:text-[#003377] active:bg-[#FFC83D]/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20"
                 }`}
               >
                 {t("History")} ({versions.length})
@@ -362,35 +366,47 @@ export function PromptTemplateVersionHistoryDialog({
                   setSuccessMsg(null);
                   setErrorMsg(null);
                 }}
-                className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition shadow-sm ${
+                className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all duration-150 shadow-sm active:scale-95 ${
                   activeTab === "create"
-                    ? "bg-[#003377] text-white dark:bg-[#FFC83D] dark:text-[#003377]"
-                    : "bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500"
+                    ? "bg-[#FFC83D] text-[#003377] shadow-md shadow-[#FFC83D]/15 active:bg-[#003377] active:text-[#FFC83D]"
+                    : "bg-[#003377] text-white hover:bg-[#002255] hover:shadow active:bg-[#FFC83D] active:text-[#003377] dark:bg-[#FFC83D] dark:text-[#003377] dark:hover:bg-[#f7c948]"
                 }`}
               >
-                <Plus className="h-3.5 w-3.5" />
+                <Plus className="h-4 w-4 stroke-[2.5]" />
                 {t("Create New Version")}
               </button>
             </div>
           </div>
+
+          {/* Absolute Top-Right Close Button */}
+          <button
+            type="button"
+            onClick={onClose}
+            title={t("Close")}
+            className="absolute top-4 right-4 sm:top-5 sm:right-6 grid h-9 w-9 place-items-center rounded-xl border border-slate-200 bg-slate-100/80 text-slate-600 shadow-sm transition-all duration-150 hover:bg-slate-200 hover:border-[#FFC83D] hover:text-[#003377] active:scale-90 active:bg-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D] dark:active:text-[#003377]"
+          >
+            <X className="h-4 w-4 stroke-[2.5]" />
+          </button>
         </DialogHeader>
 
-        {successMsg && (
-          <div className="mt-4 flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs font-medium text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300">
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-            <span>{successMsg}</span>
-          </div>
-        )}
+        {/* Scrollable Modal Body */}
+        <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8 space-y-4">
+          {successMsg && (
+            <div className="flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs font-medium text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300">
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <span>{successMsg}</span>
+            </div>
+          )}
 
-        {errorMsg && (
-          <div className="mt-4 flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 p-3.5 text-xs font-medium text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
-            <AlertCircle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
-            <span>{errorMsg}</span>
-          </div>
-        )}
+          {errorMsg && (
+            <div className="flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 p-3.5 text-xs font-medium text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
+              <AlertCircle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
+              <span>{errorMsg}</span>
+            </div>
+          )}
 
-        {activeTab === "list" ? (
-          <div className="space-y-4 pt-4">
+          {activeTab === "list" ? (
+            <div className="space-y-4">
             {isLoading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
@@ -414,7 +430,7 @@ export function PromptTemplateVersionHistoryDialog({
                     populateFormFromSource(template);
                     setActiveTab("create");
                   }}
-                  className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#003377] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#002255] dark:bg-[#FFC83D] dark:text-[#003377]"
+                  className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#003377] px-4 py-2 text-xs font-bold text-white shadow-sm transition-all duration-150 hover:bg-[#002255] hover:shadow active:scale-95 dark:bg-[#FFC83D] dark:text-[#003377] dark:hover:bg-[#f7c948]"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   {t("Create v")}{(template.version || 1) + 1}
@@ -430,13 +446,13 @@ export function PromptTemplateVersionHistoryDialog({
                   return (
                     <div
                       key={ver.id}
-                      className="rounded-3xl border border-slate-200 bg-slate-50/60 p-4 transition hover:bg-white hover:shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:hover:bg-slate-900"
+                      className="rounded-3xl border border-slate-200 bg-slate-50/60 p-4 transition-all duration-200 hover:bg-white hover:border-slate-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-slate-700 dark:hover:bg-slate-900"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-2">
                           <Badge
                             variant="outline"
-                            className="rounded-full border-[#FFC83D] bg-[#FFC83D]/15 px-3 py-0.5 text-xs font-bold text-[#003377] dark:text-[#FFC83D]"
+                            className="rounded-full border-[#FFC83D] bg-[#FFC83D]/15 px-3 py-0.5 text-xs font-bold text-[#003377] transition-all duration-150 hover:bg-[#FFC83D]/30 hover:border-[#FFC83D] dark:text-[#FFC83D]"
                           >
                             v{verNum}
                           </Badge>
@@ -445,12 +461,12 @@ export function PromptTemplateVersionHistoryDialog({
                             variant="outline"
                             className="rounded-full border-blue-200 bg-blue-50 text-[11px] font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-300"
                           >
-                            {isKhmer ? "🇰🇭 Khmer (km)" : "🇬🇧 English (en)"}
+                            {isKhmer ? t("Khmer (km)") : t("English (en)")}
                           </Badge>
 
                           {ver.taskType && (
                             <Badge variant="outline" className="rounded-full text-[10px] text-slate-600 dark:text-slate-400">
-                              {ver.taskType}
+                              {t(ver.taskType)}
                             </Badge>
                           )}
 
@@ -463,7 +479,7 @@ export function PromptTemplateVersionHistoryDialog({
                                   : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-300"
                               }`}
                             >
-                              {ver.templateStatus}
+                              {t(ver.templateStatus)}
                             </Badge>
                           )}
 
@@ -481,7 +497,7 @@ export function PromptTemplateVersionHistoryDialog({
                               type="button"
                               onClick={() => handleSetDefault(ver)}
                               disabled={isSettingDefault}
-                              className="rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                              className="rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-sm transition-all duration-150 hover:bg-slate-50 hover:border-[#003377] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
                             >
                               {t("Set Default")}
                             </button>
@@ -490,7 +506,7 @@ export function PromptTemplateVersionHistoryDialog({
                           <button
                             type="button"
                             onClick={() => handleCloneVersion(ver)}
-                            className="rounded-xl border border-blue-200 bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 hover:bg-blue-100 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300"
+                            className="rounded-xl border border-blue-200 bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 transition-all duration-150 hover:bg-blue-100 hover:border-[#003377] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D] active:text-[#003377] active:border-[#FFC83D] dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D] dark:active:text-[#003377]"
                           >
                             {t("Clone to Draft")}
                           </button>
@@ -498,7 +514,7 @@ export function PromptTemplateVersionHistoryDialog({
                           <button
                             type="button"
                             onClick={() => setExpandedVersionId(isExpanded ? null : ver.id)}
-                            className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                            className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-600 transition-all duration-150 hover:bg-slate-50 hover:border-[#003377] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
                           >
                             {isExpanded ? (
                               <>
@@ -530,11 +546,11 @@ export function PromptTemplateVersionHistoryDialog({
                       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
                         <span>ID: <code className="font-mono">{ver.id}</code></span>
                         {ver.modelName && (
-                          <span>Model: <code className="font-mono text-slate-600 dark:text-slate-300">{ver.modelName}</code></span>
+                          <span>{t("Model")}: <code className="font-mono text-slate-600 dark:text-slate-300">{ver.modelName}</code></span>
                         )}
-                        <span>Created: {formatDate(ver.createdAt)}</span>
+                        <span>{t("Created")}: {formatDate(ver.createdAt)}</span>
                         {ver.createdBy && (
-                          <span>By: <code className="font-mono text-[10px]">{ver.createdBy}</code></span>
+                          <span>{t("By")}: <code className="font-mono text-[10px]">{ver.createdBy}</code></span>
                         )}
                       </div>
 
@@ -549,7 +565,7 @@ export function PromptTemplateVersionHistoryDialog({
                                 <button
                                   type="button"
                                   onClick={() => copyText(ver.systemPrompt!, `sys_${ver.id}`)}
-                                  className="inline-flex items-center gap-1 text-[11px] font-normal text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                                  className="inline-flex items-center gap-1 text-[11px] font-normal text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D]"
                                 >
                                   {copiedKey === `sys_${ver.id}` ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
                                   {copiedKey === `sys_${ver.id}` ? t("Copied") : t("Copy")}
@@ -569,7 +585,7 @@ export function PromptTemplateVersionHistoryDialog({
                                 <button
                                   type="button"
                                   onClick={() => copyText(ver.userPromptTemplate!, `usr_${ver.id}`)}
-                                  className="inline-flex items-center gap-1 text-[11px] font-normal text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                                  className="inline-flex items-center gap-1 text-[11px] font-normal text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D]"
                                 >
                                   {copiedKey === `usr_${ver.id}` ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
                                   {copiedKey === `usr_${ver.id}` ? t("Copied") : t("Copy")}
@@ -589,7 +605,7 @@ export function PromptTemplateVersionHistoryDialog({
                                 <button
                                   type="button"
                                   onClick={() => copyText(JSON.stringify(ver.generationConfig, null, 2), `gen_${ver.id}`)}
-                                  className="inline-flex items-center gap-1 text-[11px] font-normal text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                                  className="inline-flex items-center gap-1 text-[11px] font-normal text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D]"
                                 >
                                   {copiedKey === `gen_${ver.id}` ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
                                   {copiedKey === `gen_${ver.id}` ? t("Copied") : t("Copy")}
@@ -611,7 +627,7 @@ export function PromptTemplateVersionHistoryDialog({
                                     <button
                                       type="button"
                                       onClick={() => copyText(JSON.stringify(ver.inputSchema, null, 2), `in_${ver.id}`)}
-                                      className="text-[11px] font-normal text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                                      className="text-[11px] font-normal text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D]"
                                     >
                                       {copiedKey === `in_${ver.id}` ? t("Copied") : t("Copy")}
                                     </button>
@@ -629,7 +645,7 @@ export function PromptTemplateVersionHistoryDialog({
                                     <button
                                       type="button"
                                       onClick={() => copyText(JSON.stringify(ver.outputSchema, null, 2), `out_${ver.id}`)}
-                                      className="text-[11px] font-normal text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                                      className="text-[11px] font-normal text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D]"
                                     >
                                       {copiedKey === `out_${ver.id}` ? t("Copied") : t("Copy")}
                                     </button>
@@ -647,7 +663,7 @@ export function PromptTemplateVersionHistoryDialog({
                             <button
                               type="button"
                               onClick={() => copyText(JSON.stringify(ver, null, 2), `raw_${ver.id}`)}
-                              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:border-[#FFC83D] hover:text-[#003377] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
                             >
                               <Code2 className="h-3.5 w-3.5" />
                               {copiedKey === `raw_${ver.id}` ? t("Version JSON Copied!") : t("Copy Version JSON")}
@@ -658,6 +674,19 @@ export function PromptTemplateVersionHistoryDialog({
                     </div>
                   );
                 })}
+              </div>
+            )}
+
+            {/* List Tab Footer Close Button */}
+            {versions.length > 0 && (
+              <div className="flex items-center justify-end border-t border-slate-100 pt-4 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="rounded-xl border border-slate-200 px-5 py-2 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-100 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
+                >
+                  {t("Close")}
+                </button>
               </div>
             )}
           </div>
@@ -775,14 +804,14 @@ export function PromptTemplateVersionHistoryDialog({
                   {t("Task Type")}
                 </label>
                 <Select value={taskType} onValueChange={(val) => setTaskType(val as TaskType)}>
-                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs dark:border-slate-800 dark:bg-slate-900">
+                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl">
-                    <SelectItem value="CATEGORY_PREDICTION">CATEGORY_PREDICTION</SelectItem>
-                    <SelectItem value="FINANCIAL_ASSISTANT">FINANCIAL_ASSISTANT</SelectItem>
-                    <SelectItem value="SAVINGS_GOAL_ANALYSIS">SAVINGS_GOAL_ANALYSIS</SelectItem>
-                    <SelectItem value="BUDGET_ADVICE">BUDGET_ADVICE</SelectItem>
+                    <SelectItem value="CATEGORY_PREDICTION">{t("Category Prediction")}</SelectItem>
+                    <SelectItem value="FINANCIAL_ASSISTANT">{t("Financial Assistant")}</SelectItem>
+                    <SelectItem value="SAVINGS_GOAL_ANALYSIS">{t("Savings Goal Analysis")}</SelectItem>
+                    <SelectItem value="BUDGET_ADVICE">{t("Budget Advice")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -792,16 +821,16 @@ export function PromptTemplateVersionHistoryDialog({
                   {t("Template Scope")}
                 </label>
                 <Select value={templateScope} onValueChange={(val) => setTemplateScope(val as TemplateScope)}>
-                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs dark:border-slate-800 dark:bg-slate-900">
+                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl">
-                    <SelectItem value="GENERAL_CONVERSATION">GENERAL_CONVERSATION</SelectItem>
-                    <SelectItem value="SAVINGS_ANALYSIS">SAVINGS_ANALYSIS</SelectItem>
-                    <SelectItem value="SPENDING_ANALYSIS">SPENDING_ANALYSIS</SelectItem>
-                    <SelectItem value="INCOME_ANALYSIS">INCOME_ANALYSIS</SelectItem>
-                    <SelectItem value="GENERAL_QUESTION">GENERAL_QUESTION</SelectItem>
-                    <SelectItem value="MONTHLY_SUMMARY">MONTHLY_SUMMARY</SelectItem>
+                    <SelectItem value="GENERAL_CONVERSATION">{t("General Conversation")}</SelectItem>
+                    <SelectItem value="SAVINGS_ANALYSIS">{t("Savings Analysis")}</SelectItem>
+                    <SelectItem value="SPENDING_ANALYSIS">{t("Spending Analysis")}</SelectItem>
+                    <SelectItem value="INCOME_ANALYSIS">{t("Income Analysis")}</SelectItem>
+                    <SelectItem value="GENERAL_QUESTION">{t("General Question")}</SelectItem>
+                    <SelectItem value="MONTHLY_SUMMARY">{t("Monthly Summary")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -811,12 +840,12 @@ export function PromptTemplateVersionHistoryDialog({
                   {t("Language")}
                 </label>
                 <Select value={languageCode} onValueChange={(val) => setLanguageCode(val as LanguageCode)}>
-                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs dark:border-slate-800 dark:bg-slate-900">
+                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl">
-                    <SelectItem value="km">🇰🇭 Khmer (km)</SelectItem>
-                    <SelectItem value="en">🇬🇧 English (en)</SelectItem>
+                    <SelectItem value="km">{t("Khmer (km)")}</SelectItem>
+                    <SelectItem value="en">{t("English (en)")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -826,12 +855,12 @@ export function PromptTemplateVersionHistoryDialog({
                   {t("Initial Status")}
                 </label>
                 <Select value={templateStatus} onValueChange={(val) => setTemplateStatus(val as PromptTemplateStatus)}>
-                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs dark:border-slate-800 dark:bg-slate-900">
+                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl">
-                    <SelectItem value="DRAFT">DRAFT</SelectItem>
-                    <SelectItem value="ACTIVE">ACTIVE</SelectItem>
+                    <SelectItem value="DRAFT">{t("Draft")}</SelectItem>
+                    <SelectItem value="ACTIVE">{t("Active")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1014,7 +1043,7 @@ export function PromptTemplateVersionHistoryDialog({
               <button
                 type="button"
                 onClick={() => setActiveTab("list")}
-                className="rounded-2xl border border-slate-200 px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                className="rounded-2xl border border-slate-200 px-5 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-100 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
               >
                 {t("Cancel")}
               </button>
@@ -1022,7 +1051,7 @@ export function PromptTemplateVersionHistoryDialog({
               <button
                 type="submit"
                 disabled={isCreating}
-                className="inline-flex items-center gap-2 rounded-2xl bg-[#003377] px-6 py-2.5 text-xs font-bold text-white shadow-md transition hover:bg-[#002255] disabled:opacity-50 dark:bg-[#FFC83D] dark:text-[#003377] dark:hover:bg-[#f7c948]"
+                className="inline-flex items-center gap-2 rounded-2xl bg-[#FFC83D] px-6 py-2.5 text-xs font-bold text-[#003377] shadow-md shadow-[#FFC83D]/15 transition-all duration-150 hover:bg-[#f0ba33] hover:shadow-lg active:scale-95 active:bg-[#003377] active:text-[#FFC83D] disabled:opacity-50 dark:bg-[#FFC83D] dark:text-[#003377] dark:hover:bg-[#f7c948] dark:active:bg-[#002255] dark:active:text-[#FFC83D]"
               >
                 {isCreating && <RefreshCw className="h-3.5 w-3.5 animate-spin" />}
                 {isCreating ? t("Publishing Version...") : t("Publish Version")}
@@ -1030,6 +1059,7 @@ export function PromptTemplateVersionHistoryDialog({
             </div>
           </form>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );

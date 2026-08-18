@@ -1,23 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  Sparkles,
-  Plus,
-  RefreshCw,
-  SlidersHorizontal,
-  Layers,
-} from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { useAdminI18n } from "@/i18n/admin-i18n";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetAdminPromptTemplatesQuery } from "../api";
 import type { PromptTemplateItem, PromptTemplateQueryParams } from "../types";
@@ -78,7 +63,7 @@ export function PromptTemplateManager() {
     refetch,
   } = useGetAdminPromptTemplatesQuery(queryParams);
 
-  const rawTemplates = pageData?.content || [];
+  const rawTemplates = useMemo(() => pageData?.content || [], [pageData?.content]);
 
   // Check if any filters are active
   const hasActiveFilters = Boolean(
@@ -197,12 +182,12 @@ export function PromptTemplateManager() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             type="button"
             onClick={() => refetch()}
             disabled={isFetching}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-semibold text-[#003377] shadow-sm transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-semibold text-[#003377] shadow-sm transition-all duration-150 hover:bg-slate-50 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:text-[#003377] active:border-[#FFC83D] disabled:opacity-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} />
             {t("Refresh")}
@@ -211,9 +196,9 @@ export function PromptTemplateManager() {
           <button
             type="button"
             onClick={openCreate}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#003377] px-5 text-xs font-bold text-white shadow-md transition hover:bg-[#002255] dark:bg-[#FFC83D] dark:text-[#003377] dark:hover:bg-[#f7c948]"
+            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#FFC83D] px-5 text-sm font-bold text-[#003377] shadow-md shadow-[#FFC83D]/20 transition-all duration-150 hover:bg-[#f0ba33] hover:shadow-lg hover:scale-[1.02] active:scale-95 active:bg-[#003377] active:text-[#FFC83D] active:shadow-inner dark:bg-[#FFC83D] dark:text-[#003377] dark:hover:bg-[#f7c948] dark:active:bg-[#002255] dark:active:text-[#FFC83D]"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 stroke-[2.5]" />
             {t("Create Template")}
           </button>
         </div>
@@ -269,7 +254,7 @@ export function PromptTemplateManager() {
                 setPageNumber(0);
               }}
             >
-              <SelectTrigger className="h-8 w-16 rounded-xl text-xs">
+              <SelectTrigger className="h-8 w-16 rounded-xl text-xs transition-all duration-150 hover:border-[#FFC83D] dark:hover:border-[#FFC83D] data-[state=open]:border-[#003377] dark:data-[state=open]:border-[#FFC83D]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -285,7 +270,7 @@ export function PromptTemplateManager() {
               type="button"
               disabled={pageNumber === 0}
               onClick={() => setPageNumber((p) => Math.max(0, p - 1))}
-              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-50 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] disabled:opacity-40 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
             >
               {t("Previous")}
             </button>
@@ -296,7 +281,7 @@ export function PromptTemplateManager() {
               type="button"
               disabled={pageNumber >= totalPages - 1}
               onClick={() => setPageNumber((p) => Math.min(totalPages - 1, p + 1))}
-              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-50 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] disabled:opacity-40 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
             >
               {t("Next")}
             </button>
