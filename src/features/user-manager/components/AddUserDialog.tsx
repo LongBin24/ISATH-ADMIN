@@ -89,7 +89,7 @@ export default function AddUserDialog({ open, onOpenChange }: AddUserDialogProps
     if (!validate()) return;
 
     try {
-      await createUser({
+      const res = await createUser({
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
         email: form.email.trim(),
@@ -97,7 +97,7 @@ export default function AddUserDialog({ open, onOpenChange }: AddUserDialogProps
         confirmPassword: form.confirmPassword,
         role: form.role,
       }).unwrap();
-      toast.success("User created successfully.");
+      toast.success(res?.message || "User created successfully.");
       reset();
       onOpenChange(false);
     } catch (err) {
