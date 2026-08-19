@@ -18,7 +18,11 @@ import {
 } from "lucide-react";
 import { CurrencyItem, TransactionRecord } from "../types";
 import { transactionSchema, TransactionFormData } from "../schema";
+<<<<<<< HEAD
 import { useAdminI18n } from "@/i18n/admin-i18n";
+=======
+import { useI18n } from "@/hooks/use-i18n";
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
 
 interface MultiCurrencyTransactionManagerProps {
   currencies: CurrencyItem[] | undefined;
@@ -83,7 +87,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
   onSync,
   isSyncing,
 }) => {
+<<<<<<< HEAD
   const { t } = useAdminI18n();
+=======
+  const { dict, isEnglish } = useI18n();
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
   const [transactions, setTransactions] = useState<TransactionRecord[]>(INITIAL_TRANSACTIONS);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -113,12 +121,16 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
   const activeBaseItem = useMemo(() => {
     return currencies.find((c) => c.code === baseCurrency) || {
       code: "USD",
+<<<<<<< HEAD
       name: "US Dollar",
+=======
+      name: isEnglish ? "US Dollar" : "ដុល្លារអាមេរិក",
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
       rate: 1,
       symbol: "$",
       flag: "🇺🇸",
     };
-  }, [currencies, baseCurrency]);
+  }, [currencies, baseCurrency, isEnglish]);
 
   const convertAmount = useCallback(
     (origAmount: number, sourceCode: string, targetCode: string): number => {
@@ -178,6 +190,10 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
     return convertAmount(num, formCurrency || "USD", baseCurrency);
   }, [formAmount, formCurrency, baseCurrency, convertAmount]);
 
+  const baseCurrencyLabel = isEnglish
+    ? activeBaseItem.name || baseCurrency
+    : KHMER_CURRENCY_NAMES[baseCurrency] || baseCurrency;
+
   return (
     <div className="space-y-6 font-google-sans">
       {/* 1. Base Currency Selector & Exchange Rate Sync Banner */}
@@ -189,11 +205,19 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                 <Coins size={18} />
               </span>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+<<<<<<< HEAD
                 {t("Base Currency")}
               </h2>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               {t("Select the base currency used for valuation and converting financial transactions.")}
+=======
+                {dict.currencies.baseCurrency}
+              </h2>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              {dict.currencies.baseCurrencyDesc}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
             </p>
           </div>
 
@@ -205,7 +229,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               className="flex items-center gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 dark:hover:text-white transition disabled:opacity-50 border border-slate-200 dark:border-slate-700"
             >
               <RefreshCw size={14} className={isSyncing ? "animate-spin text-[#003377] dark:text-[#FFC83D]" : ""} />
+<<<<<<< HEAD
               <span>{isSyncing ? t("Synchronizing...") : t("Synchronize")}</span>
+=======
+              <span>{isSyncing ? dict.currencies.syncing : dict.currencies.sync}</span>
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
             </button>
 
             <button
@@ -217,7 +245,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               className="flex items-center gap-2 rounded-2xl bg-[#003377] dark:bg-[#FFC83D] px-5 py-2.5 text-xs font-bold text-white dark:text-[#003377] shadow-md hover:bg-[#002255] dark:hover:bg-[#e6b437] transition active:scale-95"
             >
               <Plus size={16} />
+<<<<<<< HEAD
               <span>{t("Record Transaction")}</span>
+=======
+              <span>{dict.currencies.addRecord}</span>
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
             </button>
           </div>
         </div>
@@ -225,11 +257,21 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
         {/* Base Currency Selection */}
         <div>
           <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-3">
+<<<<<<< HEAD
             {t("Active base currency:")}
+=======
+            {dict.currencies.activeBaseCurrency}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {currencies.map((curr) => {
               const isSelected = baseCurrency === curr.code;
+<<<<<<< HEAD
+=======
+              const nameLabel = isEnglish
+                ? curr.name || curr.code
+                : KHMER_CURRENCY_NAMES[curr.code] || curr.name;
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
               return (
                 <button
                   key={`base-${curr.code}`}
@@ -246,7 +288,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                       <span>{curr.flag || "🌐"}</span>
                       <span>{curr.code}</span>
                     </div>
+<<<<<<< HEAD
                     <span className="text-xs font-normal opacity-80 mt-0.5">{t(curr.name)}</span>
+=======
+                    <span className="text-[10px] font-normal opacity-80 mt-0.5">{nameLabel}</span>
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                   </div>
                   {isSelected && <CheckCircle2 size={14} className="text-[#FFC83D] dark:text-[#003377]" />}
                 </button>
@@ -262,7 +308,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
         <div className="rounded-3xl bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-5 border border-emerald-500/20 dark:border-emerald-500/30">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+<<<<<<< HEAD
               {t("Total Income")}
+=======
+              {dict.currencies.totalIncome}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
             </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
               <ArrowUpRight size={18} />
@@ -272,8 +322,13 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
             {activeBaseItem.symbol}{" "}
             {stats.income.toLocaleString("en-US", { maximumFractionDigits: 2 })}
           </p>
+<<<<<<< HEAD
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             {t("Converted to")} {t(activeBaseItem.name)}
+=======
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+            {isEnglish ? `Converted to ${baseCurrencyLabel}` : `បំប្លែងស្វ័យប្រវត្តិជា ${baseCurrencyLabel}`}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
           </p>
         </div>
 
@@ -281,7 +336,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
         <div className="rounded-3xl bg-gradient-to-br from-rose-500/10 via-rose-500/5 to-transparent p-5 border border-rose-500/20 dark:border-rose-500/30">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-rose-600 dark:text-rose-400">
+<<<<<<< HEAD
               {t("Total Expense")}
+=======
+              {dict.currencies.totalExpense}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
             </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400">
               <ArrowDownRight size={18} />
@@ -291,8 +350,13 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
             {activeBaseItem.symbol}{" "}
             {stats.expense.toLocaleString("en-US", { maximumFractionDigits: 2 })}
           </p>
+<<<<<<< HEAD
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             {t("Converted to")} {t(activeBaseItem.name)}
+=======
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+            {isEnglish ? `Converted to ${baseCurrencyLabel}` : `បំប្លែងស្វ័យប្រវត្តិជា ${baseCurrencyLabel}`}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
           </p>
         </div>
 
@@ -300,7 +364,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
         <div className="rounded-3xl bg-gradient-to-br from-[#003377]/10 via-[#003377]/5 to-transparent p-5 border border-[#003377]/20 dark:border-slate-800">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
+<<<<<<< HEAD
               {t("Net Balance")}
+=======
+              {dict.currencies.netBalance}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
             </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#003377]/20 text-[#003377] dark:text-[#FFC83D]">
               <TrendingUp size={18} />
@@ -310,8 +378,13 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
             {activeBaseItem.symbol}{" "}
             {stats.balance.toLocaleString("en-US", { maximumFractionDigits: 2 })}
           </p>
+<<<<<<< HEAD
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             {t("Balance based on live rates")}
+=======
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+            {isEnglish ? "Net balance at current exchange rates" : "សមតុល្យតាមអត្រាប្តូរប្រាក់បច្ចុប្បន្ន"}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
           </p>
         </div>
       </div>
@@ -322,15 +395,26 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <CreditCard size={18} className="text-[#003377] dark:text-[#FFC83D]" />
+<<<<<<< HEAD
               {t("Multi-Currency Transactions")}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               {t("Showing recorded amount and auto-converted value in")} {t(activeBaseItem.name)}
+=======
+              {dict.currencies.recentRecords}
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {dict.currencies.recentRecordsSubtitle}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
             </p>
           </div>
 
           <span className="rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
+<<<<<<< HEAD
             {transactions.length} {t("Transactions")}
+=======
+            {transactions.length} {dict.categories.total}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
           </span>
         </div>
 
@@ -386,14 +470,22 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                     {activeBaseItem.symbol}{" "}
                     {converted.toLocaleString("en-US", { maximumFractionDigits: 2 })}
                     <span className="ml-1 text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
+<<<<<<< HEAD
                       ({t(activeBaseItem.name)})
+=======
+                      ({baseCurrencyLabel})
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                     </span>
                   </div>
 
                   <div className="flex items-center sm:justify-end gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     <ArrowRightLeft size={12} className="text-slate-400" />
                     <span>
+<<<<<<< HEAD
                       {t("Original:")} {currObj.symbol} {tx.originalAmount.toLocaleString()}{" "}
+=======
+                      {isEnglish ? "Original:" : "តម្លៃដើម៖"} {currObj.symbol} {tx.originalAmount.toLocaleString()}{" "}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                       <span className="font-bold text-slate-700 dark:text-slate-300">
                         {tx.originalCurrency}
                       </span>
@@ -416,7 +508,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                   <Plus size={18} />
                 </div>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white font-google-sans">
+<<<<<<< HEAD
                   {t("Record New Transaction")}
+=======
+                  {dict.currencies.addRecord}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 </h3>
               </div>
               <button
@@ -440,7 +536,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                       : "text-slate-600 dark:text-slate-400"
                   }`}
                 >
+<<<<<<< HEAD
                   {t("Expense")}
+=======
+                  {dict.transactions.expense}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 </button>
                 <button
                   type="button"
@@ -451,19 +551,31 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                       : "text-slate-600 dark:text-slate-400"
                   }`}
                 >
+<<<<<<< HEAD
                   {t("Income")}
+=======
+                  {dict.transactions.income}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 </button>
               </div>
 
               {/* Title */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+<<<<<<< HEAD
                   {t("Description")}
+=======
+                  {dict.currencies.recordTitle}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 </label>
                 <input
                   type="text"
                   {...register("title")}
+<<<<<<< HEAD
                   placeholder={t("e.g. Dining, Internet...")}
+=======
+                  placeholder={dict.currencies.enterTitle}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none focus:border-[#FFC83D] focus:ring-2 focus:ring-[#FFC83D]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                 />
                 {errors.title && (
@@ -478,7 +590,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+<<<<<<< HEAD
                     {t("Amount")}
+=======
+                    {dict.currencies.amount}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                   </label>
                   <input
                     type="number"
@@ -497,7 +613,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+<<<<<<< HEAD
                     {t("Currency")}
+=======
+                    {dict.nav.currencies}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                   </label>
                   <select
                     {...register("currency")}
@@ -516,7 +636,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               {Number(formAmount) > 0 && (
                 <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-[#FFC83D]/30 flex items-center justify-between text-xs">
                   <span className="text-slate-600 dark:text-slate-300 font-semibold">
+<<<<<<< HEAD
                     {t("Converted to")} ({t(activeBaseItem.name)}):
+=======
+                    {isEnglish ? `Auto-converted (${baseCurrencyLabel}):` : `តម្លៃបំប្លែងស្វ័យប្រវត្តិ (${baseCurrencyLabel}):`}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                   </span>
                   <span className="font-black text-[#003377] dark:text-[#FFC83D] text-sm">
                     {activeBaseItem.symbol}{" "}
@@ -530,18 +654,31 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               {/* Category */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+<<<<<<< HEAD
                   {t("Category")}
+=======
+                  {dict.currencies.category}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 </label>
                 <select
                   {...register("category")}
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                 >
+<<<<<<< HEAD
                   <option value="General Expense">{t("General Expense")}</option>
                   <option value="Food & Dining">{t("Food & Dining")}</option>
                   <option value="Bills & Utilities">{t("Bills & Utilities")}</option>
                   <option value="Shopping">{t("Shopping")}</option>
                   <option value="Salary">{t("Salary")}</option>
                   <option value="Bonus">{t("Bonus")}</option>
+=======
+                  <option value="ចំណាយទូទៅ">{isEnglish ? "General Expense" : "ចំណាយទូទៅ"}</option>
+                  <option value="អាហារ និងភេសជ្ជៈ">{isEnglish ? "Food & Beverage" : "អាហារ និងភេសជ្ជៈ"}</option>
+                  <option value="វិក្កយបត្រសេវាកម្ម">{isEnglish ? "Utility Bills" : "វិក្កយបត្រសេវាកម្ម"}</option>
+                  <option value="ទិញទំនិញ">{isEnglish ? "Shopping" : "ទិញទំនិញ"}</option>
+                  <option value="ចំណូលប្រាក់ខែ">{isEnglish ? "Salary Income" : "ចំណូលប្រាក់ខែ"}</option>
+                  <option value="ប្រាក់ឧបត្ថម្ភ">{isEnglish ? "Sponsorship / Grant" : "ប្រាក់ឧបត្ថម្ភ"}</option>
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 </select>
               </div>
 
@@ -552,13 +689,21 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                   onClick={() => setIsModalOpen(false)}
                   className="rounded-2xl border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
                 >
+<<<<<<< HEAD
                   {t("Cancel")}
+=======
+                  {dict.common.cancel}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 </button>
                 <button
                   type="submit"
                   className="rounded-2xl bg-[#003377] dark:bg-[#FFC83D] px-6 py-2.5 text-xs font-bold text-white dark:text-[#003377] shadow-md hover:bg-[#002255] dark:hover:bg-[#e6b437]"
                 >
+<<<<<<< HEAD
                   {t("Record Transaction")}
+=======
+                  {dict.currencies.addRecord}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 </button>
               </div>
             </form>
@@ -568,3 +713,5 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
     </div>
   );
 };
+
+export default MultiCurrencyTransactionManager;

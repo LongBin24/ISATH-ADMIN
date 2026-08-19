@@ -6,7 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowDownUp, Calculator, AlertCircle } from "lucide-react";
 import { ExchangeRate } from "../CurrencyApi";
 import { converterSchema, ConverterFormData } from "../schema";
+<<<<<<< HEAD
 import { useAdminI18n } from "@/i18n/admin-i18n";
+=======
+import { useI18n } from "@/hooks/use-i18n";
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
 
 interface CurrencyConverterProps {
   rates: ExchangeRate[] | undefined;
@@ -22,7 +26,12 @@ const DEFAULT_CURRENCIES: ExchangeRate[] = [
 ];
 
 export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) => {
+<<<<<<< HEAD
   const { t } = useAdminI18n();
+=======
+  const { dict } = useI18n();
+
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
   const activeRates = useMemo(() => {
     return rates && rates.length > 0 ? rates : DEFAULT_CURRENCIES;
   }, [rates]);
@@ -70,10 +79,17 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
           </div>
           <div>
             <h2 className="text-lg font-bold text-[#003377] dark:text-white">
+<<<<<<< HEAD
               {t("Currency Converter")}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {t("Calculate currency conversion according to live exchange rates.")}
+=======
+              {dict.currencies.converterTitle}
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {dict.currencies.converterSubtitle}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
             </p>
           </div>
         </div>
@@ -83,7 +99,11 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
           {/* Amount Input */}
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+<<<<<<< HEAD
               {t("Amount")}
+=======
+              {dict.currencies.amount}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
             </label>
             <Controller
               name="amount"
@@ -95,7 +115,11 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
                   {...field}
                   onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                   className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-[#FFC83D] text-base font-bold text-slate-800 dark:text-white"
+<<<<<<< HEAD
                   placeholder={t("Enter amount")}
+=======
+                  placeholder={dict.currencies.enterAmount}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 />
               )}
             />
@@ -111,7 +135,11 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
           <div className="grid grid-cols-[1fr,auto,1fr] gap-3 items-center">
             <div>
               <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">
+<<<<<<< HEAD
                 {t("From Currency")}
+=======
+                {dict.currencies.fromCurrency}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
               </label>
               <Controller
                 name="fromCurrency"
@@ -142,7 +170,11 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
 
             <div>
               <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">
+<<<<<<< HEAD
                 {t("To Currency")}
+=======
+                {dict.currencies.toCurrency}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
               </label>
               <Controller
                 name="toCurrency"
@@ -168,7 +200,11 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ rates }) =
       {/* Result Display Box */}
       <div className="mt-8 p-6 bg-[#003377] rounded-3xl text-white shadow-md dark:border dark:border-slate-700 dark:bg-slate-800">
         <div className="text-xs text-[#FFC83D] font-bold mb-1">
+<<<<<<< HEAD
           {t("Conversion Result")}
+=======
+          {dict.currencies.conversionResult}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
         </div>
         <div className="text-3xl font-black tracking-tight">
           {new Intl.NumberFormat("en-US", {

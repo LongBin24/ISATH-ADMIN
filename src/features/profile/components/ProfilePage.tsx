@@ -10,18 +10,76 @@ import { useGetProfileQuery } from "../api";
 import ChangePasswordTab from "./ChangePasswordTab";
 import EditProfileTab from "./EditProfileTab";
 import KhmerToast from "./KhmerToast";
+<<<<<<< HEAD
 import ProfileBanner from "./ProfileBanner";
 import ProfileNavTabs, { type ProfileTabKey } from "./ProfileNavTabs";
 import ProfileOverviewTab from "./ProfileOverviewTab";
 
 export default function ProfilePage() {
   const { t } = useAdminI18n();
+=======
+import { RefreshCw, AlertTriangle } from "lucide-react";
+import { useI18n } from "@/hooks/use-i18n";
+
+export default function ProfilePage() {
+  const { dict, isEnglish } = useI18n();
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
   const { data: profile, isLoading, isError, refetch } = useGetProfileQuery();
   const [activeTab, setActiveTab] = useState<ProfileTabKey>("overview");
   const [toast, setToast] = useState<{ type: "success" | "error" | null; message: string | null }>({ type: null, message: null });
 
+<<<<<<< HEAD
   if (isLoading) return <ProfileSkeleton />;
   if (isError || !profile) return <div className="mx-auto max-w-4xl py-10"><Card className="rounded-2xl border-destructive/30 bg-destructive/5"><CardContent className="flex flex-col items-center p-8 text-center"><span className="grid size-12 place-items-center rounded-xl bg-destructive/10 text-destructive"><AlertTriangle className="size-6" /></span><h2 className="mt-4 text-lg font-semibold">{t("Unable to load profile")}</h2><p className="mt-1 text-base text-muted-foreground">{t("We could not load your account information. Please try again.")}</p><Button variant="outline" className="mt-5" onClick={() => refetch()}><RefreshCw className="mr-2 size-4" />{t("Retry")}</Button></CardContent></Card></div>;
+=======
+  const showSuccess = (msg: string) => {
+    setToast({ type: "success", message: msg });
+  };
+
+  const showError = (msg: string) => {
+    setToast({ type: "error", message: msg });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-3">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#003377] text-[#FFC83D] shadow-lg animate-bounce">
+          <RefreshCw className="h-7 w-7 animate-spin" />
+        </div>
+        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 font-google-sans">
+          {dict.profile.loading}
+        </p>
+      </div>
+    );
+  }
+
+  if (isError || !profile) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 rounded-3xl border border-rose-200 bg-rose-50/50 p-8 text-center dark:border-rose-900/50 dark:bg-rose-950/20">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500 text-white shadow-md">
+          <AlertTriangle className="h-7 w-7" />
+        </div>
+        <div className="max-w-md font-google-sans">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+            {dict.profile.errorLoading}
+          </h3>
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+            {isEnglish
+              ? "There was an error connecting to the server. Please check your internet or try again."
+              : "មានបញ្ហាក្នុងការតភ្ជាប់ទៅកាន់ម៉ាស៊ីនបម្រើ សូមពិនិត្យមើលអ៊ីនធឺណិត ឬព្យាយាមម្តងទៀត។"}
+          </p>
+        </div>
+        <button
+          onClick={() => refetch()}
+          className="flex items-center gap-2 rounded-xl bg-[#003377] px-5 py-2.5 text-xs font-bold text-white shadow hover:bg-[#002255] transition font-google-sans dark:bg-[#FFC83D] dark:text-[#003377]"
+        >
+          <RefreshCw className="h-4 w-4" />
+          {dict.common.refresh}
+        </button>
+      </div>
+    );
+  }
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 font-google-sans">

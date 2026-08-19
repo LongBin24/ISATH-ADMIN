@@ -102,12 +102,16 @@ export const adminApi = baseApi.injectEndpoints({
   overrideExisting: true,
 });
 
+<<<<<<< HEAD
 export {
   useGetUsersQuery,
   useSuspendUserMutation,
   useReactivateUserMutation,
   useCreateUserMutation,
 } from "../user-manager/api";
+=======
+export { useGetUsersQuery, useSuspendUserMutation, useReactivateUserMutation } from "../users/api";
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
 
 export const {
   useGetStatsQuery,

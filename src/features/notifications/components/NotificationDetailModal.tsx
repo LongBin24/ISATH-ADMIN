@@ -5,8 +5,10 @@ import { X, Calendar, ExternalLink, Wallet, AlertTriangle, Target, Repeat, BarCh
 import { useNotificationUI } from "../hook";
 import { CATEGORY_CONFIGS } from "../constants";
 import { useRetryNotificationDeliveryMutation, useGetAdminNotificationByIdQuery } from "../api";
+import { useI18n } from "@/hooks/use-i18n";
 
 export default function NotificationDetailModal() {
+  const { dict, isEnglish } = useI18n();
   const { selectedNotification, isDetailModalOpen, dismissDetailModal } = useNotificationUI();
   const notificationId = selectedNotification?.id ?? "";
   const { data: adminNotificationDetail, isLoading: isFetchingDetail } = useGetAdminNotificationByIdQuery(notificationId, {
@@ -31,7 +33,7 @@ export default function NotificationDetailModal() {
       setRetrySuccess(true);
       setTimeout(() => setRetrySuccess(false), 3000);
     } catch (e: any) {
-      const msg = e?.data?.message || e?.message || "No failed notification deliveries are available to retry.";
+      const msg = e?.data?.message || e?.message || (isEnglish ? "No failed notification deliveries are available to retry." : "មិនមានការជូនដំណឹងដែលបានបរាជ័យសម្រាប់ផ្ញើឡើងវិញទេ។");
       setRetryErrorMessage(msg);
       setTimeout(() => setRetryErrorMessage(null), 4000);
     }
@@ -39,18 +41,18 @@ export default function NotificationDetailModal() {
 
   const config = CATEGORY_CONFIGS[(selectedNotification as any).category || selectedNotification.notificationType];
 
-  const getPriorityKh = (priority: string) => {
+  const getPriorityLabel = (priority: string) => {
     switch (priority) {
       case "LOW":
-        return "ទាប";
+        return dict.notifications.priorityLow;
       case "MEDIUM":
-        return "មធ្យម";
+        return dict.notifications.priorityMedium;
       case "HIGH":
-        return "ខ្ពស់";
+        return dict.notifications.priorityHigh;
       case "URGENT":
-        return "បន្ទាន់";
+        return dict.notifications.priorityUrgent;
       default:
-        return priority || "មធ្យម";
+        return priority || dict.notifications.priorityMedium;
     }
   };
 
@@ -74,8 +76,24 @@ export default function NotificationDetailModal() {
     }
   };
 
+  const categoryName = isEnglish
+    ? config?.nameEn || selectedNotification.notificationType
+    : config?.nameKh || selectedNotification.notificationType;
+
+  const displayTitle = isEnglish
+    ? adminNotificationDetail?.title || selectedNotification.title || (selectedNotification as any).titleKh
+    : adminNotificationDetail?.title || (selectedNotification as any).titleKh || selectedNotification.title;
+
+  const displayMessage = isEnglish
+    ? adminNotificationDetail?.message || selectedNotification.message || (selectedNotification as any).messageKh
+    : adminNotificationDetail?.message || (selectedNotification as any).messageKh || selectedNotification.message;
+
+  const createdDateFormatted = new Date(
+    adminNotificationDetail?.createdAt || selectedNotification.createdAt
+  ).toLocaleString(isEnglish ? "en-US" : "km-KH");
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200 font-google-sans">
       <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900 dark:border dark:border-slate-800">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800 dark:bg-slate-850">
@@ -85,16 +103,17 @@ export default function NotificationDetailModal() {
             </div>
             <div>
               <span className="text-xs font-semibold text-[#003377] dark:text-[#FFC83D]">
-                {config?.nameKh || selectedNotification.notificationType}
+                {categoryName}
               </span>
               <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 font-google-sans">
-                ព័ត៌មានលម្អិតនៃការជូនដំណឹង
+                {dict.notifications.detailTitle}
               </h3>
             </div>
           </div>
           <button
             type="button"
             onClick={handleClose}
+            aria-label={dict.common.close}
             className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
           >
             <X size={20} />
@@ -106,7 +125,7 @@ export default function NotificationDetailModal() {
           {isFetchingDetail ? (
             <div className="flex flex-col items-center justify-center py-8 text-slate-400">
               <RefreshCw className="animate-spin text-[#FFC83D] mb-2" size={24} />
-              <p className="text-xs">កំពុងទាញយកព័ត៌មានលម្អិត... (Fetching details by ID)</p>
+              <p className="text-xs">{dict.notifications.fetchingDetails}</p>
             </div>
           ) : (
             <>
@@ -123,33 +142,32 @@ export default function NotificationDetailModal() {
                     }`}
                   />
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    កម្រិតអាទិភាព៖ {getPriorityKh((selectedNotification as any).priority || "MEDIUM")}
+                    {dict.notifications.priorityLabel} {getPriorityLabel((selectedNotification as any).priority || "MEDIUM")}
                   </span>
                 </div>
                 <h4 className="text-lg font-bold text-slate-900 dark:text-white leading-snug">
-                  {adminNotificationDetail?.title || (selectedNotification as any).titleKh || selectedNotification.title}
+                  {displayTitle}
                 </h4>
               </div>
 
-
               {/* Channels Used */}
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-500 dark:text-slate-400">ប៉ុស្តិ៍ជូនដំណឹង៖</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">{dict.notifications.channelsLabel}</span>
                 {((adminNotificationDetail?.channels?.includes("IN_APP") || (selectedNotification as any).channels?.includes("IN_APP")) ?? true) && (
                   <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
-                    <Bell size={12} /> ក្នុងកម្មវិធី
+                    <Bell size={12} /> {dict.notifications.channelInApp}
                   </span>
                 )}
                 {((adminNotificationDetail?.channels?.includes("EMAIL") || (selectedNotification as any).channels?.includes("EMAIL")) ?? false) && (
                   <span className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
-                    <Mail size={12} /> អ៊ីមែល
+                    <Mail size={12} /> {dict.notifications.channelEmail}
                   </span>
                 )}
               </div>
 
               {/* Message Body */}
               <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-sm text-slate-700 dark:bg-slate-800/60 dark:border-slate-750 dark:text-slate-300 leading-relaxed font-google-sans">
-                {adminNotificationDetail?.message || (selectedNotification as any).messageKh || selectedNotification.message}
+                {displayMessage}
               </div>
 
               {/* Error Message Banner */}
@@ -163,7 +181,7 @@ export default function NotificationDetailModal() {
               {/* Timestamp */}
               <div className="flex items-center text-xs text-slate-400 gap-1.5">
                 <Calendar size={14} />
-                <span>កាលបរិច្ឆេទផ្ញើ៖ {new Date(adminNotificationDetail?.createdAt || selectedNotification.createdAt).toLocaleString("km-KH")}</span>
+                <span>{dict.notifications.sentDateLabel} {createdDateFormatted}</span>
               </div>
             </>
           )}
@@ -181,17 +199,17 @@ export default function NotificationDetailModal() {
             {isRetrying ? (
               <>
                 <RefreshCw size={14} className="animate-spin" />
-                <span>កំពុងផ្ញើឡើងវិញ...</span>
+                <span>{dict.notifications.retrying}</span>
               </>
             ) : retrySuccess ? (
               <>
                 <Check size={14} className="text-green-600" />
-                <span>បានផ្ញើឡើងវិញរួចរាល់!</span>
+                <span>{dict.notifications.retriedSuccess}</span>
               </>
             ) : (
               <>
                 <RotateCcw size={14} />
-                <span>ព្យាយាមផ្ញើឡើងវិញ</span>
+                <span>{dict.notifications.retryDelivery}</span>
               </>
             )}
           </button>
@@ -201,7 +219,7 @@ export default function NotificationDetailModal() {
             onClick={handleClose}
             className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
           >
-            បិទ
+            {dict.common.close}
           </button>
 
           {selectedNotification.actionUrl && (
@@ -210,7 +228,7 @@ export default function NotificationDetailModal() {
               onClick={handleClose}
               className="inline-flex items-center gap-1.5 rounded-xl bg-[#003377] px-4 py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#002255] transition"
             >
-              <span>ទៅកាន់ទំព័រពាក់ព័ន្ធ</span>
+              <span>{dict.notifications.viewActionUrl}</span>
               <ExternalLink size={14} />
             </a>
           )}

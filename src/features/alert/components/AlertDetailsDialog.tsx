@@ -24,7 +24,11 @@ import {
 import { useGetAlertRuleByIdQuery } from "@/features/alert/hooks";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+<<<<<<< HEAD
 import { useAdminI18n } from "@/i18n/admin-i18n";
+=======
+import { useI18n } from "@/hooks/use-i18n";
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
 
 interface AlertDetailsDialogProps {
   isOpen?: boolean;
@@ -39,6 +43,7 @@ interface DetailCardProps {
   className?: string;
 }
 
+<<<<<<< HEAD
 function formatDate(value?: string | null) {
   if (!value) return null;
   try {
@@ -49,6 +54,63 @@ function formatDate(value?: string | null) {
   } catch {
     return value;
   }
+=======
+const valueTranslationsKh: Record<string, string> = {
+  DAILY_EXPENSE_REMINDER: "រំលឹកការចំណាយប្រចាំថ្ងៃ",
+  BUDGET_THRESHOLD: "កម្រិតថវិកា",
+  SAVINGS_REMINDER: "រំលឹកការសន្សំ",
+  RECURRING_REMINDER: "រំលឹកប្រតិបត្តិការប្រចាំ",
+  MONTHLY_SUMMARY: "សេចក្តីសង្ខេបប្រចាំខែ",
+  THRESHOLD_EXCEEDED: "លើសកម្រិតកំណត់",
+  CUSTOM: "កំណត់ដោយផ្ទាល់",
+  TIME: "តាមម៉ោង",
+  THRESHOLD: "តាមកម្រិតកំណត់",
+  EVENT: "តាមព្រឹត្តិការណ៍",
+  SCHEDULE: "តាមកាលវិភាគ",
+  MANUAL: "ដោយផ្ទាល់",
+  BUDGET: "ថវិកា",
+  SAVINGS_GOAL: "គោលដៅសន្សំ",
+  RECURRING_TRANSACTION: "ប្រតិបត្តិការប្រចាំ",
+  TRANSACTION_CATEGORY: "ប្រភេទប្រតិបត្តិការ",
+  ACCOUNT_BALANCE: "សមតុល្យគណនី",
+  NONE: "គ្មាន",
+};
+
+const valueTranslationsEn: Record<string, string> = {
+  DAILY_EXPENSE_REMINDER: "Daily Expense Reminder",
+  BUDGET_THRESHOLD: "Budget Threshold",
+  SAVINGS_REMINDER: "Savings Reminder",
+  RECURRING_REMINDER: "Recurring Reminder",
+  MONTHLY_SUMMARY: "Monthly Summary",
+  THRESHOLD_EXCEEDED: "Threshold Exceeded",
+  CUSTOM: "Custom",
+  TIME: "By Time",
+  THRESHOLD: "By Threshold",
+  EVENT: "By Event",
+  SCHEDULE: "By Schedule",
+  MANUAL: "Manual",
+  BUDGET: "Budget",
+  SAVINGS_GOAL: "Savings Goal",
+  RECURRING_TRANSACTION: "Recurring Transaction",
+  TRANSACTION_CATEGORY: "Transaction Category",
+  ACCOUNT_BALANCE: "Account Balance",
+  NONE: "None",
+};
+
+function translateValue(value: string | null | undefined, isEnglish: boolean) {
+  if (!value) return null;
+  const map = isEnglish ? valueTranslationsEn : valueTranslationsKh;
+  return map[value] ?? value.replaceAll("_", " ");
+}
+
+function formatDate(value: string | null | undefined, isEnglish: boolean) {
+  if (!value) return null;
+
+  return new Intl.DateTimeFormat(isEnglish ? "en-US" : "km-KH", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
 }
 
 function DetailCard({ icon: Icon, label, value, className = "" }: DetailCardProps) {
@@ -73,7 +135,11 @@ function DetailCard({ icon: Icon, label, value, className = "" }: DetailCardProp
 
 function LoadingState() {
   return (
+<<<<<<< HEAD
     <div className="grid gap-3 py-1 sm:grid-cols-2">
+=======
+    <div className="grid gap-3 py-1 sm:grid-cols-2" aria-label="Loading details">
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
       {[0, 1, 2, 3, 4, 5].map((item) => (
         <div key={item} className="space-y-3 rounded-2xl border border-slate-200 p-4 dark:border-slate-700">
           <Skeleton className="h-3 w-24" />
@@ -89,7 +155,11 @@ export function AlertDetailsDialog({
   onClose,
   ruleId,
 }: AlertDetailsDialogProps) {
+<<<<<<< HEAD
   const { t } = useAdminI18n();
+=======
+  const { dict, isEnglish } = useI18n();
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
   const {
     data: alertRule,
     isLoading,
@@ -102,6 +172,15 @@ export function AlertDetailsDialog({
   });
 
   const severity = alertRule?.severity;
+<<<<<<< HEAD
+=======
+  const severityLabel =
+    severity === "CRITICAL"
+      ? dict.alerts.criticalRules
+      : severity === "WARNING"
+        ? dict.alerts.warningRules
+        : dict.alerts.infoRules;
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -116,12 +195,21 @@ export function AlertDetailsDialog({
             </span>
             <div className="min-w-0">
               <DialogTitle className="text-lg font-bold text-[#003377] dark:text-[#FFC83D] sm:text-xl">
+<<<<<<< HEAD
                 {t("Alert Rule Details")}
               </DialogTitle>
               <DialogDescription className="mt-1 truncate text-sm text-slate-500 dark:text-slate-400">
                 {alertRule?.ruleName
                   ? `${t("Details for:")} ${alertRule.ruleName}`
                   : t("Read-only rule configuration and execution information.")}
+=======
+                {dict.alerts.dialogTitle}
+              </DialogTitle>
+              <DialogDescription className="mt-1 truncate text-sm text-slate-500 dark:text-slate-400">
+                {alertRule?.ruleName
+                  ? dict.alerts.dialogSubtitle.replace("{name}", alertRule.ruleName)
+                  : dict.alerts.dialogDefaultSubtitle}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
               </DialogDescription>
             </div>
           </div>
@@ -136,10 +224,17 @@ export function AlertDetailsDialog({
                 <AlertCircle className="size-6" />
               </span>
               <h3 className="font-bold text-slate-900 dark:text-white">
+<<<<<<< HEAD
                 {t("Unable to load alert rules.")}
               </h3>
               <p className="mt-1 max-w-sm text-sm leading-6 text-slate-500 dark:text-slate-400">
                 {t("Please try again.")}
+=======
+                {dict.alerts.errorDialogLoading}
+              </h3>
+              <p className="mt-1 max-w-sm text-sm leading-6 text-slate-500 dark:text-slate-400">
+                {dict.alerts.errorDialogDesc}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
               </p>
               <Button
                 type="button"
@@ -147,14 +242,22 @@ export function AlertDetailsDialog({
                 className="mt-5 gap-2 rounded-xl bg-[#FFC83D] px-5 font-bold text-[#003377] hover:bg-[#eab52f]"
               >
                 <RefreshCw className="size-4" />
+<<<<<<< HEAD
                 {t("Retry")}
+=======
+                {dict.alerts.tryAgain}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
               </Button>
             </div>
           ) : alertRule ? (
             <div className="space-y-4">
               <div className="flex flex-col gap-3 rounded-2xl bg-[#003377] p-4 text-white shadow-sm sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
+<<<<<<< HEAD
                   <p className="text-xs font-medium text-white/65">{t("Rule Name")}</p>
+=======
+                  <p className="text-xs font-medium text-white/65">{dict.alerts.ruleName}</p>
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                   <p className="mt-1 truncate font-bold">{alertRule.ruleName}</p>
                 </div>
                 <span
@@ -174,6 +277,7 @@ export function AlertDetailsDialog({
               <div className="grid gap-3 sm:grid-cols-2">
                 <DetailCard
                   icon={BellRing}
+<<<<<<< HEAD
                   label={t("Alert Type")}
                   value={t(alertRule.alertType)}
                 />
@@ -188,11 +292,28 @@ export function AlertDetailsDialog({
                   value={
                     <span className={alertRule.enabled ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500"}>
                       {t(alertRule.enabled ? "Enabled" : "Disabled")}
+=======
+                  label={dict.alerts.alertTypeLabel}
+                  value={translateValue(alertRule.alertType, isEnglish)}
+                />
+                <DetailCard
+                  icon={TimerReset}
+                  label={dict.alerts.triggerTypeLabel}
+                  value={translateValue(alertRule.triggerType, isEnglish)}
+                />
+                <DetailCard
+                  icon={CheckCircle2}
+                  label={dict.alerts.statusLabel}
+                  value={
+                    <span className={alertRule.enabled ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500"}>
+                      {alertRule.enabled ? dict.alerts.enabled : dict.alerts.disabled}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                     </span>
                   }
                 />
                 <DetailCard
                   icon={Tag}
+<<<<<<< HEAD
                   label={t("Reference")}
                   value={alertRule.referenceType ? t(alertRule.referenceType) : t("No reference")}
                 />
@@ -204,11 +325,28 @@ export function AlertDetailsDialog({
                 <DetailCard
                   icon={Clock3}
                   label={t("Reminder Time")}
+=======
+                  label={dict.alerts.referenceTypeLabel}
+                  value={translateValue(alertRule.referenceType, isEnglish)}
+                />
+                <DetailCard
+                  icon={CalendarDays}
+                  label={dict.alerts.daysBeforeLabel}
+                  value={alertRule.daysBefore !== null ? `${alertRule.daysBefore} ${dict.alerts.daysUnit}` : null}
+                />
+                <DetailCard
+                  icon={Clock3}
+                  label={dict.alerts.reminderTimeLabel}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                   value={alertRule.reminderTime}
                 />
                 <DetailCard
                   icon={MessageSquareText}
+<<<<<<< HEAD
                   label={t("Notification")}
+=======
+                  label={dict.alerts.alertMessageLabel}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                   value={alertRule.ruleConfiguration?.message}
                   className="sm:col-span-2"
                 />
@@ -216,18 +354,31 @@ export function AlertDetailsDialog({
 
               <div className="grid gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400 sm:grid-cols-2">
                 <div>
+<<<<<<< HEAD
                   <span className="font-semibold">{t("Created")}:</span>{" "}
                   {formatDate(alertRule.createdAt)}
                 </div>
                 <div className="sm:text-right">
                   <span className="font-semibold">{t("Updated")}:</span>{" "}
                   {formatDate(alertRule.updatedAt)}
+=======
+                  <span className="font-semibold">{dict.alerts.createdAtLabel}</span>{" "}
+                  {formatDate(alertRule.createdAt, isEnglish)}
+                </div>
+                <div className="sm:text-right">
+                  <span className="font-semibold">{dict.alerts.updatedAtLabel}</span>{" "}
+                  {formatDate(alertRule.updatedAt, isEnglish)}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 </div>
               </div>
             </div>
           ) : (
             <div className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">
+<<<<<<< HEAD
               {t("No alert rules found")}
+=======
+              {dict.alerts.noDetails}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
             </div>
           )}
         </div>
@@ -238,7 +389,11 @@ export function AlertDetailsDialog({
             onClick={onClose}
             className="min-w-28 rounded-xl bg-[#FFC83D] font-bold text-[#003377] shadow-sm hover:bg-[#eab52f]"
           >
+<<<<<<< HEAD
             {t("Close")}
+=======
+            {dict.common.close}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
           </Button>
         </DialogClose>
       </DialogContent>

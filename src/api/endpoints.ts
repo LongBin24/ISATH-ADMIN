@@ -12,8 +12,10 @@ export const ENDPOINTS = {
   ADMIN_CURRENCIES: "admin/currencies",
   ADMIN_CURRENCIES_SYNCHRONIZE: "admin/currencies/synchronize",
   ADMIN_CURRENCIES_PROVIDER_STATUS: "admin/currencies/provider-status",
-  ADMIN_CURRENCIES_ACTIVATE: (code: string) => `admin/currencies/${code}/activate`,
-  ADMIN_CURRENCIES_DEACTIVATE: (code: string) => `admin/currencies/${code}/deactivate`,
+  ADMIN_CURRENCIES_ACTIVATE: (code: string) =>
+    `admin/currencies/${code}/activate`,
+  ADMIN_CURRENCIES_DEACTIVATE: (code: string) =>
+    `admin/currencies/${code}/deactivate`,
 
   // Admin Users Endpoints
   ADMIN_USERS: "admin/users",

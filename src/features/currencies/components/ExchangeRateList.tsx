@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { TrendingUp, TrendingDown, Globe } from "lucide-react";
 import {
@@ -5,6 +7,7 @@ import {
   useActivateCurrencyMutation,
   useDeactivateCurrencyMutation,
 } from "../CurrencyApi";
+import { useI18n } from "@/hooks/use-i18n";
 import toast from "react-hot-toast";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 
@@ -14,7 +17,11 @@ interface ExchangeRateListProps {
 }
 
 export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoading }) => {
+<<<<<<< HEAD
   const { t } = useAdminI18n();
+=======
+  const { dict, isEnglish } = useI18n();
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
   const [activateCurrency] = useActivateCurrencyMutation();
   const [deactivateCurrency] = useDeactivateCurrencyMutation();
 
@@ -22,6 +29,7 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
     try {
       if (currentActive) {
         await deactivateCurrency(code).unwrap();
+<<<<<<< HEAD
         toast.success(`${code} ${t("deactivated successfully.")}`);
       } else {
         await activateCurrency(code).unwrap();
@@ -29,6 +37,23 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
       }
     } catch {
       toast.error(t("Unable to change currency status."));
+=======
+        toast.success(
+          isEnglish
+            ? `Successfully deactivated ${code}`
+            : `បានបិទដំណើរការ ${code} ជោគជ័យ`
+        );
+      } else {
+        await activateCurrency(code).unwrap();
+        toast.success(
+          isEnglish
+            ? `Successfully activated ${code}`
+            : `បានបើកដំណើរការ ${code} ជោគជ័យ`
+        );
+      }
+    } catch {
+      toast.error(dict.common.error);
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
     }
   };
 
@@ -38,7 +63,11 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
         <div className="animate-spin text-[#003377] dark:text-[#FFC83D]">
           <Globe className="w-8 h-8" />
         </div>
+<<<<<<< HEAD
         <p className="text-xs font-bold text-slate-500">{t("Loading...")}</p>
+=======
+        <p className="text-xs font-bold text-slate-500">{dict.currencies.loadingRates}</p>
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
       </div>
     );
   }
@@ -52,10 +81,17 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
         </div>
         <div>
           <h2 className="text-lg font-bold text-[#003377] dark:text-white">
+<<<<<<< HEAD
             {t("Exchange Rates Table")}
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             {t("Live exchange rates compared to 1 US Dollar (USD)")}
+=======
+            {dict.currencies.exchangeRatesTable}
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {dict.currencies.exchangeRatesTableSubtitle}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
           </p>
         </div>
       </div>
@@ -65,6 +101,12 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
         {rates?.map((item) => {
           const changeVal = item.change ?? 0;
           const isPositive = changeVal >= 0;
+<<<<<<< HEAD
+=======
+          const currencyLabel = isEnglish
+            ? item.name
+            : KHMER_CURRENCY_NAMES[item.code] || item.name;
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
 
           return (
             <div
@@ -87,11 +129,19 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                           : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                       }`}
                     >
+<<<<<<< HEAD
                       {t(item.active ? "Active" : "Inactive")}
                     </span>
                   </div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">
                     {t(item.name)}
+=======
+                      {item.active ? dict.common.active : dict.common.inactive}
+                    </span>
+                  </div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                    {currencyLabel}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                   </div>
                 </div>
               </div>

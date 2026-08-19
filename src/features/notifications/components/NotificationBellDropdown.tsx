@@ -9,8 +9,10 @@ import {
 } from "../api";
 import { useNotificationUI } from "../hook";
 import Link from "next/link";
+import { useI18n } from "@/hooks/use-i18n";
 
 export default function NotificationBellDropdown() {
+  const { dict, locale, isEnglish } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +58,7 @@ export default function NotificationBellDropdown() {
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         className="relative rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 transition hover:border-[#FFC83D] hover:text-[#003377] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D]"
-        aria-label="ការជូនដំណឹង"
+        aria-label={dict.notifications.title}
       >
         <Bell size={20} />
         {unreadCount > 0 && (
@@ -73,11 +75,16 @@ export default function NotificationBellDropdown() {
           <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-5 py-3.5 dark:border-slate-800 dark:bg-slate-850">
             <div className="flex items-center gap-2">
               <span className="font-bold text-sm text-slate-900 dark:text-white font-google-sans">
-                ការជូនដំណឹង
+                {dict.notifications.title}
               </span>
               {unreadCount > 0 && (
+<<<<<<< HEAD
                 <span className="rounded-full bg-[#FFC83D]/20 px-2 py-0.5 text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
                   {unreadCount} ថ្មី
+=======
+                <span className="rounded-full bg-[#FFC83D]/20 px-2 py-0.5 text-[11px] font-bold text-[#003377] dark:text-[#FFC83D]">
+                  {unreadCount} {isEnglish ? "New" : "ថ្មី"}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 </span>
               )}
             </div>
@@ -89,7 +96,7 @@ export default function NotificationBellDropdown() {
                 className="text-xs font-semibold text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D] flex items-center gap-1"
               >
                 <CheckCheck size={14} />
-                <span>អានទាំងអស់</span>
+                <span>{dict.notifications.markAllRead}</span>
               </button>
             )}
           </div>
@@ -97,7 +104,7 @@ export default function NotificationBellDropdown() {
           <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
             {recentNotifications.length === 0 ? (
               <div className="p-8 text-center text-xs text-slate-400">
-                គ្មានការជូនដំណឹងទេ
+                {dict.notifications.noNotifications}
               </div>
             ) : (
               recentNotifications.map((item) => (
@@ -122,10 +129,15 @@ export default function NotificationBellDropdown() {
 
                   <div className="flex-1 space-y-0.5">
                     <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
-                      {item.titleKh}
+                      {isEnglish ? item.title || item.titleKh : item.titleKh || item.title}
                     </p>
+<<<<<<< HEAD
                     <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
                       {item.messageKh}
+=======
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                      {isEnglish ? item.message || item.messageKh : item.messageKh || item.message}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                     </p>
                   </div>
                 </div>
@@ -135,11 +147,11 @@ export default function NotificationBellDropdown() {
 
           <div className="border-t border-slate-100 bg-slate-50/50 p-3 text-center dark:border-slate-800 dark:bg-slate-850">
             <Link
-              href="/notifications"
+              href={`/${locale}/notifications`}
               onClick={() => setIsOpen(false)}
               className="inline-flex items-center gap-1.5 text-xs font-bold text-[#003377] hover:underline dark:text-[#FFC83D]"
             >
-              <span>មើលការជូនដំណឹងទាំងអស់</span>
+              <span>{dict.notifications.viewAll}</span>
               <ExternalLink size={12} />
             </Link>
           </div>

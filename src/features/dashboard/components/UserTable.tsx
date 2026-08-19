@@ -24,7 +24,8 @@ import {
 import { useMemo, useState } from "react";
 import UserDetailModal from "./UserDetailModal";
 import Image from "next/image";
-import { useSuspendUserMutation, useReactivateUserMutation } from "@/features/user-manager/api";
+import { useSuspendUserMutation, useReactivateUserMutation } from "@/features/users/api";
+import { useI18n } from "@/hooks/use-i18n";
 import toast from "react-hot-toast";
 
 interface UserTableProps {
@@ -34,6 +35,7 @@ interface UserTableProps {
 }
 
 export default function UserTable({ users, showSearch = true, initialPageSize = 10 }: UserTableProps) {
+  const { dict, isEnglish } = useI18n();
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [openDetail, setOpenDetail] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -62,13 +64,21 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
     try {
       if (isSuspended) {
         await reactivateUser(userId).unwrap();
-        toast.success(`បានបើកដំណើរការ ${user.name} ឡើងវិញជោគជ័យ`);
+        toast.success(
+          isEnglish
+            ? `Successfully reactivated ${user.name}`
+            : `បានបើកដំណើរការ ${user.name} ឡើងវិញជោគជ័យ`
+        );
       } else {
         await suspendUser(userId).unwrap();
-        toast.success(`បានផ្អាកដំណើរការ ${user.name} ជោគជ័យ`);
+        toast.success(
+          isEnglish
+            ? `Successfully suspended ${user.name}`
+            : `បានផ្អាកដំណើរការ ${user.name} ជោគជ័យ`
+        );
       }
     } catch (err: any) {
-      toast.error(err?.data?.message || "មានបញ្ហាក្នុងការផ្លាស់ប្តូរស្ថានភាព");
+      toast.error(err?.data?.message || dict.common.error);
     }
   };
 
@@ -163,8 +173,13 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
+<<<<<<< HEAD
                 placeholder="ស្វែងរកតាម ឈ្មោះ អ៊ីម៉ែល ឬ លេខសម្គាល់..."
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-base text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+=======
+                placeholder={dict.users.searchPlaceholder}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-sm text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
               />
             </div>
 
@@ -174,14 +189,14 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                 onClick={() => setShowFilters(!showFilters)}
                 className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-base font-semibold transition ${
                   showFilters || hasActiveFilters
-                    ? "border-[#003377] bg-[#003377] text-white"
+                    ? "border-[#003377] bg-[#003377] text-white dark:bg-[#FFC83D] dark:text-[#003377] dark:border-[#FFC83D]"
                     : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
                 }`}
               >
                 <Filter className="size-4" />
-                <span>តម្រងស្វែងរក</span>
+                <span>{dict.users.filterButton}</span>
                 {hasActiveFilters && (
-                  <span className="size-2 rounded-full bg-[#FFC83D]" />
+                  <span className="size-2 rounded-full bg-[#FFC83D] dark:bg-[#003377]" />
                 )}
               </button>
 
@@ -189,28 +204,42 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                 <button
                   type="button"
                   onClick={handleResetFilters}
+<<<<<<< HEAD
                   title="លុបតម្រង"
                   className="inline-flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-base font-semibold text-rose-600 hover:bg-rose-50 dark:border-slate-800 dark:bg-slate-900"
+=======
+                  title={dict.users.clearFilters}
+                  className="inline-flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:border-slate-800 dark:bg-slate-900"
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 >
                   <RotateCcw className="size-3.5" />
-                  <span>លុបតម្រង</span>
+                  <span>{dict.users.clearFilters}</span>
                 </button>
               )}
 
+<<<<<<< HEAD
               <div className="flex items-center gap-2 text-base text-slate-500 ml-2">
                 <span>បង្ហាញ:</span>
+=======
+              <div className="flex items-center gap-2 text-xs text-slate-500 ml-2">
+                <span>{dict.users.showRows}</span>
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 <select
                   value={pageSize}
                   onChange={(e) => {
                     setPageSize(Number(e.target.value));
                     setCurrentPage(1);
                   }}
+<<<<<<< HEAD
                   className="rounded-xl border border-slate-200 bg-white px-2 py-1 text-base text-slate-700 outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+=======
+                  className="rounded-xl border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 font-bold"
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
                 >
-                  <option value={5}>5 នាក់</option>
-                  <option value={10}>10 នាក់</option>
-                  <option value={20}>20 នាក់</option>
-                  <option value={50}>50 នាក់</option>
+                  <option value={5}>5 {dict.users.usersCount}</option>
+                  <option value={10}>10 {dict.users.usersCount}</option>
+                  <option value={20}>20 {dict.users.usersCount}</option>
+                  <option value={50}>50 {dict.users.usersCount}</option>
                 </select>
               </div>
             </div>
@@ -222,7 +251,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
               {/* accountStatus */}
               <div>
                 <label className="block text-slate-500 font-medium mb-1">
-                  ស្ថានភាពគណនី
+                  {dict.users.accountStatus}
                 </label>
                 <select
                   value={accountStatusFilter}
@@ -232,17 +261,17 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                   }}
                   className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                 >
-                  <option value="ALL">ទាំងអស់</option>
-                  <option value="ACTIVE">សកម្ម</option>
-                  <option value="SUSPENDED">ផ្អាកដំណើរការ</option>
-                  <option value="DELETED">បានលុប</option>
+                  <option value="ALL">{dict.users.statusAll}</option>
+                  <option value="ACTIVE">{dict.users.statusActive}</option>
+                  <option value="SUSPENDED">{dict.users.statusSuspended}</option>
+                  <option value="DELETED">{dict.users.statusDeleted}</option>
                 </select>
               </div>
 
               {/* onboardingCompleted */}
               <div>
                 <label className="block text-slate-500 font-medium mb-1">
-                  ការចុះឈ្មោះប្រើប្រាស់
+                  {dict.users.onboardingStatus}
                 </label>
                 <select
                   value={onboardingFilter}
@@ -252,16 +281,16 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                   }}
                   className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                 >
-                  <option value="ALL">ទាំងអស់</option>
-                  <option value="COMPLETED">រួចរាល់</option>
-                  <option value="PENDING">មិនទាន់រួចរាល់</option>
+                  <option value="ALL">{dict.users.statusAll}</option>
+                  <option value="COMPLETED">{dict.users.onboardingCompleted}</option>
+                  <option value="PENDING">{dict.users.onboardingPending}</option>
                 </select>
               </div>
 
               {/* emailVerified */}
               <div>
                 <label className="block text-slate-500 font-medium mb-1">
-                  ការផ្ទៀងផ្ទាត់អ៊ីម៉ែល
+                  {dict.users.emailVerification}
                 </label>
                 <select
                   value={emailVerifiedFilter}
@@ -271,9 +300,9 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                   }}
                   className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                 >
-                  <option value="ALL">ទាំងអស់</option>
-                  <option value="VERIFIED">ផ្ទៀងផ្ទាត់រួចរាល់</option>
-                  <option value="UNVERIFIED">មិនទាន់ផ្ទៀងផ្ទាត់</option>
+                  <option value="ALL">{dict.users.statusAll}</option>
+                  <option value="VERIFIED">{dict.users.emailVerifiedStatus}</option>
+                  <option value="UNVERIFIED">{dict.users.emailUnverifiedStatus}</option>
                 </select>
               </div>
             </div>
@@ -285,18 +314,18 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
       <Table className="font-google-sans">
         <TableHeader className="bg-slate-50 dark:bg-slate-800/50">
           <TableRow>
-            <TableHead>អ្នកប្រើប្រាស់</TableHead>
-            <TableHead>ស្ថានភាព</TableHead>
-            <TableHead>ការចុះឈ្មោះ និង ផ្ទៀងផ្ទាត់</TableHead>
-            <TableHead>កាលបរិច្ឆេទបង្កើត</TableHead>
-            <TableHead className="text-right">សកម្មភាព</TableHead>
+            <TableHead>{dict.users.name}</TableHead>
+            <TableHead>{dict.users.status}</TableHead>
+            <TableHead>{dict.users.onboarding}</TableHead>
+            <TableHead>{dict.users.createdAt}</TableHead>
+            <TableHead className="text-right">{dict.common.actions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {paginatedUsers.length === 0 ? (
             <TableRow>
               <TableCell colSpan={5} className="text-center py-10 text-slate-400">
-                មិនមានទិន្នន័យអ្នកប្រើប្រាស់តាមតម្រងស្វែងរកទេ
+                {dict.common.noData}
               </TableCell>
             </TableRow>
           ) : (
@@ -309,7 +338,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
               const isOnboarded = user.rawUser?.onboardingCompleted ?? true;
 
               const dateStr = user.rawUser?.createdAt
-                ? new Date(user.rawUser.createdAt).toLocaleDateString("km-KH")
+                ? new Date(user.rawUser.createdAt).toLocaleDateString(isEnglish ? "en-US" : "km-KH")
                 : user.lastActive || "—";
 
               return (
@@ -352,17 +381,17 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                           : "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300"
                       }
                     >
-                      {isSuspended ? "ផ្អាកដំណើរការ" : isDeleted ? "បានលុប" : "សកម្ម"}
+                      {isSuspended ? dict.users.statusSuspended : isDeleted ? dict.users.statusDeleted : dict.users.statusActive}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-xs">
                     <div className="flex flex-col gap-1">
                       <span className={isOnboarded ? "text-emerald-600 font-medium flex items-center gap-1" : "text-amber-600 font-medium flex items-center gap-1"}>
                         {isOnboarded ? <CheckCircle className="size-3" /> : <XCircle className="size-3" />}
-                        ការចុះឈ្មោះ: {isOnboarded ? "រួចរាល់" : "មិនទាន់រួចរាល់"}
+                        {dict.users.onboardingLabel} {isOnboarded ? dict.users.onboardingCompleted : dict.users.onboardingPending}
                       </span>
                       <span className={isVerified ? "text-slate-500" : "text-amber-600"}>
-                        អ៊ីម៉ែល: {isVerified ? "បានផ្ទៀងផ្ទាត់" : "មិនទាន់ផ្ទៀងផ្ទាត់"}
+                        {dict.users.emailLabel} {isVerified ? dict.users.emailVerifiedStatus : dict.users.emailUnverifiedStatus}
                       </span>
                     </div>
                   </TableCell>
@@ -375,14 +404,14 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                         e.stopPropagation();
                         openUser(user);
                       }}
-                      title="មើលព័ត៌មានលម្អិត"
-                      className="p-1 text-slate-400 hover:text-[#003377]"
+                      title={dict.users.viewDetails}
+                      className="p-1 text-slate-400 hover:text-[#003377] dark:hover:text-[#FFC83D]"
                     >
                       <Eye size={18} />
                     </button>
                     <button
                       onClick={(e) => handleToggleSuspend(e, user)}
-                      title={isSuspended ? "បើកដំណើរការឡើងវិញ" : "ផ្អាកដំណើរការ"}
+                      title={isSuspended ? dict.users.reactivate : dict.users.suspend}
                       className={`p-1 ${
                         isSuspended
                           ? "text-emerald-500 hover:text-emerald-700"
@@ -401,11 +430,12 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
 
       {/* Pagination Footer */}
       {totalItems > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 font-google-sans">
           <div>
-            បង្ហាញ <span className="font-semibold text-slate-700 dark:text-slate-200">{startItem}</span> ដល់{" "}
-            <span className="font-semibold text-slate-700 dark:text-slate-200">{endItem}</span> នៃ{" "}
-            <span className="font-semibold text-slate-700 dark:text-slate-200">{totalItems}</span> អ្នកប្រើប្រាស់
+            {dict.users.showingCount
+              .replace("{start}", String(startItem))
+              .replace("{end}", String(endItem))
+              .replace("{total}", String(totalItems))}
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -415,7 +445,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
             >
-              <ChevronLeft className="size-4" /> ថយក្រោយ
+              <ChevronLeft className="size-4" /> {dict.users.prev}
             </button>
 
             <div className="flex items-center gap-1 px-1">
@@ -426,7 +456,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                   onClick={() => setCurrentPage(page)}
                   className={`size-8 rounded-xl text-xs font-semibold transition ${
                     safeCurrentPage === page
-                      ? "bg-[#003377] text-white"
+                      ? "bg-[#003377] text-white dark:bg-[#FFC83D] dark:text-[#003377]"
                       : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
                   }`}
                 >
@@ -441,7 +471,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
             >
-              បន្ទាប់ <ChevronRight className="size-4" />
+              {dict.users.next} <ChevronRight className="size-4" />
             </button>
           </div>
         </div>

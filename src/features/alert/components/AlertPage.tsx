@@ -13,6 +13,7 @@ import { AlertTable } from "./AlertTable";
 import { AlertFilters, type AlertFilterValues } from "./AlertFilters";
 import { AlertDetailsDialog } from "./AlertDetailsDialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useI18n } from "@/hooks/use-i18n";
 
 const defaultFilters: AlertFilterValues = {
   search: "",
@@ -36,13 +37,13 @@ function SummaryCard({
   iconBackground,
 }: SummaryCardProps) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-white/70 bg-white/85 p-4 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/85">
+    <div className="flex items-center gap-3 rounded-2xl border border-white/70 bg-white/85 p-4 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/85 min-h-[76px]">
       <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${iconBackground} ${iconClassName}`}>
         <Icon className="size-5" />
       </span>
-      <div>
+      <div className="min-w-0 flex-1">
         <p className="text-2xl font-black leading-none text-[#003377] dark:text-white">{value}</p>
-        <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">{label}</p>
+        <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">{label}</p>
       </div>
     </div>
   );
@@ -61,6 +62,7 @@ function PageLoading() {
 }
 
 export function AlertPage() {
+  const { dict, isEnglish } = useI18n();
   const [filters, setFilters] = useState<AlertFilterValues>(defaultFilters);
   const [selectedRuleId, setSelectedRuleId] = useState<string | null>(null);
 
@@ -111,9 +113,9 @@ export function AlertPage() {
               <BellRing className="size-6" />
             </span>
             <div>
-              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">គ្រប់គ្រងការជូនដំណឹង</h1>
+              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{dict.alerts.title}</h1>
               <p className="mt-1 max-w-2xl text-sm leading-6 text-white/70">
-                តាមដាន និងពិនិត្យច្បាប់ជូនដំណឹងស្វ័យប្រវត្តិរបស់ប្រព័ន្ធទាំងអស់។
+                {dict.alerts.subtitle}
               </p>
             </div>
           </div>
@@ -122,10 +124,10 @@ export function AlertPage() {
             type="button"
             onClick={() => refetch()}
             disabled={isFetching}
-            className="inline-flex h-11 w-fit items-center gap-2 rounded-xl bg-[#FFC83D] px-4 text-sm font-bold text-[#003377] shadow-sm transition hover:bg-[#eab52f] disabled:cursor-wait disabled:opacity-70"
+            className="inline-flex h-11 min-w-[165px] items-center justify-center gap-2 rounded-xl bg-[#FFC83D] px-4 text-sm font-bold text-[#003377] shadow-sm transition hover:bg-[#eab52f] disabled:cursor-wait disabled:opacity-70 whitespace-nowrap shrink-0"
           >
             <RefreshCw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
-            {isFetching ? "កំពុងធ្វើបច្ចុប្បន្នភាព..." : "ធ្វើបច្ចុប្បន្នភាព"}
+            <span>{isFetching ? dict.alerts.updating : dict.alerts.updateBtn}</span>
           </button>
         </div>
       </header>
@@ -137,9 +139,9 @@ export function AlertPage() {
           <span className="mb-4 grid size-14 place-items-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-300">
             <AlertTriangle className="size-7" />
           </span>
-          <h2 className="font-bold text-slate-900 dark:text-white">មិនអាចទាញយកច្បាប់ជូនដំណឹងបានទេ</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">{dict.alerts.errorLoading}</h2>
           <p className="mt-1 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
-            មានបញ្ហាក្នុងការភ្ជាប់ទៅម៉ាស៊ីនមេ។ សូមពិនិត្យការតភ្ជាប់ ហើយព្យាយាមម្តងទៀត។
+            {dict.alerts.errorDesc}
           </p>
           <button
             type="button"
@@ -147,16 +149,16 @@ export function AlertPage() {
             className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#FFC83D] px-5 py-2.5 text-sm font-bold text-[#003377] hover:bg-[#eab52f]"
           >
             <RefreshCw className="size-4" />
-            ព្យាយាមម្តងទៀត
+            {dict.alerts.tryAgain}
           </button>
         </div>
       ) : (
         <>
           <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <SummaryCard label="ច្បាប់សរុប" value={summary.total} icon={BellRing} iconBackground="bg-[#FFC83D]/20" iconClassName="text-[#8A6500] dark:text-[#FFC83D]" />
-            <SummaryCard label="កំពុងដំណើរការ" value={summary.active} icon={CheckCircle2} iconBackground="bg-emerald-100 dark:bg-emerald-950/50" iconClassName="text-emerald-600 dark:text-emerald-400" />
-            <SummaryCard label="ត្រូវប្រុងប្រយ័ត្ន" value={summary.warning} icon={AlertTriangle} iconBackground="bg-amber-100 dark:bg-amber-950/50" iconClassName="text-amber-600 dark:text-amber-400" />
-            <SummaryCard label="ធ្ងន់ធ្ងរ" value={summary.critical} icon={ShieldAlert} iconBackground="bg-red-100 dark:bg-red-950/50" iconClassName="text-red-600 dark:text-red-400" />
+            <SummaryCard label={dict.alerts.totalRules} value={summary.total} icon={BellRing} iconBackground="bg-[#FFC83D]/20" iconClassName="text-[#8A6500] dark:text-[#FFC83D]" />
+            <SummaryCard label={dict.alerts.activeRules} value={summary.active} icon={CheckCircle2} iconBackground="bg-emerald-100 dark:bg-emerald-950/50" iconClassName="text-emerald-600 dark:text-emerald-400" />
+            <SummaryCard label={dict.alerts.warningRules} value={summary.warning} icon={AlertTriangle} iconBackground="bg-amber-100 dark:bg-amber-950/50" iconClassName="text-amber-600 dark:text-amber-400" />
+            <SummaryCard label={dict.alerts.criticalRules} value={summary.critical} icon={ShieldAlert} iconBackground="bg-red-100 dark:bg-red-950/50" iconClassName="text-red-600 dark:text-red-400" />
           </section>
 
           <AlertFilters

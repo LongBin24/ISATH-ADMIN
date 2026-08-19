@@ -3,7 +3,11 @@
 import Image from "next/image";
 import { useEffect } from "react";
 import { Category } from "../types";
+<<<<<<< HEAD
 import { useAdminI18n } from "@/i18n/admin-i18n";
+=======
+import { useI18n } from "@/hooks/use-i18n";
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
 
 interface DeleteCategoryDialogProps {
   category: Category | null;
@@ -18,7 +22,11 @@ export function DeleteCategoryDialog({
   onClose,
   onConfirm,
 }: DeleteCategoryDialogProps) {
+<<<<<<< HEAD
   const { t } = useAdminI18n();
+=======
+  const { dict } = useI18n();
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
 
   useEffect(() => {
     if (!category) return;
@@ -34,10 +42,11 @@ export function DeleteCategoryDialog({
   if (!category) return null;
 
   const isIncome = (category.type ?? "expense").toLowerCase() === "income";
+  const typeText = isIncome ? dict.transactions.income : dict.transactions.expense;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-[1px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-[1px] font-google-sans"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !isDeleting) onClose();
       }}
@@ -49,7 +58,7 @@ export function DeleteCategoryDialog({
         aria-describedby="delete-category-description"
         className="w-full max-w-[400px] rounded-[20px] bg-white p-9 text-center shadow-[0_25px_30px_rgba(0,0,0,0.2)] dark:bg-slate-900 font-google-sans"
       >
-        <div className="mx-auto flex size-[60px] items-center justify-center rounded-[30px] bg-red-100">
+        <div className="mx-auto flex size-[60px] items-center justify-center rounded-[30px] bg-red-100 dark:bg-red-950">
           <Image
             src="/categories/delete.svg"
             alt=""
@@ -62,13 +71,21 @@ export function DeleteCategoryDialog({
           id="delete-category-title"
           className="mt-4 text-lg font-bold text-[#293444] dark:text-slate-100"
         >
+<<<<<<< HEAD
           {t("Delete Category")} {category.name}?
+=======
+          {dict.categories.deleteTitle.replace("{type}", typeText)}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
         </h2>
         <p
           id="delete-category-description"
           className="mt-2 text-xs leading-relaxed text-[#667180] dark:text-slate-400"
         >
+<<<<<<< HEAD
           {t("This category and associated rules will be removed.")}
+=======
+          {dict.categories.deleteDescription}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
         </p>
 
         <div className="mt-7 flex items-center justify-center gap-2.5">
@@ -79,7 +96,11 @@ export function DeleteCategoryDialog({
             onClick={onClose}
             className="h-[41px] rounded-[10px] border border-slate-200 bg-[#eaeaea] px-6 text-sm font-bold text-[#293444] transition hover:bg-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600"
           >
+<<<<<<< HEAD
             {t("Cancel")}
+=======
+            {dict.categories.deleteCancel}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
           </button>
           <button
             type="button"
@@ -87,7 +108,11 @@ export function DeleteCategoryDialog({
             onClick={onConfirm}
             className="h-[41px] min-w-[101px] rounded-[10px] bg-[#ef4444] px-6 text-sm font-bold text-white transition hover:bg-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
           >
+<<<<<<< HEAD
             {isDeleting ? t("Deleting...") : t("Delete Category")}
+=======
+            {isDeleting ? dict.categories.deleting : dict.categories.deleteConfirm}
+>>>>>>> 17cb3ce3e288d4fd37c9f2ea926c41fd3cc16c0f
           </button>
         </div>
       </section>
