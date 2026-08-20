@@ -113,7 +113,7 @@ export function AlertPage() {
             <div>
               <h1 className="text-xl font-bold tracking-tight sm:text-2xl">គ្រប់គ្រងការជូនដំណឹង</h1>
               <p className="mt-1 max-w-2xl text-sm leading-6 text-white/70">
-                តាមដាន និងពិនិត្យច្បាប់ជូនដំណឹងស្វ័យប្រវត្តិរបស់ប្រព័ន្ធទាំងអស់។
+                តាមដាន និងពិនិត្យការរំឭកស្វ័យប្រវត្តិរបស់ប្រព័ន្ធទាំងអស់។
               </p>
             </div>
           </div>
@@ -137,7 +137,7 @@ export function AlertPage() {
           <span className="mb-4 grid size-14 place-items-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-300">
             <AlertTriangle className="size-7" />
           </span>
-          <h2 className="font-bold text-slate-900 dark:text-white">មិនអាចទាញយកច្បាប់ជូនដំណឹងបានទេ</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">មិនអាចទាញយការរំឭកបានទេ</h2>
           <p className="mt-1 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
             មានបញ្ហាក្នុងការភ្ជាប់ទៅម៉ាស៊ីនមេ។ សូមពិនិត្យការតភ្ជាប់ ហើយព្យាយាមម្តងទៀត។
           </p>

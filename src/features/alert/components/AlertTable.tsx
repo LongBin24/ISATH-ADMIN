@@ -67,7 +67,7 @@ export function AlertTable({ alertRules, onViewDetails }: AlertTableProps) {
         <span className="mb-4 grid size-14 place-items-center rounded-2xl bg-[#FFC83D]/20 text-[#8A6500] dark:text-[#FFC83D]">
           <Inbox className="size-7" />
         </span>
-        <h3 className="font-bold text-slate-900 dark:text-white">រកមិនឃើញច្បាប់ជូនដំណឹង</h3>
+        <h3 className="font-bold text-slate-900 dark:text-white">រកមិនឃើញការរំឭក</h3>
         <p className="mt-1 max-w-sm text-sm leading-6 text-slate-500 dark:text-slate-400">
           សូមសាកល្បងកែប្រែពាក្យស្វែងរក ឬជ្រើសរើសតម្រងផ្សេងទៀត។
         </p>

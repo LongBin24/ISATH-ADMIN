@@ -38,9 +38,11 @@ function checkAdminRole(): boolean {
     if (parts.length < 2) return true;
     const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const decoded = JSON.parse(window.atob(base64));
-    const realmRoles = (decoded.realm_access?.roles || []).map((r: unknown) => String(r).toUpperCase());
+    const realmRoles = (decoded.realm_access?.roles || []).map((r: unknown) =>
+      String(r).toUpperCase(),
+    );
     const clientRoles = Object.values(decoded.resource_access || {})
-      .flatMap((r: any) => ((r?.roles || []) as unknown[]))
+      .flatMap((r: any) => (r?.roles || []) as unknown[])
       .map((r: unknown) => String(r).toUpperCase());
     const allRoles = [...realmRoles, ...clientRoles];
     return (
@@ -87,7 +89,7 @@ const allFeatures: FeatureCard[] = [
     title: { en: "System Overview", km: "ទិដ្ឋភាពទូទៅប្រព័ន្ធ" },
     description: {
       en: "Monitor key metrics and system health in real time.",
-      km: "តាមដានសូចនាករសំខាន់ៗ និងសុខភាពប្រព័ន្ធជាបន្តបន្ទាប់។",
+      km: "តាមដានសូចនាករសំខាន់ៗ និងស្ថានភាពប្រព័ន្ធជាបន្តបន្ទាប់។",
     },
     href: "/dashboard",
     icon: Wallet,
@@ -128,10 +130,10 @@ const allFeatures: FeatureCard[] = [
     iconClass: "border border-[#FEDB55]/25 bg-[#0C1727] text-[#FEDB55]",
   },
   {
-    title: { en: "Alert Rules", km: "ច្បាប់ជូនដំណឹង" },
+    title: { en: "Alert Rules", km: "រំឭក" },
     description: {
       en: "Monitor alert rules across all users and system.",
-      km: "តាមដានច្បាប់ជូនដំណឹងសម្រាប់អ្នកប្រើប្រាស់ និងប្រព័ន្ធទាំងមូល។",
+      km: "តាមដានការរំឭកសម្រាប់អ្នកប្រើប្រាស់ និងប្រព័ន្ធទាំងមូល។",
     },
     href: "/alert",
     icon: FileText,
@@ -163,7 +165,9 @@ function orbitOffset(angleDeg: number) {
 }
 
 function getCalcPosition(offset: number): string {
-  return offset < 0 ? `calc(50% - ${Math.abs(offset)}px)` : `calc(50% + ${offset}px)`;
+  return offset < 0
+    ? `calc(50% - ${Math.abs(offset)}px)`
+    : `calc(50% + ${offset}px)`;
 }
 
 const reveal: Variants = {
@@ -172,13 +176,25 @@ const reveal: Variants = {
     opacity: 1,
     scale: 1,
     y: 0,
-    transition: { delay: 0.3 + index * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+    transition: {
+      delay: 0.3 + index * 0.1,
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1],
+    },
   }),
 };
 
 const MotionLink = motion(Link);
 
-function OrbitCard({ feature, index, locale }: { feature: FeatureCard; index: number; locale: Locale }) {
+function OrbitCard({
+  feature,
+  index,
+  locale,
+}: {
+  feature: FeatureCard;
+  index: number;
+  locale: Locale;
+}) {
   const reducedMotion = useReducedMotion();
   const Icon = feature.icon;
   const { x, y } = orbitOffset(feature.angle);
@@ -202,20 +218,30 @@ function OrbitCard({ feature, index, locale }: { feature: FeatureCard; index: nu
         animate={reducedMotion ? undefined : { y: [0, -5, 0] }}
         whileHover={{ y: -3 }}
         transition={{
-          y: { duration: 4 + index * 0.35, repeat: Infinity, ease: "easeInOut" },
+          y: {
+            duration: 4 + index * 0.35,
+            repeat: Infinity,
+            ease: "easeInOut",
+          },
           default: { duration: 0.25, ease: "easeOut" },
         }}
         className="group block"
       >
-        <div className={`flex items-center gap-4 ${isLeft ? "flex-row-reverse text-right" : "text-left"}`}>
+        <div
+          className={`flex items-center gap-4 ${isLeft ? "flex-row-reverse text-right" : "text-left"}`}
+        >
           <span
             className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-[0_6px_16px_-6px_rgba(2,6,23,.35)] transition-shadow duration-300 group-hover:shadow-[0_0_18px_rgba(254,219,85,.28)] ${feature.iconClass}`}
           >
             <Icon className="h-5 w-5" strokeWidth={2} />
           </span>
           <div className="w-[190px] rounded-[20px] border border-slate-200/70 bg-white px-4 py-3 shadow-[0_10px_28px_-20px_rgba(2,6,23,.2)] transition-colors duration-300 group-hover:border-[#FEDB55]/50 dark:border-[#1D2B3D] dark:bg-[#0C1727] dark:group-hover:border-[#FEDB55]/40">
-            <h3 className="text-[14px] font-semibold leading-5 text-[#0F172A] dark:text-[#F8FAFC]">{feature.title[locale]}</h3>
-            <p className="mt-1 line-clamp-2 text-[12.5px] leading-[1.2rem] text-slate-500 dark:text-[#94A3B8]">{feature.description[locale]}</p>
+            <h3 className="text-[14px] font-semibold leading-5 text-[#0F172A] dark:text-[#F8FAFC]">
+              {feature.title[locale]}
+            </h3>
+            <p className="mt-1 line-clamp-2 text-[12.5px] leading-[1.2rem] text-slate-500 dark:text-[#94A3B8]">
+              {feature.description[locale]}
+            </p>
           </div>
         </div>
       </MotionLink>
@@ -275,7 +301,11 @@ export default function WelcomeIntro() {
           className="grid size-9 place-items-center rounded-full border border-slate-200/70 bg-white/80 text-[#003377] shadow-sm backdrop-blur transition hover:rotate-6 hover:bg-[#FFC83D] dark:border-[#1D2B3D] dark:bg-[#071221]/90 dark:text-[#FEDB55]"
           aria-label="Toggle dark mode"
         >
-          {themeMounted && theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          {themeMounted && theme === "dark" ? (
+            <Sun className="size-4" />
+          ) : (
+            <Moon className="size-4" />
+          )}
         </button>
       </div>
 
@@ -287,7 +317,10 @@ export default function WelcomeIntro() {
         className="mx-auto max-w-[700px] text-center"
       >
         <span className="inline-flex items-center gap-2 rounded-full border border-[#003377]/10 bg-[#003377]/[0.035] px-4 py-2 text-xs font-semibold text-[#003377]/70 dark:border-[#1D2B3D] dark:bg-[#071221] dark:text-[#94A3B8]">
-          <Sparkles className="size-4 text-[#e3a400] dark:text-[#FEDB55]" aria-hidden="true" />
+          <Sparkles
+            className="size-4 text-[#e3a400] dark:text-[#FEDB55]"
+            aria-hidden="true"
+          />
           {copy.chip[locale]}
         </span>
         <h1 className="hero-heading mt-6 text-[#003377] dark:text-[#F8FAFC]">
@@ -300,9 +333,21 @@ export default function WelcomeIntro() {
 
       <div className="relative mx-auto mt-6 aspect-square w-full max-w-[240px] lg:mt-8 lg:aspect-auto lg:h-[540px] lg:max-w-[1050px]">
         <div className="absolute left-1/2 top-1/2 aspect-square w-[80%] max-w-[220px] -translate-x-1/2 -translate-y-1/2 lg:max-w-[420px]">
-          <svg viewBox="0 0 500 500" className="absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
+          <svg
+            viewBox="0 0 500 500"
+            className="absolute inset-0 h-full w-full overflow-visible"
+            aria-hidden="true"
+          >
             {/* inner thin static ring — purely decorative */}
-            <circle cx="250" cy="250" r="130" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[#003377]/10 dark:text-[#1D2B3D]" />
+            <circle
+              cx="250"
+              cy="250"
+              r="130"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              className="text-[#003377]/10 dark:text-[#1D2B3D]"
+            />
 
             {/* middle blue dotted orbit — purely decorative */}
             <motion.g
@@ -310,7 +355,17 @@ export default function WelcomeIntro() {
               transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
               style={{ transformOrigin: "250px 250px" }}
             >
-              <circle cx="250" cy="250" r="190" fill="none" stroke="#3B82F6" strokeWidth="1.5" strokeDasharray="1 12" strokeLinecap="round" opacity=".5" />
+              <circle
+                cx="250"
+                cy="250"
+                r="190"
+                fill="none"
+                stroke="#3B82F6"
+                strokeWidth="1.5"
+                strokeDasharray="1 12"
+                strokeLinecap="round"
+                opacity=".5"
+              />
               <circle cx="250" cy="60" r="3.5" fill="#3B82F6" opacity=".9" />
             </motion.g>
 
@@ -320,7 +375,17 @@ export default function WelcomeIntro() {
               transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
               style={{ transformOrigin: "250px 250px" }}
             >
-              <circle cx="250" cy="250" r="248" fill="none" stroke="#FEDB55" strokeWidth="2" strokeDasharray="60 40 10 60" strokeLinecap="round" opacity=".45" />
+              <circle
+                cx="250"
+                cy="250"
+                r="248"
+                fill="none"
+                stroke="#FEDB55"
+                strokeWidth="2"
+                strokeDasharray="60 40 10 60"
+                strokeLinecap="round"
+                opacity=".45"
+              />
               <circle cx="250" cy="2" r="4.5" fill="#FEDB55" />
             </motion.g>
           </svg>
@@ -330,16 +395,32 @@ export default function WelcomeIntro() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             animate={reducedMotion ? undefined : { y: [0, -6, 0] }}
-            transition={{ y: { duration: 5, repeat: Infinity, ease: "easeInOut" }, opacity: { duration: 0.5 }, scale: { duration: 0.65, ease: [0.16, 1, 0.3, 1] } }}
+            transition={{
+              y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+              opacity: { duration: 0.5 },
+              scale: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+            }}
             className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[20px] border border-[#003377]/10 bg-white shadow-[0_16px_36px_-18px_rgba(0,0,0,.3)] dark:border-[#FEDB55]/20 dark:bg-white lg:h-24 lg:w-24 lg:rounded-[24px]"
           >
-            <Image src="/iStash-logo (3).png" alt="iStash" width={72} height={72} className="h-9 w-9 lg:h-12 lg:w-12" priority />
+            <Image
+              src="/iStash-logo (3).png"
+              alt="iStash"
+              width={72}
+              height={72}
+              className="h-9 w-9 lg:h-12 lg:w-12"
+              priority
+            />
           </motion.div>
         </div>
 
         <div className="hidden lg:block">
           {allFeatures.map((feature, index) => (
-            <OrbitCard key={feature.href} feature={feature} index={index} locale={locale} />
+            <OrbitCard
+              key={feature.href}
+              feature={feature}
+              index={index}
+              locale={locale}
+            />
           ))}
         </div>
       </div>
@@ -353,12 +434,18 @@ export default function WelcomeIntro() {
               href={feature.href}
               className="flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 dark:border-[#1D2B3D] dark:bg-[#0C1727]"
             >
-              <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${feature.iconClass}`}>
+              <span
+                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${feature.iconClass}`}
+              >
                 <Icon className="h-5 w-5" strokeWidth={2} />
               </span>
               <span>
-                <span className="block text-sm font-semibold text-[#0F172A] dark:text-[#F8FAFC]">{feature.title[locale]}</span>
-                <span className="mt-0.5 block text-xs leading-5 text-slate-500 dark:text-[#94A3B8]">{feature.description[locale]}</span>
+                <span className="block text-sm font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
+                  {feature.title[locale]}
+                </span>
+                <span className="mt-0.5 block text-xs leading-5 text-slate-500 dark:text-[#94A3B8]">
+                  {feature.description[locale]}
+                </span>
               </span>
             </Link>
           );

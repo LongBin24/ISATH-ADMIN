@@ -6,7 +6,8 @@ const mockNotifications: any[] = [
     userId: "usr-101",
     actorUserId: "admin-01",
     title: "បានផ្ញើការរំលឹកចំណាយប្រចាំថ្ងៃ",
-    message: "ប្រព័ន្ធបានផ្ញើការរំលឹកចំណាយប្រចាំថ្ងៃទៅកាន់អ្នកប្រើប្រាស់ចំនួន ១៥០ នាក់រួចរាល់។",
+    message:
+      "ប្រព័ន្ធបានផ្ញើការរំលឹកចំណាយប្រចាំថ្ងៃទៅកាន់អ្នកប្រើប្រាស់ចំនួន ១៥០ នាក់រួចរាល់។",
     notificationType: "DAILY_REMINDER",
     category: "DAILY_REMINDER",
     channels: ["IN_APP", "EMAIL"],
@@ -20,7 +21,8 @@ const mockNotifications: any[] = [
     id: "notif-002",
     userId: "usr-102",
     title: "កញ្ចប់ថវិកាហួសកម្រិតកំណត់ (90%)",
-    message: "អ្នកប្រើប្រាស់រ៉ូសាលីនបានប្រើប្រាស់ថវិកាហួស ៩០% នៃកញ្ចប់ថវិកាប្រចាំខែ។",
+    message:
+      "អ្នកប្រើប្រាស់រ៉ូសាលីនបានប្រើប្រាស់ថវិកាហួស ៩០% នៃកញ្ចប់ថវិកាប្រចាំខែ។",
     notificationType: "BUDGET_WARNING",
     category: "BUDGET_WARNING",
     channels: ["IN_APP"],
@@ -33,14 +35,14 @@ const mockNotifications: any[] = [
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   const item = mockNotifications.find((n) => n.id === id) || {
     id,
     userId: "usr-system",
-    title: "ការជូនដំណឹងប្រព័ន្ធ",
-    message: "ព័ត៌មានលម្អិតនៃការជូនដំណឹងប្រព័ន្ធសម្រាប់ ID: " + id,
+    title: "ប្រព័ន្ធការជូនដំណឹង",
+    message: "ព័ត៌មានលម្អិតនៃប្រព័ន្ធការជូនដំណឹងសម្រាប់ ID: " + id,
     notificationType: "DAILY_REMINDER",
     read: false,
     createdAt: new Date().toISOString(),
