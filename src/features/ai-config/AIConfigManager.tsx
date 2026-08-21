@@ -1,22 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Sliders, ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Sparkles, Sliders } from "lucide-react";
 import { useAdminI18n } from "@/i18n/admin-i18n";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { PromptTemplateManager } from "./components/PromptTemplateManager";
 import AIConfigForm from "./AIConfigForm";
 
 export default function AIConfigManager() {
   const { t } = useAdminI18n();
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<string>("prompt-templates");
 
   return (
     <div className="space-y-7 font-google-sans">
-      {/* Feature Header matching category/currency/user-management pattern */}
+      {/* Feature Header */}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
@@ -27,18 +24,6 @@ export default function AIConfigManager() {
               "Manage system prompt templates, version histories, AI assistant capabilities, and model parameters."
             )}
           </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => router.push("/dashboard")}
-            className="border-border text-base font-medium text-[#003377] transition-all duration-150 hover:border-[#003377] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
-          >
-            <ArrowLeft className="mr-2 size-4" />
-            {t("Dashboard")}
-          </Button>
         </div>
       </header>
 

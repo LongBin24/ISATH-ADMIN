@@ -96,7 +96,7 @@ export default function MobileBottomNav() {
                 className={`relative flex flex-1 flex-col items-center justify-center gap-0.5 py-1 transition-all duration-150 active:scale-90 ${
                   isActive
                     ? "text-[#003377] dark:text-[#FFC83D]"
-                    : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+                    : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-[#FFC83D]"
                 }`}
               >
                 <div className="relative">

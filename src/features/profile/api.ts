@@ -144,6 +144,7 @@ export const profileApi = baseApi.injectEndpoints({
           displayName: body.displayName,
           phoneNumber: body.phoneNumber,
           city: body.location,
+          occupation: body.occupation,
         },
       }),
       transformResponse: toUserProfile,

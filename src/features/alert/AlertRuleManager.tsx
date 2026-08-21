@@ -14,8 +14,10 @@ import {
   LockKeyhole,
   MoreHorizontal,
   RefreshCw,
+  Search,
   ShieldAlert,
   TriangleAlert,
+  X,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -32,6 +35,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useGetAdminUsersQuery } from "@/features/user-manager/api";
 import type { AdminUser } from "@/features/user-manager/types";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { cn } from "@/lib/utils";
 import { useGetAdminAlertRulesQuery, useGetAlertRuleByIdQuery } from "./api";
 import type { AlertRule, AlertRuleQueryParams, AlertType, ReferenceType, Severity, TriggerType } from "./types";
 
@@ -47,10 +51,10 @@ function initials(user?: AdminUser) { return userName(user).split(/\s+/).map((va
 function exactDate(value?: string | null) { if (!value) return "—"; const date = new Date(value); return Number.isNaN(date.getTime()) ? "—" : format(date, "PPp"); }
 function relativeDate(value?: string | null) { if (!value) return "—"; const date = new Date(value); return Number.isNaN(date.getTime()) ? "—" : formatDistanceToNow(date, { addSuffix: true }); }
 function friendlyEnum(value?: string | null) { return value ? value.toLowerCase().replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()) : "—"; }
-function pages(current: number, total: number) { if (total <= 5) return Array.from({ length: total }, (_, index) => index); const result: Array<number | string> = [0]; if (current > 2) result.push("start"); for (let page = Math.max(1, current - 1); page <= Math.min(total - 2, current + 1); page += 1) result.push(page); if (current < total - 3) result.push("end"); result.push(total - 1); return result; }
 
 export default function AlertRuleManager() {
   const { t } = useAdminI18n();
+  const [search, setSearch] = useState("");
   const [userId, setUserId] = useState("");
   const [alertType, setAlertType] = useState<FilterValue<AlertType>>("ALL");
   const [triggerType, setTriggerType] = useState<FilterValue<TriggerType>>("ALL");
@@ -74,13 +78,60 @@ export default function AlertRuleManager() {
   const users = useMemo(() => usersQuery.data?.content ?? [], [usersQuery.data?.content]);
   const usersById = useMemo(() => new Map(users.map((user) => [user.id, user])), [users]);
   const rules = rulesQuery.data?.content ?? [];
+
+  const filteredRules = useMemo(() => {
+    if (!search.trim()) return rules;
+    const term = search.toLowerCase().trim();
+    return rules.filter((rule) => {
+      const user = usersById.get(rule.userId);
+      const name = userName(user).toLowerCase();
+      const email = (user?.email || "").toLowerCase();
+      const alertTypeStr = rule.alertType.toLowerCase();
+      const triggerTypeStr = rule.triggerType.toLowerCase();
+      const severityStr = rule.severity.toLowerCase();
+      const refTypeStr = (rule.referenceType || "").toLowerCase();
+      const idStr = rule.id.toLowerCase();
+      return (
+        name.includes(term) ||
+        email.includes(term) ||
+        alertTypeStr.includes(term) ||
+        triggerTypeStr.includes(term) ||
+        severityStr.includes(term) ||
+        refTypeStr.includes(term) ||
+        idStr.includes(term)
+      );
+    });
+  }, [rules, search, usersById]);
+
   const page = rulesQuery.data?.page;
   const totalPages = page?.totalPages ?? 0;
   const totalElements = page?.totalElements ?? 0;
   const safePage = Math.min(pageNumber, Math.max(0, totalPages - 1));
-  const hasFilters = Boolean(userId || alertType !== "ALL" || triggerType !== "ALL" || severity !== "ALL" || enabled !== "ALL" || referenceType !== "ALL");
+  const hasFilters = Boolean(
+    search.trim() ||
+    userId ||
+    alertType !== "ALL" ||
+    triggerType !== "ALL" ||
+    severity !== "ALL" ||
+    enabled !== "ALL" ||
+    referenceType !== "ALL"
+  );
 
-  function resetFilters() { setUserId(""); setAlertType("ALL"); setTriggerType("ALL"); setSeverity("ALL"); setEnabled("ALL"); setReferenceType("ALL"); setPageNumber(0); }
+  const pageNumbers = useMemo(() => {
+    const start = Math.max(0, Math.min(safePage - 2, totalPages - 5));
+    return Array.from({ length: Math.min(5, totalPages) }, (_, index) => start + index);
+  }, [safePage, totalPages]);
+
+  function resetFilters() {
+    setSearch("");
+    setUserId("");
+    setAlertType("ALL");
+    setTriggerType("ALL");
+    setSeverity("ALL");
+    setEnabled("ALL");
+    setReferenceType("ALL");
+    setPageNumber(0);
+  }
   function openDetails(rule: AlertRule) { setSelectedId(rule.id); setDetailOpen(true); }
   const statsLoading = totalQuery.isLoading || enabledQuery.isLoading || criticalQuery.isLoading || warningQuery.isLoading;
   const first = totalElements ? safePage * pageSize + 1 : 0;
@@ -106,20 +157,50 @@ export default function AlertRuleManager() {
           <p className="text-sm text-muted-foreground font-normal">{t("Read-only monitoring of user notification rules and schedules.")}</p>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="filter-card flex flex-col gap-3 text-base xl:flex-row xl:flex-wrap xl:items-center">
-            <UserFilter value={userId} users={users} loading={usersQuery.isLoading} onChange={(value) => { setUserId(value); setPageNumber(0); }} />
-            <RuleSelect value={alertType} options={{ ALL: t("All Alert Types"), DAILY_EXPENSE_REMINDER: t("Daily Expense Reminder"), BUDGET_THRESHOLD: t("Budget Threshold"), SAVINGS_REMINDER: t("Savings Reminder"), RECURRING_REMINDER: t("Recurring Reminder"), MONTHLY_SUMMARY: t("Monthly Summary") }} onChange={(value) => { setAlertType(value as FilterValue<AlertType>); setPageNumber(0); }} />
-            <RuleSelect value={triggerType} options={{ ALL: t("All Triggers"), TIME: t("Time"), THRESHOLD: t("Threshold"), EVENT: t("Event"), SCHEDULE: t("Schedule") }} onChange={(value) => { setTriggerType(value as FilterValue<TriggerType>); setPageNumber(0); }} />
-            <RuleSelect value={severity} options={{ ALL: t("All Severities"), INFO: t("Info"), WARNING: t("Warning"), CRITICAL: t("Critical") }} onChange={(value) => { setSeverity(value as FilterValue<Severity>); setPageNumber(0); }} />
-            <RuleSelect value={enabled} options={{ ALL: t("All Statuses"), ENABLED: t("Enabled"), DISABLED: t("Disabled") }} onChange={(value) => { setEnabled(value as EnabledFilter); setPageNumber(0); }} />
-            <RuleSelect value={referenceType} options={{ ALL: t("All References"), BUDGET: t("Budget"), SAVINGS_GOAL: t("Savings Goal"), RECURRING_TRANSACTION: t("Recurring Transaction") }} onChange={(value) => { setReferenceType(value as FilterValue<ReferenceType>); setPageNumber(0); }} />
-            <Button variant="ghost" className="text-base font-medium" onClick={resetFilters}>{t("Reset Filters")}</Button>
+          <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setPageNumber(0);
+                }}
+                placeholder={t("Search by rule, user, or reference...")}
+                className="h-11 rounded-xl pl-9 pr-8 text-sm"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch("");
+                    setPageNumber(0);
+                  }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                >
+                  <X className="size-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <UserFilter value={userId} users={users} loading={usersQuery.isLoading} onChange={(value) => { setUserId(value); setPageNumber(0); }} />
+              <RuleSelect label="Alert Type" value={alertType} options={{ ALL: t("All Alert Types"), DAILY_EXPENSE_REMINDER: t("Daily Expense Reminder"), BUDGET_THRESHOLD: t("Budget Threshold"), SAVINGS_REMINDER: t("Savings Reminder"), RECURRING_REMINDER: t("Recurring Reminder"), MONTHLY_SUMMARY: t("Monthly Summary") }} onChange={(value) => { setAlertType(value as FilterValue<AlertType>); setPageNumber(0); }} />
+              <RuleSelect label="Trigger" value={triggerType} options={{ ALL: t("All Triggers"), TIME: t("Time"), THRESHOLD: t("Threshold"), EVENT: t("Event"), SCHEDULE: t("Schedule") }} onChange={(value) => { setTriggerType(value as FilterValue<TriggerType>); setPageNumber(0); }} />
+              <RuleSelect label="Severity" value={severity} options={{ ALL: t("All Severities"), INFO: t("Info"), WARNING: t("Warning"), CRITICAL: t("Critical") }} onChange={(value) => { setSeverity(value as FilterValue<Severity>); setPageNumber(0); }} />
+              <RuleSelect label="Status" value={enabled} options={{ ALL: t("All Statuses"), ENABLED: t("Enabled"), DISABLED: t("Disabled") }} onChange={(value) => { setEnabled(value as EnabledFilter); setPageNumber(0); }} />
+              <RuleSelect label="Reference" value={referenceType} options={{ ALL: t("All References"), BUDGET: t("Budget"), SAVINGS_GOAL: t("Savings Goal"), RECURRING_TRANSACTION: t("Recurring Transaction") }} onChange={(value) => { setReferenceType(value as FilterValue<ReferenceType>); setPageNumber(0); }} />
+              {hasFilters && (
+                <Button variant="ghost" className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium" onClick={resetFilters}>
+                  {t("Reset")}
+                </Button>
+              )}
+            </div>
           </div>
           {rulesQuery.isError ? (
             <ErrorState onRetry={() => rulesQuery.refetch()} />
           ) : rulesQuery.isLoading ? (
             <TableSkeleton />
-          ) : rules.length === 0 ? (
+          ) : filteredRules.length === 0 ? (
             <EmptyState filtered={hasFilters} onReset={resetFilters} />
           ) : (
             <>
@@ -138,28 +219,69 @@ export default function AlertRuleManager() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {rules.map((rule) => (
+                    {filteredRules.map((rule) => (
                       <RuleRow key={rule.id} rule={rule} user={usersById.get(rule.userId)} onView={() => openDetails(rule)} />
                     ))}
                   </TableBody>
                 </Table>
               </div>
-              <div className="flex flex-col gap-4 border-t border-border pt-4 text-base lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col items-center justify-between gap-4 border-t border-border pt-4 text-base sm:flex-row">
                 <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
-                  <span>Showing {first}–{last} of {totalElements.toLocaleString()} {t("Alert Rules")}</span>
-                  <RuleSelect value={String(pageSize)} options={{ "10": "10 / page", "20": "20 / page", "50": "50 / page", "100": "100 / page" }} onChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }} compact />
+                  <span>Showing <span className="font-medium text-foreground">{first}</span>–<span className="font-medium text-foreground">{last}</span> of <span className="font-medium text-foreground">{totalElements.toLocaleString()}</span> {t("Alert Rules")}</span>
+                  <div className="admin-page-size">
+                    <Select
+                      value={String(pageSize)}
+                      onValueChange={(val) => {
+                        setPageSize(Number(val));
+                        setPageNumber(0);
+                      }}
+                    >
+                      <SelectTrigger className="h-10 w-32 text-sm">
+                        <SelectValue value={`${pageSize} / page`} />
+                      </SelectTrigger>
+                      <SelectContent
+                        value={String(pageSize)}
+                        onValueChange={(val) => {
+                          setPageSize(Number(val));
+                          setPageNumber(0);
+                        }}
+                      >
+                        <SelectItem value="10">10 / page</SelectItem>
+                        <SelectItem value="20">20 / page</SelectItem>
+                        <SelectItem value="50">50 / page</SelectItem>
+                        <SelectItem value="100">100 / page</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <Pagination className="mx-0 w-auto justify-start lg:justify-end">
-                  <PaginationContent>
-                    <PaginationItem><PaginationPrevious disabled={safePage === 0} onClick={() => setPageNumber(Math.max(0, safePage - 1))} /></PaginationItem>
-                    {pages(safePage, totalPages).map((item) => (
-                      <PaginationItem key={item}>
-                        {typeof item === "number" ? <PaginationLink isActive={item === safePage} onClick={() => setPageNumber(item)}>{item + 1}</PaginationLink> : <PaginationEllipsis />}
+                {totalPages > 1 && (
+                  <Pagination className="mx-0 w-auto">
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          disabled={safePage === 0}
+                          onClick={() => setPageNumber((p) => Math.max(0, p - 1))}
+                        />
                       </PaginationItem>
-                    ))}
-                    <PaginationItem><PaginationNext disabled={safePage + 1 >= totalPages} onClick={() => setPageNumber(Math.min(totalPages - 1, safePage + 1))} /></PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+                      {pageNumbers.map((num) => (
+                        <PaginationItem key={num}>
+                          <PaginationLink
+                            isActive={num === safePage}
+                            onClick={() => setPageNumber(num)}
+                          >
+                            {num + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      <PaginationItem>
+                        <PaginationNext
+                          disabled={safePage + 1 >= totalPages}
+                          onClick={() => setPageNumber((p) => Math.min(totalPages - 1, p + 1))}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
               </div>
             </>
           )}
@@ -187,15 +309,34 @@ function StatCard({ icon: Icon, label, value, helper }: { icon: typeof BellRing;
   );
 }
 
-function RuleSelect({ value, options, onChange, compact = false }: { value: string; options: Record<string, string>; onChange: (value: string) => void; compact?: boolean }) {
+function RuleSelect({
+  label,
+  value,
+  options,
+  onChange,
+  compact = false,
+}: {
+  label?: string;
+  value: string;
+  options: Record<string, string>;
+  onChange: (value: string) => void;
+  compact?: boolean;
+}) {
+  const isSelected = value !== "ALL";
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className={`h-11 rounded-xl text-base ${compact ? "admin-page-size w-32" : "w-full xl:w-44"}`}>
-        <SelectValue value={options[value]} />
+      <SelectTrigger
+        className={cn(
+          "h-11 rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+          compact ? "admin-page-size w-32" : "min-w-[130px]",
+          isSelected && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
+        )}
+      >
+        <SelectValue placeholder={label} value={options[value]} />
       </SelectTrigger>
-      <SelectContent value={value} onValueChange={onChange}>
-        {Object.entries(options).map(([key, label]) => (
-          <SelectItem key={key} value={key}>{label}</SelectItem>
+      <SelectContent value={value} onValueChange={onChange} className="rounded-xl">
+        {Object.entries(options).map(([key, text]) => (
+          <SelectItem key={key} value={key}>{text}</SelectItem>
         ))}
       </SelectContent>
     </Select>
@@ -205,12 +346,18 @@ function RuleSelect({ value, options, onChange, compact = false }: { value: stri
 function UserFilter({ value, users, loading, onChange }: { value: string; users: AdminUser[]; loading: boolean; onChange: (value: string) => void }) {
   const { t } = useAdminI18n();
   const labels = Object.fromEntries(users.map((user) => [user.id, `${userName(user)} · ${user.email}`]));
+  const isSelected = Boolean(value && value !== "ALL");
   return (
     <Select value={value || "ALL"} onValueChange={(next) => onChange(next === "ALL" ? "" : next)}>
-      <SelectTrigger className="h-11 w-full rounded-xl text-base xl:w-56">
+      <SelectTrigger
+        className={cn(
+          "h-11 min-w-[150px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+          isSelected && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
+        )}
+      >
         <SelectValue value={value ? labels[value] || t("Selected User") : loading ? t("Loading users...") : t("All Users")} />
       </SelectTrigger>
-      <SelectContent value={value || "ALL"} onValueChange={(next) => onChange(next === "ALL" ? "" : next)}>
+      <SelectContent value={value || "ALL"} onValueChange={(next) => onChange(next === "ALL" ? "" : next)} className="rounded-xl">
         <SelectItem value="ALL">{t("All Users")}</SelectItem>
         {users.map((user) => (
           <SelectItem key={user.id} value={user.id}>{userName(user)} · {user.email}</SelectItem>

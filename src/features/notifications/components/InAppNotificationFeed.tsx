@@ -25,6 +25,21 @@ import {
 import { useNotificationUI } from "../hook";
 import { CATEGORY_CONFIGS } from "../constants";
 import { NotificationCategory } from "../types";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function InAppNotificationFeed() {
   const {
@@ -102,6 +117,11 @@ export default function InAppNotificationFeed() {
 
   const startItem = totalItems === 0 ? 0 : (safeCurrentPage - 1) * pageSize + 1;
   const endItem = Math.min(safeCurrentPage * pageSize, totalItems);
+
+  const pageNumbers = useMemo(() => {
+    const start = Math.max(1, Math.min(safeCurrentPage - 2, totalPages - 4));
+    return Array.from({ length: Math.min(5, totalPages) }, (_, index) => start + index);
+  }, [safeCurrentPage, totalPages]);
 
   // Icon mapping
   const getCategoryIcon = (category: NotificationCategory) => {
@@ -323,51 +343,68 @@ export default function InAppNotificationFeed() {
             })}
           </div>
 
-          {/* Pagination Footer matching UserTable */}
+          {/* Pagination Bar */}
           {totalItems > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200/80 dark:border-slate-800 text-xs text-slate-500 font-google-sans">
-              <div>
-                បង្ហាញ <span className="font-semibold text-slate-700 dark:text-slate-200">{startItem}</span> ដល់{" "}
-                <span className="font-semibold text-slate-700 dark:text-slate-200">{endItem}</span> នៃ{" "}
-                <span className="font-semibold text-slate-700 dark:text-slate-200">{totalItems}</span> ការជូនដំណឹង
-              </div>
-
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  disabled={safeCurrentPage <= 1}
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                >
-                  <ChevronLeft className="size-4" /> ថយក្រោយ
-                </button>
-
-                <div className="flex items-center gap-1 px-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      type="button"
-                      onClick={() => setCurrentPage(page)}
-                      className={`size-8 rounded-xl text-xs font-semibold transition ${
-                        safeCurrentPage === page
-                          ? "bg-[#003377] text-white dark:bg-[#FFC83D] dark:text-[#003377]"
-                          : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                      }`}
+            <div className="flex flex-col items-center justify-between gap-4 border-t border-slate-200/80 pt-4 text-base dark:border-slate-800 sm:flex-row">
+              <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
+                <span>
+                  Showing <span className="font-medium text-foreground">{startItem}</span>–<span className="font-medium text-foreground">{endItem}</span> of <span className="font-medium text-foreground">{totalItems.toLocaleString()}</span> notifications
+                </span>
+                <div className="admin-page-size">
+                  <Select
+                    value={String(pageSize)}
+                    onValueChange={(val) => {
+                      setPageSize(Number(val));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="h-10 w-32 text-sm">
+                      <SelectValue value={`${pageSize} / page`} />
+                    </SelectTrigger>
+                    <SelectContent
+                      value={String(pageSize)}
+                      onValueChange={(val) => {
+                        setPageSize(Number(val));
+                        setCurrentPage(1);
+                      }}
                     >
-                      {page}
-                    </button>
-                  ))}
+                      <SelectItem value="10">10 / page</SelectItem>
+                      <SelectItem value="20">20 / page</SelectItem>
+                      <SelectItem value="50">50 / page</SelectItem>
+                      <SelectItem value="100">100 / page</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-
-                <button
-                  type="button"
-                  disabled={safeCurrentPage >= totalPages}
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                >
-                  បន្ទាប់ <ChevronRight className="size-4" />
-                </button>
               </div>
+
+              {totalPages > 1 && (
+                <Pagination className="mx-0 w-auto">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        disabled={safeCurrentPage <= 1}
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      />
+                    </PaginationItem>
+                    {pageNumbers.map((num) => (
+                      <PaginationItem key={num}>
+                        <PaginationLink
+                          isActive={num === safeCurrentPage}
+                          onClick={() => setCurrentPage(num)}
+                        >
+                          {num}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext
+                        disabled={safeCurrentPage >= totalPages}
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
             </div>
           )}
         </div>

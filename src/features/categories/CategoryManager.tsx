@@ -22,6 +22,7 @@ import {
   Tags,
   Trash2,
   WalletCards,
+  X,
   XCircle,
 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -98,16 +99,6 @@ function errorMessage(error: unknown, fallback: string) {
   return typeof message === "string" && message.length < 240 ? message : fallback;
 }
 
-function paginationItems(current: number, total: number) {
-  if (total <= 5) return Array.from({ length: total }, (_, index) => index + 1);
-  const items: Array<number | string> = [1];
-  if (current > 3) items.push("start");
-  for (let page = Math.max(2, current - 1); page <= Math.min(total - 1, current + 1); page += 1) items.push(page);
-  if (current < total - 2) items.push("end");
-  items.push(total);
-  return items;
-}
-
 function queryForClassification(value: Classification): Pick<CategoryQueryParams, "systemCategory" | "defaultCategory"> {
   if (value === "SYSTEM") return { systemCategory: true };
   if (value === "DEFAULT") return { defaultCategory: true };
@@ -154,8 +145,14 @@ export default function CategoryManager() {
   const [updateCategory, updateState] = useUpdateCategoryMutation();
   const [deleteCategory, deleteState] = useDeleteCategoryMutation();
   const page = categoriesQuery.data;
+  const totalPages = Math.max(1, page?.totalPages ?? 1);
+  const safePage = Math.min(pageNumber, Math.max(0, totalPages - 1));
   const categories = page?.content ?? [];
-  const safePage = Math.min(pageNumber, Math.max(0, (page?.totalPages ?? 1) - 1));
+
+  const pageNumbers = useMemo(() => {
+    const start = Math.max(0, Math.min(safePage - 2, totalPages - 5));
+    return Array.from({ length: Math.min(5, totalPages) }, (_, index) => start + index);
+  }, [safePage, totalPages]);
 
   function resetFilters() {
     setKeyword(""); setType("ALL"); setStatus("ALL"); setClassification("ALL"); setLevel("ALL"); setIncludeHidden(true); setPageNumber(0);
@@ -188,6 +185,15 @@ export default function CategoryManager() {
   const start = page?.totalElements ? safePage * pageSize + 1 : 0;
   const end = Math.min((safePage + 1) * pageSize, page?.totalElements ?? 0);
 
+  const hasActiveFilters = Boolean(
+    deferredKeyword ||
+      type !== "ALL" ||
+      status !== "ALL" ||
+      classification !== "ALL" ||
+      level !== "ALL" ||
+      !includeHidden
+  );
+
   return (
     <div className="space-y-7 font-google-sans">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -215,21 +221,37 @@ export default function CategoryManager() {
           <p className="text-sm text-muted-foreground font-normal">{t("Search, organize, and manage the category hierarchy.")}</p>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={keyword} onChange={(event) => { setKeyword(event.target.value); setPageNumber(0); }} placeholder={t("Search by category name or keyword...")} className="h-11 rounded-xl pl-9 text-base" />
-          </div>
-          <div className="filter-card flex flex-col gap-3 text-base lg:flex-row lg:flex-wrap lg:items-center">
-            <FilterSelect label="Type" value={type} options={{ ALL: t("All Types"), INCOME: t("Income"), EXPENSE: t("Expense"), BOTH: t("Income & Expense") }} onChange={(value) => { setType(value as CategoryType); setPageNumber(0); }} />
-            <FilterSelect label="Status" value={status} options={{ ALL: t("All Statuses"), ACTIVE: t("Active"), INACTIVE: t("Inactive"), DELETED: t("Deleted") }} onChange={(value) => { setStatus(value as CategoryStatus); setPageNumber(0); }} />
-            <FilterSelect label="Classification" value={classification} options={{ ALL: t("All Categories"), SYSTEM: t("System Categories"), DEFAULT: t("Default Categories"), CUSTOM: t("Custom Categories") }} onChange={(value) => { setClassification(value as Classification); setPageNumber(0); }} />
-            <FilterSelect label="Level" value={level} options={{ ALL: t("All Levels"), ROOT: t("Root Categories") }} onChange={(value) => { setLevel(value as Level); setPageNumber(0); }} />
-            <label className="flex h-11 items-center gap-2 rounded-xl border border-input px-3 text-base font-medium">
-              <input type="checkbox" checked={includeHidden} onChange={(event) => { setIncludeHidden(event.target.checked); setPageNumber(0); }} className="size-4 accent-[#003377]" />
-              <EyeOff className="size-4 text-muted-foreground" />
-              {t("Include Hidden")}
-            </label>
-            <Button variant="ghost" className="text-base font-medium" onClick={resetFilters}>{t("Reset")}</Button>
+          <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={keyword}
+                onChange={(event) => { setKeyword(event.target.value); setPageNumber(0); }}
+                placeholder={t("Search by category name or keyword...")}
+                className="h-11 rounded-xl pl-9 pr-8 text-sm"
+              />
+              {keyword && (
+                <button
+                  type="button"
+                  onClick={() => { setKeyword(""); setPageNumber(0); }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                >
+                  <X className="size-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <FilterSelect label="Type" value={type} options={{ ALL: t("All Types"), INCOME: t("Income"), EXPENSE: t("Expense"), BOTH: t("Income & Expense") }} onChange={(value) => { setType(value as CategoryType); setPageNumber(0); }} />
+              <FilterSelect label="Status" value={status} options={{ ALL: t("All Statuses"), ACTIVE: t("Active"), INACTIVE: t("Inactive"), DELETED: t("Deleted") }} onChange={(value) => { setStatus(value as CategoryStatus); setPageNumber(0); }} />
+              <FilterSelect label="Classification" value={classification} options={{ ALL: t("All Categories"), SYSTEM: t("System Categories"), DEFAULT: t("Default Categories"), CUSTOM: t("Custom Categories") }} onChange={(value) => { setClassification(value as Classification); setPageNumber(0); }} />
+              <FilterSelect label="Level" value={level} options={{ ALL: t("All Levels"), ROOT: t("Root Categories") }} onChange={(value) => { setLevel(value as Level); setPageNumber(0); }} />
+              {hasActiveFilters && (
+                <>
+                  <FilterSelect label="Visibility" value={includeHidden ? "ALL" : "VISIBLE"} options={{ ALL: t("Include Hidden"), VISIBLE: t("Visible Only") }} onChange={(value) => { setIncludeHidden(value === "ALL"); setPageNumber(0); }} />
+                  <Button variant="ghost" className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium" onClick={resetFilters}>{t("Reset")}</Button>
+                </>
+              )}
+            </div>
           </div>
 
           {categoriesQuery.isError ? (
@@ -237,7 +259,7 @@ export default function CategoryManager() {
           ) : categoriesQuery.isLoading || (categoriesQuery.isFetching && !page) ? (
             <TableSkeleton />
           ) : categories.length === 0 ? (
-            <EmptyState filtered={Boolean(deferredKeyword || type !== "ALL" || status !== "ALL" || classification !== "ALL" || level !== "ALL" || !includeHidden)} onReset={resetFilters} onCreate={openCreate} />
+            <EmptyState filtered={hasActiveFilters} onReset={resetFilters} onCreate={openCreate} />
           ) : (
             <>
               <div className="overflow-x-auto rounded-2xl border border-border">
@@ -266,22 +288,66 @@ export default function CategoryManager() {
                   </TableBody>
                 </Table>
               </div>
-              <div className="flex flex-col gap-4 border-t border-border pt-4 text-base lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex flex-col gap-3 text-base text-muted-foreground sm:flex-row sm:items-center">
-                  <span>Showing {start}–{end} of {(page?.totalElements ?? 0).toLocaleString()} {t("categories")}</span>
-                  <FilterSelect label="Page size" value={String(pageSize)} options={{ "10": "10 / page", "20": "20 / page", "50": "50 / page", "100": "100 / page" }} onChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }} compact />
+              <div className="flex flex-col items-center justify-between gap-4 border-t border-border pt-4 text-base sm:flex-row">
+                <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
+                  <span>
+                    Showing <span className="font-medium text-foreground">{start}</span>–<span className="font-medium text-foreground">{end}</span> of <span className="font-medium text-foreground">{(page?.totalElements ?? 0).toLocaleString()}</span> {t("categories")}
+                  </span>
+                  <div className="admin-page-size">
+                    <Select
+                      value={String(pageSize)}
+                      onValueChange={(val) => {
+                        setPageSize(Number(val));
+                        setPageNumber(0);
+                      }}
+                    >
+                      <SelectTrigger className="h-10 w-32 text-sm">
+                        <SelectValue value={`${pageSize} / page`} />
+                      </SelectTrigger>
+                      <SelectContent
+                        value={String(pageSize)}
+                        onValueChange={(val) => {
+                          setPageSize(Number(val));
+                          setPageNumber(0);
+                        }}
+                      >
+                        <SelectItem value="10">10 / page</SelectItem>
+                        <SelectItem value="20">20 / page</SelectItem>
+                        <SelectItem value="50">50 / page</SelectItem>
+                        <SelectItem value="100">100 / page</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <Pagination className="mx-0 w-auto justify-start lg:justify-end">
-                  <PaginationContent>
-                    <PaginationItem><PaginationPrevious disabled={safePage === 0} onClick={() => setPageNumber(Math.max(0, safePage - 1))} /></PaginationItem>
-                    {paginationItems(safePage + 1, page?.totalPages ?? 1).map((item) => (
-                      <PaginationItem key={item}>
-                        {typeof item === "number" ? <PaginationLink isActive={item === safePage + 1} onClick={() => setPageNumber(item - 1)}>{item}</PaginationLink> : <PaginationEllipsis />}
+
+                {totalPages > 1 && (
+                  <Pagination className="mx-0 w-auto">
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          disabled={safePage === 0}
+                          onClick={() => setPageNumber((p) => Math.max(0, p - 1))}
+                        />
                       </PaginationItem>
-                    ))}
-                    <PaginationItem><PaginationNext disabled={safePage + 1 >= (page?.totalPages ?? 1)} onClick={() => setPageNumber(Math.min((page?.totalPages ?? 1) - 1, safePage + 1))} /></PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+                      {pageNumbers.map((num) => (
+                        <PaginationItem key={num}>
+                          <PaginationLink
+                            isActive={num === safePage}
+                            onClick={() => setPageNumber(num)}
+                          >
+                            {num + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      <PaginationItem>
+                        <PaginationNext
+                          disabled={safePage >= totalPages - 1}
+                          onClick={() => setPageNumber((p) => Math.min(totalPages - 1, p + 1))}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
               </div>
             </>
           )}
@@ -315,7 +381,7 @@ function StatCard({ icon: Icon, label, value, helper }: { icon: typeof Tags; lab
 function FilterSelect({ label, value, options, onChange, compact = false }: { label: string; value: string; options: Record<string, string>; onChange: (value: string) => void; compact?: boolean }) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className={`h-11 rounded-xl text-base ${compact ? "admin-page-size w-40" : "w-full lg:w-48"}`}>
+      <SelectTrigger className={`h-11 rounded-xl text-sm ${compact ? "admin-page-size w-36" : "w-auto min-w-[130px]"}`}>
         <SelectValue value={options[value]} />
       </SelectTrigger>
       <SelectContent value={value} onValueChange={onChange}>

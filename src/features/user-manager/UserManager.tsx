@@ -120,7 +120,11 @@ export default function UserManagerPage() {
 
         <Card className="rounded-2xl border-border shadow-sm">
           <CardContent className="space-y-4 p-4 sm:p-6">
-            <UserFilterToolbar filters={filters} onFiltersChange={handleFiltersChange} />
+            <UserFilterToolbar
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onReset={() => handleFiltersChange(DEFAULT_USER_FILTERS)}
+            />
 
             {isError ? (
               <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 py-16 text-center">
