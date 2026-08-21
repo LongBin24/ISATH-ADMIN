@@ -24,10 +24,17 @@ export const editProfileSchema = z.object({
     .regex(/^[0-9+\s-]+$/, { message: "លេខទូរស័ព្ទត្រូវមានតែលេខ និងសញ្ញា + ឬ -" }),
   bio: z
     .string()
-    .max(500, { message: "ជីវប្រវត្តិមិនអាចលើសពី ៥០០ តួអក្សរឡើយ" }),
+    .max(500, { message: "ជីវប្រវត្តិមិនអាចលើសពី ៥០០ តួអក្សរឡើយ" })
+    .optional()
+    .or(z.literal("")),
   location: z
     .string()
-    .min(2, { message: "សូមបញ្ចូលទីតាំងរស់នៅ ឬអាសយដ្ឋាន" }),
+    .min(2, { message: "សូមបញ្ចូលទីតាំងរស់នៅ ឬអាសយដ្ឋាន" })
+    .max(100, { message: "ទីតាំងមិនអាចលើសពី ១០០ តួអក្សរឡើយ" }),
+  occupation: z
+    .string()
+    .min(1, { message: "សូមបញ្ចូលមុខរបរ" })
+    .max(100, { message: "មុខរបរមិនអាចលើសពី ១០០ តួអក្សរឡើយ" }),
 });
 
 export type EditProfileFormValues = z.infer<typeof editProfileSchema>;

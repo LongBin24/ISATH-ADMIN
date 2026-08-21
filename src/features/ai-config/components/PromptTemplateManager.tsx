@@ -3,6 +3,15 @@
 import { useMemo, useState } from "react";
 import { Plus, RefreshCw } from "lucide-react";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetAdminPromptTemplatesQuery } from "../api";
 import type { PromptTemplateItem, PromptTemplateQueryParams } from "../types";
@@ -130,6 +139,14 @@ export function PromptTemplateManager() {
   const totalPages = Math.max(1, Math.ceil(totalElements / pageSize));
   const safePageNumber = Math.min(pageNumber, Math.max(0, totalPages - 1));
 
+  const startItem = totalElements === 0 ? 0 : safePageNumber * pageSize + 1;
+  const endItem = Math.min((safePageNumber + 1) * pageSize, totalElements);
+
+  const pageNumbers = useMemo(() => {
+    const start = Math.max(0, Math.min(safePageNumber - 2, totalPages - 5));
+    return Array.from({ length: Math.min(5, totalPages) }, (_, index) => start + index);
+  }, [safePageNumber, totalPages]);
+
   // Slice templates for current page navigation
   const paginatedTemplates = useMemo(() => {
     if (!hasActiveFilters && pageData && typeof pageData.totalPages === "number" && pageData.totalPages > 1 && rawTemplates.length <= pageSize) {
@@ -195,7 +212,7 @@ export function PromptTemplateManager() {
             type="button"
             onClick={() => refetch()}
             disabled={isFetching}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-semibold text-[#003377] shadow-sm transition-all duration-150 hover:bg-slate-50 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:text-[#003377] active:border-[#FFC83D] disabled:opacity-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
+            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-semibold text-[#003377] shadow-sm transition-all duration-150 hover:bg-slate-50 hover:border-[#003377] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:text-[#003377] active:border-[#FFC83D] disabled:opacity-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} />
             {t("Refresh")}
@@ -219,116 +236,93 @@ export function PromptTemplateManager() {
         isLoading={isLoading}
       />
 
-      {/* Filters row */}
-      <PromptTemplateFilters
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onReset={handleResetFilters}
-        resultCount={totalElements}
-      />
+      {/* Unified Card Container containing Filters, Table, and Pagination */}
+      <Card className="rounded-2xl border-border shadow-sm">
+        <CardContent className="space-y-5 p-4 sm:p-6">
+          {/* Filters row */}
+          <PromptTemplateFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onReset={handleResetFilters}
+            resultCount={totalElements}
+          />
 
-      {/* Table view */}
-      <PromptTemplateTable
-        templates={paginatedTemplates}
-        isLoading={isLoading}
-        onViewDetails={openDetails}
-        onTest={openTest}
-        onVersionHistory={openHistory}
-        onEdit={openEdit}
-      />
+          {/* Table view */}
+          <PromptTemplateTable
+            templates={paginatedTemplates}
+            isLoading={isLoading}
+            onViewDetails={openDetails}
+            onTest={openTest}
+            onVersionHistory={openHistory}
+            onEdit={openEdit}
+          />
 
-      {/* Pagination Bar */}
-      {totalElements > 0 && (
-        <div className="flex flex-col items-center justify-between gap-4 rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-            <span>{t("Showing")}</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-100">
-              {safePageNumber * pageSize + 1}
-            </span>
-            <span>-</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-100">
-              {Math.min((safePageNumber + 1) * pageSize, totalElements)}
-            </span>
-            <span>{t("of")}</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-100">
-              {totalElements}
-            </span>
+          {/* Pagination Bar */}
+          {totalElements > 0 && (
+            <div className="flex flex-col items-center justify-between gap-4 pt-1 text-base sm:flex-row">
+              <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
+                <span>
+                  Showing <span className="font-medium text-foreground">{startItem}</span>–<span className="font-medium text-foreground">{endItem}</span> of <span className="font-medium text-foreground">{totalElements.toLocaleString()}</span> {t("Prompt Templates")}
+                </span>
+                <div className="admin-page-size">
+                  <Select
+                    value={String(pageSize)}
+                    onValueChange={(val) => {
+                      setPageSize(Number(val));
+                      setPageNumber(0);
+                    }}
+                  >
+                    <SelectTrigger className="h-10 w-32 text-sm">
+                      <SelectValue value={`${pageSize} / page`} />
+                    </SelectTrigger>
+                    <SelectContent
+                      value={String(pageSize)}
+                      onValueChange={(val) => {
+                        setPageSize(Number(val));
+                        setPageNumber(0);
+                      }}
+                    >
+                      <SelectItem value="10">10 / page</SelectItem>
+                      <SelectItem value="20">20 / page</SelectItem>
+                      <SelectItem value="50">50 / page</SelectItem>
+                      <SelectItem value="100">100 / page</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
-            <span className="ml-2 sm:ml-4 font-medium">{t("Rows per page")}:</span>
-            <Select
-              value={String(pageSize)}
-              onValueChange={(val) => {
-                setPageSize(Number(val));
-                setPageNumber(0);
-              }}
-            >
-              <SelectTrigger className="h-8 w-20 rounded-xl px-2.5 text-xs font-semibold transition-all duration-150 hover:border-[#FFC83D] dark:hover:border-[#FFC83D] data-[state=open]:border-[#003377] dark:data-[state=open]:border-[#FFC83D]">
-                <SelectValue value={String(pageSize)} />
-              </SelectTrigger>
-              <SelectContent className="min-w-20 rounded-xl">
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              disabled={safePageNumber === 0}
-              onClick={() => setPageNumber((p) => Math.max(0, p - 1))}
-              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-50 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] disabled:opacity-30 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
-            >
-              {t("Previous")}
-            </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i).map((pageIdx) => {
-              // Only display around current page if totalPages is large
-              if (
-                totalPages > 7 &&
-                pageIdx !== 0 &&
-                pageIdx !== totalPages - 1 &&
-                Math.abs(pageIdx - safePageNumber) > 1
-              ) {
-                if (pageIdx === 1 || pageIdx === totalPages - 2) {
-                  return (
-                    <span key={pageIdx} className="px-1 text-xs text-slate-400">
-                      ...
-                    </span>
-                  );
-                }
-                return null;
-              }
-
-              const isCurrent = pageIdx === safePageNumber;
-              return (
-                <button
-                  key={pageIdx}
-                  type="button"
-                  onClick={() => setPageNumber(pageIdx)}
-                  className={`grid h-8 min-w-8 place-items-center rounded-xl px-2 text-xs font-bold transition-all duration-150 active:scale-95 ${
-                    isCurrent
-                      ? "bg-[#FFC83D] text-[#003377] shadow-sm shadow-[#FFC83D]/20"
-                      : "border border-slate-200 bg-white text-slate-700 hover:border-[#FFC83D] hover:text-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
-                  }`}
-                >
-                  {pageIdx + 1}
-                </button>
-              );
-            })}
-
-            <button
-              type="button"
-              disabled={safePageNumber >= totalPages - 1}
-              onClick={() => setPageNumber((p) => Math.min(totalPages - 1, p + 1))}
-              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-50 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] disabled:opacity-30 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
-            >
-              {t("Next")}
-            </button>
-          </div>
-        </div>
-      )}
+              {totalPages > 1 && (
+                <Pagination className="mx-0 w-auto">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        disabled={safePageNumber === 0}
+                        onClick={() => setPageNumber((p) => Math.max(0, p - 1))}
+                      />
+                    </PaginationItem>
+                    {pageNumbers.map((num) => (
+                      <PaginationItem key={num}>
+                        <PaginationLink
+                          isActive={num === safePageNumber}
+                          onClick={() => setPageNumber(num)}
+                        >
+                          {num + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext
+                        disabled={safePageNumber >= totalPages - 1}
+                        onClick={() => setPageNumber((p) => Math.min(totalPages - 1, p + 1))}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Dialogs */}
       <PromptTemplateDetailsDialog

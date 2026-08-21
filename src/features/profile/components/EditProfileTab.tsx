@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { editProfileSchema, EditProfileFormValues } from "../schema";
 import { UserProfile } from "../types";
 import { useUpdateProfileMutation } from "../api";
-import { User, Mail, Phone, MapPin, FileText, Save, RefreshCw, AlertCircle } from "lucide-react";
+import { User, Mail, Phone, MapPin, BriefcaseBusiness, FileText, Save, RefreshCw, AlertCircle } from "lucide-react";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface EditProfileTabProps {
@@ -38,6 +38,7 @@ export default function EditProfileTab({
       phoneNumber: profile.phoneNumber,
       bio: profile.bio,
       location: profile.location,
+      occupation: profile.occupation || "",
     },
   });
 
@@ -50,12 +51,13 @@ export default function EditProfileTab({
       phoneNumber: profile.phoneNumber,
       bio: profile.bio,
       location: profile.location,
+      occupation: profile.occupation || "",
     });
   }, [profile, reset]);
 
   const onSubmit = async (values: EditProfileFormValues) => {
     try {
-      await updateProfile(values).unwrap();
+      await updateProfile({ ...values, bio: values.bio ?? "" }).unwrap();
       onSuccess(t("Profile updated successfully."));
     } catch {
       onError(t("Unable to save profile changes. Please try again."));
@@ -194,28 +196,53 @@ export default function EditProfileTab({
           </div>
         </div>
 
-        {/* Location */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1">
-            <MapPin className="h-3.5 w-3.5 text-slate-400" />
-            {t("Location")} <span className="text-rose-500">*</span>
-          </label>
-          <input
-            type="text"
-            {...register("location")}
-            placeholder="Phnom Penh, Cambodia"
-            className={`w-full rounded-xl border px-3.5 py-2.5 text-sm transition outline-none dark:bg-slate-950 dark:text-white ${
-              errors.location
-                ? "border-rose-500 focus:ring-1 focus:ring-rose-500"
-                : "border-slate-200 focus:border-[#003377] focus:ring-1 focus:ring-[#003377] dark:border-slate-800"
-            }`}
-          />
-          {errors.location && (
-            <p className="mt-1 text-xs text-rose-500 flex items-center gap-1">
-              <AlertCircle className="h-3.5 w-3.5" />
-              {errors.location.message}
-            </p>
-          )}
+        {/* Location & Occupation */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1">
+              <MapPin className="h-3.5 w-3.5 text-slate-400" />
+              {t("Location")} <span className="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              {...register("location")}
+              placeholder="Phnom Penh, Cambodia"
+              className={`w-full rounded-xl border px-3.5 py-2.5 text-sm transition outline-none dark:bg-slate-950 dark:text-white ${
+                errors.location
+                  ? "border-rose-500 focus:ring-1 focus:ring-rose-500"
+                  : "border-slate-200 focus:border-[#003377] focus:ring-1 focus:ring-[#003377] dark:border-slate-800"
+              }`}
+            />
+            {errors.location && (
+              <p className="mt-1 text-xs text-rose-500 flex items-center gap-1">
+                <AlertCircle className="h-3.5 w-3.5" />
+                {errors.location.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1">
+              <BriefcaseBusiness className="h-3.5 w-3.5 text-slate-400" />
+              {t("Occupation")} <span className="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              {...register("occupation")}
+              placeholder="Finance Lead & Founder"
+              className={`w-full rounded-xl border px-3.5 py-2.5 text-sm transition outline-none dark:bg-slate-950 dark:text-white ${
+                errors.occupation
+                  ? "border-rose-500 focus:ring-1 focus:ring-rose-500"
+                  : "border-slate-200 focus:border-[#003377] focus:ring-1 focus:ring-[#003377] dark:border-slate-800"
+              }`}
+            />
+            {errors.occupation && (
+              <p className="mt-1 text-xs text-rose-500 flex items-center gap-1">
+                <AlertCircle className="h-3.5 w-3.5" />
+                {errors.occupation.message}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Bio */}

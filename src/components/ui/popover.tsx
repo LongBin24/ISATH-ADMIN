@@ -99,7 +99,7 @@ function PopoverContent({
   return (
     <div
       className={cn(
-        "absolute z-50 mt-2 rounded-xl border border-border bg-popover p-4 text-popover-foreground shadow-lg animate-in fade-in-0 zoom-in-95",
+        "absolute z-50 mt-2 w-auto min-w-[280px] rounded-2xl border border-slate-200 bg-white p-3 text-popover-foreground shadow-2xl animate-in fade-in-0 zoom-in-95 dark:border-slate-800 dark:bg-slate-900",
         alignClass,
         className
       )}

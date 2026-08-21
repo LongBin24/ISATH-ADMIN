@@ -92,25 +92,6 @@ type CurrencyAction = {
   currency: CurrencyItem;
   action: "activate" | "deactivate";
 } | null;
-const PAGE_SIZE = 10;
-
-function paginationItems(currentPage: number, totalPages: number) {
-  if (totalPages <= 5)
-    return Array.from({ length: totalPages }, (_, index) => index + 1);
-
-  const pages: Array<number | "start-ellipsis" | "end-ellipsis"> = [1];
-  if (currentPage > 3) pages.push("start-ellipsis");
-  for (
-    let page = Math.max(2, currentPage - 1);
-    page <= Math.min(totalPages - 1, currentPage + 1);
-    page += 1
-  )
-    pages.push(page);
-  if (currentPage < totalPages - 2) pages.push("end-ellipsis");
-  pages.push(totalPages);
-  return pages;
-}
-
 function safeDate(value?: string, exact = false) {
   if (!value) return "Never synced";
   const date = new Date(value);
@@ -369,25 +350,30 @@ export default function CurrencyManager() {
       return matchesQuery && matchesStatus;
     });
   }, [currencies, query, statusFilter]);
+  const [pageSize, setPageSize] = useState(10);
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredCurrencies.length / PAGE_SIZE),
+    Math.ceil(filteredCurrencies.length / pageSize),
   );
   const visiblePage = Math.min(currentPage, totalPages);
   const paginatedCurrencies = useMemo(
     () =>
       filteredCurrencies.slice(
-        (visiblePage - 1) * PAGE_SIZE,
-        visiblePage * PAGE_SIZE,
+        (visiblePage - 1) * pageSize,
+        visiblePage * pageSize,
       ),
-    [filteredCurrencies, visiblePage],
+    [filteredCurrencies, visiblePage, pageSize],
   );
   const firstVisibleCurrency =
-    filteredCurrencies.length === 0 ? 0 : (visiblePage - 1) * PAGE_SIZE + 1;
+    filteredCurrencies.length === 0 ? 0 : (visiblePage - 1) * pageSize + 1;
   const lastVisibleCurrency = Math.min(
-    visiblePage * PAGE_SIZE,
+    visiblePage * pageSize,
     filteredCurrencies.length,
   );
+  const pageNumbers = useMemo(() => {
+    const start = Math.max(1, Math.min(visiblePage - 2, totalPages - 4));
+    return Array.from({ length: Math.min(5, totalPages) }, (_, index) => start + index);
+  }, [visiblePage, totalPages]);
 
   async function handleSynchronize() {
     try {
@@ -811,47 +797,70 @@ export default function CurrencyManager() {
           {!currenciesQuery.isLoading &&
             !currenciesQuery.isError &&
             filteredCurrencies.length > 0 && (
-              <div className="flex flex-col gap-3 border-t border-border pt-4 text-base lg:flex-row lg:items-center lg:justify-between">
-                <p className="text-base text-muted-foreground font-normal">
-                  {t("Showing")} {firstVisibleCurrency}–{lastVisibleCurrency}{" "}
-                  {t("of")} {filteredCurrencies.length.toLocaleString()}{" "}
-                  {t("currencies")}
-                </p>
-                <Pagination className="mx-0 w-auto justify-start lg:justify-end">
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        disabled={visiblePage === 1}
-                        onClick={() =>
-                          setCurrentPage(Math.max(1, visiblePage - 1))
-                        }
-                      />
-                    </PaginationItem>
-                    {paginationItems(visiblePage, totalPages).map((item) => (
-                      <PaginationItem key={item}>
-                        {typeof item === "number" ? (
-                          <PaginationLink
-                            isActive={item === visiblePage}
-                            aria-label={`Go to page ${item}`}
-                            onClick={() => setCurrentPage(item)}
-                          >
-                            {item}
-                          </PaginationLink>
-                        ) : (
-                          <PaginationEllipsis />
-                        )}
+              <div className="flex flex-col items-center justify-between gap-4 border-t border-border pt-4 text-base sm:flex-row">
+                <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
+                  <span>
+                    Showing <span className="font-medium text-foreground">{firstVisibleCurrency}</span>–<span className="font-medium text-foreground">{lastVisibleCurrency}</span> of <span className="font-medium text-foreground">{filteredCurrencies.length.toLocaleString()}</span> {t("currencies")}
+                  </span>
+                  <div className="admin-page-size">
+                    <Select
+                      value={String(pageSize)}
+                      onValueChange={(val) => {
+                        setPageSize(Number(val));
+                        setCurrentPage(1);
+                      }}
+                    >
+                      <SelectTrigger className="h-10 w-32 text-sm">
+                        <SelectValue value={`${pageSize} / page`} />
+                      </SelectTrigger>
+                      <SelectContent
+                        value={String(pageSize)}
+                        onValueChange={(val) => {
+                          setPageSize(Number(val));
+                          setCurrentPage(1);
+                        }}
+                      >
+                        <SelectItem value="10">10 / page</SelectItem>
+                        <SelectItem value="20">20 / page</SelectItem>
+                        <SelectItem value="50">50 / page</SelectItem>
+                        <SelectItem value="100">100 / page</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {totalPages > 1 && (
+                  <Pagination className="mx-0 w-auto">
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          disabled={visiblePage === 1}
+                          onClick={() =>
+                            setCurrentPage((p) => Math.max(1, p - 1))
+                          }
+                        />
                       </PaginationItem>
-                    ))}
-                    <PaginationItem>
-                      <PaginationNext
-                        disabled={visiblePage === totalPages}
-                        onClick={() =>
-                          setCurrentPage(Math.min(totalPages, visiblePage + 1))
-                        }
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+                      {pageNumbers.map((num) => (
+                        <PaginationItem key={num}>
+                          <PaginationLink
+                            isActive={num === visiblePage}
+                            onClick={() => setCurrentPage(num)}
+                          >
+                            {num}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      <PaginationItem>
+                        <PaginationNext
+                          disabled={visiblePage >= totalPages}
+                          onClick={() =>
+                            setCurrentPage((p) => Math.min(totalPages, p + 1))
+                          }
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
               </div>
             )}
         </CardContent>

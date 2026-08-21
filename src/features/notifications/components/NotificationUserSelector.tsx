@@ -11,6 +11,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useGetAdminUsersQuery } from "@/features/user-manager/api";
 import type { AdminUser } from "@/features/user-manager/types";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { cn } from "@/lib/utils";
 
 interface NotificationUserSelectorProps {
   value: AdminUser | null;
@@ -42,21 +43,26 @@ export default function NotificationUserSelector({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger className="flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-input bg-background px-3 text-left text-base shadow-sm">
+      <PopoverTrigger
+        className={cn(
+          "flex h-11 min-w-[150px] items-center justify-between gap-2.5 rounded-xl border border-input bg-background px-3 text-left text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+          value && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
+        )}
+      >
         <span className="min-w-0 flex-1 truncate">
           {value ? (
             <span className="flex min-w-0 items-center gap-2">
-              <Avatar className="size-7">
+              <Avatar className="size-6">
                 <AvatarImage src={value.profileImageUrl ?? undefined} alt={userName(value)} />
                 <AvatarFallback className="text-xs">{userName(value).charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
-              <span className="truncate text-base">{userName(value)}</span>
+              <span className="truncate text-sm font-medium">{userName(value)}</span>
             </span>
           ) : (
-            <span className="text-base text-muted-foreground">{t(placeholder)}</span>
+            <span className="text-sm font-medium text-muted-foreground">{t(placeholder)}</span>
           )}
         </span>
-        <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
+        <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[min(24rem,calc(100vw-2rem))] p-2 text-base">
         <div className="relative">

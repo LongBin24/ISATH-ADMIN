@@ -434,3 +434,48 @@ p {
 .font-google-sans {
   font-family: "Google Sans", "Battambang", "Khmer OS", sans-serif;
 }
+
+/* ==========================================================================
+   Mobile PWA & Touch Experience Optimizations
+   ========================================================================== */
+html {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  text-size-adjust: 100%;
+}
+
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+}
+
+/* Safe-area insets utilities for modern iOS & Android display notches/bars */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Standalone PWA adjustments when running installed on home screen */
+@media all and (display-mode: standalone) {
+  /* Prevent pull-to-refresh reload in standalone app mode */
+  body {
+    overscroll-behavior-y: contain;
+    user-select: none;
+  }
+
+  /* Allow text selection in inputs, textareas, and readable article blocks */
+  input,
+  textarea,
+  [contenteditable="true"],
+  .admin-readable {
+    user-select: text;
+  }
+}

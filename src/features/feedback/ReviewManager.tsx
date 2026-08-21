@@ -19,8 +19,10 @@ import {
   MoreHorizontal,
   RefreshCw,
   Save,
+  Search,
   Star,
   Trash2,
+  X,
 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,6 +31,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -39,6 +42,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useGetAdminUsersQuery } from "@/features/user-manager/api";
 import type { AdminUser } from "@/features/user-manager/types";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { cn } from "@/lib/utils";
 import { useDeleteReviewMutation, useGetAdminReviewsQuery, useGetReviewByIdQuery, useUpdateReviewStatusMutation } from "./api";
 import type { Review, ReviewQueryParams, ReviewStatus, ReviewType } from "./types";
 
@@ -84,20 +88,11 @@ function safeError(error: unknown, fallback: string) {
   return typeof message === "string" && message.length < 240 ? message : fallback;
 }
 
-function pageItems(current: number, total: number) {
-  if (total <= 5) return Array.from({ length: total }, (_, index) => index);
-  const result: Array<number | string> = [0];
-  if (current > 2) result.push("start");
-  for (let page = Math.max(1, current - 1); page <= Math.min(total - 2, current + 1); page += 1) result.push(page);
-  if (current < total - 3) result.push("end");
-  result.push(total - 1);
-  return result;
-}
-
 export default function ReviewManager() {
   const { t } = useAdminI18n();
   const [type, setType] = useState<TypeFilter>("ALL");
   const [status, setStatus] = useState<StatusFilter>("ALL");
+  const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortOption>("NEWEST");
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
@@ -121,12 +116,42 @@ export default function ReviewManager() {
   const [deleteReview, deleteState] = useDeleteReviewMutation();
   const reviews = reviewsQuery.data?.content ?? [];
   const usersById = useMemo(() => new Map((usersQuery.data?.content ?? []).map((user) => [user.id, user])), [usersQuery.data?.content]);
+
+  const filteredReviews = useMemo(() => {
+    if (!search.trim()) return reviews;
+    const term = search.toLowerCase().trim();
+    return reviews.filter((review) => {
+      const user = usersById.get(review.userId);
+      const name = displayName(user).toLowerCase();
+      const title = (review.title || "").toLowerCase();
+      const description = (review.description || "").toLowerCase();
+      const note = (review.latestReviewNote || "").toLowerCase();
+      return (
+        title.includes(term) ||
+        description.includes(term) ||
+        name.includes(term) ||
+        note.includes(term)
+      );
+    });
+  }, [reviews, search, usersById]);
+
   const totalPages = reviewsQuery.data?.totalPages ?? 0;
   const totalElements = reviewsQuery.data?.totalElements ?? 0;
   const safePage = Math.min(page, Math.max(0, totalPages - 1));
-  const hasFilters = type !== "ALL" || status !== "ALL" || sort !== "NEWEST";
+  const hasFilters = Boolean(search.trim() || type !== "ALL" || status !== "ALL" || sort !== "NEWEST");
 
-  function resetFilters() { setType("ALL"); setStatus("ALL"); setSort("NEWEST"); setPage(0); }
+  const pageNumbers = useMemo(() => {
+    const start = Math.max(0, Math.min(safePage - 2, totalPages - 5));
+    return Array.from({ length: Math.min(5, totalPages) }, (_, index) => start + index);
+  }, [safePage, totalPages]);
+
+  function resetFilters() {
+    setSearch("");
+    setType("ALL");
+    setStatus("ALL");
+    setSort("NEWEST");
+    setPage(0);
+  }
   function openReview(review: Review) { setSelectedId(review.id); setSheetOpen(true); }
   async function confirmDelete() {
     if (!deleteTarget) return;
@@ -164,17 +189,47 @@ export default function ReviewManager() {
           <p className="text-sm text-muted-foreground font-normal">{t("Monitor and manage feedback submitted by iStash users.")}</p>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="filter-card flex flex-col gap-3 text-base lg:flex-row lg:flex-wrap lg:items-center">
-            <ReviewSelect value={type} options={{ ALL: t("All Types"), SUGGESTION: t("Suggestion"), BUG_REPORT: t("Bug Report"), COMPLAINT: t("Complaint"), COMPLIMENT: t("Compliment"), GENERAL: t("General") }} onChange={(value) => { setType(value as TypeFilter); setPage(0); }} />
-            <ReviewSelect value={status} options={{ ALL: t("All Statuses"), PENDING: t("Pending"), IN_REVIEW: t("In Review"), RESOLVED: t("Resolved"), CLOSED: t("Closed") }} onChange={(value) => { setStatus(value as StatusFilter); setPage(0); }} />
-            <ReviewSelect value={sort} options={{ NEWEST: t("Newest First"), OLDEST: t("Oldest First"), UPDATED: t("Recently Updated") }} onChange={(value) => { setSort(value as SortOption); setPage(0); }} />
-            <Button variant="ghost" className="text-base font-medium" onClick={resetFilters}>{t("Reset Filters")}</Button>
+          <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setPage(0);
+                }}
+                placeholder={t("Search by title, description, or user...")}
+                className="h-11 rounded-xl pl-9 pr-8 text-sm"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch("");
+                    setPage(0);
+                  }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                >
+                  <X className="size-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <ReviewSelect label="Type" value={type} options={{ ALL: t("All Types"), SUGGESTION: t("Suggestion"), BUG_REPORT: t("Bug Report"), COMPLAINT: t("Complaint"), COMPLIMENT: t("Compliment"), GENERAL: t("General") }} onChange={(value) => { setType(value as TypeFilter); setPage(0); }} />
+              <ReviewSelect label="Status" value={status} options={{ ALL: t("All Statuses"), PENDING: t("Pending"), IN_REVIEW: t("In Review"), RESOLVED: t("Resolved"), CLOSED: t("Closed") }} onChange={(value) => { setStatus(value as StatusFilter); setPage(0); }} />
+              <ReviewSelect label="Sort" value={sort} options={{ NEWEST: t("Newest First"), OLDEST: t("Oldest First"), UPDATED: t("Recently Updated") }} onChange={(value) => { setSort(value as SortOption); setPage(0); }} />
+              {hasFilters && (
+                <Button variant="ghost" className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium" onClick={resetFilters}>
+                  {t("Reset")}
+                </Button>
+              )}
+            </div>
           </div>
           {reviewsQuery.isError ? (
             <ErrorState onRetry={() => reviewsQuery.refetch()} />
           ) : reviewsQuery.isLoading ? (
             <TableSkeleton />
-          ) : reviews.length === 0 ? (
+          ) : filteredReviews.length === 0 ? (
             <EmptyState filtered={hasFilters} onReset={resetFilters} />
           ) : (
             <>
@@ -192,28 +247,69 @@ export default function ReviewManager() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {reviews.map((review) => (
+                    {filteredReviews.map((review) => (
                       <ReviewRow key={review.id} review={review} user={usersById.get(review.userId)} onView={() => openReview(review)} onDelete={() => setDeleteTarget(review)} />
                     ))}
                   </TableBody>
                 </Table>
               </div>
-              <div className="flex flex-col gap-4 border-t pt-4 text-base lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col items-center justify-between gap-4 border-t border-border pt-4 text-base sm:flex-row">
                 <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
-                  <span>{first}–{last} {t("of")} {totalElements.toLocaleString()} {t("Reviews")}</span>
-                  <ReviewSelect value={String(size)} options={{ "10": t("10 / page"), "20": t("20 / page"), "50": t("50 / page"), "100": t("100 / page") }} onChange={(value) => { setSize(Number(value)); setPage(0); }} compact />
+                  <span>Showing <span className="font-medium text-foreground">{first}</span>–<span className="font-medium text-foreground">{last}</span> of <span className="font-medium text-foreground">{totalElements.toLocaleString()}</span> {t("Reviews")}</span>
+                  <div className="admin-page-size">
+                    <Select
+                      value={String(size)}
+                      onValueChange={(val) => {
+                        setSize(Number(val));
+                        setPage(0);
+                      }}
+                    >
+                      <SelectTrigger className="h-10 w-32 text-sm">
+                        <SelectValue value={`${size} / page`} />
+                      </SelectTrigger>
+                      <SelectContent
+                        value={String(size)}
+                        onValueChange={(val) => {
+                          setSize(Number(val));
+                          setPage(0);
+                        }}
+                      >
+                        <SelectItem value="10">10 / page</SelectItem>
+                        <SelectItem value="20">20 / page</SelectItem>
+                        <SelectItem value="50">50 / page</SelectItem>
+                        <SelectItem value="100">100 / page</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <Pagination className="mx-0 w-auto justify-start lg:justify-end">
-                  <PaginationContent>
-                    <PaginationItem><PaginationPrevious disabled={safePage === 0} onClick={() => setPage(Math.max(0, safePage - 1))} /></PaginationItem>
-                    {pageItems(safePage, totalPages).map((item) => (
-                      <PaginationItem key={item}>
-                        {typeof item === "number" ? <PaginationLink isActive={item === safePage} onClick={() => setPage(item)}>{item + 1}</PaginationLink> : <PaginationEllipsis />}
+                {totalPages > 1 && (
+                  <Pagination className="mx-0 w-auto">
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          disabled={safePage === 0}
+                          onClick={() => setPage((p) => Math.max(0, p - 1))}
+                        />
                       </PaginationItem>
-                    ))}
-                    <PaginationItem><PaginationNext disabled={safePage + 1 >= totalPages} onClick={() => setPage(Math.min(totalPages - 1, safePage + 1))} /></PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+                      {pageNumbers.map((num) => (
+                        <PaginationItem key={num}>
+                          <PaginationLink
+                            isActive={num === safePage}
+                            onClick={() => setPage(num)}
+                          >
+                            {num + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      <PaginationItem>
+                        <PaginationNext
+                          disabled={safePage + 1 >= totalPages}
+                          onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
               </div>
             </>
           )}
@@ -255,15 +351,36 @@ function StatCard({ icon: Icon, label, value, helper }: { icon: typeof Star; lab
   );
 }
 
-function ReviewSelect({ value, options, onChange, compact = false }: { value: string; options: Record<string, string>; onChange: (value: string) => void; compact?: boolean }) {
+function ReviewSelect({
+  label,
+  value,
+  options,
+  onChange,
+  compact = false,
+}: {
+  label?: string;
+  value: string;
+  options: Record<string, string>;
+  onChange: (value: string) => void;
+  compact?: boolean;
+}) {
+  const isSelected = value !== "ALL" && value !== "NEWEST";
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className={`h-11 rounded-xl text-base ${compact ? "admin-page-size w-32" : "w-full lg:w-48"}`}>
-        <SelectValue value={options[value]} />
+      <SelectTrigger
+        className={cn(
+          "h-11 rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+          compact ? "admin-page-size w-32" : "min-w-[140px]",
+          isSelected && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
+        )}
+      >
+        <SelectValue placeholder={label} value={options[value]} />
       </SelectTrigger>
-      <SelectContent value={value} onValueChange={onChange}>
-        {Object.entries(options).map(([key, label]) => (
-          <SelectItem key={key} value={key}>{label}</SelectItem>
+      <SelectContent value={value} onValueChange={onChange} className="rounded-xl">
+        {Object.entries(options).map(([key, labelText]) => (
+          <SelectItem key={key} value={key}>
+            {labelText}
+          </SelectItem>
         ))}
       </SelectContent>
     </Select>

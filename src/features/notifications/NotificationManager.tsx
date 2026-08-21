@@ -48,7 +48,38 @@ export default function NotificationManager() {
     () => new Map((recipientData?.content ?? []).map((user) => [user.id, user])),
     [recipientData?.content],
   );
+
+  const filteredNotifications = useMemo(() => {
+    if (!filters.search?.trim()) return notifications;
+    const term = filters.search.toLowerCase().trim();
+    return notifications.filter((item) => {
+      const user = usersById.get(item.userId);
+      const name = (
+        user?.displayName ||
+        `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() ||
+        user?.username ||
+        ""
+      ).toLowerCase();
+      const email = (user?.email || "").toLowerCase();
+      const title = (item.title || "").toLowerCase();
+      const message = (item.message || "").toLowerCase();
+      const notifType = (item.notificationType || "").toLowerCase();
+      const refType = (item.referenceType || "").toLowerCase();
+      const refId = (item.referenceId || "").toLowerCase();
+      return (
+        title.includes(term) ||
+        message.includes(term) ||
+        name.includes(term) ||
+        email.includes(term) ||
+        notifType.includes(term) ||
+        refType.includes(term) ||
+        refId.includes(term)
+      );
+    });
+  }, [notifications, filters.search, usersById]);
+
   const hasFilters =
+    Boolean(filters.search?.trim()) ||
     !!filters.user ||
     filters.notificationType !== "ALL" ||
     filters.referenceType !== "ALL" ||
@@ -105,7 +136,7 @@ export default function NotificationManager() {
                 <RefreshCw className="mr-2 size-3.5" />{t("Retry")}
               </Button>
             </div>
-          ) : !isLoading && notifications.length === 0 ? (
+          ) : !isLoading && filteredNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border py-16 text-center">
               <span className="grid size-12 place-items-center rounded-2xl bg-muted"><BellOff className="size-6 text-muted-foreground" /></span>
               <div>
@@ -121,7 +152,7 @@ export default function NotificationManager() {
           ) : (
             <>
               <NotificationTable
-                notifications={notifications}
+                notifications={filteredNotifications}
                 usersById={usersById}
                 isLoading={isLoading || isFetching}
                 sortDirection={sortDirection}

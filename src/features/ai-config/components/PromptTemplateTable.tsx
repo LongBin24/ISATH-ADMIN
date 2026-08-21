@@ -98,158 +98,158 @@ export function PromptTemplateTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-b border-slate-100 bg-slate-50/75 transition-colors hover:bg-slate-100/80 dark:border-slate-800 dark:bg-slate-800/40 dark:hover:bg-slate-800/80">
-              <TableHead className="py-4 pl-6 text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
-                {t("Template")}
-              </TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
-                {t("Task & Scope")}
-              </TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
-                {t("Language")}
-              </TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
-                {t("Version")}
-              </TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
-                {t("Status")}
-              </TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
-                {t("Updated")}
-              </TableHead>
-              <TableHead className="pr-6 text-right text-xs font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]">
-                {t("Actions")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
+    <div className="overflow-x-auto rounded-2xl border border-border">
+      <Table>
+        <TableHeader className="bg-muted/40">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="min-w-64 py-3.5 pl-6 text-sm font-semibold text-muted-foreground">
+              {t("Template")}
+            </TableHead>
+            <TableHead className="min-w-44 text-sm font-semibold text-muted-foreground">
+              {t("Task & Scope")}
+            </TableHead>
+            <TableHead className="min-w-28 text-sm font-semibold text-muted-foreground">
+              {t("Language")}
+            </TableHead>
+            <TableHead className="min-w-24 text-sm font-semibold text-muted-foreground">
+              {t("Version")}
+            </TableHead>
+            <TableHead className="min-w-28 text-sm font-semibold text-muted-foreground">
+              {t("Status")}
+            </TableHead>
+            <TableHead className="min-w-36 text-sm font-semibold text-muted-foreground">
+              {t("Updated")}
+            </TableHead>
+            <TableHead className="w-20 pr-6 text-right text-sm font-semibold text-muted-foreground">
+              {t("Actions")}
+            </TableHead>
+          </TableRow>
+        </TableHeader>
 
-          <TableBody>
-            {templates.map((tmpl) => {
-              const isKhmer = tmpl.languageCode === "km";
-              const isActive = tmpl.templateStatus === "ACTIVE";
+        <TableBody>
+          {templates.map((tmpl) => {
+            const isKhmer = tmpl.languageCode === "km";
+            const isActive = tmpl.templateStatus === "ACTIVE";
 
-              return (
-                <TableRow
-                  key={tmpl.id}
-                  className="group border-b border-slate-100 transition hover:bg-slate-50/60 dark:border-slate-800/60 dark:hover:bg-slate-800/30"
-                >
-                  {/* Template Info */}
-                  <TableCell className="py-4 pl-6">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => onViewDetails(tmpl)}
-                          className="text-left font-bold text-[#003377] transition hover:text-[#002255] hover:underline dark:text-slate-100 dark:hover:text-[#FFC83D]"
-                        >
-                          {tmpl.templateName}
-                        </button>
-                        {tmpl.isDefault && (
-                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                            {t("Default")}
-                          </span>
-                        )}
-                      </div>
-                      <p className="font-mono text-xs text-slate-400 dark:text-slate-500">
-                        {tmpl.templateKey}
-                      </p>
-                      {tmpl.description && (
-                        <p className="line-clamp-1 max-w-md text-xs text-slate-500 dark:text-slate-400">
-                          {tmpl.description}
-                        </p>
-                      )}
-                    </div>
-                  </TableCell>
-
-                  {/* Task & Scope */}
-                  <TableCell>
-                    <div className="space-y-1">
-                      <span className="inline-block rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                        {tmpl.taskType ? t(tmpl.taskType) : "—"}
-                      </span>
-                      {tmpl.templateScope && (
-                        <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                          {t(tmpl.templateScope)}
-                        </p>
-                      )}
-                    </div>
-                  </TableCell>
-
-                  {/* Language */}
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                        isKhmer
-                          ? "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-300"
-                          : "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-900/50 dark:bg-purple-950/30 dark:text-purple-300"
-                      }`}
-                    >
-                      {isKhmer ? "🇰🇭 km" : "🇬🇧 en"}
-                    </Badge>
-                  </TableCell>
-
-                  {/* Version */}
-                  <TableCell>
-                    <button
-                      type="button"
-                      onClick={() => onVersionHistory(tmpl)}
-                      className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/15 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:hover:shadow-[0_0_10px_rgba(255,200,61,0.2)] dark:active:bg-[#FFC83D]/20"
-                    >
-                      <span>v{tmpl.version}</span>
-                      <History className="h-3.5 w-3.5 text-slate-400 transition-colors" />
-                    </button>
-                  </TableCell>
-
-                  {/* Status */}
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                        isActive
-                          ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
-                          : tmpl.templateStatus === "DRAFT"
-                          ? "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
-                          : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
-                      }`}
-                    >
-                      {tmpl.templateStatus ? t(tmpl.templateStatus) : "—"}
-                    </Badge>
-                  </TableCell>
-
-                  {/* Updated */}
-                  <TableCell className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                    {formatDate(tmpl.updatedAt || tmpl.createdAt)}
-                  </TableCell>
-
-                  {/* Actions */}
-                  <TableCell className="pr-6 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
-                      {/* Quick Test Button */}
+            return (
+              <TableRow
+                key={tmpl.id}
+                className="group border-b border-border transition hover:bg-muted/30"
+              >
+                {/* Template Info */}
+                <TableCell className="py-4 pl-6">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => onTest(tmpl)}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-all duration-150 hover:border-[#FFC83D] hover:bg-[#FFC83D]/20 hover:text-[#003377] active:scale-95 active:bg-[#FFC83D] active:text-[#003377] dark:border-slate-800 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D] dark:active:text-[#003377]"
-                        title={t("Test Prompt")}
+                        onClick={() => onViewDetails(tmpl)}
+                        className="text-left font-semibold text-foreground transition-colors hover:text-[#003377] hover:underline dark:hover:text-[#FFC83D]"
                       >
-                        <Play className="h-3.5 w-3.5 fill-current" />
+                        {tmpl.templateName}
                       </button>
+                      {tmpl.isDefault && (
+                        <Badge
+                          variant="outline"
+                          className="rounded-full border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
+                        >
+                          {t("Default")}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="font-mono text-xs text-muted-foreground">
+                      {tmpl.templateKey}
+                    </p>
+                  </div>
+                </TableCell>
 
-                      {/* Dropdown for more actions */}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            type="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-all duration-150 hover:bg-slate-100 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D] active:text-[#003377] dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D] dark:active:text-[#003377]"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48 rounded-2xl p-1.5 font-google-sans dark:border-slate-800 dark:bg-slate-900">
+                {/* Task & Scope */}
+                <TableCell>
+                  <div className="space-y-1">
+                    <Badge
+                      variant="outline"
+                      className="rounded-lg border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300"
+                    >
+                      {tmpl.taskType ? t(tmpl.taskType) : "—"}
+                    </Badge>
+                    {tmpl.templateScope && (
+                      <p className="text-xs font-normal text-muted-foreground">
+                        {t(tmpl.templateScope)}
+                      </p>
+                    )}
+                  </div>
+                </TableCell>
+
+                {/* Language */}
+                <TableCell>
+                  <Badge
+                    variant="outline"
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                      isKhmer
+                        ? "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-300"
+                        : "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-900/50 dark:bg-purple-950/30 dark:text-purple-300"
+                    }`}
+                  >
+                    {isKhmer ? "🇰🇭 km" : "🇬🇧 en"}
+                  </Badge>
+                </TableCell>
+
+                {/* Version */}
+                <TableCell>
+                  <button
+                    type="button"
+                    onClick={() => onVersionHistory(tmpl)}
+                    className="inline-flex items-center gap-1 rounded-xl border border-border bg-background px-2.5 py-1 text-xs font-bold text-foreground shadow-sm transition-all duration-150 hover:border-[#003377] hover:bg-[#003377]/10 hover:text-[#003377] active:scale-95 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D]"
+                  >
+                    <span>v{tmpl.version}</span>
+                    <History className="h-3.5 w-3.5 text-muted-foreground" />
+                  </button>
+                </TableCell>
+
+                {/* Status */}
+                <TableCell>
+                  <Badge
+                    variant="outline"
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                      isActive
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
+                        : tmpl.templateStatus === "DRAFT"
+                        ? "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
+                        : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
+                    }`}
+                  >
+                    {tmpl.templateStatus ? t(tmpl.templateStatus) : "—"}
+                  </Badge>
+                </TableCell>
+
+                {/* Updated */}
+                <TableCell className="text-xs font-normal text-muted-foreground whitespace-nowrap">
+                  {formatDate(tmpl.updatedAt || tmpl.createdAt)}
+                </TableCell>
+
+                {/* Actions */}
+                <TableCell className="pr-6 text-right">
+                  <div className="flex items-center justify-end gap-1.5">
+                    {/* Quick Test Button */}
+                    <button
+                      type="button"
+                      onClick={() => onTest(tmpl)}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground transition-all duration-150 hover:border-[#003377] hover:bg-[#003377]/10 hover:text-[#003377] active:scale-95 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/20 dark:hover:text-[#FFC83D]"
+                      title={t("Test Prompt")}
+                    >
+                      <Play className="h-3.5 w-3.5 fill-current" />
+                    </button>
+
+                    {/* Dropdown for more actions */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground transition-all duration-150 hover:border-[#003377] hover:bg-[#003377]/10 hover:text-[#003377] active:scale-95 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/20 dark:hover:text-[#FFC83D]"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48 rounded-2xl p-1.5 font-google-sans dark:border-slate-800 dark:bg-slate-900">
                           <DropdownMenuItem
                             onClick={() => onViewDetails(tmpl)}
                             className="cursor-pointer gap-2 rounded-xl text-xs dark:hover:text-[#FFC83D] dark:focus:text-[#FFC83D]"
@@ -314,6 +314,5 @@ export function PromptTemplateTable({
           </TableBody>
         </Table>
       </div>
-    </div>
-  );
-}
+    );
+  }

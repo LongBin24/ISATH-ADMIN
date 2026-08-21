@@ -81,7 +81,10 @@ export function PromptTemplateStats({
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 {stat.label}
               </p>
-              <p className="text-2xl font-bold tracking-tight text-[#003377] dark:text-white sm:text-3xl">
+              <p
+                className="stat-card-value card-number text-[30px] text-3xl font-bold tracking-tight text-[#003377] dark:text-white"
+                style={{ fontSize: "30px", lineHeight: "36px" }}
+              >
                 {stat.value.toLocaleString()}
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400">
