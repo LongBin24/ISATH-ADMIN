@@ -338,8 +338,8 @@ export default function WelcomeIntro() {
         </p>
       </motion.div>
 
-      <div className="relative mx-auto mt-5 aspect-square w-full max-w-[240px] lg:hidden">
-        <div className="absolute left-1/2 top-1/2 aspect-square w-[80%] max-w-[220px] -translate-x-1/2 -translate-y-1/2">
+      <div className="relative mx-auto mt-5 aspect-square w-full max-w-[280px] lg:hidden">
+        <div className="absolute left-1/2 top-1/2 aspect-square w-[86%] max-w-[250px] -translate-x-1/2 -translate-y-1/2">
           <svg
             viewBox="0 0 500 500"
             className="absolute inset-0 h-full w-full overflow-visible"
