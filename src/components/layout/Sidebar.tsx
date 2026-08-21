@@ -62,7 +62,15 @@ export default function Sidebar({
               alt="Logo"
               width={44}
               height={44}
-              className="h-auto w-auto"
+              className="h-auto w-auto object-contain dark:hidden"
+              priority
+            />
+            <Image
+              src="/Dark_Mode_Logo.png"
+              alt="Logo"
+              width={48}
+              height={46}
+              className="hidden object-contain dark:block"
               priority
             />
             <span>iStash</span>
