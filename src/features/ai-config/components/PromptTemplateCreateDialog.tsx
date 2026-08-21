@@ -399,10 +399,10 @@ export function PromptTemplateCreateDialog({
                     }
                   }}
                   placeholder="iStash Financial Assistant - Intent Classification"
-                  className={`h-10 w-full rounded-xl border bg-slate-50/60 px-3.5 text-xs text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800/80 dark:focus:border-[#FFC83D] dark:focus:bg-slate-950 dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:focus:shadow-[0_0_16px_rgba(255,200,61,0.15)] ${
+                  className={`h-10 w-full rounded-xl border bg-slate-50/60 px-3.5 text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
                     fieldErrors.templateName?.length
                       ? "border-red-400 focus:border-red-500"
-                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
+                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                   }`}
                   required
                 />
@@ -432,10 +432,10 @@ export function PromptTemplateCreateDialog({
                     }
                   }}
                   placeholder="istash-financial-intent-classifier"
-                  className={`h-10 w-full rounded-xl border bg-slate-50/60 px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800/80 dark:focus:border-[#FFC83D] dark:focus:bg-slate-950 dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:focus:shadow-[0_0_16px_rgba(255,200,61,0.15)] ${
+                  className={`h-10 w-full rounded-xl border bg-slate-50/60 px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
                     fieldErrors.templateKey?.length
                       ? "border-red-400 focus:border-red-500"
-                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
+                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                   }`}
                   required
                 />
@@ -461,7 +461,7 @@ export function PromptTemplateCreateDialog({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("Classifies user messages into predefined intents...")}
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-xs text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:border-[#003377] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800/80 dark:focus:border-[#FFC83D] dark:focus:bg-slate-950 dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:focus:shadow-[0_0_16px_rgba(255,200,61,0.15)]"
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
               />
             </div>
           </div>
@@ -561,7 +561,7 @@ export function PromptTemplateCreateDialog({
                   value={modelName}
                   onChange={(e) => setModelName(e.target.value)}
                   placeholder="gemini-2.5-flash"
-                  className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:border-[#003377] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800/80 dark:focus:border-[#FFC83D] dark:focus:bg-slate-950 dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:focus:shadow-[0_0_16px_rgba(255,200,61,0.15)]"
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
                 />
               </div>
 
@@ -581,7 +581,7 @@ export function PromptTemplateCreateDialog({
                   step={0.1}
                   value={temperature}
                   onChange={(e) => setTemperature(Number(e.target.value))}
-                  className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-xs text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:border-[#003377] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800/80 dark:focus:border-[#FFC83D] dark:focus:bg-slate-950 dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:focus:shadow-[0_0_16px_rgba(255,200,61,0.15)]"
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
                 />
               </div>
 
@@ -594,7 +594,7 @@ export function PromptTemplateCreateDialog({
                   value={responseMimeType}
                   onChange={(e) => setResponseMimeType(e.target.value)}
                   placeholder="application/json"
-                  className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:border-[#003377] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800/80 dark:focus:border-[#FFC83D] dark:focus:bg-slate-950 dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:focus:shadow-[0_0_16px_rgba(255,200,61,0.15)]"
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
                 />
               </div>
             </div>
@@ -626,10 +626,10 @@ export function PromptTemplateCreateDialog({
                     setFieldErrors((prev) => ({ ...prev, systemPrompt: [] }));
                   }
                 }}
-                className={`w-full rounded-xl border bg-slate-50/60 p-3.5 font-mono text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800/80 dark:focus:border-[#FFC83D] dark:focus:bg-slate-950 dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:focus:shadow-[0_0_16px_rgba(255,200,61,0.15)] ${
+                className={`w-full rounded-xl border bg-slate-50/60 p-3.5 font-mono text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
                   fieldErrors.systemPrompt?.length
                     ? "border-red-400 focus:border-red-500"
-                    : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
+                    : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                 }`}
                 required
               />
@@ -659,10 +659,10 @@ export function PromptTemplateCreateDialog({
                     setFieldErrors((prev) => ({ ...prev, userPromptTemplate: [] }));
                   }
                 }}
-                className={`w-full rounded-xl border bg-slate-50/60 p-3.5 font-mono text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800/80 dark:focus:border-[#FFC83D] dark:focus:bg-slate-950 dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:focus:shadow-[0_0_16px_rgba(255,200,61,0.15)] ${
+                className={`w-full rounded-xl border bg-slate-50/60 p-3.5 font-mono text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
                   fieldErrors.userPromptTemplate?.length
                     ? "border-red-400 focus:border-red-500"
-                    : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
+                    : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                 }`}
                 required
               />
@@ -702,7 +702,7 @@ export function PromptTemplateCreateDialog({
                       setSchemaError(null);
                     }}
                     placeholder='{"type": "object", "required": ["question"]}'
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:border-[#003377] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-slate-700 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
                   />
                 </div>
 
@@ -718,7 +718,7 @@ export function PromptTemplateCreateDialog({
                       setSchemaError(null);
                     }}
                     placeholder='{"type": "object", "required": ["category"]}'
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:border-[#003377] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-slate-700 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
                   />
                 </div>
               </div>
@@ -731,7 +731,7 @@ export function PromptTemplateCreateDialog({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-100 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
+              className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-100 hover:border-[#003377] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
             >
               {t("Cancel")}
             </button>

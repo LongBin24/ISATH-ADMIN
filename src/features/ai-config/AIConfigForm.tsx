@@ -135,7 +135,7 @@ export default function AIConfigForm() {
                   className={`rounded-full px-4 py-2 text-sm font-semibold transition-all duration-150 active:scale-95 ${
                     feature.enabled
                       ? "bg-[#FFC83D] text-[#003377] hover:bg-[#f0ba33] active:bg-[#003377] active:text-[#FFC83D]"
-                      : "border border-transparent bg-slate-200 text-slate-700 hover:border-[#FFC83D] hover:text-[#003377] active:bg-[#FFC83D]/20 active:text-[#003377] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
+                      : "border border-slate-200 bg-slate-200 text-slate-700 hover:border-[#003377] hover:text-[#003377] active:bg-[#FFC83D]/20 active:text-[#003377] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
                   }`}
                 >
                   {feature.enabled ? t("On") : t("Off")}
@@ -170,7 +170,7 @@ export default function AIConfigForm() {
                   className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-sm font-semibold transition-all duration-150 active:scale-95 ${
                     model === option
                       ? "border-[#FFC83D] bg-[#FFC83D]/15 text-[#003377] dark:text-[#FFC83D]"
-                      : "border-slate-200 bg-white text-slate-700 hover:border-[#FFC83D] hover:text-[#003377] active:bg-[#FFC83D]/10 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/10"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:text-[#003377] active:bg-[#FFC83D]/10 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/10"
                   }`}
                 >
                   <span>{option}</span>

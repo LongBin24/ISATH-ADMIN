@@ -69,21 +69,23 @@ export default function DashboardLayout({
   }
 
   return (
-    <AdminI18nProvider><div className="min-h-screen bg-[#F8F9FA] text-slate-800 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100 font-google-sans pb-16 lg:pb-0">
-      <Sidebar isOpen={sidebarOpen} isCollapsed={sidebarCollapsed} onClose={() => setSidebarOpen(false)} />
+    <AdminI18nProvider>
+      <div className="min-h-screen bg-[#F8F9FA] text-slate-800 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100 font-google-sans pb-[calc(4.75rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
+        <Sidebar isOpen={sidebarOpen} isCollapsed={sidebarCollapsed} onClose={() => setSidebarOpen(false)} />
 
-      <div className={`flex min-h-screen flex-col transition-[margin] duration-300 ${sidebarCollapsed ? "lg:ml-0" : "lg:ml-[260px]"}`}>
-        <Navbar
-          onMenuToggle={toggleSidebar}
-          isSidebarOpen={sidebarOpen}
-          isSidebarCollapsed={sidebarCollapsed}
-        />
+        <div className={`flex min-h-screen flex-col transition-[margin] duration-300 ${sidebarCollapsed ? "lg:ml-0" : "lg:ml-[260px]"}`}>
+          <Navbar
+            onMenuToggle={toggleSidebar}
+            isSidebarOpen={sidebarOpen}
+            isSidebarCollapsed={sidebarCollapsed}
+          />
 
-        <main className="admin-readable flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+          <main className="admin-readable flex-1 p-3.5 sm:p-5 md:p-6 lg:p-8">{children}</main>
+        </div>
+
+        <MobileBottomNav />
+        <PWAInstallPrompt />
       </div>
-
-      <MobileBottomNav />
-      <PWAInstallPrompt />
-    </div></AdminI18nProvider>
+    </AdminI18nProvider>
   );
 }

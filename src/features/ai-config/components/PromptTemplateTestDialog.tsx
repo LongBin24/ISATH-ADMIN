@@ -195,10 +195,10 @@ export function PromptTemplateTestDialog({
                       setFieldErrors((prev) => ({ ...prev, question: [] }));
                     }
                   }}
-                  className={`w-full rounded-2xl border bg-slate-50/60 p-3 text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800/80 dark:focus:border-[#FFC83D] dark:focus:bg-slate-950 dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:focus:shadow-[0_0_16px_rgba(255,200,61,0.15)] ${
+                  className={`w-full rounded-2xl border bg-slate-50/60 p-3 text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
                     fieldErrors.question?.length
                       ? "border-red-400 focus:border-red-500"
-                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
+                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                   }`}
                   required
                 />
@@ -223,7 +223,7 @@ export function PromptTemplateTestDialog({
                       className={`flex-1 rounded-xl py-2 text-xs font-semibold transition-all duration-150 active:scale-95 ${
                         currencyCode === curr
                           ? "bg-[#FFC83D] text-[#003377] font-bold shadow-sm active:bg-[#003377] active:text-[#FFC83D]"
-                          : "border border-slate-200 bg-white text-slate-700 hover:border-[#FFC83D] hover:bg-slate-50 active:bg-[#FFC83D]/20 active:text-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
+                          : "border border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:text-[#003377] active:bg-[#FFC83D]/20 active:text-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
                       }`}
                     >
                       {curr}
@@ -248,6 +248,9 @@ export function PromptTemplateTestDialog({
                             currency: currencyCode,
                             currentSavingsTotal: 450.0,
                             savingsGoalTarget: 1000.0,
+                            goalProgressPercentage: 45.0,
+                            monthlyIncome: 2000.0,
+                            monthlyExpense: 850.0,
                           },
                           null,
                           2
@@ -266,7 +269,7 @@ export function PromptTemplateTestDialog({
                     setFinancialContextJson(e.target.value);
                     setJsonError(null);
                   }}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/60 p-3 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:border-[#003377] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800/80 dark:focus:border-[#FFC83D] dark:focus:bg-slate-950 dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:focus:shadow-[0_0_16px_rgba(255,200,61,0.15)]"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/60 p-3 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
                 />
                 {jsonError && (
                   <p className="text-xs font-medium text-red-600">{jsonError}</p>
@@ -370,7 +373,7 @@ export function PromptTemplateTestDialog({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-100 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
+              className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-100 hover:border-[#003377] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
             >
               {t("Close")}
             </button>

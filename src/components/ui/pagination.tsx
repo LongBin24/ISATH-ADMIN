@@ -41,8 +41,8 @@ function PaginationLink({
       className={cn(
         "flex size-10 items-center justify-center rounded-lg border text-base font-medium shadow-sm transition-colors",
         isActive
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-border bg-background text-foreground hover:border-primary/40 hover:bg-accent hover:text-accent-foreground",
+          ? "border-[#003377] bg-[#003377] text-white font-bold dark:border-[#FFC83D] dark:bg-[#FFC83D] dark:text-[#003377]"
+          : "border-border bg-background text-foreground hover:border-[#003377] hover:text-[#003377] hover:bg-accent dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]",
         className
       )}
       {...props}
@@ -63,7 +63,7 @@ function PaginationPrevious({
       type="button"
       aria-label={t("Go to previous page")}
       className={cn(
-        "flex h-10 items-center gap-1.5 rounded-lg border border-border bg-background px-3.5 text-base font-medium text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-40",
+        "flex h-10 items-center gap-1.5 rounded-lg border border-border bg-background px-3.5 text-base font-medium text-foreground shadow-sm transition-colors hover:border-[#003377] hover:text-[#003377] hover:bg-accent dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] disabled:pointer-events-none disabled:opacity-40",
         className
       )}
       {...props}
@@ -87,7 +87,7 @@ function PaginationNext({
       type="button"
       aria-label={t("Go to next page")}
       className={cn(
-        "flex h-10 items-center gap-1.5 rounded-lg border border-border bg-background px-3.5 text-base font-medium text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-40",
+        "flex h-10 items-center gap-1.5 rounded-lg border border-border bg-background px-3.5 text-base font-medium text-foreground shadow-sm transition-colors hover:border-[#003377] hover:text-[#003377] hover:bg-accent dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] disabled:pointer-events-none disabled:opacity-40",
         className
       )}
       {...props}

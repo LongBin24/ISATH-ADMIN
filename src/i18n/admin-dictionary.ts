@@ -25,6 +25,23 @@ const km: Record<string, string> = {
   "Collapse sidebar": "បង្រួមរបារចំហៀង",
   "Close sidebar": "បិទរបារចំហៀង",
   Close: "បិទ",
+  More: "ច្រើនទៀត",
+  "More options": "ជម្រើសបន្ថែម",
+  "Admin Features": "មុខងារគ្រប់គ្រង",
+  "View Profile": "មើលគណនី",
+  "Light Mode": "ពន្លឺ",
+  "Dark Mode": "ងងឹត",
+  "iStash App": "កម្មវិធីទូរស័ព្ទ iStash",
+  "Install iStash Admin on Mobile": "ដំឡើងកម្មវិធី iStash លើទូរស័ព្ទដៃ",
+  "Fast, native mobile experience with notifications.":
+    "ប្រើប្រាស់លឿន ងាយស្រួល និងទទួលបានការជូនដំណឹង",
+  Install: "ដំឡើង",
+  Dismiss: "បដិសេធ",
+  "How to install on iOS (iPhone / iPad)": "របៀបដំឡើង iStash លើ iPhone / iPad",
+  "Tap the Share button in Safari toolbar":
+    "ចុចលើសញ្ញា ចែករំលែក (Share) នៅខាងក្រោមនៃកម្មវិធី Safari",
+  'Select "Add to Home Screen"': 'ជ្រើសរើស "បន្ថែមទៅអេក្រង់ដើម"',
+  "Got it": "យល់ព្រម",
 
   // Greetings & Dashboard Header
   "Good morning": "អរុណសួស្តី",

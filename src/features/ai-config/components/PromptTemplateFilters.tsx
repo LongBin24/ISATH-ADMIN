@@ -44,7 +44,7 @@ export function PromptTemplateFilters({
   const isStatusSelected = filters.templateStatus !== "ALL";
 
   return (
-    <div className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-5">
+    <div className="space-y-3">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         {/* Search Input Box */}
         <div className="relative flex-1 min-w-[240px]">
@@ -54,7 +54,7 @@ export function PromptTemplateFilters({
             value={filters.search}
             onChange={(e) => onFilterChange("search", e.target.value)}
             placeholder={t("Search by name, key, description, model...")}
-            className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50/60 pl-10 pr-9 text-xs text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-white focus:bg-white focus:border-[#003377] focus:outline-none focus:ring-4 focus:ring-[#003377]/10 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800 dark:focus:border-[#FFC83D] dark:focus:bg-slate-900 dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:focus:shadow-[0_0_16px_rgba(255,200,61,0.15)]"
+            className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50/60 pl-10 pr-9 text-xs text-slate-800 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-white outline-none focus:bg-white focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-slate-800 dark:focus:bg-slate-900"
           />
           {filters.search && (
             <button
@@ -76,10 +76,10 @@ export function PromptTemplateFilters({
               onValueChange={(val) => onFilterChange("taskType", val)}
             >
               <SelectTrigger
-                className={`h-11 rounded-2xl text-xs font-semibold shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-4 ${
+                className={`h-11 rounded-2xl text-xs font-semibold shadow-sm transition-all duration-200 active:scale-95 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${
                   isTaskTypeSelected
-                    ? "border-[#003377] bg-[#003377]/10 text-[#003377] font-bold [&>svg]:text-[#003377] hover:bg-[#003377]/15 dark:border-[#FFC83D] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D] dark:[&>svg]:text-[#FFC83D] dark:shadow-[0_0_12px_rgba(255,200,61,0.2)] dark:hover:bg-[#FFC83D]/25"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D]"
+                    ? "border-[#003377] bg-[#003377]/10 text-[#003377] font-bold [&>svg]:text-[#003377] hover:border-[#003377] hover:bg-[#003377]/15 dark:border-[#FFC83D] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D] dark:[&>svg]:text-[#FFC83D] dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/25"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:text-[#003377] hover:[&>svg]:text-[#003377] dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D]"
                 }`}
               >
                 <SelectValue
@@ -116,10 +116,10 @@ export function PromptTemplateFilters({
               onValueChange={(val) => onFilterChange("templateScope", val)}
             >
               <SelectTrigger
-                className={`h-11 rounded-2xl text-xs font-semibold shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-4 ${
+                className={`h-11 rounded-2xl text-xs font-semibold shadow-sm transition-all duration-200 active:scale-95 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${
                   isScopeSelected
-                    ? "border-[#003377] bg-[#003377]/10 text-[#003377] font-bold [&>svg]:text-[#003377] hover:bg-[#003377]/15 dark:border-[#FFC83D] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D] dark:[&>svg]:text-[#FFC83D] dark:shadow-[0_0_12px_rgba(255,200,61,0.2)] dark:hover:bg-[#FFC83D]/25"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D]"
+                    ? "border-[#003377] bg-[#003377]/10 text-[#003377] font-bold [&>svg]:text-[#003377] hover:border-[#003377] hover:bg-[#003377]/15 dark:border-[#FFC83D] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D] dark:[&>svg]:text-[#FFC83D] dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/25"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:text-[#003377] hover:[&>svg]:text-[#003377] dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D]"
                 }`}
               >
                 <SelectValue
@@ -162,10 +162,10 @@ export function PromptTemplateFilters({
               onValueChange={(val) => onFilterChange("languageCode", val)}
             >
               <SelectTrigger
-                className={`h-11 rounded-2xl text-xs font-semibold shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-4 ${
+                className={`h-11 rounded-2xl text-xs font-semibold shadow-sm transition-all duration-200 active:scale-95 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${
                   isLanguageSelected
-                    ? "border-[#003377] bg-[#003377]/10 text-[#003377] font-bold [&>svg]:text-[#003377] hover:bg-[#003377]/15 dark:border-[#FFC83D] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D] dark:[&>svg]:text-[#FFC83D] dark:shadow-[0_0_12px_rgba(255,200,61,0.2)] dark:hover:bg-[#FFC83D]/25"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D]"
+                    ? "border-[#003377] bg-[#003377]/10 text-[#003377] font-bold [&>svg]:text-[#003377] hover:border-[#003377] hover:bg-[#003377]/15 dark:border-[#FFC83D] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D] dark:[&>svg]:text-[#FFC83D] dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/25"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:text-[#003377] hover:[&>svg]:text-[#003377] dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D]"
                 }`}
               >
                 <SelectValue
@@ -194,10 +194,10 @@ export function PromptTemplateFilters({
               onValueChange={(val) => onFilterChange("templateStatus", val)}
             >
               <SelectTrigger
-                className={`h-11 rounded-2xl text-xs font-semibold shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-4 ${
+                className={`h-11 rounded-2xl text-xs font-semibold shadow-sm transition-all duration-200 active:scale-95 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${
                   isStatusSelected
-                    ? "border-[#003377] bg-[#003377]/10 text-[#003377] font-bold [&>svg]:text-[#003377] hover:bg-[#003377]/15 dark:border-[#FFC83D] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D] dark:[&>svg]:text-[#FFC83D] dark:shadow-[0_0_12px_rgba(255,200,61,0.2)] dark:hover:bg-[#FFC83D]/25"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D]"
+                    ? "border-[#003377] bg-[#003377]/10 text-[#003377] font-bold [&>svg]:text-[#003377] hover:border-[#003377] hover:bg-[#003377]/15 dark:border-[#FFC83D] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D] dark:[&>svg]:text-[#FFC83D] dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/25"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:text-[#003377] hover:[&>svg]:text-[#003377] dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D]"
                 }`}
               >
                 <SelectValue
@@ -232,7 +232,7 @@ export function PromptTemplateFilters({
             <button
               type="button"
               onClick={onReset}
-              className="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-100 px-3.5 text-xs font-semibold text-slate-600 transition-all duration-150 hover:bg-slate-200 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D] dark:active:text-[#003377]"
+              className="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-100 px-3.5 text-xs font-semibold text-slate-600 transition-all duration-150 hover:border-[#003377] hover:bg-slate-200 hover:text-[#003377] active:scale-95 active:bg-[#FFC83D] active:text-[#003377] outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-slate-700 dark:hover:text-[#FFC83D]"
             >
               <X className="h-3.5 w-3.5" />
               {t("Reset")}

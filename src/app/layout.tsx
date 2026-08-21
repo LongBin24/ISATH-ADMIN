@@ -7,13 +7,18 @@ import "@fontsource/google-sans/700.css";
 import "./globals.css";
 import { ReduxProvider } from "../redux/provider";
 import { Toaster } from "react-hot-toast";
+import PWARegister from "@/components/pwa/PWARegister";
 
 export const viewport: Viewport = {
-  themeColor: "#003377",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#003377" },
+    { media: "(prefers-color-scheme: dark)", color: "#020617" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
@@ -61,6 +66,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-google-sans">
         <ReduxProvider>{children}</ReduxProvider>
+        <PWARegister />
 
         <Toaster
           position="top-right"

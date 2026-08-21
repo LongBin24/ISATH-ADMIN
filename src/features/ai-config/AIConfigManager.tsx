@@ -34,7 +34,7 @@ export default function AIConfigManager() {
             variant="outline"
             size="lg"
             onClick={() => router.push("/dashboard")}
-            className="border-border text-base font-medium text-[#003377] transition-all duration-150 hover:border-[#FFC83D] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
+            className="border-border text-base font-medium text-[#003377] transition-all duration-150 hover:border-[#003377] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
           >
             <ArrowLeft className="mr-2 size-4" />
             {t("Dashboard")}
