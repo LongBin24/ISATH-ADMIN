@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { format, formatDistanceToNow } from "date-fns";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis } from "recharts";
-import { Activity, ArrowRight, Bell, BellRing, ChevronRight, CircleCheck, Clock3, Coins, MessageSquareText, RefreshCw, ShieldAlert, Tags, TriangleAlert, Users } from "lucide-react";
+import { Activity, ArrowRight, Bell, BellRing, ChevronRight, CircleCheck, Clock3, Coins, Globe, MessageSquareText, RefreshCw, ShieldAlert, Tags, TriangleAlert, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
         <KpiCard tone="teal" icon={Bell} title={t("Notifications")} value={notificationsTotal.data?.page.totalElements} loading={notificationsTotal.isLoading} error={notificationsTotal.isError} description={t("System notifications")} href="/notifications" />
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]">
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <UserOverview stats={userStats.data} loading={userStats.isLoading} error={userStats.isError} tab={chartTab} setTab={setChartTab} retry={() => userStats.refetch()} />
         <SystemHealth data={provider.data} loading={provider.isLoading} error={provider.isError} retry={() => provider.refetch()} />
       </section>
@@ -155,95 +155,151 @@ type UserStats = ReturnType<typeof useGetUserStatisticsQuery>["data"];
 
 function UserOverview({ stats, loading, error, tab, setTab, retry }: { stats: UserStats; loading: boolean; error: boolean; tab: string; setTab: (value: string) => void; retry: () => void }) {
   const { t } = useAdminI18n();
-  const genderRows = stats
-    ? [
-        { name: "Male", label: t("Male"), value: stats.gender.male },
-        { name: "Female", label: t("Female"), value: stats.gender.female },
-        { name: "Other", label: t("Other"), value: stats.gender.other },
-        { name: "Prefer Not To Say", label: t("Prefer Not To Say"), value: stats.gender.preferNotToSay },
-        { name: "Unspecified", label: t("Unspecified"), value: stats.gender.unspecified },
-      ]
-    : [];
+  const totalUsers = stats?.totalUsers ?? 0;
 
-  const ageRows = stats
-    ? [
-        { name: "Under 15", label: t("Under 15"), value: stats.ageGroups.under15 },
-        { name: "15–24", label: "15–24", value: stats.ageGroups.age15To24 },
-        { name: "25–44", label: "25–44", value: stats.ageGroups.age25To44 },
-        { name: "45–59", label: "45–59", value: stats.ageGroups.age45To59 },
-        { name: "60–74", label: "60–74", value: stats.ageGroups.age60To74 },
-        { name: "75+", label: "75+", value: stats.ageGroups.age75Plus },
-        { name: "Unknown", label: t("Unknown"), value: stats.ageGroups.unknown },
-      ]
-    : [];
+  const genderRows = useMemo(() => {
+    if (!stats) return [];
+    return [
+      { name: "Male", label: t("Male"), value: stats.gender.male },
+      { name: "Female", label: t("Female"), value: stats.gender.female },
+      { name: "Other", label: t("Other"), value: stats.gender.other },
+      { name: "Prefer Not To Say", label: t("Prefer Not To Say"), value: stats.gender.preferNotToSay },
+      { name: "Unspecified", label: t("Unspecified"), value: stats.gender.unspecified },
+    ];
+  }, [stats, t]);
+
+  const ageRows = useMemo(() => {
+    if (!stats) return [];
+    return [
+      { name: "Under 15", label: t("Under 15"), value: stats.ageGroups.under15 },
+      { name: "15–24", label: "15–24", value: stats.ageGroups.age15To24 },
+      { name: "25–44", label: "25–44", value: stats.ageGroups.age25To44 },
+      { name: "45–59", label: "45–59", value: stats.ageGroups.age45To59 },
+      { name: "60–74", label: "60–74", value: stats.ageGroups.age60To74 },
+      { name: "75+", label: "75+", value: stats.ageGroups.age75Plus },
+      { name: "Unknown", label: t("Unknown"), value: stats.ageGroups.unknown },
+    ];
+  }, [stats, t]);
 
   return (
-    <Card className="rounded-2xl">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold md:text-xl">{t("User Overview")}</CardTitle>
-        <CardDescription>{t("Understand the current iStash user distribution.")}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {loading ? (
-          <Skeleton className="h-72" />
-        ) : error ? (
-          <WidgetError message={t("Unable to load user statistics.")} retry={retry} />
-        ) : (
-          <Tabs value={tab} onValueChange={setTab}>
-            <TabsList>
-              <TabsTrigger value="gender">{t("Gender")}</TabsTrigger>
-              <TabsTrigger value="age">{t("Age")}</TabsTrigger>
+    <Card className="flex h-full flex-col overflow-hidden rounded-2xl border-border/70 shadow-sm transition-all hover:shadow-md">
+      <Tabs value={tab} onValueChange={setTab} className="flex h-full flex-col">
+        <CardHeader className="border-b border-border/60 bg-muted/20 pb-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#003377]/10 text-[#003377] dark:bg-[#FEDB55]/15 dark:text-[#FEDB55]">
+                <Users className="size-5" />
+              </span>
+              <div>
+                <CardTitle className="text-lg font-semibold md:text-xl">{t("User Overview")}</CardTitle>
+                <CardDescription>{t("Understand the current iStash user distribution.")}</CardDescription>
+              </div>
+            </div>
+            <TabsList className="h-9 self-start rounded-xl bg-muted/60 p-1 sm:self-center">
+              <TabsTrigger value="gender" className="rounded-lg text-xs font-semibold px-3 py-1 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                {t("Gender")}
+              </TabsTrigger>
+              <TabsTrigger value="age" className="rounded-lg text-xs font-semibold px-3 py-1 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                {t("Age")}
+              </TabsTrigger>
             </TabsList>
-            <TabsContent value="gender">
-              <div className="grid min-h-64 items-center gap-4 sm:grid-cols-[minmax(220px,1fr)_minmax(180px,1fr)]">
-                <div className="h-64">
+          </div>
+        </CardHeader>
+
+        <CardContent className="flex flex-1 flex-col justify-between p-4 sm:p-5">
+          {loading ? (
+            <Skeleton className="h-72 w-full rounded-xl" />
+          ) : error ? (
+            <WidgetError message={t("Unable to load user statistics.")} retry={retry} />
+          ) : (
+            <div className="flex flex-1 flex-col justify-between">
+              <TabsContent value="gender" className="mt-0 space-y-4">
+                <div className="grid min-h-60 items-center gap-4 sm:grid-cols-[minmax(200px,1fr)_minmax(200px,1.2fr)]">
+                  <div className="relative flex h-56 w-full items-center justify-center sm:h-60">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={genderRows}
+                          dataKey="value"
+                          nameKey="label"
+                          innerRadius={56}
+                          outerRadius={84}
+                          paddingAngle={3}
+                          strokeWidth={0}
+                        >
+                          {genderRows.map((row, index) => (
+                            <Cell key={row.name} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <ChartTooltip contentStyle={{ borderRadius: 12, fontSize: 13, borderColor: "var(--border)", backgroundColor: "var(--card)" }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-2xl font-bold tracking-tight card-number text-[#003377] dark:text-[#FEDB55]">
+                        {totalUsers.toLocaleString()}
+                      </span>
+                      <span className="text-xs font-medium text-muted-foreground">{t("Users")}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    {genderRows.map((row, index) => {
+                      const percent = totalUsers > 0 ? Math.round((row.value / totalUsers) * 100) : 0;
+                      return (
+                        <div
+                          key={row.name}
+                          className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-muted/20 px-3.5 py-2 transition-colors hover:bg-muted/40"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                            <span className="truncate text-sm font-medium text-foreground">{row.label}</span>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-sm font-bold text-foreground">{row.value.toLocaleString()}</span>
+                            <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
+                              {percent}%
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="age" className="mt-0 space-y-4">
+                <div className="h-60 w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={genderRows} dataKey="value" nameKey="label" innerRadius={58} outerRadius={90} paddingAngle={2} strokeWidth={0}>
-                        {genderRows.map((row, index) => (
-                          <Cell key={row.name} fill={COLORS[index]} />
+                    <BarChart data={ageRows} margin={{ top: 8, left: -18, right: 8, bottom: 0 }}>
+                      <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border/60" />
+                      <XAxis dataKey="label" tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
+                      <ChartTooltip contentStyle={{ borderRadius: 12, fontSize: 13, borderColor: "var(--border)", backgroundColor: "var(--card)" }} />
+                      <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                        {ageRows.map((row, index) => (
+                          <Cell key={row.name} fill={AGE_COLORS[index % AGE_COLORS.length]} />
                         ))}
-                      </Pie>
-                      <ChartTooltip contentStyle={{ borderRadius: 12, fontSize: 13 }} />
-                    </PieChart>
+                      </Bar>
+                    </BarChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="space-y-2">
-                  {genderRows.map((row, index) => (
-                    <div key={row.name} className="flex justify-between gap-4 text-sm">
-                      <span className="flex items-center gap-2">
-                        <span className="size-2.5 rounded-full" style={{ backgroundColor: COLORS[index] }} />
-                        {row.label}
-                      </span>
-                      <strong>{row.value.toLocaleString()}</strong>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </TabsContent>
-            <TabsContent value="age">
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={ageRows} margin={{ left: -18, right: 8 }}>
-                    <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis dataKey="label" tick={{ fontSize: 13, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 13, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
-                    <ChartTooltip contentStyle={{ borderRadius: 12, fontSize: 13 }} />
-                    <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                      {ageRows.map((row, index) => (
-                        <Cell key={row.name} fill={AGE_COLORS[index % AGE_COLORS.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </TabsContent>
-            <p className="mt-4 text-sm text-muted-foreground font-normal">
-              {t("Total Users")}: <span className="font-semibold text-foreground">{stats?.totalUsers.toLocaleString()}</span>
-            </p>
-          </Tabs>
-        )}
-      </CardContent>
+              </TabsContent>
+
+              <Link
+                href="/user-manager"
+                className="mt-4 flex h-11 w-full items-center justify-between rounded-xl border border-border/70 bg-background px-4 text-sm font-semibold text-[#003377] transition-colors hover:bg-muted dark:text-[#FEDB55]"
+              >
+                <span>
+                  {t("Total Users")}: <strong className="text-foreground">{totalUsers.toLocaleString()}</strong>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  {t("View All Users")} <ArrowRight className="size-4" />
+                </span>
+              </Link>
+            </div>
+          )}
+        </CardContent>
+      </Tabs>
     </Card>
   );
 }
@@ -255,49 +311,108 @@ function SystemHealth({ data, loading, error, retry }: { data: Provider; loading
   const healthy = data?.status === "HEALTHY" && !data?.stale && !data?.lastError;
 
   return (
-    <Card className="rounded-2xl">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg font-semibold md:text-xl">
-          <Activity className="size-5" />
-          {t("System Health")}
-        </CardTitle>
-        <CardDescription>{t("Currency provider availability and synchronization.")}</CardDescription>
+    <Card className="flex h-full flex-col overflow-hidden rounded-2xl border-border/70 shadow-sm transition-all hover:shadow-md">
+      <CardHeader className="border-b border-border/60 bg-muted/20 pb-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#003377]/10 text-[#003377] dark:bg-[#FEDB55]/15 dark:text-[#FEDB55]">
+              <Activity className="size-5" />
+            </span>
+            <div>
+              <CardTitle className="text-lg font-semibold md:text-xl">{t("System Health")}</CardTitle>
+              <CardDescription>{t("Currency provider availability and synchronization.")}</CardDescription>
+            </div>
+          </div>
+          <Badge
+            variant="outline"
+            className={
+              healthy
+                ? "gap-1.5 border-emerald-300/80 bg-emerald-50/80 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                : "gap-1.5 border-amber-300/80 bg-amber-50/80 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
+            }
+          >
+            {healthy ? <CircleCheck className="size-3.5" /> : <TriangleAlert className="size-3.5" />}
+            {healthy ? t("Healthy") : t("Provider Issue")}
+          </Badge>
+        </div>
       </CardHeader>
-      <CardContent>
+
+      <CardContent className="flex flex-1 flex-col justify-between p-4 sm:p-5">
         {loading ? (
-          <Skeleton className="h-72" />
+          <Skeleton className="h-72 w-full rounded-xl" />
         ) : error || !data ? (
           <WidgetError message={t("Unable to load provider status.")} retry={retry} />
         ) : (
-          <div className="space-y-4">
-            <Badge
-              variant="outline"
-              className={
-                healthy
-                  ? "gap-1 border-emerald-200 bg-emerald-50 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300"
-                  : "gap-1 border-amber-200 bg-amber-50 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300"
-              }
-            >
-              {healthy ? <CircleCheck className="size-3.5" /> : <TriangleAlert className="size-3.5" />}
-              {healthy ? t("Healthy") : t("Provider Issue")}
-            </Badge>
+          <div className="flex flex-1 flex-col justify-between space-y-3">
             {data.lastError && (
-              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-200">
-                {data.lastError}
+              <div className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50/90 p-3 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/50 dark:text-amber-200">
+                <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                <span className="line-clamp-2 leading-relaxed">{data.lastError}</span>
               </div>
             )}
-            <div className="divide-y">
-              <Info label={t("Provider")} value={data.provider || "—"} />
-              <Info label={t("Last Successful Sync")} value={exact(data.lastSuccessfulSyncAt)} />
-              <Info label={t("Currencies Received")} value={data.currenciesReceived?.toLocaleString() ?? "—"} />
-              <Info label={t("Rates Updated")} value={data.ratesUpdated?.toLocaleString() ?? "—"} />
-              <Info label={t("Data Status")} value={data.stale ? t("Data may be outdated") : t("Up to date")} />
+
+            <div className="space-y-2">
+              <HealthRow
+                icon={Globe}
+                label={t("Provider")}
+                value={
+                  <span className="rounded-lg border border-border/60 bg-muted/60 px-2 py-0.5 font-mono text-xs font-semibold text-foreground">
+                    {data.provider || "EXCHANGE_RATE_API_OPEN"}
+                  </span>
+                }
+              />
+              <HealthRow
+                icon={Clock3}
+                label={t("Last Successful Sync")}
+                value={
+                  <span className="text-sm font-medium text-foreground">
+                    {exact(data.lastSuccessfulSyncAt)}
+                  </span>
+                }
+              />
+              <HealthRow
+                icon={Coins}
+                label={t("Currencies Received")}
+                value={
+                  <span className="text-sm font-bold text-foreground">
+                    {data.currenciesReceived?.toLocaleString() ?? "—"}
+                  </span>
+                }
+              />
+              <HealthRow
+                icon={RefreshCw}
+                label={t("Rates Updated")}
+                value={
+                  <span className="text-sm font-bold text-foreground">
+                    {data.ratesUpdated?.toLocaleString() ?? "—"}
+                  </span>
+                }
+              />
+              <HealthRow
+                icon={ShieldAlert}
+                label={t("Data Status")}
+                value={
+                  data.stale ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                      <span className="size-1.5 rounded-full bg-amber-500 animate-pulse" />
+                      {t("Data may be outdated")}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                      <span className="size-1.5 rounded-full bg-emerald-500" />
+                      {t("Up to date")}
+                    </span>
+                  )
+                }
+              />
             </div>
+
             <Link
               href="/currencies"
-              className="inline-flex h-9 items-center justify-center rounded-xl border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+              className="mt-4 flex h-11 w-full items-center justify-between rounded-xl border border-border/70 bg-background px-4 text-sm font-semibold text-[#003377] transition-colors hover:bg-muted dark:text-[#FEDB55]"
             >
-              {t("View Currencies")} <ArrowRight className="ml-2 size-4" />
+              <span>{t("View Currencies")}</span>
+              <ArrowRight className="size-4" />
             </Link>
           </div>
         )}
@@ -306,11 +421,24 @@ function SystemHealth({ data, loading, error, retry }: { data: Provider; loading
   );
 }
 
-function Info({ label, value }: { label: string; value: string }) {
+function HealthRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof Users;
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
-    <div className="flex justify-between gap-4 py-3">
-      <span className="text-sm text-muted-foreground font-normal">{label}</span>
-      <span className="text-right text-sm font-medium text-foreground">{value}</span>
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-muted/20 px-3.5 py-2.5 transition-colors hover:bg-muted/40">
+      <div className="flex items-center gap-2.5 min-w-0">
+        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground">
+          <Icon className="size-3.5" />
+        </span>
+        <span className="truncate text-sm font-medium text-muted-foreground font-normal">{label}</span>
+      </div>
+      <div className="shrink-0">{value}</div>
     </div>
   );
 }

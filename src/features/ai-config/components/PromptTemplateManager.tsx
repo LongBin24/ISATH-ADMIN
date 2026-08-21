@@ -11,6 +11,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationSummary,
 } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetAdminPromptTemplatesQuery } from "../api";
@@ -261,9 +262,12 @@ export function PromptTemplateManager() {
           {totalElements > 0 && (
             <div className="flex flex-col items-center justify-between gap-4 pt-1 text-base sm:flex-row">
               <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
-                <span>
-                  Showing <span className="font-medium text-foreground">{startItem}</span>–<span className="font-medium text-foreground">{endItem}</span> of <span className="font-medium text-foreground">{totalElements.toLocaleString()}</span> {t("Prompt Templates")}
-                </span>
+                <PaginationSummary
+                  start={startItem}
+                  end={endItem}
+                  total={totalElements}
+                  entityName={t("Prompt Templates")}
+                />
                 <div className="admin-page-size">
                   <Select
                     value={String(pageSize)}
@@ -272,20 +276,15 @@ export function PromptTemplateManager() {
                       setPageNumber(0);
                     }}
                   >
-                    <SelectTrigger className="h-10 w-32 text-sm">
-                      <SelectValue value={`${pageSize} / page`} />
+                    <SelectTrigger className="h-9 w-32 text-xs">
+                      <SelectValue placeholder={t(`${pageSize} / page`)} />
                     </SelectTrigger>
-                    <SelectContent
-                      value={String(pageSize)}
-                      onValueChange={(val) => {
-                        setPageSize(Number(val));
-                        setPageNumber(0);
-                      }}
-                    >
-                      <SelectItem value="10">10 / page</SelectItem>
-                      <SelectItem value="20">20 / page</SelectItem>
-                      <SelectItem value="50">50 / page</SelectItem>
-                      <SelectItem value="100">100 / page</SelectItem>
+                    <SelectContent>
+                      <SelectItem value="5">{t("5 / page")}</SelectItem>
+                      <SelectItem value="10">{t("10 / page")}</SelectItem>
+                      <SelectItem value="20">{t("20 / page")}</SelectItem>
+                      <SelectItem value="50">{t("50 / page")}</SelectItem>
+                      <SelectItem value="100">{t("100 / page")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

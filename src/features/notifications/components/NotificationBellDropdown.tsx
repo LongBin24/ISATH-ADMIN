@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, ExternalLink, CheckCheck } from "lucide-react";
+import { Bell, ExternalLink, CheckCheck, Clock } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import {
   useGetNotificationsQuery,
   useGetNotificationStatsQuery,
@@ -8,9 +9,18 @@ import {
   useMarkAsReadMutation,
 } from "../api";
 import { useNotificationUI } from "../hook";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 import Link from "next/link";
 
+function safeRelativeTime(value?: string | null) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return formatDistanceToNow(date, { addSuffix: true });
+}
+
 export default function NotificationBellDropdown() {
+  const { t, locale } = useAdminI18n();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -55,12 +65,16 @@ export default function NotificationBellDropdown() {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="relative rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 transition hover:border-[#FFC83D] hover:text-[#003377] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
-        aria-label="ការជូនដំណឹង"
+        className="relative rounded-xl border border-border bg-card p-2.5 text-foreground/80 transition hover:border-[#FFC83D] hover:text-[#003377] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
+        aria-label={t("Notifications")}
       >
         <Bell size={20} />
         {unreadCount > 0 && (
-          <span key={unreadCount} className="absolute -right-1.5 -top-1.5 flex min-h-5 min-w-5 animate-in zoom-in-75 items-center justify-center rounded-full bg-[#FFC83D] px-1 text-xs font-bold text-[#003377] ring-2 ring-white dark:ring-slate-900" aria-label={`${unreadCount} unread notifications`}>
+          <span
+            key={unreadCount}
+            className="absolute -right-1.5 -top-1.5 flex min-h-5 min-w-5 animate-in zoom-in-75 items-center justify-center rounded-full bg-[#FFC83D] px-1 text-xs font-bold text-[#003377] ring-2 ring-background dark:ring-slate-900"
+            aria-label={`${unreadCount} ${t("unread notifications")}`}
+          >
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
@@ -68,16 +82,16 @@ export default function NotificationBellDropdown() {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-80 sm:w-96 rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 font-google-sans">
+        <div className="absolute right-0 z-50 mt-3 w-80 sm:w-96 overflow-hidden rounded-2xl border border-border bg-card shadow-2xl dark:border-slate-800 dark:bg-slate-900 animate-in fade-in slide-in-from-top-2 duration-200 font-google-sans">
           {/* Dropdown Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-5 py-3.5 dark:border-slate-800 dark:bg-slate-850">
+          <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-3 dark:border-slate-800 dark:bg-slate-800/60">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-sm text-slate-900 dark:text-white font-google-sans">
-                ការជូនដំណឹង
+              <span className="text-sm font-bold text-foreground dark:text-slate-100">
+                {t("Notifications")}
               </span>
               {unreadCount > 0 && (
-                <span className="rounded-full bg-[#FFC83D]/20 px-2 py-0.5 text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
-                  {unreadCount} ថ្មី
+                <span className="rounded-full bg-[#003377]/10 px-2 py-0.5 text-xs font-bold text-[#003377] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D]">
+                  {unreadCount} {t("new")}
                 </span>
               )}
             </div>
@@ -86,60 +100,88 @@ export default function NotificationBellDropdown() {
               <button
                 type="button"
                 onClick={() => markAllAsRead()}
-                className="text-xs font-semibold text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D] flex items-center gap-1"
+                className="flex items-center gap-1 text-xs font-semibold text-muted-foreground transition-colors hover:text-[#003377] dark:text-slate-400 dark:hover:text-[#FFC83D]"
               >
                 <CheckCheck size={14} />
-                <span>អានទាំងអស់</span>
+                <span>{t("Mark all as read")}</span>
               </button>
             )}
           </div>
 
-          <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
+          <div className="max-h-80 divide-y divide-border/60 overflow-y-auto dark:divide-slate-800">
             {recentNotifications.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-400">
-                គ្មានការជូនដំណឹងទេ
+              <div className="p-8 text-center text-xs text-muted-foreground dark:text-slate-400">
+                {t("No notifications yet")}
               </div>
             ) : (
-              recentNotifications.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => {
-                    if (!item.isRead) {
-                      markAsRead(item.id);
-                    }
-                    selectNotification(item);
-                    setIsOpen(false);
-                  }}
-                  className={`flex items-start gap-3 p-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer ${
-                    !item.isRead ? "bg-amber-500/5" : ""
-                  }`}
-                >
-                  <div className="relative mt-0.5 h-2 w-2 shrink-0 rounded-full bg-[#FFC83D]">
-                    {!item.isRead && (
-                      <span className="absolute inset-0 rounded-full bg-[#FFC83D] animate-ping" />
-                    )}
-                  </div>
+              recentNotifications.map((item) => {
+                const isUnread = !item.isRead && !item.read;
+                const title =
+                  locale === "km"
+                    ? item.titleKh || t(item.title) || item.title
+                    : item.titleEn || item.title || item.titleKh;
+                const message =
+                  locale === "km"
+                    ? item.messageKh || t(item.message) || item.message
+                    : item.messageEn || item.message || item.messageKh;
+                const timeAgo = safeRelativeTime(item.createdAt);
 
-                  <div className="flex-1 space-y-0.5">
-                    <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
-                      {item.titleKh}
-                    </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                      {item.messageKh}
-                    </p>
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => {
+                      if (isUnread) {
+                        markAsRead(item.id);
+                      }
+                      selectNotification(item);
+                      setIsOpen(false);
+                    }}
+                    className={`flex items-start gap-3 p-3.5 transition cursor-pointer hover:bg-muted/50 dark:hover:bg-slate-800/60 ${
+                      isUnread
+                        ? "bg-[#003377]/[0.03] dark:bg-[#FFC83D]/[0.05]"
+                        : ""
+                    }`}
+                  >
+                    <span className="relative mt-1.5 flex size-2 shrink-0 rounded-full bg-[#003377] dark:bg-[#FFC83D]">
+                      {isUnread && (
+                        <span className="absolute inset-0 rounded-full bg-[#003377] opacity-75 animate-ping dark:bg-[#FFC83D]" />
+                      )}
+                    </span>
+
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p
+                          className={`line-clamp-1 text-xs ${
+                            isUnread
+                              ? "font-bold text-foreground dark:text-slate-100"
+                              : "font-medium text-foreground/90 dark:text-slate-300"
+                          }`}
+                        >
+                          {title}
+                        </p>
+                        {timeAgo && (
+                          <span className="shrink-0 text-[10px] text-muted-foreground dark:text-slate-400">
+                            {timeAgo}
+                          </span>
+                        )}
+                      </div>
+                      <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground dark:text-slate-400">
+                        {message}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
-          <div className="border-t border-slate-100 bg-slate-50/50 p-3 text-center dark:border-slate-800 dark:bg-slate-850">
+          <div className="border-t border-border bg-muted/20 p-2.5 text-center dark:border-slate-800 dark:bg-slate-900/90">
             <Link
               href="/notifications"
               onClick={() => setIsOpen(false)}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#003377] hover:underline dark:text-[#FFC83D]"
+              className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-[#003377] transition hover:bg-[#003377]/5 dark:text-[#FFC83D] dark:hover:bg-[#FFC83D]/10"
             >
-              <span>មើលការជូនដំណឹងទាំងអស់</span>
+              <span>{t("View All Notifications")}</span>
               <ExternalLink size={12} />
             </Link>
           </div>

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { AlertCircle, BellOff, BellPlus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationSummary } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetAdminUsersQuery } from "@/features/user-manager/api";
 import { useGetAdminNotificationsQuery } from "./api";
@@ -165,16 +165,21 @@ export default function NotificationManager() {
 
               <div className="flex flex-col items-center justify-between gap-4 pt-1 text-base sm:flex-row">
                 <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
-                  <span>
-                    Showing <span className="font-medium text-foreground">{startItem}</span>–<span className="font-medium text-foreground">{endItem}</span> of <span className="font-medium text-foreground">{totalElements.toLocaleString()}</span> {t("Notifications")}
-                  </span>
+                  <PaginationSummary
+                    start={startItem}
+                    end={endItem}
+                    total={totalElements}
+                    entityName={t("Notifications")}
+                  />
                   <div className="admin-page-size">
                     <Select value={String(pageSize)} onValueChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }}>
-                      <SelectTrigger className="h-10 w-32 text-sm"><SelectValue value={`${pageSize} / page`} /></SelectTrigger>
-                      <SelectContent value={String(pageSize)} onValueChange={(value) => { setPageSize(Number(value)); setPageNumber(0); }}>
-                        <SelectItem value="10">10 / page</SelectItem>
-                        <SelectItem value="20">20 / page</SelectItem>
-                        <SelectItem value="50">50 / page</SelectItem>
+                      <SelectTrigger className="h-9 w-32 text-xs"><SelectValue placeholder={t(`${pageSize} / page`)} /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5">{t("5 / page")}</SelectItem>
+                        <SelectItem value="10">{t("10 / page")}</SelectItem>
+                        <SelectItem value="20">{t("20 / page")}</SelectItem>
+                        <SelectItem value="50">{t("50 / page")}</SelectItem>
+                        <SelectItem value="100">{t("100 / page")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

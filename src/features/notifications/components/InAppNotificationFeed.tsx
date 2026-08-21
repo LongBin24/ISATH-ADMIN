@@ -32,6 +32,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationSummary,
 } from "@/components/ui/pagination";
 import {
   Select,
@@ -40,8 +41,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAdminI18n } from "@/i18n/admin-i18n";
 
 export default function InAppNotificationFeed() {
+  const { t } = useAdminI18n();
   const {
     selectedCategoryFilter,
     searchQuery,
@@ -347,9 +350,12 @@ export default function InAppNotificationFeed() {
           {totalItems > 0 && (
             <div className="flex flex-col items-center justify-between gap-4 border-t border-slate-200/80 pt-4 text-base dark:border-slate-800 sm:flex-row">
               <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
-                <span>
-                  Showing <span className="font-medium text-foreground">{startItem}</span>–<span className="font-medium text-foreground">{endItem}</span> of <span className="font-medium text-foreground">{totalItems.toLocaleString()}</span> notifications
-                </span>
+                <PaginationSummary
+                  start={startItem}
+                  end={endItem}
+                  total={totalItems}
+                  entityName={t("Notifications")}
+                />
                 <div className="admin-page-size">
                   <Select
                     value={String(pageSize)}
@@ -358,20 +364,15 @@ export default function InAppNotificationFeed() {
                       setCurrentPage(1);
                     }}
                   >
-                    <SelectTrigger className="h-10 w-32 text-sm">
-                      <SelectValue value={`${pageSize} / page`} />
+                    <SelectTrigger className="h-9 w-32 text-xs">
+                      <SelectValue placeholder={t(`${pageSize} / page`)} />
                     </SelectTrigger>
-                    <SelectContent
-                      value={String(pageSize)}
-                      onValueChange={(val) => {
-                        setPageSize(Number(val));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <SelectItem value="10">10 / page</SelectItem>
-                      <SelectItem value="20">20 / page</SelectItem>
-                      <SelectItem value="50">50 / page</SelectItem>
-                      <SelectItem value="100">100 / page</SelectItem>
+                    <SelectContent>
+                      <SelectItem value="5">{t("5 / page")}</SelectItem>
+                      <SelectItem value="10">{t("10 / page")}</SelectItem>
+                      <SelectItem value="20">{t("20 / page")}</SelectItem>
+                      <SelectItem value="50">{t("50 / page")}</SelectItem>
+                      <SelectItem value="100">{t("100 / page")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

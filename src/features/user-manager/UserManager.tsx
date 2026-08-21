@@ -18,6 +18,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationSummary,
 } from "@/components/ui/pagination";
 import UserManagementHeader from "./components/UserManagementHeader";
 import UserStatCards from "./components/UserStatCards";
@@ -169,35 +170,33 @@ export default function UserManagerPage() {
                 />
 
                 <div className="flex flex-col items-center justify-between gap-4 pt-2 text-base sm:flex-row">
-                  <div className="flex items-center gap-3 text-base text-muted-foreground">
-                    <span>
-                      Showing <span className="font-medium text-foreground">{startItem}</span>–
-                      <span className="font-medium text-foreground">{endItem}</span> of{" "}
-                      <span className="font-medium text-foreground">{totalElements.toLocaleString()}</span> {t("Users")}
-                    </span>
-                    <div className="admin-page-size"><Select
-                      value={String(pageSize)}
-                      onValueChange={(value) => {
-                        setPageSize(Number(value));
-                        setPageNumber(0);
-                      }}
-                    >
-                      <SelectTrigger className="h-10 w-32 text-sm">
-                        <SelectValue value={`${pageSize} / page`} />
-                      </SelectTrigger>
-                      <SelectContent
+                  <div className="flex flex-wrap items-center gap-3 text-base text-muted-foreground">
+                    <PaginationSummary
+                      start={startItem}
+                      end={endItem}
+                      total={totalElements}
+                      entityName={t("Users")}
+                    />
+                    <div className="admin-page-size">
+                      <Select
                         value={String(pageSize)}
                         onValueChange={(value) => {
                           setPageSize(Number(value));
                           setPageNumber(0);
                         }}
                       >
-                        <SelectItem value="10">10 / page</SelectItem>
-                        <SelectItem value="20">20 / page</SelectItem>
-                        <SelectItem value="50">50 / page</SelectItem>
-                        <SelectItem value="100">100 / page</SelectItem>
-                      </SelectContent>
-                    </Select></div>
+                        <SelectTrigger className="h-9 w-32 text-xs">
+                          <SelectValue placeholder={t(`${pageSize} / page`)} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="5">{t("5 / page")}</SelectItem>
+                          <SelectItem value="10">{t("10 / page")}</SelectItem>
+                          <SelectItem value="20">{t("20 / page")}</SelectItem>
+                          <SelectItem value="50">{t("50 / page")}</SelectItem>
+                          <SelectItem value="100">{t("100 / page")}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   {totalPages > 1 && (

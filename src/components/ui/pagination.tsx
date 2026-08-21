@@ -110,6 +110,48 @@ function PaginationEllipsis({ className, ...props }: React.HTMLAttributes<HTMLSp
   );
 }
 
+interface PaginationSummaryProps {
+  start: number;
+  end: number;
+  total: number;
+  entityName?: string;
+  className?: string;
+}
+
+function PaginationSummary({
+  start,
+  end,
+  total,
+  entityName,
+  className,
+}: PaginationSummaryProps) {
+  const i18n = useOptionalAdminI18n();
+  const t = i18n?.t ?? ((str: string) => str);
+
+  if (total <= 0) {
+    return null;
+  }
+
+  return (
+    <div
+      className={cn(
+        "flex flex-wrap items-center gap-1.5 text-base font-normal text-muted-foreground",
+        className
+      )}
+    >
+      <span>{t("Showing")}</span>
+      <span className="font-semibold text-foreground">
+        {start}–{end}
+      </span>
+      <span>{t("of")}</span>
+      <span className="font-semibold text-foreground">
+        {total.toLocaleString()}
+      </span>
+      {entityName && <span>{entityName}</span>}
+    </div>
+  );
+}
+
 export {
   Pagination,
   PaginationContent,
@@ -118,4 +160,5 @@ export {
   PaginationPrevious,
   PaginationNext,
   PaginationEllipsis,
+  PaginationSummary,
 };
