@@ -13,6 +13,7 @@ import {
   Tags,
   Globe,
   MessageSquare,
+  Mail,
   ShieldAlert,
   BarChart3,
   User,
@@ -70,6 +71,7 @@ export default function MobileBottomNav() {
     { label: "Reports", icon: BarChart3, href: "/reports" },
     { label: "Alert Rules", icon: ShieldAlert, href: "/alert" },
     { label: "Reviews", icon: MessageSquare, href: "/feedback" },
+    { label: "Contact Us", icon: Mail, href: "/contact-us" },
     { label: "Settings", icon: Settings, href: "/settings" },
   ];
 
