@@ -1,8 +1,7 @@
 "use client";
 
 import { InActiveSummary } from "../type";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Skeleton } from "./ui/skeleton";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { X } from "lucide-react";
 
 export default function InActiveStatsModal({

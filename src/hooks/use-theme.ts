@@ -18,6 +18,7 @@ export function useTheme() {
           ? "dark"
           : "light";
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(initialTheme);
     setMounted(true);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
@@ -42,8 +43,11 @@ export function useTheme() {
       setTheme(nextTheme);
     };
 
-    if (typeof document !== "undefined" && "startViewTransition" in document) {
-      (document as any).startViewTransition(() => {
+    const doc = document as Document & {
+      startViewTransition?: (callback: () => void) => void;
+    };
+    if (typeof document !== "undefined" && typeof doc.startViewTransition === "function") {
+      doc.startViewTransition(() => {
         updateDOM();
       });
     } else {

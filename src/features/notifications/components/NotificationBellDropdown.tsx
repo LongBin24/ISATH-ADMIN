@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, ExternalLink, CheckCheck, Clock } from "lucide-react";
+import { Bell, ExternalLink, CheckCheck } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import {
   useGetNotificationsQuery,

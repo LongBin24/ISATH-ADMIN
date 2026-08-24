@@ -8,7 +8,7 @@ export async function PUT(request: Request) {
       notifications: body.notifications,
     });
     return NextResponse.json(updated);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "មិនអាចផ្លាស់ប្តូរការកំណត់ជូនដំណឹងបានទេ" },
       { status: 400 }

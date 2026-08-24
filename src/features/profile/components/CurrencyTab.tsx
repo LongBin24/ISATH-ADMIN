@@ -64,7 +64,7 @@ export default function CurrencyTab({
     try {
       await updateCurrency({ currency: selectedCurrency }).unwrap();
       onSuccess("បានកំណត់រូបិយប័ណ្ណដែលពេញចិត្តដោយជោគជ័យ!");
-    } catch (err) {
+    } catch {
       onError("មិនអាចផ្លាស់ប្តូររូបិយប័ណ្ណបានទេ សូមព្យាយាមម្តងទៀត");
     }
   };

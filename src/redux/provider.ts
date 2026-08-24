@@ -5,8 +5,9 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 
 export function ReduxProvider({ children }: { children: ReactNode }) {
-  return createElement(Provider as unknown as React.ComponentType<{ children?: ReactNode; store: typeof store }>, {
-    store,
-    children,
-  });
+  return createElement(
+    Provider as unknown as React.ComponentType<{ store: typeof store }>,
+    { store },
+    children
+  );
 }

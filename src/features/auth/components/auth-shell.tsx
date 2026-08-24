@@ -1,9 +1,8 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, Moon, ShieldCheck, Sparkles, Sun, TrendingUp, Wallet } from 'lucide-react';
+import { Moon, ShieldCheck, Sparkles, Sun, TrendingUp, Wallet } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useTheme } from '@/hooks/use-theme';
 import type { ReactNode } from 'react';
 

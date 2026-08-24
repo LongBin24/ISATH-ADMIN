@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       isDefaultAvatar: !!body.isDefault,
     });
     return NextResponse.json(updated);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "មិនអាចផ្ទុកឡើងរូបភាពបានទេ" },
       { status: 400 }

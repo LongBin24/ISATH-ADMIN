@@ -14,6 +14,7 @@ export function useLocale() {
     const initialLocale: Locale =
       storedLocale === "en" || storedLocale === "km" ? storedLocale : browserPrefersKhmer ? "km" : "en";
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocale(initialLocale);
     setMounted(true);
   }, []);

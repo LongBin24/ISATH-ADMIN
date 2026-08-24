@@ -33,8 +33,6 @@ export function DeleteCategoryDialog({
 
   if (!category) return null;
 
-  const isIncome = (category.type ?? "expense").toLowerCase() === "income";
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-[1px]"

@@ -45,6 +45,7 @@ export default function ProfileAvatarModal({
 
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedAvatar(profile.avatar);
       setSelectedFile(null);
       setIsDefault(profile.isDefaultAvatar);

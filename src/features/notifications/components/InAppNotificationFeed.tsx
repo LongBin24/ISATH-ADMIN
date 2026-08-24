@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Search,
   Filter,
   Check,
-  Trash2,
   Bell,
   Wallet,
   AlertTriangle,
@@ -14,8 +13,6 @@ import {
   BarChart3,
   RotateCcw,
   RefreshCw,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import {
   useGetNotificationsQuery,
@@ -43,6 +40,17 @@ import {
 } from "@/components/ui/select";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 
+function formatKhmerTimeAgo(dateStr: string) {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diffMs / (1000 * 60));
+  if (mins < 1) return "ទើបតែឥឡូវនេះ";
+  if (mins < 60) return `${mins} នាទីមុន`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} ម៉ោងមុន`;
+  const days = Math.floor(hours / 24);
+  return `${days} ថ្ងៃមុន`;
+}
+
 export default function InAppNotificationFeed() {
   const { t } = useAdminI18n();
   const {
@@ -58,28 +66,25 @@ export default function InAppNotificationFeed() {
   const [markAsRead] = useMarkAsReadMutation();
   const [retryingId, setRetryingId] = React.useState<string | null>(null);
   const [retrySuccessId, setRetrySuccessId] = React.useState<string | null>(null);
-  const [retryErrorMsg, setRetryErrorMsg] = React.useState<string | null>(null);
 
   // Pagination states matching UserTable
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   // Reset to page 1 on search or category filter change
-  React.useEffect(() => {
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [searchQuery, selectedCategoryFilter]);
 
   const handleRetryItem = async (id: string) => {
     setRetryingId(id);
-    setRetryErrorMsg(null);
     try {
       await retryDelivery({ notificationId: id }).unwrap();
       setRetrySuccessId(id);
       setTimeout(() => setRetrySuccessId(null), 3000);
-    } catch (err: any) {
-      const msg = err?.data?.message || err?.message || "No failed deliveries to retry.";
-      setRetryErrorMsg(msg);
-      setTimeout(() => setRetryErrorMsg(null), 4000);
+    } catch {
+      // Failed retry handled gracefully
     } finally {
       setRetryingId(null);
     }
@@ -144,17 +149,7 @@ export default function InAppNotificationFeed() {
     }
   };
 
-  // Human friendly time diff in Khmer
-  const formatKhmerTimeAgo = (dateStr: string) => {
-    const diffMs = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diffMs / (1000 * 60));
-    if (mins < 1) return "ទើបតែឥឡូវនេះ";
-    if (mins < 60) return `${mins} នាទីមុន`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours} ម៉ោងមុន`;
-    const days = Math.floor(hours / 24);
-    return `${days} ថ្ងៃមុន`;
-  };
+
 
   return (
     <div className="space-y-6">

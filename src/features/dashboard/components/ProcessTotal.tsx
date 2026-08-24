@@ -1,9 +1,8 @@
 "use client";
 
 import { ProcessSummary } from "../type";
-import { Dialog, DialogContent, DialogHeader, DialogTitle} from "./ui/dialog";
-import { Skeleton } from "./ui/skeleton";
-import { X} from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
+import { X } from "lucide-react";
 
 export default function ProcessStatsModal({
     open,

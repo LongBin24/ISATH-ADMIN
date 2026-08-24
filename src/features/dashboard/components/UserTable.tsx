@@ -27,14 +27,40 @@ import Image from "next/image";
 import { useSuspendUserMutation, useReactivateUserMutation } from "@/features/user-manager/api";
 import toast from "react-hot-toast";
 
+export interface UserTableItem {
+  id?: string;
+  name?: string;
+  email?: string;
+  status?: string;
+  avatarUrl?: string;
+  lastActive?: string;
+  rawUser?: {
+    id?: string;
+    profileImageUrl?: string;
+    displayName?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phoneNumber?: string;
+    occupation?: string;
+    city?: string;
+    countryCode?: string;
+    createdAt?: string;
+    accountStatus?: string;
+    emailVerified?: boolean;
+    onboardingCompleted?: boolean;
+    profileCompleted?: boolean;
+  };
+}
+
 interface UserTableProps {
-  users: any[];
+  users: UserTableItem[];
   showSearch?: boolean;
   initialPageSize?: number;
 }
 
 export default function UserTable({ users, showSearch = true, initialPageSize = 10 }: UserTableProps) {
-  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserTableItem | null>(null);
   const [openDetail, setOpenDetail] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,14 +75,14 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
   const [suspendUser] = useSuspendUserMutation();
   const [reactivateUser] = useReactivateUserMutation();
 
-  function openUser(user: any) {
+  function openUser(user: UserTableItem) {
     setSelectedUser(user);
     setOpenDetail(true);
   }
 
-  const handleToggleSuspend = async (e: React.MouseEvent, user: any) => {
+  const handleToggleSuspend = async (e: React.MouseEvent, user: UserTableItem) => {
     e.stopPropagation();
-    const userId = user.id || user.rawUser?.id;
+    const userId = user.id || user.rawUser?.id || "";
     const isSuspended = user.status === "suspended" || user.rawUser?.accountStatus === "SUSPENDED";
 
     try {
@@ -67,8 +93,9 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
         await suspendUser(userId).unwrap();
         toast.success(`បានផ្អាកដំណើរការ ${user.name} ជោគជ័យ`);
       }
-    } catch (err: any) {
-      toast.error(err?.data?.message || "មានបញ្ហាក្នុងការផ្លាស់ប្តូរស្ថានភាព");
+    } catch (err: unknown) {
+      const errorMsg = (err as { data?: { message?: string } })?.data?.message || "មានបញ្ហាក្នុងការផ្លាស់ប្តូរស្ថានភាព";
+      toast.error(errorMsg);
     }
   };
 
@@ -322,7 +349,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                     {avatarUrl ? (
                       <Image
                         src={avatarUrl}
-                        alt={user.name}
+                        alt={user.name || "User"}
                         width={40}
                         height={40}
                         unoptimized

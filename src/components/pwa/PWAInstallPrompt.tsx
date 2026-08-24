@@ -19,7 +19,7 @@ export default function PWAInstallPrompt() {
     // Check if already in standalone PWA mode
     const isStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true;
+      Boolean((window.navigator as unknown as { standalone?: boolean }).standalone);
 
     if (isStandalone) {
       return; // Already running as PWA
@@ -32,7 +32,7 @@ export default function PWAInstallPrompt() {
     }
 
     // Detect iOS
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window);
 
     // Listen for BeforeInstallPrompt event (Android / Brave / Chrome / Edge)
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -53,6 +53,7 @@ export default function PWAInstallPrompt() {
 
     // Show banner for iOS if not installed
     if (isIOS) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowInstallBanner(true);
     }
 
@@ -63,7 +64,7 @@ export default function PWAInstallPrompt() {
   }, []);
 
   const handleInstallClick = async () => {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window);
 
     if (isIOS) {
       setShowIOSModal(true);

@@ -18,7 +18,31 @@ export default function UserDetailModal({
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  user: any | null;
+  user: {
+    id?: string;
+    name?: string;
+    email?: string;
+    status?: string;
+    avatarUrl?: string;
+    lastActive?: string;
+    rawUser?: {
+      id?: string;
+      profileImageUrl?: string;
+      displayName?: string;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      phoneNumber?: string;
+      occupation?: string;
+      city?: string;
+      countryCode?: string;
+      createdAt?: string;
+      accountStatus?: string;
+      emailVerified?: boolean;
+      onboardingCompleted?: boolean;
+      profileCompleted?: boolean;
+    };
+  } | null;
 }) {
   const userId = user?.id || user?.rawUser?.id || "";
 
@@ -57,8 +81,9 @@ export default function UserDetailModal({
       await suspendUser(userId).unwrap();
       toast.success(`បានបិទគណនី ${displayName} ជោគជ័យ`);
       onOpenChange(false);
-    } catch (err: any) {
-      toast.error(err?.data?.message || "មានបញ្ហាក្នុងការបិទគណនី");
+    } catch (err: unknown) {
+      const errorMsg = (err as { data?: { message?: string } })?.data?.message || "មានបញ្ហាក្នុងការបិទគណនី";
+      toast.error(errorMsg);
     }
   };
 
@@ -68,8 +93,9 @@ export default function UserDetailModal({
       await reactivateUser(userId).unwrap();
       toast.success(`បានបើកដំណើរការគណនី ${displayName} ឡើងវិញជោគជ័យ`);
       onOpenChange(false);
-    } catch (err: any) {
-      toast.error(err?.data?.message || "មានបញ្ហាក្នុងការបើកគណនី");
+    } catch (err: unknown) {
+      const errorMsg = (err as { data?: { message?: string } })?.data?.message || "មានបញ្ហាក្នុងការបើកគណនី";
+      toast.error(errorMsg);
     }
   };
 

@@ -18,7 +18,7 @@ export async function PUT(request: Request) {
       location: body.location ?? mockProfileState.location,
     });
     return NextResponse.json(updated);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "មានបញ្ហាក្នុងការធ្វើបច្ចុប្បន្នភាពព័ត៌មាន" },
       { status: 400 }

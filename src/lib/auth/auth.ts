@@ -58,12 +58,13 @@ export const auth = betterAuth({
           scopes: ["openid", "profile", "email", "roles"],
           pkce: true,
 
-          mapProfileToUser: async (profile: any) => {
+          mapProfileToUser: async (profile: Record<string, unknown>) => {
+            const realmAccess = profile.realm_access as { roles?: string[] } | undefined;
             return {
-              id: profile.sub,
-              email: profile.email,
-              name: profile.name,
-              role: profile.realm_access?.roles?.includes("ADMIN")
+              id: String(profile.sub ?? ""),
+              email: String(profile.email ?? ""),
+              name: String(profile.name ?? ""),
+              role: realmAccess?.roles?.includes("ADMIN")
                 ? "admin"
                 : "user",
             };

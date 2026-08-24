@@ -8,7 +8,7 @@ export async function PUT(request: Request) {
       preferredCurrency: body.currency,
     });
     return NextResponse.json(updated);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "មិនអាចផ្លាស់ប្តូររូបិយប័ណ្ណបានទេ" },
       { status: 400 }

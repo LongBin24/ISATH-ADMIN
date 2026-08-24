@@ -23,8 +23,10 @@ function checkAdminRole(): boolean {
     const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const decoded = JSON.parse(window.atob(base64));
     const realmRoles = (decoded.realm_access?.roles || []).map((r: unknown) => String(r).toUpperCase());
-    const clientRoles = Object.values(decoded.resource_access || {})
-      .flatMap((r: any) => ((r?.roles || []) as unknown[]))
+    const clientRoles = Object.values(
+      (decoded.resource_access || {}) as Record<string, { roles?: unknown[] }>
+    )
+      .flatMap((r) => r?.roles || [])
       .map((r: unknown) => String(r).toUpperCase());
     const allRoles = [...realmRoles, ...clientRoles];
     return (

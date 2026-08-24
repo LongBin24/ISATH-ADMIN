@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const mockNotifications: any[] = [
+const mockNotifications: Record<string, unknown>[] = [
   {
     id: "notif-001",
     userId: "usr-101",

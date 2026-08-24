@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       message: "ផ្លាស់ប្តូរពាក្យសម្ងាត់បានជោគជ័យ!",
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "មានបញ្ហាក្នុងការផ្លាស់ប្តូរពាក្យសម្ងាត់" },
       { status: 500 }

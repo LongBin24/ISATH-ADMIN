@@ -1,0 +1,320 @@
+﻿
+> istash@0.1.0 lint
+> eslint
+
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\prisma.config.ts
+  1:1  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\scratch\generate_icons.js
+  1:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:14  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\scratch\test-api.ts
+  15:66  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\(dashboard)\layout.tsx
+  27:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\keycloak\callback\route.ts
+  64:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\admin\notifications\[id]\route.ts
+  3:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\admin\notifications\route.ts
+  85:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\profile\avatar\route.ts
+  12:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\profile\currency\route.ts
+  11:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\profile\notifications\route.ts
+  11:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\profile\password\route.ts
+  15:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\profile\route.ts
+  21:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\components\layout\MobileBottomNav.tsx
+  45:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\components\layout\MobileBottomNav.tsx:45:5
+  43 |   // Close drawer whenever pathname changes
+  44 |   useEffect(() => {
+> 45 |     setMoreOpen(false);
+     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  46 |   }, [pathname]);
+  47 |
+  48 |   // Prevent background scroll when more drawer is open  react-hooks/set-state-in-effect
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\components\pwa\PWAInstallPrompt.tsx
+  22:28  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+  35:79  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+  56:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\components\pwa\PWAInstallPrompt.tsx:56:7
+  54 |     // Show banner for iOS if not installed
+  55 |     if (isIOS) {
+> 56 |       setShowInstallBanner(true);
+     |       ^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  57 |     }
+  58 |
+  59 |     return () => {  react-hooks/set-state-in-effect
+  66:79  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\components\ui\input.tsx
+  4:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\ai-config\api.ts
+    5:3   warning  'ApiResponse' is defined but never used                 @typescript-eslint/no-unused-vars
+   11:3   warning  'PromptTemplatePageResponse' is defined but never used  @typescript-eslint/no-unused-vars
+  358:33  warning  '_id' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  392:33  warning  '_id' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  426:33  warning  '_id' is assigned a value but never used                @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\ai-config\components\PromptTemplateVersionHistoryDialog.tsx
+  149:6  warning  React Hook useEffect has a missing dependency: 'populateFormFromSource'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\alert\AlertRuleManager.tsx
+  29:41  warning  'PaginationEllipsis' is defined but never used                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  80:9   warning  The 'rules' logical expression could make the dependencies of useMemo Hook (at line 104) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'rules' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\auth\components\auth-shell.tsx
+  4:10  warning  'ArrowLeft' is defined but never used  @typescript-eslint/no-unused-vars
+  6:8   warning  'Link' is defined but never used       @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\auth\types.ts
+  12:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\categories\CategoryManager.tsx
+  36:41  warning  'PaginationEllipsis' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\categories\components\DeleteCategoryDialog.tsx
+  36:9  warning  'isIncome' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\currencies\CurrencyManager.tsx
+  44:3  warning  'PaginationEllipsis' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\currencies\components\CurrencyConverter.tsx
+  44:18  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\currencies\components\CurrencyConverter.tsx:44:18
+  42 |   });
+  43 |
+> 44 |   const amount = watch("amount");
+     |                  ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  45 |   const fromCurrency = watch("fromCurrency");
+  46 |   const toCurrency = watch("toCurrency");
+  47 |  react-hooks/incompatible-library
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\currencies\components\MultiCurrencyTransactionManager.tsx
+  109:24  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\currencies\components\MultiCurrencyTransactionManager.tsx:109:24
+  107 |   });
+  108 |
+> 109 |   const selectedType = watch("type");
+      |                        ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  110 |   const formAmount = watch("amount");
+  111 |   const formCurrency = watch("currency");
+  112 |  react-hooks/incompatible-library
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\api.ts
+  25:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  26:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  30:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  86:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  88:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\components\InActiveTotal.tsx
+  4:33  warning  'DialogHeader' is defined but never used  @typescript-eslint/no-unused-vars
+  5:10  warning  'Skeleton' is defined but never used      @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\components\ProcessTotal.tsx
+  4:33  warning  'DialogHeader' is defined but never used  @typescript-eslint/no-unused-vars
+  5:10  warning  'Skeleton' is defined but never used      @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\components\UserDetailModal.tsx
+  21:9   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  60:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\components\UserModals.tsx
+  1:33  warning  'DialogHeader' is defined but never used  @typescript-eslint/no-unused-vars
+  1:47  warning  'DialogTitle' is defined but never used   @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\components\UserTable.tsx
+  31:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  37:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  70:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\components\UserTotal.tsx
+  4:33  warning  'DialogHeader' is defined but never used  @typescript-eslint/no-unused-vars
+  5:10  warning  'Skeleton' is defined but never used      @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\hoock.ts
+  7:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  9:72  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\feedback\ReviewManager.tsx
+   35:41  warning  'PaginationEllipsis' is defined but never used                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  117:9   warning  The 'reviews' logical expression could make the dependencies of useMemo Hook (at line 136) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'reviews' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\notifications\NotificationManager.tsx
+  43:9  warning  The 'notifications' logical expression could make the dependencies of useMemo Hook (at line 79) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'notifications' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\notifications\components\InAppNotificationFeed.tsx
+    8:3   warning  'Trash2' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   17:3   warning  'ChevronLeft' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   18:3   warning  'ChevronRight' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+   61:10  warning  'retryErrorMsg' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   69:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\notifications\components\InAppNotificationFeed.tsx:69:5
+  67 |   // Reset to page 1 on search or category filter change
+  68 |   React.useEffect(() => {
+> 69 |     setCurrentPage(1);
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  70 |   }, [searchQuery, selectedCategoryFilter]);
+  71 |
+  72 |   const handleRetryItem = async (id: string) => {  react-hooks/set-state-in-effect
+   79:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  149:20  error    Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\notifications\components\InAppNotificationFeed.tsx:149:20
+  147 |   // Human friendly time diff in Khmer
+  148 |   const formatKhmerTimeAgo = (dateStr: string) => {
+> 149 |     const diffMs = Date.now() - new Date(dateStr).getTime();
+      |                    ^^^^^^^^^^ Cannot call impure function
+  150 |     const mins = Math.floor(diffMs / (1000 * 60));
+  151 |     if (mins < 1) return "ទើបតែឥឡូវនេះ";
+  152 |     if (mins < 60) return `${mins} នាទីមុន`;                                                                                                                                                                                                                                                                                                 react-hooks/purity
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\notifications\components\NotificationBellDropdown.tsx
+  3:42  warning  'Clock' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\notifications\components\NotificationDetailModal.tsx
+   33:17   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   40:60   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   84:57   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  118:48   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  118:101  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  120:52   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  126:76   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:79   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  138:102  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  143:101  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  152:79   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\notifications\constants.ts
+  3:3  warning  'NotificationItem' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\profile\components\CurrencyTab.tsx
+  67:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\profile\components\NotificationTab.tsx
+  36:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\profile\components\ProfileAvatarModal.tsx
+   48:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\profile\components\ProfileAvatarModal.tsx:48:7
+  46 |   useEffect(() => {
+  47 |     if (isOpen) {
+> 48 |       setSelectedAvatar(profile.avatar);
+     |       ^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  49 |       setSelectedFile(null);
+  50 |       setIsDefault(profile.isDefaultAvatar);
+  51 |       setCustomUrl("");  react-hooks/set-state-in-effect
+  140:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @next/next/no-img-element
+  175:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @next/next/no-img-element
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\hooks\use-locale.ts
+  17:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\hooks\use-locale.ts:17:5
+  15 |       storedLocale === "en" || storedLocale === "km" ? storedLocale : browserPrefersKhmer ? "km" : "en";
+  16 |
+> 17 |     setLocale(initialLocale);
+     |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  18 |     setMounted(true);
+  19 |   }, []);
+  20 |  react-hooks/set-state-in-effect
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\hooks\use-theme.ts
+  21:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\hooks\use-theme.ts:21:5
+  19 |           : "light";
+  20 |
+> 21 |     setTheme(initialTheme);
+     |     ^^^^^^^^ Avoid calling setState() directly within an effect
+  22 |     setMounted(true);
+  23 |     document.documentElement.classList.toggle("dark", initialTheme === "dark");
+  24 |     document.documentElement.setAttribute("data-theme", initialTheme);  react-hooks/set-state-in-effect
+  46:20  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\lib\auth\auth.ts
+  61:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\proxy.ts
+  2:10  warning  'auth' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\redux\provider.ts
+  8:10  error  Do not pass children as props. Instead, pass them as additional arguments to React.createElement  react/no-children-prop
+
+✖ 96 problems (53 errors, 43 warnings)
+

@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { Dialog, DialogContent } from "../components/ui/dialog";
 import { CheckCircle2 } from "lucide-react";
 
 export function SuccessModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {

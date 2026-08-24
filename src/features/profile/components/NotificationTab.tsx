@@ -33,7 +33,7 @@ export default function NotificationTab({
     try {
       await updateNotifications({ notifications: settings }).unwrap();
       onSuccess("បានធ្វើបច្ចុប្បន្នភាពការកំណត់ជូនដំណឹងដោយជោគជ័យ!");
-    } catch (err) {
+    } catch {
       onError("មិនអាចរក្សាទុកការកំណត់ជូនដំណឹងបានទេ សូមព្យាយាមម្តងទៀត");
     }
   };

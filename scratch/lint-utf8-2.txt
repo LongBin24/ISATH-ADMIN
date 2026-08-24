@@ -1,0 +1,125 @@
+﻿
+> istash@0.1.0 lint
+> eslint
+
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\prisma.config.ts
+  1:1  error  Include a description after the "@ts-expect-error" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer  @typescript-eslint/ban-ts-comment
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\admin\notifications\route.ts
+  85:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\profile\avatar\route.ts
+  12:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\profile\currency\route.ts
+  11:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\profile\notifications\route.ts
+  11:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\profile\password\route.ts
+  15:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\app\api\v1\profile\route.ts
+  21:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\ai-config\api.ts
+    5:3   warning  'ApiResponse' is defined but never used                 @typescript-eslint/no-unused-vars
+   11:3   warning  'PromptTemplatePageResponse' is defined but never used  @typescript-eslint/no-unused-vars
+  358:33  warning  '_id' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  392:33  warning  '_id' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  426:33  warning  '_id' is assigned a value but never used                @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\ai-config\components\PromptTemplateVersionHistoryDialog.tsx
+  149:6  warning  React Hook useEffect has a missing dependency: 'populateFormFromSource'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\alert\AlertRuleManager.tsx
+  29:41  warning  'PaginationEllipsis' is defined but never used                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  80:9   warning  The 'rules' logical expression could make the dependencies of useMemo Hook (at line 104) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'rules' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\auth\components\auth-shell.tsx
+  4:10  warning  'ArrowLeft' is defined but never used  @typescript-eslint/no-unused-vars
+  6:8   warning  'Link' is defined but never used       @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\categories\CategoryManager.tsx
+  36:41  warning  'PaginationEllipsis' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\categories\components\DeleteCategoryDialog.tsx
+  36:9  warning  'isIncome' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\currencies\CurrencyManager.tsx
+  44:3  warning  'PaginationEllipsis' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\currencies\components\CurrencyConverter.tsx
+  44:18  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\currencies\components\CurrencyConverter.tsx:44:18
+  42 |   });
+  43 |
+> 44 |   const amount = watch("amount");
+     |                  ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  45 |   const fromCurrency = watch("fromCurrency");
+  46 |   const toCurrency = watch("toCurrency");
+  47 |  react-hooks/incompatible-library
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\currencies\components\MultiCurrencyTransactionManager.tsx
+  109:24  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\currencies\components\MultiCurrencyTransactionManager.tsx:109:24
+  107 |   });
+  108 |
+> 109 |   const selectedType = watch("type");
+      |                        ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  110 |   const formAmount = watch("amount");
+  111 |   const formCurrency = watch("currency");
+  112 |  react-hooks/incompatible-library
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\components\InActiveTotal.tsx
+  4:33  warning  'DialogHeader' is defined but never used  @typescript-eslint/no-unused-vars
+  5:10  warning  'Skeleton' is defined but never used      @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\components\ProcessTotal.tsx
+  4:33  warning  'DialogHeader' is defined but never used  @typescript-eslint/no-unused-vars
+  5:10  warning  'Skeleton' is defined but never used      @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\components\UserModals.tsx
+  1:33  warning  'DialogHeader' is defined but never used  @typescript-eslint/no-unused-vars
+  1:47  warning  'DialogTitle' is defined but never used   @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\dashboard\components\UserTotal.tsx
+  4:33  warning  'DialogHeader' is defined but never used  @typescript-eslint/no-unused-vars
+  5:10  warning  'Skeleton' is defined but never used      @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\feedback\ReviewManager.tsx
+   35:41  warning  'PaginationEllipsis' is defined but never used                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  117:9   warning  The 'reviews' logical expression could make the dependencies of useMemo Hook (at line 136) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'reviews' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\notifications\NotificationManager.tsx
+  43:9  warning  The 'notifications' logical expression could make the dependencies of useMemo Hook (at line 79) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'notifications' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\notifications\components\InAppNotificationFeed.tsx
+  69:10  warning  'retryErrorMsg' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\notifications\components\NotificationBellDropdown.tsx
+  3:42  warning  'Clock' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\notifications\constants.ts
+  3:3  warning  'NotificationItem' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\profile\components\CurrencyTab.tsx
+  67:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\profile\components\NotificationTab.tsx
+  36:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\ISTAD\ITE\ISTASH_FINALPROJECT\frondend_code\istash-admin\src\features\profile\components\ProfileAvatarModal.tsx
+  141:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  176:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+✖ 40 problems (1 error, 39 warnings)
+

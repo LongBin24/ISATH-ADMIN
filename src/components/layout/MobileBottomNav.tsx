@@ -42,6 +42,7 @@ export default function MobileBottomNav() {
 
   // Close drawer whenever pathname changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMoreOpen(false);
   }, [pathname]);
 

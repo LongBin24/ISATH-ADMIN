@@ -21,13 +21,17 @@ export const adminApi = baseApi.injectEndpoints({
         const usersRes = await baseQuery("admin/users?pageNumber=0&pageSize=100");
         const statsRes = await baseQuery(ENDPOINTS.ADMIN_USERS_STATISTICS);
 
+        type UserItem = { accountStatus?: string };
+        type UsersEnvelope = { data?: { content?: UserItem[]; totalElements?: number } };
+        type StatsEnvelope = { data?: { totalUsers?: number } };
+
         const transactions = getData<TransactionPage>(transRes.data);
-        const usersData = (usersRes.data as any)?.data;
-        const statsData = (statsRes.data as any)?.data;
+        const usersData = (usersRes.data as UsersEnvelope)?.data;
+        const statsData = (statsRes.data as StatsEnvelope)?.data;
 
         const content = Array.isArray(usersData?.content) ? usersData.content : [];
         const totalUsers = statsData?.totalUsers ?? usersData?.totalElements ?? content.length;
-        const inActiveUsers = content.filter((u: any) => u.accountStatus !== "ACTIVE").length;
+        const inActiveUsers = content.filter((u: UserItem) => u.accountStatus !== "ACTIVE").length;
 
         return {
           data: {
@@ -46,10 +50,15 @@ export const adminApi = baseApi.injectEndpoints({
         let total = 0;
         let active = 0;
         if (usersRes.data) {
-          const usersData = (usersRes.data as any)?.data;
+          type UserItem = { accountStatus?: string };
+          type UsersEnvelope = { data?: { content?: UserItem[]; totalElements?: number } };
+          type StatsEnvelope = { data?: { totalUsers?: number } };
+
+          const usersData = (usersRes.data as UsersEnvelope)?.data;
+          const statsData = (statsRes.data as StatsEnvelope)?.data;
           const content = Array.isArray(usersData?.content) ? usersData.content : [];
-          total = (statsRes.data as any)?.data?.totalUsers ?? usersData?.totalElements ?? content.length;
-          active = content.filter((u: any) => u.accountStatus === "ACTIVE").length;
+          total = statsData?.totalUsers ?? usersData?.totalElements ?? content.length;
+          active = content.filter((u: UserItem) => u.accountStatus === "ACTIVE").length;
         }
         return {
           data: {
@@ -83,9 +92,11 @@ export const adminApi = baseApi.injectEndpoints({
         const usersRes = await baseQuery("admin/users?pageNumber=0&pageSize=100");
         let inactiveCount = 0;
         if (usersRes.data) {
-          const usersData = (usersRes.data as any)?.data;
+          type UserItem = { accountStatus?: string };
+          type UsersEnvelope = { data?: { content?: UserItem[]; totalElements?: number } };
+          const usersData = (usersRes.data as UsersEnvelope)?.data;
           const content = Array.isArray(usersData?.content) ? usersData.content : [];
-          inactiveCount = content.filter((u: any) => u.accountStatus !== "ACTIVE").length;
+          inactiveCount = content.filter((u: UserItem) => u.accountStatus !== "ACTIVE").length;
         }
         return {
           data: {

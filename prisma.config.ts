@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error: prisma/config types are resolved at runtime
 import { defineConfig } from "prisma/config";
 
 export default defineConfig({

@@ -1,6 +1,5 @@
 import {
   NotificationCategoryConfig,
-  NotificationItem,
   UserNotificationPreferences,
 } from "./types";
 

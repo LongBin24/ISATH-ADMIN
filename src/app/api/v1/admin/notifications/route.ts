@@ -82,7 +82,7 @@ export async function POST(request: Request) {
 
     mockNotifications.unshift(newNotif);
     return NextResponse.json(newNotif, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: "Invalid request payload" }, { status: 400 });
   }
 }
