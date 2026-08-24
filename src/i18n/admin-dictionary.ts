@@ -1036,6 +1036,9 @@ const km: Record<string, string> = {
   "Guest Inquiry": "ភ្ញៀវសាធារណៈ",
   "View details and respond to customer message.":
     "មើលព័ត៌មានលម្អិត និងឆ្លើយតបទៅកាន់សាររបស់អតិថិជន។",
+
+    "Contact Messages": "សារទំនាក់ទំនង",
+"Monitor, search, and respond to inquiries submitted through the contact form.": "តាមដាន ស្វែងរក និងឆ្លើយតបចំពោះរាល់ការសាកសួរដែលបានផ្ញើតាមរយៈទម្រង់ទំនាក់ទំនង។"
 };
 
 export function translateAdmin(locale: AdminLocale, text: string) {
