@@ -14,6 +14,7 @@ import {
   useGetUserByIdQuery,
   useGetUserOnboardingQuery,
 } from "@/features/user-manager/api";
+import { useGetAuditLogsByUserQuery } from "@/features/audit-logs/api";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 
 interface UserDetailSheetProps {
@@ -66,6 +67,10 @@ export default function UserDetailSheet({
   const { data: onboardingRes, isLoading: isOnboardingLoading } = useGetUserOnboardingQuery(userId ?? "", {
     skip: !userId || !open,
   });
+  const { data: userAuditLogs, isLoading: isAuditLoading } = useGetAuditLogsByUserQuery(
+    { userId: userId ?? "", page: 0, size: 5 },
+    { skip: !userId || !open }
+  );
 
   const name = user
     ? user.displayName || `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || user.username || user.email
@@ -176,6 +181,51 @@ export default function UserDetailSheet({
                   <Field label={t("Created")} value={displayDate(user.createdAt)} />
                   <Field label={t("Updated")} value={displayDate(user.updatedAt)} />
                 </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <SectionTitle>{t("Activity & Audit Logs")}</SectionTitle>
+                  {userAuditLogs && userAuditLogs.totalElements > 0 && (
+                    <span className="text-xs text-muted-foreground font-mono">
+                      {userAuditLogs.totalElements} {t("events")}
+                    </span>
+                  )}
+                </div>
+
+                {isAuditLoading ? (
+                  <div className="space-y-2 py-2">
+                    <Skeleton className="h-10 w-full rounded-xl" />
+                    <Skeleton className="h-10 w-full rounded-xl" />
+                  </div>
+                ) : !userAuditLogs || userAuditLogs.content.length === 0 ? (
+                  <p className="py-2 text-xs text-muted-foreground">
+                    {t("No audit activities recorded for this user.")}
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {userAuditLogs.content.map((log) => (
+                      <div
+                        key={log.id}
+                        className="flex items-center justify-between rounded-xl border border-border/80 bg-muted/20 p-2.5 text-xs"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-foreground">
+                            {log.action}
+                          </span>
+                          <span className="font-mono text-[11px] text-muted-foreground">
+                            {log.entityType}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-muted-foreground">
+                          {displayDate(log.createdAt)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <Separator />

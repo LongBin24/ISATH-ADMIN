@@ -14,6 +14,7 @@ import {
   UserCog,
   X,
   ShieldAlert,
+  ScrollText,
   LogOut,
 } from "lucide-react";
 import { useAdminI18n } from "@/i18n/admin-i18n";
@@ -28,6 +29,7 @@ const navItems = [
   { label: "Users", icon: UserCog, href: "/user-manager" },
   { label: "Reviews", icon: MessageSquare, href: "/feedback" },
   { label: "Contact Us", icon: Mail, href: "/contact-us" },
+  { label: "Audit Logs", icon: ScrollText, href: "/audit-logs" },
   { label: "Alert Rules", icon: ShieldAlert, href: "/alert" },
   { label: "Notifications", icon: Bell, href: "/notifications" },
 ];

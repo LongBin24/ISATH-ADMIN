@@ -389,6 +389,200 @@ Path parameter: `contactId` (uuid/string).
 
 ---
 
+## Admin Audit Logs
+
+| Method | Path | Operation ID | Auth |
+|---|---|---|---|
+| GET | `/api/v1/admin/audit-logs` | `getAuditLogs` | ✅ |
+| GET | `/api/v1/admin/audit-logs/{auditLogId}` | `getAuditLogById` | ✅ |
+| GET | `/api/v1/admin/audit-logs/users/{userId}` | `getAuditLogsByUser` | ✅ |
+| GET | `/api/v1/admin/audit-logs/entities/{entityType}/{entityId}` | `getAuditLogsByEntity` | ✅ |
+
+### `GET /api/v1/admin/audit-logs` — List audit logs
+
+Query parameters:
+
+| Name | Type | Notes |
+|---|---|---|
+| `query` / `search` | string | Search by action, entity type, entity ID, user ID, or IP |
+| `action` | string | Filter by action (e.g. `CREATE`, `UPDATE`, `DELETE`, `SUSPEND`, `LOGIN`) |
+| `entityType` | string | Filter by entity type (e.g. `CONTACT_MESSAGE`, `USER`, `CATEGORY`, `CURRENCY`, `ALERT_RULE`) |
+| `userId` | string | Filter by user / actor ID |
+| `page` / `pageNumber` | int32 (≥0) | Page index (0-indexed) |
+| `size` / `pageSize` | int32 (1–200) | Items per page |
+| `sortBy` | string | Field to sort by (e.g. `createdAt`, `action`) |
+| `sortDirection` | string | `ASC` / `DESC` |
+
+**Response 200:** `ApiResponse<AuditLogPage>`:
+
+```jsonc
+{
+  "success": true,
+  "message": "Audit logs retrieved successfully.",
+  "data": {
+    "content": [
+      {
+        "id": "bbd3c8ae-e7b7-4ba9-9c05-e1d2a31aee37",
+        "userId": null,
+        "action": "CREATE",
+        "entityType": "CONTACT_MESSAGE",
+        "entityId": "21e1f22d-527d-4466-844c-f8fdb62a3b9c",
+        "ipAddress": "127.0.0.1",
+        "createdAt": "2026-08-21T22:27:37.375459Z"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "last": true
+  },
+  "timestamp": "2026-08-24T09:30:37.981787272Z"
+}
+```
+
+### `GET /api/v1/admin/audit-logs/{auditLogId}` — Get audit log by ID
+
+Path parameter: `auditLogId` (uuid/string).
+
+**Response 200:** `ApiResponse<AuditLog>`:
+
+```jsonc
+{
+  "success": true,
+  "message": "Audit log retrieved successfully.",
+  "data": {
+    "id": "bbd3c8ae-e7b7-4ba9-9c05-e1d2a31aee37",
+    "userId": null,
+    "action": "CREATE",
+    "entityType": "CONTACT_MESSAGE",
+    "entityId": "21e1f22d-527d-4466-844c-f8fdb62a3b9c",
+    "oldValues": null,
+    "newValues": {
+      "array": false,
+      "bigDecimal": false,
+      "bigInteger": false,
+      "binary": false,
+      "boolean": false,
+      "containerNode": true,
+      "double": false,
+      "empty": false,
+      "float": false,
+      "floatingPointNumber": false,
+      "int": false,
+      "integralNumber": false,
+      "long": false,
+      "missingNode": false,
+      "nodeType": "OBJECT",
+      "null": false,
+      "number": false,
+      "object": true,
+      "pojo": false,
+      "short": false,
+      "textual": false,
+      "valueNode": false
+    },
+    "ipAddress": "127.0.0.1",
+    "userAgent": "curl/8.7.1",
+    "createdAt": "2026-08-21T22:27:37.375459Z"
+  },
+  "timestamp": "2026-08-24T09:42:36.722254345Z"
+}
+```
+
+#### `AuditLog`
+`id`, `userId` (uuid or null), `action` (string), `entityType` (string), `entityId` (string), `oldValues` (object or null), `newValues` (object or null), `ipAddress` (string or null), `userAgent` (string or null), `createdAt` (ISO 8601).
+
+### `GET /api/v1/admin/audit-logs/users/{userId}` — List audit logs by user ID
+
+Path parameter: `userId` (uuid/string).
+
+Query parameters:
+
+| Name | Type | Notes |
+|---|---|---|
+| `query` / `search` | string | Search by action, entity type, entity ID, or IP |
+| `action` | string | Filter by action (e.g. `CREATE`, `UPDATE`, `DELETE`, `LOGIN`) |
+| `entityType` | string | Filter by entity type |
+| `page` / `pageNumber` | int32 (≥0) | Page index (0-indexed) |
+| `size` / `pageSize` | int32 (1–200) | Items per page |
+
+**Response 200:** `ApiResponse<AuditLogPage>`:
+
+```jsonc
+{
+  "success": true,
+  "message": "User audit history retrieved successfully.",
+  "data": {
+    "content": [
+      {
+        "id": "123e4567-e89b-12d3-a456-426614174000",
+        "userId": "123e4567-e89b-12d3-a456-426614174000",
+        "action": "CREATE",
+        "entityType": "CONTACT_MESSAGE",
+        "entityId": "123e4567-e89b-12d3-a456-426614174000",
+        "ipAddress": "192.168.1.45",
+        "createdAt": "2026-08-24T08:34:59.605Z"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "last": true
+  },
+  "timestamp": "2026-08-24T08:34:59.605Z"
+}
+```
+
+### `GET /api/v1/admin/audit-logs/entities/{entityType}/{entityId}` — List audit logs by Entity Type & ID
+
+Path parameters:
+- `entityType` (string, e.g. `CONTACT_MESSAGE`, `USER`, `CATEGORY`, `CURRENCY`, `ALERT_RULE`)
+- `entityId` (string/uuid)
+
+Query parameters:
+
+| Name | Type | Notes |
+|---|---|---|
+| `query` / `search` | string | Search by action, user ID, or IP |
+| `action` | string | Filter by action (e.g. `CREATE`, `UPDATE`, `DELETE`) |
+| `page` / `pageNumber` | int32 (≥0) | Page index (0-indexed) |
+| `size` / `pageSize` | int32 (1–200) | Items per page |
+
+**Response 200:** `ApiResponse<AuditLogPage>`:
+
+```jsonc
+{
+  "success": true,
+  "message": "Entity audit history retrieved successfully.",
+  "data": {
+    "content": [
+      {
+        "id": "bbd3c8ae-e7b7-4ba9-9c05-e1d2a31aee37",
+        "userId": null,
+        "action": "CREATE",
+        "entityType": "CONTACT_MESSAGE",
+        "entityId": "21e1f22d-527d-4466-844c-f8fdb62a3b9c",
+        "ipAddress": "127.0.0.1",
+        "createdAt": "2026-08-21T22:27:37.375459Z"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "last": true
+  },
+  "timestamp": "2026-08-24T08:34:59.605Z"
+}
+```
+
+---
+
 ## Admin Alert Rules
 
 | Method | Path | Operation ID | Auth |

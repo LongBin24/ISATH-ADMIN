@@ -26,6 +26,13 @@ export const ENDPOINTS = {
   // Admin Contact Us Endpoints
   ADMIN_CONTACT_US: "admin/contact-us",
   ADMIN_CONTACT_US_BY_ID: (id: string) => `admin/contact-us/${id}`,
+
+  // Admin Audit Logs Endpoints
+  ADMIN_AUDIT_LOGS: "admin/audit-logs",
+  ADMIN_AUDIT_LOGS_BY_ID: (id: string) => `admin/audit-logs/${id}`,
+  ADMIN_AUDIT_LOGS_BY_USER: (userId: string) => `admin/audit-logs/users/${userId}`,
+  ADMIN_AUDIT_LOGS_BY_ENTITY: (entityType: string, entityId: string) =>
+    `admin/audit-logs/entities/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId)}`,
 } as const;
 
 export const ENDPOINTS_CATEGORY = {

@@ -13,6 +13,7 @@ export const API_TAGS = {
   ALERT_RULE: "AlertRule",
   PROMPT_TEMPLATE: "PromptTemplate",
   CONTACT_US: "ContactUs",
+  AUDIT_LOG: "AuditLog",
 } as const;
 
 export type ApiTagType = (typeof API_TAGS)[keyof typeof API_TAGS];

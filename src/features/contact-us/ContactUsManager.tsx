@@ -22,6 +22,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Pagination,
@@ -610,24 +617,33 @@ function ContactRow({
         className="py-4 text-right"
         onClick={(event) => {
           event.stopPropagation();
-          onView();
         }}
       >
-        <Tooltip>
-          <TooltipTrigger>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              onClick={onView}
-              aria-label={t("View Details")}
-              className="size-8.5 rounded-xl border border-slate-200/80 bg-slate-50/80 text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-[#003377] hover:text-white dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D] dark:hover:text-[#003377]"
+              aria-label={t("Contact inquiry actions")}
+              className="size-8.5 rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
             >
               <MoreHorizontal className="size-4.5" />
             </Button>
-          </TooltipTrigger>
-          <TooltipContent>{t("View Details")}</TooltipContent>
-        </Tooltip>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-44 rounded-2xl p-1 font-google-sans shadow-xl border-slate-200/80 dark:border-slate-800"
+          >
+            <DropdownMenuItem
+              onClick={onView}
+              className="cursor-pointer gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold"
+            >
+              <Eye className="size-4 text-[#003377] dark:text-[#FFC83D]" />
+              {t("View Details")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </TableCell>
     </TableRow>
   );
@@ -723,19 +739,6 @@ function ContactDetail({
                 {dateText(data.createdAt)}
               </Badge>
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                navigator.clipboard.writeText(data.id);
-                toast.success(t("Copied!"));
-              }}
-              className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground hover:bg-slate-200/60 hover:text-slate-900 dark:hover:bg-slate-700"
-              title={t("Copy")}
-            >
-              <Hash className="size-3 text-slate-400" />
-              <span>{data.id.slice(0, 8)}...</span>
-              <Copy className="size-2.5 text-slate-400" />
-            </button>
           </div>
 
           <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white sm:text-xl leading-snug">
@@ -799,13 +802,6 @@ function ContactDetail({
                     <span>{data.phone}</span>
                   </a>
                 )}
-
-                {data.userId && (
-                  <span className="inline-flex items-center gap-1 rounded-xl border border-slate-200/80 bg-slate-100/80 px-2.5 py-1.5 font-mono text-[11px] text-slate-500 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-400">
-                    <Hash className="size-3 text-slate-400" />
-                    <span>User ID: {data.userId}</span>
-                  </span>
-                )}
               </div>
             </div>
           </div>
@@ -839,8 +835,8 @@ function ContactDetail({
         </section>
 
         {/* Metadata Details Grid */}
-        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/60 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
+        <section>
+          <div className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/60 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
             <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
               <Calendar className="size-4" />
             </span>
@@ -850,32 +846,6 @@ function ContactDetail({
               </p>
               <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
                 {dateText(data.createdAt, true)}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/60 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
-            <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
-              <Hash className="size-4" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-1">
-                <p className="text-[11px] font-medium text-muted-foreground">
-                  {t("Inquiry ID")}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(data.id);
-                    toast.success(t("Copied!"));
-                  }}
-                  className="text-[10px] font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                >
-                  {t("Copy")}
-                </button>
-              </div>
-              <p className="mt-0.5 truncate font-mono text-xs text-slate-800 dark:text-slate-200">
-                {data.id}
               </p>
             </div>
           </div>
