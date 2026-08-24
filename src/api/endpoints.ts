@@ -22,6 +22,10 @@ export const ENDPOINTS = {
   ADMIN_USER_ONBOARDING: (userId: string) => `admin/users/${userId}/onboarding`,
   ADMIN_USER_SUSPEND: (userId: string) => `admin/users/${userId}/suspend`,
   ADMIN_USER_REACTIVATE: (userId: string) => `admin/users/${userId}/reactivate`,
+
+  // Admin Contact Us Endpoints
+  ADMIN_CONTACT_US: "admin/contact-us",
+  ADMIN_CONTACT_US_BY_ID: (id: string) => `admin/contact-us/${id}`,
 } as const;
 
 export const ENDPOINTS_CATEGORY = {

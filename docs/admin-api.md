@@ -308,6 +308,87 @@ Path: `id` (uuid). Body — `UpdateReviewStatusRequest` (required: `reviewStatus
 
 ---
 
+## Admin Contact Us
+
+| Method | Path | Operation ID | Auth |
+|---|---|---|---|
+| GET | `/api/v1/admin/contact-us` | `getContactMessages` | ✅ |
+| GET | `/api/v1/admin/contact-us/{id}` | `getContactMessageById` | ✅ |
+
+### `GET /api/v1/admin/contact-us` — List contact messages
+
+Query parameters:
+
+| Name | Type | Notes |
+|---|---|---|
+| `query` / `search` | string | Search by name, email, phone, subject, or message |
+| `registeredUser` | boolean | Filter by registered user vs guest inquiries |
+| `page` / `pageNumber` | int32 (≥0) | Page index (0-indexed) |
+| `size` / `pageSize` | int32 (1–200) | Items per page |
+| `sortBy` | string | Field to sort by (e.g. `createdAt`, `name`) |
+| `sortDirection` | string | `ASC` / `DESC` |
+
+**Response 200:** `ApiResponse<ContactMessagePage>`:
+
+```jsonc
+{
+  "success": true,
+  "message": "Contact messages retrieved successfully.",
+  "data": {
+    "content": [
+      {
+        "id": "21e1f22d-527d-4466-844c-f8fdb62a3b9c",
+        "userId": null,
+        "registeredUser": false,
+        "name": "សុខ ដារ៉ា",
+        "email": "dara@example.com",
+        "phone": "012345678",
+        "subject": "សំណួរអំពី iStash",
+        "messagePreview": "ខ្ញុំចង់ដឹងព័ត៌មានបន្ថែមអំពី iStash។",
+        "createdAt": "2026-08-21T22:27:37.373641Z"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "last": true
+  },
+  "timestamp": "2026-08-24T08:42:35.850864744Z"
+}
+```
+
+### `GET /api/v1/admin/contact-us/{contactId}` — Get contact message by ID
+
+Path parameter: `contactId` (uuid/string).
+
+**Response 200:** `ApiResponse<ContactMessage>`:
+
+```jsonc
+{
+  "success": true,
+  "message": "Contact message retrieved successfully.",
+  "data": {
+    "id": "21e1f22d-527d-4466-844c-f8fdb62a3b9c",
+    "userId": null,
+    "registeredUser": false,
+    "name": "សុខ ដារ៉ា",
+    "phone": "012345678",
+    "email": "dara@example.com",
+    "subject": "សំណួរអំពី iStash",
+    "message": "ខ្ញុំចង់ដឹងព័ត៌មានបន្ថែមអំពី iStash។",
+    "createdAt": "2026-08-21T22:27:37.373641Z"
+  },
+  "timestamp": "2026-08-24T08:56:17.647058944Z"
+}
+```
+
+#### `ContactMessage`
+`id`, `userId` (uuid or null), `registeredUser` (boolean), `name`, `phone`, `email`, `subject`, `message`, `messagePreview` (optional), `createdAt`.
+
+---
+
 ## Admin Alert Rules
 
 | Method | Path | Operation ID | Auth |

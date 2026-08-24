@@ -9,6 +9,7 @@ import {
   Globe,
   Bot,
   MessageSquare,
+  Mail,
   Bell,
   UserCog,
   X,
@@ -26,6 +27,7 @@ const navItems = [
   { label: "AI Support", icon: Bot, href: "/ai-config" },
   { label: "Users", icon: UserCog, href: "/user-manager" },
   { label: "Reviews", icon: MessageSquare, href: "/feedback" },
+  { label: "Contact Us", icon: Mail, href: "/contact-us" },
   { label: "Alert Rules", icon: ShieldAlert, href: "/alert" },
   { label: "Notifications", icon: Bell, href: "/notifications" },
 ];
