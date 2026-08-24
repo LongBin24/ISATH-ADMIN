@@ -1120,6 +1120,8 @@ const km: Record<string, string> = {
   "Initial creation (no prior state)": "ការបង្កើតដំបូង (មិនមានទិន្នន័យមុន)",
   "No state changes recorded": "មិនមានការផ្លាស់ប្តូរទិន្នន័យត្រូវបានកត់ត្រាទេ",
   "Client & Device": "កម្មវិធីរុករក & ឧបករណ៍",
+  "Contact Messages": "សារទំនាក់ទំនង",
+"Monitor, search, and respond to inquiries submitted through the contact form.": "តាមដាន ស្វែងរក និងឆ្លើយតបចំពោះរាល់ការសាកសួរដែលបានផ្ញើតាមរយៈទម្រង់ទំនាក់ទំនង។"
 };
 
 export function translateAdmin(locale: AdminLocale, text: string) {
