@@ -271,7 +271,7 @@ export function ContactUsTable({
                           variant="ghost"
                           size="icon"
                           onClick={() => onSelectMessage(item)}
-                          className="size-8.5 rounded-xl border border-slate-200/80 bg-slate-50/80 text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-[#003377] hover:text-white dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D] dark:hover:text-[#003377]"
+                          className="size-8.5 rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
                           aria-label={t("View Details")}
                         >
                           <MoreHorizontal className="size-4.5" />

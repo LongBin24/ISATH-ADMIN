@@ -70,6 +70,7 @@ export default function MobileBottomNav() {
     { label: "Categories", icon: Tags, href: "/categories" },
     { label: "Currencies", icon: Globe, href: "/currencies" },
     { label: "Reports", icon: BarChart3, href: "/reports" },
+    { label: "Audit Logs", icon: ShieldAlert, href: "/audit-logs" },
     { label: "Alert Rules", icon: ShieldAlert, href: "/alert" },
     { label: "Reviews", icon: MessageSquare, href: "/feedback" },
     { label: "Contact Us", icon: Mail, href: "/contact-us" },
