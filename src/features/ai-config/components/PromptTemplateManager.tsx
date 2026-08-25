@@ -29,7 +29,6 @@ const defaultFilters: PromptTemplateFilterValues = {
   search: "",
   taskType: "ALL",
   templateScope: "ALL",
-  languageCode: "ALL",
   templateStatus: "ALL",
 };
 
@@ -60,7 +59,6 @@ export function PromptTemplateManager() {
     if (filters.search) params.search = filters.search;
     if (filters.taskType !== "ALL") params.taskType = filters.taskType;
     if (filters.templateScope !== "ALL") params.templateScope = filters.templateScope;
-    if (filters.languageCode !== "ALL") params.languageCode = filters.languageCode;
     if (filters.templateStatus !== "ALL") params.templateStatus = filters.templateStatus;
 
     return params;
@@ -80,7 +78,6 @@ export function PromptTemplateManager() {
     (filters.search && filters.search.trim() !== "") ||
       filters.taskType !== "ALL" ||
       filters.templateScope !== "ALL" ||
-      filters.languageCode !== "ALL" ||
       filters.templateStatus !== "ALL"
   );
 
@@ -120,12 +117,7 @@ export function PromptTemplateManager() {
         if (item.templateScope !== filters.templateScope) return false;
       }
 
-      // 4. Language Code filter
-      if (filters.languageCode !== "ALL") {
-        if (item.languageCode !== filters.languageCode) return false;
-      }
-
-      // 5. Template Status filter
+      // 4. Template Status filter
       if (filters.templateStatus !== "ALL") {
         const itemStatus = item.templateStatus || item.status;
         if (itemStatus !== filters.templateStatus) return false;

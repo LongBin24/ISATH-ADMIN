@@ -23,6 +23,7 @@ import { useGetProfileQuery } from "@/features/profile/api";
 import { useTheme } from "@/hooks/use-theme";
 import { useLocale, type Locale } from "@/hooks/use-locale";
 import { useSignOut } from "@/features/auth/hook";
+import { LanguageFlag } from "@/components/ui/LanguageFlag";
 import styles from "./welcome-intro.module.css";
 
 function checkAdminRole(): boolean {
@@ -289,13 +290,14 @@ export default function WelcomeIntro() {
               type="button"
               onClick={() => setLocale(option)}
               aria-pressed={localeMounted && locale === option}
-              className={`rounded-full px-2.5 py-1.5 transition ${
+              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 transition ${
                 localeMounted && locale === option
                   ? "bg-[#003377] text-[#FFC83D] dark:bg-[#FEDB55] dark:text-[#050D1B]"
                   : "text-slate-500 hover:text-[#003377] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC]"
               }`}
             >
-              {option === "en" ? "EN" : "ខ្មែរ"}
+              <LanguageFlag locale={option} className="w-4 h-3" />
+              <span className="text-xs font-semibold">{option === "en" ? "EN" : "ខ្មែរ"}</span>
             </button>
           ))}
         </div>

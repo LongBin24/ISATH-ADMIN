@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { LanguageFlag } from "@/components/ui/LanguageFlag";
 import {
   useGetPromptTemplateVersionsQuery,
   useCreatePromptTemplateVersionMutation,
@@ -459,9 +460,10 @@ export function PromptTemplateVersionHistoryDialog({
 
                           <Badge
                             variant="outline"
-                            className="rounded-full border-blue-200 bg-blue-50 text-[11px] font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-300"
+                            className="rounded-full border-blue-200 bg-blue-50 text-[11px] font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-300 inline-flex items-center gap-1.5"
                           >
-                            {isKhmer ? t("Khmer (km)") : t("English (en)")}
+                            <LanguageFlag locale={ver.languageCode} className="w-3.5 h-2.5" />
+                            <span>{isKhmer ? t("Khmer (km)") : t("English (en)")}</span>
                           </Badge>
 
                           {ver.taskType && (

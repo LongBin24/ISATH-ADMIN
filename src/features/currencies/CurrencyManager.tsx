@@ -269,10 +269,10 @@ function ProviderCard({
                 <p className="mt-1 text-sm text-amber-800 dark:text-amber-300">
                   {provider.lastError ||
                     provider.message ||
-                    "The latest provider data may be outdated."}
+                    t("The latest provider data may be outdated.")}
                 </p>
                 <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">
-                  Last successful synchronization:{" "}
+                  {t("Last successful synchronization:")}{" "}
                   {safeDate(provider.lastSuccessfulSyncAt, true)}
                 </p>
                 <Button
@@ -508,18 +508,18 @@ export default function CurrencyManager() {
       />
 
       {syncResult && (
-        <Card className="rounded-2xl border-[#003377]/20 bg-[#003377]/[0.03] shadow-sm">
+        <Card className="rounded-2xl border-[#003377]/20 bg-[#003377]/[0.03] dark:border-[#FEDB55]/20 dark:bg-[#FEDB55]/[0.02] shadow-sm">
           <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex gap-3">
               <Database className="mt-0.5 size-5 text-[#003377] dark:text-[#FEDB55]" />
               <div>
-                <p className="text-lg font-semibold text-foreground">
+                <p className="text-lg font-semibold text-[#003377] dark:text-[#FFC83D]">
                   {syncResult.status === "STARTED"
-                    ? "Synchronization started"
-                    : "លិទ្ធផល​ ការធ្វើសមកាលកម្ម"}
+                    ? t("Synchronization started")
+                    : t("Synchronization Result")}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground font-normal">
-                  Provider: {syncResult.provider}
+                  {t("Provider")}: {syncResult.provider}
                 </p>
                 {syncResult.errorMessage && (
                   <p className="mt-2 text-sm text-destructive">
@@ -534,11 +534,11 @@ export default function CurrencyManager() {
                 value={syncResult.currenciesReceived ?? "—"}
               />
               <ProviderMetric
-                label={t("Currencies Received")}
+                label={t("Currencies Updated")}
                 value={syncResult.currenciesUpdated ?? "—"}
               />
               <ProviderMetric
-                label={t("Rates Updated")}
+                label={t("Rates Received")}
                 value={syncResult.ratesReceived ?? "—"}
               />
               <ProviderMetric
@@ -949,7 +949,11 @@ function CurrencyDetailSheet({
           <Button
             variant={currency.active ? "destructive" : "default"}
             onClick={() => onAction(currency)}
-            className="text-base font-medium"
+            className={
+              currency.active
+                ? "text-base font-medium"
+                : "bg-[#FEDB55] text-base font-medium text-[#003377] hover:bg-[#f0ca43]"
+            }
           >
             {currency.active ? (
               <PowerOff className="mr-2 size-4" />
@@ -1028,6 +1032,11 @@ function CurrencyActionDialog({
             variant={activating ? "default" : "destructive"}
             disabled={isLoading}
             onClick={onConfirm}
+            className={
+              activating
+                ? "bg-[#FEDB55] text-sm font-medium text-[#003377] hover:bg-[#f0ca43]"
+                : ""
+            }
           >
             {isLoading ? (
               <RefreshCw className="mr-2 size-4 animate-spin" />

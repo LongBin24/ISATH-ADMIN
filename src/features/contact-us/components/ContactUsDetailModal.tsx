@@ -212,7 +212,7 @@ export function ContactUsDetailModal({
 
                   {activeMessage.userId && (
                     <div className="pt-1 text-[11px] text-slate-400 dark:text-slate-500">
-                      <span className="font-mono">User ID: {activeMessage.userId}</span>
+                      <span className="font-mono">{t("User ID")}: {activeMessage.userId}</span>
                     </div>
                   )}
                 </div>

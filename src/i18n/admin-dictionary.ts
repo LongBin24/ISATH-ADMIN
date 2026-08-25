@@ -5,7 +5,7 @@ const km: Record<string, string> = {
   Dashboard: "ផ្ទាំងគ្រប់គ្រង",
   Categories: "ប្រភេទ",
   Currencies: "រូបិយប័ណ្ណ",
-  "AI Support": "ជំនួយ AI",
+  "AI Support": "AI ជំនួយ",
   Users: "អ្នកប្រើប្រាស់",
   Reviews: "មតិកែលម្អ",
   "Contact Us": "សារទំនាក់ទំនង",
@@ -515,6 +515,10 @@ const km: Record<string, string> = {
     "គ្រប់គ្រងរូបិយប័ណ្ណ អត្រាប្តូរប្រាក់ និងស្ថានភាពអ្នកផ្តល់សេវា។",
   Synchronize: "ធ្វើសមកាលកម្ម",
   "Synchronizing...": "កំពុងធ្វើសមកាលកម្ម...",
+  "Synchronization Result": "លទ្ធផលការធ្វើសមកាលកម្ម",
+  "Synchronization started": "ការធ្វើសមកាលកម្មបានចាប់ផ្តើម",
+  "Currencies Updated": "រូបិយប័ណ្ណបានធ្វើបច្ចុប្បន្នភាព",
+  "Rates Received": "អត្រាទទួលបាន",
   "Available currencies": "រូបិយប័ណ្ណដែលមាន",
   "Enabled in iStash": "បានបើកក្នុង iStash",
   "Currently disabled": "បានបិទបច្ចុប្បន្ន",
@@ -596,16 +600,16 @@ const km: Record<string, string> = {
 
   // AI Configuration & Prompt Templates
   "AI Configuration & Prompt Templates":
-    "ការកំណត់រចនាសម្ព័ន្ធ AI និងគំរូសារបញ្ជា",
+    "ការកំណត់រចនាសម្ព័ន្ធ AI និងពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិត",
   "AI Configuration": "ការកំណត់រចនាសម្ព័ន្ធ AI",
   "Manage and configure AI assistant capabilities, models, and OCR.":
     "គ្រប់គ្រង និងកំណត់រចនាសម្ព័ន្ធជំនួយការ AI ម៉ូដែល និង OCR។",
   "Manage system prompt templates, version histories, AI assistant capabilities, and model parameters.":
-    "គ្រប់គ្រងគំរូសារបញ្ជាប្រព័ន្ធ ប្រវត្តិជំនាន់ សមត្ថភាពជំនួយការ AI និងប៉ារ៉ាម៉ែត្រម៉ូដែល។",
+    "គ្រប់គ្រងពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិតប្រព័ន្ធ ប្រវត្តិជំនាន់ សមត្ថភាពជំនួយការ AI និងប៉ារ៉ាម៉ែត្រម៉ូដែល។",
   "Manage system prompt templates, version histories, AI assistant capabilities, and model parameters":
-    "គ្រប់គ្រងគំរូសារបញ្ជាប្រព័ន្ធ ប្រវត្តិជំនាន់ សមត្ថភាពជំនួយការ AI និងប៉ារ៉ាម៉ែត្រម៉ូដែល",
+    "គ្រប់គ្រងពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិតប្រព័ន្ធ ប្រវត្តិជំនាន់ សមត្ថភាពជំនួយការ AI និងប៉ារ៉ាម៉ែត្រម៉ូដែល",
   "Manage system prompt templates, version histories, AI assistant capabilities, and model generation parameters.":
-    "គ្រប់គ្រងគំរូសារបញ្ជាប្រព័ន្ធ ប្រវត្តិជំនាន់ សមត្ថភាពជំនួយការ AI និងប៉ារ៉ាម៉ែត្របង្កើតម៉ូដែល។",
+    "គ្រប់គ្រងពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិតប្រព័ន្ធ ប្រវត្តិជំនាន់ សមត្ថភាពជំនួយការ AI និងប៉ារ៉ាម៉ែត្របង្កើតម៉ូដែល។",
   "Active AI": "បើកដំណើរការ AI",
   "Enable or disable AI output generation across the platform.":
     "បើក ឬបិទការបង្កើតទិន្នន័យ AI នៅទូទាំងប្រព័ន្ធ។",
@@ -634,13 +638,13 @@ const km: Record<string, string> = {
   "Quick Module": "ម៉ូឌុលរហ័ស",
 
   // Prompt Templates
-  "Prompt Templates": "គំរូសារបញ្ជា",
+  "Prompt Templates": "ពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិត",
   "Model & Assistant Capabilities": "សមត្ថភាពម៉ូដែល និងជំនួយការ",
   "Configure and test structured prompt templates, variables, and model generation parameters.":
-    "កំណត់រចនាសម្ព័ន្ធ និងសាកល្បងគំរូសារបញ្ជា អថេរ និងប៉ារ៉ាម៉ែត្របង្កើតម៉ូដែល។",
+    "កំណត់រចនាសម្ព័ន្ធ និងសាកល្បងពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិត អថេរ និងប៉ារ៉ាម៉ែត្របង្កើតម៉ូដែល។",
   "Create Template": "បង្កើតគំរូ",
-  "Create Prompt Template": "បង្កើតគំរូសារបញ្ជា",
-  "Edit Prompt Template": "កែសម្រួលគំរូសារបញ្ជា",
+  "Create Prompt Template": "បង្កើតពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិត",
+  "Edit Prompt Template": "កែសម្រួលពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិត",
   "Basic Information": "ព័ត៌មានមូលដ្ឋាន",
   "Scope & Classification": "វិសាលភាព និងការចាត់ថ្នាក់",
   "Model & Parameters": "ម៉ូដែល និងការកំណត់",
@@ -648,15 +652,15 @@ const km: Record<string, string> = {
   "Defines the AI assistant persona, rules, and output format.":
     "កំណត់អត្តសញ្ញាណ វិធាន និងទម្រង់លទ្ធផលរបស់ជំនួយការ AI។",
   "User prompt template with dynamic variable interpolation.":
-    "គំរូសារបញ្ជាអ្នកប្រើជាមួយអថេរជំនួសទិន្នន័យ។",
+    "ពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិតអ្នកប្រើជាមួយអថេរជំនួសទិន្នន័យ។",
   "Supported variable syntax:": "ទម្រង់អថេរដែលគាំទ្រ៖",
   "Optional JSON schemas to enforce structured input/output validation.":
     "គម្រោងទិន្នន័យ JSON ស្រេចចិត្តដើម្បីកំណត់ទិន្នន័យបញ្ចូល និងបញ្ចេញ។",
   "Update configuration, schemas, or prompt instructions.":
     "ធ្វើបច្ចុប្បន្នភាពការកំណត់ រចនាសម្ព័ន្ធ ឬការណែនាំសារបញ្ជា។",
   "Register a new system/user prompt template (POST /api/v1/admin/ai/prompt-templates).":
-    "ចុះឈ្មោះគំរូសារបញ្ជាប្រព័ន្ធ/អ្នកប្រើប្រាស់ថ្មី។",
-  "Total Templates": "គំរូសារបញ្ជាសរុប",
+    "ចុះឈ្មោះពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិតប្រព័ន្ធ/អ្នកប្រើប្រាស់ថ្មី។",
+  "Total Templates": "ពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិតសរុប",
   "Registered prompts": "សារបញ្ជាដែលបានចុះឈ្មោះ",
   loaded: "បានផ្ទុក",
   "Active Status": "ស្ថានភាពសកម្ម",
@@ -703,16 +707,16 @@ const km: Record<string, string> = {
   ARCHIVED: "បានរក្សាទុក",
   INACTIVE: "អសកម្ម",
   Archived: "បានរក្សាទុក",
-  "prompt templates": "គំរូសារបញ្ជា",
+  "prompt templates": "ពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិត",
   "Filters applied": "បានអនុវត្តតម្រង",
-  "No prompt templates found": "រកមិនឃើញគំរូសារបញ្ជាទេ",
+  "No prompt templates found": "រកមិនឃើញពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិតទេ",
   "Try adjusting your search criteria or filter options to find templates.":
     "សូមព្យាយាមកែសម្រួលលក្ខខណ្ឌស្វែងរក ឬជម្រើសតម្រងដើម្បីស្វែងរកគំរូ។",
   Template: "គំរូ",
   "Task & Scope": "កិច្ចការ និងវិសាលភាព",
   Version: "ជំនាន់",
   "Test Prompt": "សាកល្បងសារបញ្ជា",
-  "Test Prompt Template": "សាកល្បងគំរូសារបញ្ជា",
+  "Test Prompt Template": "សាកល្បងពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិត",
   "Version History": "ប្រវត្តិជំនាន់",
   "Edit Template": "កែសម្រួលគំរូ",
   "Set as Default": "កំណត់ជាលំនាំដើម",
@@ -725,7 +729,7 @@ const km: Record<string, string> = {
   Temperature: "សីតុណ្ហភាព (Temperature)",
   "Response MIME Type": "ប្រភេទ Response MIME",
   "System Prompt": "សារបញ្ជាប្រព័ន្ធ (System Prompt)",
-  "User Prompt Template": "គំរូសារបញ្ជាអ្នកប្រើ (User Prompt)",
+  "User Prompt Template": "ពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិតអ្នកប្រើ (User Prompt)",
   "Input & Output JSON Schemas":
     "គម្រោងទិន្នន័យ JSON បញ្ចូល និងបញ្ចេញ (Input & Output)",
   "Input Schema": "គម្រោងទិន្នន័យបញ្ចូល (Input Schema)",
@@ -739,7 +743,7 @@ const km: Record<string, string> = {
   "Please correct the form errors.": "សូមកែតម្រូវកំហុសក្នុងទម្រង់។",
   "Update Template": "កែប្រែគំរូ",
   "Failed to save prompt template. Please check all required fields.":
-    "មិនអាចរក្សាទុកគំរូសារបញ្ជាបានទេ។ សូមពិនិត្យមើលគ្រប់ប្រអប់ដែលត្រូវការ។",
+    "មិនអាចរក្សាទុកពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិតបានទេ។ សូមពិនិត្យមើលគ្រប់ប្រអប់ដែលត្រូវការ។",
   "Default Platform Model": "ម៉ូដែលប្រព័ន្ធលំនាំដើម",
   "Generation Config": "ការកំណត់ការបង្កើត (Generation Config)",
   "Input Variables": "អថេរបញ្ចូល",
@@ -753,7 +757,7 @@ const km: Record<string, string> = {
   "Max Tokens": "ចំនួន Token អតិបរមា (Max Tokens)",
   "Execution Output": "លទ្ធផលនៃការប្រតិបត្តិ",
   "Executing prompt template with AI model...":
-    "កំពុងប្រតិបត្តិគំរូសារបញ្ជាជាមួយម៉ូដែល AI...",
+    "កំពុងប្រតិបត្តិពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិតជាមួយម៉ូដែល AI...",
   "Test execution failed": "ការប្រតិបត្តិសាកល្បងបានបរាជ័យ",
   tokens: "tokens",
   "Click 'Run Test' to generate and evaluate AI output.":
@@ -797,7 +801,7 @@ const km: Record<string, string> = {
   "Publish Version": "បោះពុម្ពផ្សាយជំនាន់",
   "Failed to set default version.": "មិនអាចកំណត់ជំនាន់លំនាំដើមបានទេ។",
   "New prompt template version created successfully (POST /api/v1/admin/ai/prompt-templates/{templateId}/versions).":
-    "បានបង្កើតជំនាន់គំរូសារបញ្ជាថ្មីដោយជោគជ័យ។",
+    "បានបង្កើតជំនាន់ពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិតថ្មីដោយជោគជ័យ។",
   "An unexpected error occurred while creating the version.":
     "មានកំហុសដែលមិនរំពឹងទុកបានកើតឡើងពេលបង្កើតជំនាន់។",
   "Lowercase letters, numbers, '.', '_' and '-' only (no uppercase or spaces).":
@@ -1121,22 +1125,141 @@ const km: Record<string, string> = {
   "No state changes recorded": "មិនមានការផ្លាស់ប្តូរទិន្នន័យត្រូវបានកត់ត្រាទេ",
   "Client & Device": "កម្មវិធីរុករក & ឧបករណ៍",
   "Contact Messages": "សារទំនាក់ទំនង",
-"Monitor, search, and respond to inquiries submitted through the contact form.": "តាមដាន ស្វែងរក និងឆ្លើយតបចំពោះរាល់ការសាកសួរដែលបានផ្ញើតាមរយៈទម្រង់ទំនាក់ទំនង។"
-,"CREATE": "បង្កើត",
-  "UPDATE": "កែប្រែ",
-  "DELETE": "លុប",
-  "SUSPEND": "ផ្អាកគណនី",
-  "REACTIVATE": "បើកដំណើរការឡើងវិញ",
-  "LOGIN": "ចូលគណនី",
-  "LOGOUT": "ចាកចេញ",
-   "Wallet": "កាបូបលុយ",
-  "Wallet Invitation": "ការអញ្ជើញប្រើកាបូបលុយ",
-  "Transaction": "ប្រតិបត្តិការ",
-   "Update category information and hierarchy.": "ធ្វើបច្ចុប្បន្នភាពព័ត៌មានប្រភេទ និងឋានានុក្រម។",
-  "Search by name, key, description, model...": "ស្វែងរកតាមឈ្មោះ កូដ ការពិពណ៌នា ម៉ូដែល...",
-  "Deactivate “{name}”?": "បិទដំណើរការ “{name}”?",
-  "This category will no longer be available where only active categories can be selected.": "ប្រភេទនេះនឹងមិនមានសម្រាប់ជ្រើសរើសទៀតទេ ដោយសារមានតែប្រភេទដែលសកម្មប៉ុណ្ណោះ ទើបអាចជ្រើសរើសបាន។",
-  
+
+  "Monitor, search, and respond to inquiries submitted through the contact form.":
+    "តាមដាន ស្វែងរក និងឆ្លើយតបចំពោះរាល់ការសាកសួរដែលបានផ្ញើតាមរយៈទម្រង់ទំនាក់ទំនង។",
+
+  // Missing UI & Navigation Strings
+  Today: "ថ្ងៃនេះ",
+  Days: "ថ្ងៃ",
+  Copied: "បានចម្លង",
+  "Sort By": "តម្រៀបតាម",
+  Sort: "តម្រៀប",
+  Title: "ចំណងជើង",
+  Message: "សារ",
+  Create: "បង្កើត",
+  Toggle: "បិទ/បើក",
+  ON: "បើក",
+  OFF: "បិទ",
+  "Go back": "ត្រឡប់ក្រោយ",
+  "Try again": "ព្យាយាមម្តងទៀត",
+  "Return to the home page": "ត្រឡប់ទៅទំព័រដើម",
+  "Page not found": "រកមិនឃើញទំព័រ",
+  "Network connection problem": "មានបញ្ហាក្នុងការតភ្ជាប់បណ្ដាញ",
+  "The page may have moved, been removed, or the address may be incorrect.":
+    "ទំព័រអាចត្រូវបានផ្លាស់ប្តូរ លុបចេញ ឬអាសយដ្ឋានមិនត្រឹមត្រូវ។",
+  "Check your internet connection, then try loading this page again.":
+    "សូមពិនិត្យមើលការតភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក រួចព្យាយាមផ្ទុកទំព័រនេះឡើងវិញ។",
+  "Access Denied": "ការចូលប្រើត្រូវបានបដិសេធ",
+  "Back to Login": "ត្រឡប់ទៅការចូលប្រព័ន្ធ",
+  "Please check your network and try again.":
+    "សូមពិនិត្យមើលបណ្តាញរបស់អ្នក ហើយព្យាយាមម្តងទៀត។",
+  "The latest provider data may be outdated.":
+    "ទិន្នន័យចុងក្រោយពីអ្នកផ្តល់សេវាអាចហួសសម័យ។",
+  "Last successful synchronization:": "ការធ្វើសមកាលកម្មជោគជ័យចុងក្រោយ៖",
+  "Provider:": "អ្នកផ្តល់សេវា៖",
+  "User ID:": "លេខសម្គាល់អ្នកប្រើ៖",
+
+  // AI Configuration & Prompts
+  "Search by name, key, description, model...":
+    "ស្វែងរកតាមឈ្មោះ កូនសោ ការពិពណ៌នា ម៉ូដែល...",
+  "Failed to save AI configuration.": "មិនអាចរក្សាទុកការកំណត់ AI បានទេ។",
+  "POST /api/v1/admin/ai/prompt-templates/{templateId}/versions":
+    "POST /api/v1/admin/ai/prompt-templates/{templateId}/versions",
+  "Publishing this version creates an immutable record tied to template ID":
+    "ការបោះពុម្ពផ្សាយជំនាន់នេះបង្កើតកំណត់ត្រាមិនអាចកែប្រែបានភ្ជាប់ជាមួយលេខសម្គាល់គំរូ",
+
+  // Alerts & Rules
+  "Trigger Type": "ប្រភេទកេះដំណើរការ",
+  "System alert rule": "ច្បាប់រំឭកប្រព័ន្ធ",
+  "Rule Name": "ឈ្មោះច្បាប់",
+  "Alert Rule": "ច្បាប់រំឭក",
+  TIME: "ពេលវេលា",
+  THRESHOLD: "កម្រិតកំណត់",
+  EVENT: "ព្រឹត្តិការណ៍",
+  SCHEDULE: "កាលវិភាគ",
+  DAILY_EXPENSE_REMINDER: "រំឭកការចំណាយប្រចាំថ្ងៃ",
+  BUDGET_THRESHOLD: "កម្រិតកំណត់ថវិកា",
+  SAVINGS_REMINDER: "រំឭកការសន្សំ",
+  RECURRING_REMINDER: "រំឭកប្រចាំកាល",
+  BUDGET: "ថវិកា",
+  SAVINGS_GOAL: "គោលដៅសន្សំ",
+  RECURRING_TRANSACTION: "ប្រតិបត្តិការប្រចាំកាល",
+  INFO: "ព័ត៌មាន",
+  WARNING: "ប្រុងប្រយ័ត្ន",
+  CRITICAL: "ធ្ងន់ធ្ងរ",
+
+  // Categories
+  "Update category information and hierarchy.":
+    "ធ្វើបច្ចុប្បន្នភាពព័ត៌មាន និងរចនាសម្ព័ន្ធឋានានុក្រមប្រភេទ។",
+  "Create a new root category or subcategory for iStash.":
+    "បង្កើតប្រភេទមេ ឬប្រភេទរងថ្មីសម្រាប់ iStash។",
+  "Create the first category used by iStash.":
+    "បង្កើតប្រភេទដំបូងសម្រាប់ iStash។",
+  "Use uppercase letters, numbers, and underscores. Must begin with a letter.":
+    "ប្រើអក្សរធំ លេខ និងសញ្ញា (_)។ ត្រូវចាប់ផ្តើមដោយអក្សរ។",
+  "Use uppercase letters, numbers, and underscores. Begin with a letter.":
+    "ប្រើអក្សរធំ លេខ និងសញ្ញា (_)។ ចាប់ផ្តើមដោយអក្សរ។",
+  ROOT: "មេ",
+  SUB: "រង",
+  CUSTOM: "ផ្ទាល់ខ្លួន",
+  SYSTEM: "ប្រព័ន្ធ",
+  DEFAULT: "លំនាំដើម",
+
+  // Contact Us & Inquiries
+  "Unable to load contact details":
+    "មិនអាចផ្ទុកព័ត៌មានលម្អិតនៃសារទំនាក់ទំនងបានទេ",
+  ALL: "ទាំងអស់",
+  REGISTERED: "បានចុះឈ្មោះ",
+  GUEST: "ភ្ញៀវ",
+  NEWEST: "ថ្មីបំផុត",
+  OLDEST: "ចាស់បំផុត",
+  NAME: "ឈ្មោះ",
+
+  // Feedback & Reviews
+  GENERAL: "ទូទៅ",
+  SUGGESTION: "សំណូមពរ",
+  BUG_REPORT: "រាយការណ៍បញ្ហា",
+  COMPLAINT: "ពាក្យបណ្តឹង",
+  COMPLIMENT: "ការកោតសរសើរ",
+  PENDING: "កំពុងរង់ចាំ",
+  IN_REVIEW: "កំពុងពិនិត្យ",
+  RESOLVED: "បានដោះស្រាយ",
+  CLOSED: "បានបិទ",
+
+  // Notifications
+  "Notification Information": "ព័ត៌មានការជូនដំណឹង",
+  "Notification Type": "ប្រភេទការជូនដំណឹង",
+  "Unable to load notifications.": "មិនអាចផ្ទុកការជូនដំណឹងបានទេ។",
+  "No notifications found": "រកមិនឃើញការជូនដំណឹងទេ",
+  "There are no notifications matching the current filters.":
+    "មិនមានការជូនដំណឹងដែលត្រូវនឹងតម្រងបច្ចុប្បន្នទេ។",
+  DAILY_REMINDER: "ការរំឭកប្រចាំថ្ងៃ",
+  BUDGET_WARNING: "ការព្រមានថវិកា",
+
+  // Audit Logs
+  CREATE: "បង្កើត (CREATE)",
+  UPDATE: "កែប្រែ (UPDATE)",
+  DELETE: "លុប (DELETE)",
+  SUSPEND: "ផ្អាក (SUSPEND)",
+  REACTIVATE: "ដំណើរការឡើងវិញ (REACTIVATE)",
+  LOGIN: "ចូលប្រព័ន្ធ (LOGIN)",
+  LOGOUT: "ចាកចេញ (LOGOUT)",
+  CONTACT_MESSAGE: "សារទំនាក់ទំនង",
+  USER: "អ្នកប្រើប្រាស់",
+  CATEGORY: "ប្រភេទ",
+  CURRENCY: "រូបិយប័ណ្ណ",
+  ALERT_RULE: "ច្បាប់រំឭក",
+  PROMPT_TEMPLATE: "ពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិត",
+  AUTH: "ការផ្ទៀងផ្ទាត់",
+
+  // User Stats & Charts
+  "Unable to load user statistics.": "មិនអាចផ្ទុកស្ថិតិអ្នកប្រើប្រាស់បានទេ។",
+  "Unable to load age distribution.": "មិនអាចផ្ទុកការបែងចែកអាយុបានទេ។",
+  "Unable to load gender distribution.": "មិនអាចផ្ទុកការបែងចែកយេនឌ័របានទេ។",
+  "Enter a valid 3, 6, or 8 digit hex color.": "សូមបញ្ចូលកូដពណ៌ hex ត្រឹមត្រូវ (3, 6 ឬ 8 ខ្ទង់)។",
+  "You do not have permission to access this Admin Dashboard.":
+    "អ្នកមិនមានសិទ្ធិចូលប្រើ Admin Dashboard នេះទេ។",
 };
 
 export function translateAdmin(locale: AdminLocale, text: string) {

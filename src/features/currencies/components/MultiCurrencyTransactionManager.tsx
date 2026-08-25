@@ -185,10 +185,10 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-5">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-[#003377] dark:bg-slate-800 dark:text-[#FFC83D]">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#003377]/10 text-[#003377] dark:bg-[#FEDB55]/10 dark:text-[#FEDB55]">
                 <Coins size={18} />
               </span>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              <h2 className="text-lg font-bold text-[#003377] dark:text-[#FFC83D]">
                 {t("Base Currency")}
               </h2>
             </div>
@@ -202,9 +202,9 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
               type="button"
               onClick={onSync}
               disabled={isSyncing}
-              className="flex items-center gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 dark:hover:text-white transition disabled:opacity-50 border border-slate-200 dark:border-slate-700"
+              className="flex items-center gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 dark:hover:text-white transition disabled:opacity-50 border border-slate-200 dark:border-slate-700"
             >
-              <RefreshCw size={14} className={isSyncing ? "animate-spin text-[#003377] dark:text-[#FFC83D]" : ""} />
+              <RefreshCw size={14} className={isSyncing ? "animate-spin text-[#003377] dark:text-[#FEDB55]" : ""} />
               <span>{isSyncing ? t("Synchronizing...") : t("Synchronize")}</span>
             </button>
 
@@ -214,7 +214,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                 reset();
                 setIsModalOpen(true);
               }}
-              className="flex items-center gap-2 rounded-2xl bg-[#003377] dark:bg-[#FFC83D] px-5 py-2.5 text-xs font-bold text-white dark:text-[#003377] shadow-md hover:bg-[#002255] dark:hover:bg-[#e6b437] transition active:scale-95"
+              className="flex items-center gap-2 rounded-2xl bg-[#FEDB55] text-xs font-semibold text-[#003377] hover:bg-[#f0ca43] dark:bg-[#FEDB55] dark:text-[#003377] px-5 py-2.5 shadow-sm transition active:scale-95"
             >
               <Plus size={16} />
               <span>{t("Record Transaction")}</span>
@@ -237,8 +237,8 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                   onClick={() => onBaseCurrencyChange(curr.code)}
                   className={`flex items-center justify-between p-3 rounded-2xl text-xs font-bold transition border ${
                     isSelected
-                      ? "bg-[#003377] text-white border-[#003377] shadow-md dark:bg-[#FFC83D] dark:text-[#003377] dark:border-[#FFC83D]"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-600 dark:hover:text-white"
+                      ? "bg-[#003377] text-white border-[#003377] shadow-sm dark:bg-[#FEDB55] dark:text-[#003377] dark:border-[#FEDB55]"
+                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700 dark:hover:text-white"
                   }`}
                 >
                   <div className="flex flex-col text-left">
@@ -248,7 +248,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                     </div>
                     <span className="text-xs font-normal opacity-80 mt-0.5">{t(curr.name)}</span>
                   </div>
-                  {isSelected && <CheckCircle2 size={14} className="text-[#FFC83D] dark:text-[#003377]" />}
+                  {isSelected && <CheckCircle2 size={14} className="text-[#FEDB55] dark:text-[#003377]" />}
                 </button>
               );
             })}
@@ -297,12 +297,12 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
         </div>
 
         {/* Net Balance */}
-        <div className="rounded-3xl bg-gradient-to-br from-[#003377]/10 via-[#003377]/5 to-transparent p-5 border border-[#003377]/20 dark:border-slate-800">
+        <div className="rounded-3xl bg-[#003377]/5 dark:bg-[#FEDB55]/10 p-5 border border-[#003377]/20 dark:border-[#FEDB55]/20">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
+            <span className="text-xs font-bold text-[#003377] dark:text-[#FEDB55]">
               {t("Net Balance")}
             </span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#003377]/20 text-[#003377] dark:text-[#FFC83D]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#003377]/10 text-[#003377] dark:bg-[#FEDB55]/20 dark:text-[#FEDB55]">
               <TrendingUp size={18} />
             </div>
           </div>
@@ -320,8 +320,8 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
       <div className="rounded-3xl bg-white p-6 shadow-sm dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <CreditCard size={18} className="text-[#003377] dark:text-[#FFC83D]" />
+            <h3 className="text-base font-bold text-[#003377] dark:text-[#FFC83D] flex items-center gap-2">
+              <CreditCard size={18} className="text-[#003377] dark:text-[#FEDB55]" />
               {t("Multi-Currency Transactions")}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -329,7 +329,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
             </p>
           </div>
 
-          <span className="rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
+          <span className="rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
             {transactions.length} {t("Transactions")}
           </span>
         </div>
@@ -385,7 +385,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                     {tx.type === "INCOME" ? "+" : "-"}
                     {activeBaseItem.symbol}{" "}
                     {converted.toLocaleString("en-US", { maximumFractionDigits: 2 })}
-                    <span className="ml-1 text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
+                    <span className="ml-1 text-xs font-bold text-[#003377] dark:text-[#FEDB55]">
                       ({t(activeBaseItem.name)})
                     </span>
                   </div>
@@ -412,10 +412,10 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
           <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-[#003377] dark:bg-slate-800 dark:text-[#FFC83D]">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#003377]/10 text-[#003377] dark:bg-[#FEDB55]/10 dark:text-[#FEDB55]">
                   <Plus size={18} />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white font-google-sans">
+                <h3 className="text-base font-bold text-[#003377] dark:text-[#FFC83D] font-google-sans">
                   {t("Record New Transaction")}
                 </h3>
               </div>
@@ -464,7 +464,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                   type="text"
                   {...register("title")}
                   placeholder={t("e.g. Dining, Internet...")}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none focus:border-[#FFC83D] focus:ring-2 focus:ring-[#FFC83D]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-[#FEDB55] dark:focus:ring-[#FEDB55]/20 transition"
                 />
                 {errors.title && (
                   <p className="text-xs font-bold text-rose-500 flex items-center gap-1 mt-1">
@@ -485,7 +485,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                     step="any"
                     {...register("amount", { valueAsNumber: true })}
                     placeholder="0.00"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none focus:border-[#FFC83D] focus:ring-2 focus:ring-[#FFC83D]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 font-bold"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-[#FEDB55] dark:focus:ring-[#FEDB55]/20 font-bold transition"
                   />
                   {errors.amount && (
                     <p className="text-xs font-bold text-rose-500 flex items-center gap-1 mt-1">
@@ -501,7 +501,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                   </label>
                   <select
                     {...register("currency")}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 font-bold"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-800 outline-none focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-[#FEDB55] dark:focus:ring-[#FEDB55]/20 font-bold transition"
                   >
                     {currencies.map((c) => (
                       <option key={`opt-${c.code}`} value={c.code}>
@@ -514,11 +514,11 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
 
               {/* Live Auto-Conversion Display in Form */}
               {Number(formAmount) > 0 && (
-                <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-[#FFC83D]/30 flex items-center justify-between text-xs">
+                <div className="p-3.5 rounded-2xl bg-[#003377]/5 border border-[#003377]/20 dark:bg-[#FEDB55]/10 dark:border-[#FEDB55]/20 flex items-center justify-between text-xs">
                   <span className="text-slate-600 dark:text-slate-300 font-semibold">
                     {t("Converted to")} ({t(activeBaseItem.name)}):
                   </span>
-                  <span className="font-black text-[#003377] dark:text-[#FFC83D] text-sm">
+                  <span className="font-black text-[#003377] dark:text-[#FEDB55] text-sm">
                     {activeBaseItem.symbol}{" "}
                     {liveConvertedFormAmount.toLocaleString("en-US", {
                       maximumFractionDigits: 2,
@@ -534,7 +534,7 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                 </label>
                 <select
                   {...register("category")}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-800 outline-none focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-[#FEDB55] dark:focus:ring-[#FEDB55]/20 transition"
                 >
                   <option value="General Expense">{t("General Expense")}</option>
                   <option value="Food & Dining">{t("Food & Dining")}</option>
@@ -550,13 +550,13 @@ export const MultiCurrencyTransactionManager: React.FC<MultiCurrencyTransactionM
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-2xl border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
+                  className="rounded-2xl border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
                   {t("Cancel")}
                 </button>
                 <button
                   type="submit"
-                  className="rounded-2xl bg-[#003377] dark:bg-[#FFC83D] px-6 py-2.5 text-xs font-bold text-white dark:text-[#003377] shadow-md hover:bg-[#002255] dark:hover:bg-[#e6b437]"
+                  className="rounded-2xl bg-[#FEDB55] text-xs font-semibold text-[#003377] hover:bg-[#f0ca43] dark:bg-[#FEDB55] dark:text-[#003377] px-6 py-2.5 shadow-sm transition active:scale-95"
                 >
                   {t("Record Transaction")}
                 </button>

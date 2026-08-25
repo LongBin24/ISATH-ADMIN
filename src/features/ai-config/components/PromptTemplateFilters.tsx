@@ -11,7 +11,6 @@ export interface PromptTemplateFilterValues {
   search: string;
   taskType: string;
   templateScope: string;
-  languageCode: string;
   templateStatus: string;
 }
 
@@ -37,13 +36,11 @@ export function PromptTemplateFilters({
     filters.search ||
       filters.taskType !== "ALL" ||
       filters.templateScope !== "ALL" ||
-      filters.languageCode !== "ALL" ||
       filters.templateStatus !== "ALL"
   );
 
   const isTaskTypeSelected = filters.taskType !== "ALL";
   const isScopeSelected = filters.templateScope !== "ALL";
-  const isLanguageSelected = filters.languageCode !== "ALL";
   const isStatusSelected = filters.templateStatus !== "ALL";
 
   return (
@@ -149,35 +146,6 @@ export function PromptTemplateFilters({
               <SelectItem value="SAVINGS_ANALYSIS">{t("Savings Analysis")}</SelectItem>
               <SelectItem value="SPENDING_ANALYSIS">{t("Spending Analysis")}</SelectItem>
               <SelectItem value="INCOME_ANALYSIS">{t("Income Analysis")}</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* Language Filter (ភាសា) */}
-          <Select
-            value={filters.languageCode}
-            onValueChange={(val) => onFilterChange("languageCode", val)}
-          >
-            <SelectTrigger
-              className={cn(
-                "h-11 min-w-[120px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
-                isLanguageSelected && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
-              )}
-            >
-              <SelectValue
-                placeholder={t("Language")}
-                value={
-                  filters.languageCode === "ALL"
-                    ? t("All Languages")
-                    : filters.languageCode === "km"
-                    ? t("Khmer (km)")
-                    : t("English (en)")
-                }
-              />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="ALL">{t("All Languages")}</SelectItem>
-              <SelectItem value="km">{t("Khmer (km)")}</SelectItem>
-              <SelectItem value="en">{t("English (en)")}</SelectItem>
             </SelectContent>
           </Select>
 

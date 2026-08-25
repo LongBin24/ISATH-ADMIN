@@ -15,15 +15,33 @@ interface ProfileAvatarModalProps {
 }
 
 const PRESET_AVATARS = [
-  "https://api.dicebear.com/7.x/bottts/svg?seed=istashUser1&backgroundColor=003377",
-  "https://api.dicebear.com/7.x/bottts/svg?seed=istashUser2&backgroundColor=FFC83D",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=sothea1",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=sothea2",
-  "https://api.dicebear.com/7.x/identicon/svg?seed=sothea3",
-  "https://api.dicebear.com/7.x/lorelei/svg?seed=sothea4",
+  "https://api.dicebear.com/7.x/bottts/png?seed=istashUser1&backgroundColor=003377",
+  "https://api.dicebear.com/7.x/bottts/png?seed=istashUser2&backgroundColor=FFC83D",
+  "https://api.dicebear.com/7.x/avataaars/png?seed=sothea1",
+  "https://api.dicebear.com/7.x/avataaars/png?seed=sothea2",
+  "https://api.dicebear.com/7.x/identicon/png?seed=sothea3",
+  "https://api.dicebear.com/7.x/lorelei/png?seed=sothea4",
   "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
 ];
+
+async function urlToFile(url: string, filename = "avatar.png"): Promise<File | null> {
+  try {
+    const res = await fetch(url, { mode: "cors" });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    const mimeType = blob.type || "image/png";
+    const ext = mimeType.includes("jpeg") || mimeType.includes("jpg")
+      ? "jpg"
+      : mimeType.includes("svg")
+      ? "svg"
+      : "png";
+    return new File([blob], filename.replace(/\.[^.]+$/, `.${ext}`), { type: mimeType });
+  } catch (err) {
+    console.warn("[ProfileAvatarModal] Could not fetch image as File:", err);
+    return null;
+  }
+}
 
 export default function ProfileAvatarModal({
   profile,
@@ -55,18 +73,29 @@ export default function ProfileAvatarModal({
 
   if (!isOpen) return null;
 
-  const handleSelectPreset = (url: string) => {
+  const handleSelectPreset = async (url: string) => {
     setSelectedAvatar(url);
-    setSelectedFile(null);
     setIsDefault(false);
+    const file = await urlToFile(url, "preset-avatar.png");
+    if (file) {
+      setSelectedFile(file);
+    } else {
+      setSelectedFile(null);
+    }
   };
 
-  const handleApplyCustomUrl = () => {
-    if (customUrl.trim()) {
-      setSelectedAvatar(customUrl.trim());
-      setSelectedFile(null);
+  const handleApplyCustomUrl = async () => {
+    const trimmed = customUrl.trim();
+    if (trimmed) {
+      setSelectedAvatar(trimmed);
       setIsDefault(false);
       setCustomUrl("");
+      const file = await urlToFile(trimmed, "custom-avatar.png");
+      if (file) {
+        setSelectedFile(file);
+      } else {
+        setSelectedFile(null);
+      }
     }
   };
 
@@ -81,8 +110,21 @@ export default function ProfileAvatarModal({
 
   const handleSaveAvatar = async () => {
     try {
-      if (selectedFile) {
-        await uploadAvatarFile(selectedFile).unwrap();
+      let fileToUpload = selectedFile;
+      if (!fileToUpload && selectedAvatar && !isDefault) {
+        fileToUpload = await urlToFile(selectedAvatar, "avatar.png");
+      }
+
+      if (fileToUpload) {
+        try {
+          await uploadAvatarFile(fileToUpload).unwrap();
+        } catch (fileErr) {
+          console.warn("[ProfileAvatarModal] uploadAvatarFile failed, trying uploadAvatar fallback:", fileErr);
+          await uploadAvatar({
+            avatarUrl: selectedAvatar,
+            isDefault: isDefault,
+          }).unwrap();
+        }
       } else {
         await uploadAvatar({
           avatarUrl: selectedAvatar,
