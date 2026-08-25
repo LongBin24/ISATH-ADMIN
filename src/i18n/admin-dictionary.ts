@@ -1128,7 +1128,15 @@ const km: Record<string, string> = {
   "SUSPEND": "ផ្អាកគណនី",
   "REACTIVATE": "បើកដំណើរការឡើងវិញ",
   "LOGIN": "ចូលគណនី",
-  "LOGOUT": "ចាកចេញ"
+  "LOGOUT": "ចាកចេញ",
+   "Wallet": "កាបូបលុយ",
+  "Wallet Invitation": "ការអញ្ជើញប្រើកាបូបលុយ",
+  "Transaction": "ប្រតិបត្តិការ",
+   "Update category information and hierarchy.": "ធ្វើបច្ចុប្បន្នភាពព័ត៌មានប្រភេទ និងឋានានុក្រម។",
+  "Search by name, key, description, model...": "ស្វែងរកតាមឈ្មោះ កូដ ការពិពណ៌នា ម៉ូដែល...",
+  "Deactivate “{name}”?": "បិទដំណើរការ “{name}”?",
+  "This category will no longer be available where only active categories can be selected.": "ប្រភេទនេះនឹងមិនមានសម្រាប់ជ្រើសរើសទៀតទេ ដោយសារមានតែប្រភេទដែលសកម្មប៉ុណ្ណោះ ទើបអាចជ្រើសរើសបាន។",
+  
 };
 
 export function translateAdmin(locale: AdminLocale, text: string) {
