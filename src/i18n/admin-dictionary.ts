@@ -1122,6 +1122,13 @@ const km: Record<string, string> = {
   "Client & Device": "កម្មវិធីរុករក & ឧបករណ៍",
   "Contact Messages": "សារទំនាក់ទំនង",
 "Monitor, search, and respond to inquiries submitted through the contact form.": "តាមដាន ស្វែងរក និងឆ្លើយតបចំពោះរាល់ការសាកសួរដែលបានផ្ញើតាមរយៈទម្រង់ទំនាក់ទំនង។"
+,"CREATE": "បង្កើត",
+  "UPDATE": "កែប្រែ",
+  "DELETE": "លុប",
+  "SUSPEND": "ផ្អាកគណនី",
+  "REACTIVATE": "បើកដំណើរការឡើងវិញ",
+  "LOGIN": "ចូលគណនី",
+  "LOGOUT": "ចាកចេញ"
 };
 
 export function translateAdmin(locale: AdminLocale, text: string) {
