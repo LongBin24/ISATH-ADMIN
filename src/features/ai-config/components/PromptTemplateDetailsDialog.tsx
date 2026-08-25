@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { LanguageFlag } from "@/components/ui/LanguageFlag";
 import { useGetPromptTemplateByIdQuery } from "../api";
 import type { PromptTemplateItem } from "../types";
 
@@ -104,7 +105,7 @@ export function PromptTemplateDetailsDialog({
                   variant="outline"
                   className="rounded-full border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300 inline-flex items-center gap-1.5"
                 >
-                  <span className="font-bold text-[11px]">{isKhmer ? "🇰🇭 KH" : "🇬🇧 GB"}</span>
+                  <LanguageFlag locale={template.languageCode} className="w-4 h-3" />
                   <span>{isKhmer ? t("Khmer (km)") : t("English (en)")}</span>
                 </Badge>
 

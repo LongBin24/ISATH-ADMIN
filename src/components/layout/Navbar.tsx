@@ -7,12 +7,12 @@ import {
   User,
   PanelLeftClose,
   PanelLeftOpen,
-  Globe2,
 } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "@/hooks/use-theme";
 import NotificationBellDropdown from "@/features/notifications/components/NotificationBellDropdown";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { LanguageFlag } from "@/components/ui/LanguageFlag";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGetProfileQuery } from "@/features/profile/api";
@@ -92,7 +92,7 @@ export default function Navbar({
             type="button"
             variant="ghost"
             onClick={() => setLocale(locale === "en" ? "km" : "en")}
-            className="h-9 gap-1.5 rounded-xl px-2.5 text-slate-600 hover:bg-slate-100 hover:text-[#003377] dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-[#FFC83D]"
+            className="h-9 gap-2 rounded-xl px-2.5 text-slate-600 hover:bg-slate-100 hover:text-[#003377] dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-[#FFC83D]"
             aria-label={t("Switch language")}
             title={
               locale === "km"
@@ -100,7 +100,7 @@ export default function Navbar({
                 : t("Switch to Khmer")
             }
           >
-            <Globe2 size={16} />
+            <LanguageFlag locale={localeMounted ? locale : "en"} className="w-5 h-3.5" />
             <span className="text-xs font-semibold">
               {localeMounted ? (locale === "km" ? "ខ្មែរ" : "EN") : "EN"}
             </span>

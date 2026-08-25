@@ -47,11 +47,11 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
     <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200/80 flex flex-col h-full dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 font-google-sans">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-[#003377]/10 rounded-2xl text-[#003377] dark:bg-[#FFC83D]/10 dark:text-[#FFC83D]">
+        <div className="p-3 bg-[#003377]/10 dark:bg-[#FEDB55]/10 rounded-2xl text-[#003377] dark:text-[#FEDB55]">
           <Globe className="w-6 h-6" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-[#003377] dark:text-white">
+          <h2 className="text-lg font-bold text-[#003377] dark:text-[#FFC83D]">
             {t("Exchange Rates Table")}
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -81,10 +81,10 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                   <div className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                     <span>{item.code}</span>
                     <span
-                      className={`text-xs font-bold px-2 py-0.5 rounded-full transition-colors ${
+                      className={`text-xs font-semibold px-2.5 py-0.5 rounded-full transition-colors ${
                         item.active
-                          ? "bg-[#003377]/10 text-[#003377] dark:bg-[#FFC83D]/20 dark:text-[#FFC83D]"
-                          : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                          ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                          : "bg-slate-200/60 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                       }`}
                     >
                       {t(item.active ? "Active" : "Inactive")}
@@ -124,9 +124,9 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                 <button
                   type="button"
                   onClick={() => handleToggle(item.code, item.active)}
-                  className={`group relative inline-flex h-8 w-16 shrink-0 cursor-pointer items-center rounded-full p-1 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#003377]/30 dark:focus:ring-[#FFC83D]/30 ${
+                  className={`group relative inline-flex h-8 w-16 shrink-0 cursor-pointer items-center rounded-full p-1 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#003377]/30 dark:focus:ring-[#FEDB55]/30 ${
                     item.active
-                      ? "bg-[#003377] dark:bg-[#FFC83D] shadow-sm"
+                      ? "bg-[#003377] dark:bg-[#FEDB55] shadow-sm"
                       : "bg-slate-200 dark:bg-slate-800 border border-slate-300/80 dark:border-slate-700"
                   }`}
                   role="switch"
@@ -139,7 +139,7 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                   <span
                     className={`absolute left-2 text-xs font-black uppercase tracking-tight transition-opacity duration-200 select-none ${
                       item.active
-                        ? "opacity-100 text-[#FFC83D] dark:text-[#003377]"
+                        ? "opacity-100 text-[#FEDB55] dark:text-[#003377]"
                         : "opacity-0"
                     }`}
                   >
@@ -161,14 +161,14 @@ export const ExchangeRateList: React.FC<ExchangeRateListProps> = ({ rates, isLoa
                   <span
                     className={`pointer-events-none inline-block h-6 w-6 transform rounded-full shadow-md transition duration-300 ease-out flex items-center justify-center ${
                       item.active
-                        ? "translate-x-8 bg-white dark:bg-[#003377] text-[#003377] dark:text-[#FFC83D]"
+                        ? "translate-x-8 bg-white dark:bg-[#003377] text-[#003377] dark:text-[#FEDB55]"
                         : "translate-x-0 bg-white dark:bg-slate-600 text-slate-400"
                     }`}
                   >
                     <span
                       className={`h-1.5 w-1.5 rounded-full transition-colors ${
                         item.active
-                          ? "bg-[#003377] dark:bg-[#FFC83D]"
+                          ? "bg-[#003377] dark:bg-[#FEDB55]"
                           : "bg-slate-400 dark:bg-slate-400"
                       }`}
                     />

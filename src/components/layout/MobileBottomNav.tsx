@@ -28,6 +28,7 @@ import { useGetNotificationStatsQuery } from "@/features/notifications/api";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 import { useTheme } from "@/hooks/use-theme";
 import { useSignOut } from "@/features/auth/hook";
+import { LanguageFlag } from "@/components/ui/LanguageFlag";
 import { useGetProfileQuery } from "@/features/profile/api";
 
 export default function MobileBottomNav() {
@@ -222,7 +223,7 @@ export default function MobileBottomNav() {
                 onClick={() => setLocale(locale === "en" ? "km" : "en")}
                 className="flex items-center justify-center gap-2 rounded-xl border border-slate-200/70 bg-slate-50/80 py-2 px-3 text-xs font-semibold text-slate-700 transition active:scale-95 hover:border-[#003377] dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:border-[#FFC83D]"
               >
-                <Globe2 size={14} className="text-[#003377] dark:text-[#FFC83D]" />
+                <LanguageFlag locale={localeMounted ? locale : "en"} className="w-5 h-3.5" />
                 <span>{localeMounted ? (locale === "km" ? "ខ្មែរ" : "English") : "Language"}</span>
               </button>
 

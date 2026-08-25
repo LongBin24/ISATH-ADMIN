@@ -677,9 +677,9 @@ function CategoryFormContents({ initial, category, isLoading, onCancel, onSubmit
 
   const submit = () => {
     const nextErrors: typeof errors = {};
-    if (!form.name.trim()) nextErrors.name = "Category name is required.";
-    if (!category && !/^[A-Z][A-Z0-9_]*$/.test(form.categoryKey)) nextErrors.categoryKey = "Use uppercase letters, numbers, and underscores. Begin with a letter.";
-    if (!/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(form.color)) nextErrors.color = "Enter a valid 3, 6, or 8 digit hex color.";
+    if (!form.name.trim()) nextErrors.name = t("Category name is required.");
+    if (!category && !/^[A-Z][A-Z0-9_]*$/.test(form.categoryKey)) nextErrors.categoryKey = t("Use uppercase letters, numbers, and underscores. Begin with a letter.");
+    if (!/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(form.color)) nextErrors.color = t("Enter a valid 3, 6, or 8 digit hex color.");
     setErrors(nextErrors);
     if (!Object.keys(nextErrors).length) onSubmit(form);
   };
@@ -716,7 +716,7 @@ function CategoryFormContents({ initial, category, isLoading, onCancel, onSubmit
           <div>
             <Label htmlFor="category-key" className="text-base">{t("Category Key")}</Label>
             <Input id="category-key" value={form.categoryKey} onChange={(event) => update("categoryKey", event.target.value.toUpperCase())} maxLength={100} placeholder="FOOD_DINING" className="mt-2 h-11 font-mono text-base uppercase" />
-            <p className="mt-1 text-sm text-muted-foreground">Use uppercase letters, numbers, and underscores. Must begin with a letter.</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("Use uppercase letters, numbers, and underscores. Must begin with a letter.")}</p>
             {errors.categoryKey && <p className="mt-1 text-sm text-destructive">{errors.categoryKey}</p>}
           </div>
         )}

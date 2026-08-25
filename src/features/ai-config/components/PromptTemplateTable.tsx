@@ -29,6 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { LanguageFlag } from "@/components/ui/LanguageFlag";
 import {
   useSetDefaultPromptTemplateMutation,
   useArchivePromptTemplateMutation,
@@ -183,13 +184,14 @@ export function PromptTemplateTable({
                 <TableCell>
                   <Badge
                     variant="outline"
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                       isKhmer
                         ? "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-300"
                         : "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-900/50 dark:bg-purple-950/30 dark:text-purple-300"
                     }`}
                   >
-                    {isKhmer ? "🇰🇭 km" : "🇬🇧 en"}
+                    <LanguageFlag locale={tmpl.languageCode} className="w-4 h-3" />
+                    <span>{tmpl.languageCode}</span>
                   </Badge>
                 </TableCell>
 

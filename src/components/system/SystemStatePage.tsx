@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, FileQuestion, House, RefreshCw, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useOptionalAdminI18n } from "@/i18n/admin-i18n";
 
 type SystemStatePageProps = {
   kind: "not-found" | "network";
@@ -13,6 +14,8 @@ type SystemStatePageProps = {
 
 export default function SystemStatePage({ kind, onRetry }: SystemStatePageProps) {
   const router = useRouter();
+  const i18n = useOptionalAdminI18n();
+  const t = i18n?.t ?? ((s: string) => s);
   const notFound = kind === "not-found";
   const Icon = notFound ? FileQuestion : WifiOff;
 
@@ -27,37 +30,34 @@ export default function SystemStatePage({ kind, onRetry }: SystemStatePageProps)
 
           {notFound && <p className="mt-6 text-5xl font-semibold tracking-tight text-[#003377] dark:text-[#FEDB55]">404</p>}
           <h1 className="mt-4 text-3xl font-semibold tracking-tight">
-            {notFound ? "Page not found" : "Network connection problem"}
+            {notFound ? t("Page not found") : t("Network connection problem")}
           </h1>
-          <p className="mt-2 text-lg font-medium text-muted-foreground">
-            {notFound ? "រកមិនឃើញទំព័រ" : "មានបញ្ហាក្នុងការតភ្ជាប់បណ្ដាញ"}
-          </p>
           <p className="mt-4 max-w-md text-base leading-7 text-muted-foreground">
             {notFound
-              ? "The page may have moved, been removed, or the address may be incorrect."
-              : "Check your internet connection, then try loading this page again."}
+              ? t("The page may have moved, been removed, or the address may be incorrect.")
+              : t("Check your internet connection, then try loading this page again.")}
           </p>
 
           <div className="mt-8 flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row">
             <Button variant="outline" className="h-11 rounded-xl" onClick={() => router.back()}>
               <ArrowLeft className="mr-2 size-4" />
-              Go back
+              {t("Go back")}
             </Button>
             {!notFound && (
               <Button variant="outline" className="h-11 rounded-xl" onClick={() => onRetry ? onRetry() : window.location.reload()}>
                 <RefreshCw className="mr-2 size-4" />
-                Try again
+                {t("Try again")}
               </Button>
             )}
             <Button className="h-11 rounded-xl bg-[#FEDB55] text-[#003377] hover:bg-[#f0ca43]" onClick={() => router.push("/dashboard")}>
               <House className="mr-2 size-4" />
-              Dashboard
+              {t("Dashboard")}
             </Button>
           </div>
 
           {!notFound && (
             <Link href="/" className="mt-6 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
-              Return to the home page
+              {t("Return to the home page")}
             </Link>
           )}
         </CardContent>
