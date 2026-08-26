@@ -234,14 +234,14 @@ const km: Record<string, string> = {
   "Please try again.": "សូមព្យាយាមម្តងទៀត។",
   All: "ទាំងអស់",
   "All Types": "ប្រភេទទាំងអស់",
-  "All Statuses": "ស្ថានភាពទាំងអស់",
+  "All Statuses": "គ្រប់ស្ថានភាព",
   "All Categories": "ប្រភេទទាំងអស់",
   "All Levels": "កម្រិតទាំងអស់",
   "All Users": "អ្នកប្រើទាំងអស់",
-  "All Alert Types": "ប្រភេទជូនដំណឹងទាំងអស់",
-  "All Triggers": "សកម្មភាពបង្កទាំងអស់",
-  "All Severities": "កម្រិតទាំងអស់",
-  "All References": "ឯកសារយោងទាំងអស់",
+  "All Alert Types": "គ្រប់ប្រភេទ",
+  "All Triggers": "គ្រប់សកម្មភាព",
+  "All Severities": "គ្រប់កម្រិត",
+  "All References": "គ្រប់ឯកសារយោង",
   "All Notification Types": "ប្រភេទការជូនដំណឹងទាំងអស់",
   "All Reference Types": "ប្រភេទឯកសារយោងទាំងអស់",
   Recipient: "អ្នកទទួល",
@@ -429,7 +429,7 @@ const km: Record<string, string> = {
   "Dismiss alert": "បិទការជូនដំណឹង",
   "Details for:": "ព័ត៌មានលម្អិតសម្រាប់៖",
   "Alert Type": "ប្រភេទការជូនដំណឹង",
-  "Search by rule name...": "ស្វែងរកតាមឈ្មោះច្បាប់...",
+  "Search by rule name...": "ស្វែងរក...",
   "Clear search": "សម្អាតការស្វែងរក",
   "Filter by severity": "ត្រងតាមកម្រិត",
   "Filter by status": "ត្រងតាមស្ថានភាព",
@@ -458,11 +458,11 @@ const km: Record<string, string> = {
   "Visible Only": "តែប្រភេទដែលបង្ហាញ",
   "Exclude Hidden": "មិនរួមបញ្ចូលដែលលាក់",
   "Search by title, description, or user...":
-    "ស្វែងរកតាមចំណងជើង ការពិពណ៌នា ឬអ្នកប្រើប្រាស់...",
+    "ស្វែងរក...",
   "Search by title, message, or user...":
-    "ស្វែងរកតាមចំណងជើង សារ ឬអ្នកប្រើប្រាស់...",
+    "ស្វែងរក...",
   "Search by rule, user, or reference...":
-    "ស្វែងរកតាមច្បាប់ អ្នកប្រើប្រាស់ ឬឯកសារយោង...",
+    "ស្វែងរក...",
   System: "ប្រព័ន្ធ",
   Default: "លំនាំដើម",
   Custom: "ផ្ទាល់ខ្លួន",
@@ -480,13 +480,13 @@ const km: Record<string, string> = {
   Timeline: "បន្ទាត់ពេលវេលា",
   "Category Name": "ឈ្មោះប្រភេទ",
   "Parent Category": "ប្រភេទមេ",
-  "Search root categories...": "ស្វែងរកប្រភេទដើម...",
+  "Search root categories...": "ស្វែងរក...",
   "None — Root Category": "គ្មាន — ប្រភេទដើម",
   "Saving...": "កំពុងរក្សាទុក...",
   "Unable to load categories.": "មិនអាចទាញយកប្រភេទបានទេ។",
   "No categories found": "រកមិនឃើញប្រភេទទេ",
   "No categories yet": "មិនទាន់មានប្រភេទទេ",
-  "Search by category name or keyword...": "ស្វែងរកតាមឈ្មោះ ឬពាក្យគន្លឹះ...",
+  "Search by category name or keyword...": "ស្វែងរក...",
   "Search, organize, and manage the category hierarchy.":
     "ស្វែងរក រៀបចំ និងគ្រប់គ្រងឋានានុក្រមនៃប្រភេទ។",
   "Subcategory of": "ប្រភេទរងនៃ",
@@ -522,7 +522,7 @@ const km: Record<string, string> = {
   "Available currencies": "រូបិយប័ណ្ណដែលមាន",
   "Enabled in iStash": "បានបើកក្នុង iStash",
   "Currently disabled": "បានបិទបច្ចុប្បន្ន",
-  "Search by currency code or name...": "ស្វែងរកតាមកូដ ឬឈ្មោះរូបិយប័ណ្ណ...",
+  "Search by currency code or name...": "ស្វែងរក...",
   "Manage which synchronized currencies are enabled in iStash.":
     "គ្រប់គ្រងរូបិយប័ណ្ណដែលបានធ្វើសមកាលកម្មក្នុង iStash។",
   "Unable to load currency information.": "មិនអាចទាញយកព័ត៌មានរូបិយប័ណ្ណបានទេ។",
@@ -670,7 +670,7 @@ const km: Record<string, string> = {
   "English Prompts (en)": "សារបញ្ជាភាសាអង់គ្លេស (en)",
   "Standard templates": "គំរូបទដ្ឋាន",
   "Search by template name, key, or description...":
-    "ស្វែងរកតាមឈ្មោះគំរូ កូនសោ ឬការពិពណ៌នា...",
+    "ស្វែងរក...",
   "Task Type": "ប្រភេទកិច្ចការ",
   "All Tasks": "កិច្ចការទាំងអស់",
   "Category Prediction": "ការទស្សន៍ទាយប្រភេទ",
@@ -846,7 +846,7 @@ const km: Record<string, string> = {
   "Creating...": "កំពុងបង្កើត...",
   "Create User": "បង្កើតអ្នកប្រើប្រាស់",
   "Search by name, username, or email...":
-    "ស្វែងរកតាមឈ្មោះ ឈ្មោះអ្នកប្រើ ឬអ៊ីមែល...",
+    "ស្វែងរក...",
   Verification: "ការផ្ទៀងផ្ទាត់",
   Verified: "បានផ្ទៀងផ្ទាត់",
   "Not Verified": "មិនទាន់ផ្ទៀងផ្ទាត់",
@@ -1004,7 +1004,7 @@ const km: Record<string, string> = {
   "Today's Messages": "សារថ្ងៃនេះ",
   "Received today": "ទទួលបានក្នុងថ្ងៃនេះ",
   "Search by name, email, phone, or subject...":
-    "ស្វែងរកតាមឈ្មោះ អ៊ីមែល លេខទូរស័ព្ទ ឬប្រធានបទ...",
+    "ស្វែងរក...",
   "All User Types": "គ្រប់ប្រភេទអ្នកផ្ញើ",
   Guest: "ភ្ញៀវ",
   Sender: "អ្នកផ្ញើ",
@@ -1059,11 +1059,11 @@ const km: Record<string, string> = {
   "Comprehensive history of user and administrator actions across the platform.":
     "ប្រវត្តិលម្អិតនៃសកម្មភាពរបស់អ្នកប្រើប្រាស់ និងអ្នកគ្រប់គ្រងលើប្រព័ន្ធ។",
   "Search by action, entity type, entity ID, user ID, or IP...":
-    "ស្វែងរកតាមសកម្មភាព ប្រភេទអង្គភាព លេខសម្គាល់ ឬ IP...",
+    "ស្វែងរក...",
   "Search by action, entity type, user ID, or IP...":
-    "ស្វែងរកតាមសកម្មភាព ប្រភេទអង្គភាព លេខសម្គាល់គណនី ឬ IP...",
+    "ស្វែងរក...",
   "Search by action, entity type, or actor...":
-    "ស្វែងរកតាមសកម្មភាព ប្រភេទអង្គភាព ឬអ្នកអនុវត្ត...",
+    "ស្វែងរក...",
   "All Actions": "គ្រប់សកម្មភាព",
   "Entity Type": "ប្រភេទអង្គភាព",
   "All Entity Types": "គ្រប់ប្រភេទអង្គភាព",
@@ -1159,10 +1159,10 @@ const km: Record<string, string> = {
   "Last successful synchronization:": "ការធ្វើសមកាលកម្មជោគជ័យចុងក្រោយ៖",
   "Provider:": "អ្នកផ្តល់សេវា៖",
   "User ID:": "លេខសម្គាល់អ្នកប្រើ៖",
-
+  
   // AI Configuration & Prompts
   "Search by name, key, description, model...":
-    "ស្វែងរកតាមឈ្មោះ កូនសោ ការពិពណ៌នា ម៉ូដែល...",
+    "ស្វែងរក...",
   "Failed to save AI configuration.": "មិនអាចរក្សាទុកការកំណត់ AI បានទេ។",
   "POST /api/v1/admin/ai/prompt-templates/{templateId}/versions":
     "POST /api/v1/admin/ai/prompt-templates/{templateId}/versions",
