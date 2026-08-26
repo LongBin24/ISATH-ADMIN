@@ -14,6 +14,8 @@ import {
   AdminNotificationQueryParams,
   NotificationDeliveryResponse,
   RetryNotificationDeliveriesRequest,
+  BroadcastNotificationPayload,
+  BroadcastNotificationResponse,
 } from "./types";
 
 function buildAdminNotificationQuery(params?: AdminNotificationQueryParams) {
@@ -76,6 +78,19 @@ export const notificationApi = baseApi.injectEndpoints({
       CreateAdminNotificationPayload
     >({
       query: (body) => ({ url: ENDPOINTS.NOTIFICATIONS, method: "POST", body }),
+      invalidatesTags: [{ type: API_TAGS.NOTIFICATION, id: "LIST" }],
+    }),
+
+    // 2b. POST /api/v1/admin/notifications/broadcast
+    broadcastAdminNotification: builder.mutation<
+      BroadcastNotificationResponse,
+      BroadcastNotificationPayload
+    >({
+      query: (body) => ({
+        url: ENDPOINTS.NOTIFICATIONS_BROADCAST,
+        method: "POST",
+        body,
+      }),
       invalidatesTags: [{ type: API_TAGS.NOTIFICATION, id: "LIST" }],
     }),
 
@@ -256,6 +271,7 @@ export const notificationApi = baseApi.injectEndpoints({
 export const {
   useGetAdminNotificationsQuery,
   useCreateAdminNotificationMutation,
+  useBroadcastAdminNotificationMutation,
   useRetryNotificationDeliveryMutation,
   useGetAdminNotificationByIdQuery,
   useGetAdminAlertRulesQuery,

@@ -1,5 +1,7 @@
 export const ENDPOINTS = {
   NOTIFICATIONS: "admin/notifications",
+  NOTIFICATIONS_BROADCAST: "admin/notifications/broadcast",
+  ADMIN_NOTIFICATIONS_BROADCAST: "admin/notifications/broadcast",
   NOTIFICATION_STATS: "notifications/stats",
   NOTIFICATION_PREFERENCES: "notifications/preferences",
   NOTIFICATION_MARK_READ: "notifications/mark-read",

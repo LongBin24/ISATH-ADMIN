@@ -20,6 +20,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "recharts",
+      "date-fns",
+      "framer-motion",
+      "@iconify/react",
+      "@reduxjs/toolkit",
+    ],
+  },
   async rewrites() {
     return [
       {
