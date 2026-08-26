@@ -1259,7 +1259,9 @@ const km: Record<string, string> = {
   "Unable to load gender distribution.": "មិនអាចផ្ទុកការបែងចែកយេនឌ័របានទេ។",
   "Enter a valid 3, 6, or 8 digit hex color.": "សូមបញ្ចូលកូដពណ៌ hex ត្រឹមត្រូវ (3, 6 ឬ 8 ខ្ទង់)។",
   "You do not have permission to access this Admin Dashboard.":
-    "អ្នកមិនមានសិទ្ធិចូលប្រើ Admin Dashboard នេះទេ។",
+  "អ្នកមិនមានសិទ្ធិចូលប្រើ Admin Dashboard នេះទេ។",
+  "TRANSFER_CREATE": "បង្កើតការផ្ទេរប្រាក់",
+  "TRANSFER": "ការផ្ទេរប្រាក់",
 };
 
 export function translateAdmin(locale: AdminLocale, text: string) {
