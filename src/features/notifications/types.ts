@@ -256,3 +256,28 @@ export type AdminNotificationPageResponse = PagedModelNotificationResponse;
 export type CreateAdminNotificationPayload = CreateAdminNotificationRequest;
 export type AdminAlertRuleItem = AlertRuleResponse;
 export type AdminAlertRulePageResponse = PagedModelAlertRuleResponse;
+
+// Broadcast Notification API models (POST /api/v1/admin/notifications/broadcast)
+export interface BroadcastNotificationRequest {
+  title: string;
+  message: string;
+  notificationType: AdminNotificationType;
+  sendEmail: boolean;
+  referenceType?: AdminReferenceType;
+  referenceId?: string;
+  actionUrl?: string;
+  metadata?: Record<string, unknown>;
+  expiresAt?: string;
+  channels?: NotificationChannel[];
+  userIds?: string[];
+}
+
+export interface BroadcastNotificationResponse {
+  totalRecipients: number;
+  notificationsCreated: number;
+  failedRecipients: number;
+  emailRequested: boolean;
+}
+
+export type BroadcastNotificationPayload = BroadcastNotificationRequest;
+

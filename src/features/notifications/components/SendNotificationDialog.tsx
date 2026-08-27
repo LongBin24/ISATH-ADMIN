@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { ChevronDown, ChevronUp, Send } from "lucide-react";
+import { ChevronDown, ChevronUp, Radio, Send, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { AdminUser } from "@/features/user-manager/types";
-import { useCreateAdminNotificationMutation } from "../api";
+import { useCreateAdminNotificationMutation, useBroadcastAdminNotificationMutation } from "../api";
 import { notificationTypeLabel, referenceTypeLabel } from "../presentation";
 import {
   ADMIN_NOTIFICATION_TYPES,
@@ -21,7 +21,10 @@ import {
 import NotificationUserSelector from "./NotificationUserSelector";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 
+type SendMode = "DIRECT" | "BROADCAST";
+
 interface FormState {
+  mode: SendMode;
   user: AdminUser | null;
   title: string;
   message: string;
@@ -34,6 +37,7 @@ interface FormState {
 }
 
 const INITIAL_FORM: FormState = {
+  mode: "DIRECT",
   user: null,
   title: "",
   message: "",
@@ -50,7 +54,10 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<Partial<Record<"user" | "title" | "message" | "channels", string>>>({});
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const [createNotification, { isLoading }] = useCreateAdminNotificationMutation();
+  const [createNotification, { isLoading: isDirectLoading }] = useCreateAdminNotificationMutation();
+  const [broadcastNotification, { isLoading: isBroadcastLoading }] = useBroadcastAdminNotificationMutation();
+
+  const isLoading = isDirectLoading || isBroadcastLoading;
 
   function reset() {
     setForm(INITIAL_FORM);
@@ -70,7 +77,7 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
 
   function validate() {
     const next: typeof errors = {};
-    if (!form.user) next.user = t("Select a recipient.");
+    if (form.mode === "DIRECT" && !form.user) next.user = t("Select a recipient.");
     if (!form.title.trim()) next.title = t("Title is required.");
     else if (form.title.trim().length > 200) next.title = t("Title must be 200 characters or fewer.");
     if (!form.message.trim()) next.message = t("Message is required.");
@@ -82,21 +89,42 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (!validate() || !form.user) return;
+    if (!validate()) return;
 
     try {
-      await createNotification({
-        userId: form.user.id,
-        title: form.title.trim(),
-        message: form.message.trim(),
-        notificationType: form.notificationType,
-        channels: form.channels,
-        referenceType: form.referenceType === "NONE" ? undefined : form.referenceType,
-        referenceId: form.referenceId.trim() || undefined,
-        actionUrl: form.actionUrl.trim() || undefined,
-        expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : undefined,
-      }).unwrap();
-      toast.success(t("Notification sent successfully."));
+      if (form.mode === "BROADCAST") {
+        const res = await broadcastNotification({
+          title: form.title.trim(),
+          message: form.message.trim(),
+          notificationType: form.notificationType,
+          sendEmail: form.channels.includes("EMAIL"),
+          channels: form.channels,
+          referenceType: form.referenceType === "NONE" ? undefined : form.referenceType,
+          referenceId: form.referenceId.trim() || undefined,
+          actionUrl: form.actionUrl.trim() || undefined,
+          expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : undefined,
+        }).unwrap();
+
+        const successMessage = t(
+          `Broadcast completed: ${res.notificationsCreated}/${res.totalRecipients} created (${res.failedRecipients} failed)`
+        );
+        toast.success(successMessage, { duration: 5000 });
+      } else {
+        if (!form.user) return;
+        await createNotification({
+          userId: form.user.id,
+          title: form.title.trim(),
+          message: form.message.trim(),
+          notificationType: form.notificationType,
+          channels: form.channels,
+          referenceType: form.referenceType === "NONE" ? undefined : form.referenceType,
+          referenceId: form.referenceId.trim() || undefined,
+          actionUrl: form.actionUrl.trim() || undefined,
+          expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : undefined,
+        }).unwrap();
+        toast.success(t("Notification sent successfully."));
+      }
+
       reset();
       onOpenChange(false);
     } catch (error) {
@@ -115,27 +143,82 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
     >
       <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto" onClose={() => onOpenChange(false)}>
         <DialogHeader>
-          <DialogTitle>{t("Send Notification")}</DialogTitle>
-          <DialogDescription>{t("Send a system notification to an iStash user.")}</DialogDescription>
+          <DialogTitle>{form.mode === "BROADCAST" ? t("Broadcast Notification") : t("Send Notification")}</DialogTitle>
+          <DialogDescription>
+            {form.mode === "BROADCAST"
+              ? t("Broadcast a system notification to all iStash users.")
+              : t("Send a system notification to an iStash user.")}
+          </DialogDescription>
         </DialogHeader>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
+          {/* Target Audience Mode Toggle */}
           <div className="space-y-2">
-            <Label className="text-base">{t("Recipient")}</Label>
-            <NotificationUserSelector
-              value={form.user}
-              onChange={(user) => {
-                setForm((current) => ({ ...current, user }));
-                setErrors((current) => ({ ...current, user: undefined }));
-              }}
-              allowClear={false}
-              placeholder={t("Search and select a recipient")}
-            />
-            {errors.user && <p className="text-sm text-destructive">{errors.user}</p>}
+            <Label className="text-base font-semibold text-slate-800 dark:text-slate-200">
+              {t("Delivery Mode")}
+            </Label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setForm((c) => ({ ...c, mode: "DIRECT" }))}
+                className={`flex items-center justify-center gap-2 rounded-2xl border p-3.5 text-xs font-bold transition-all duration-200 ${
+                  form.mode === "DIRECT"
+                    ? "border-[#003377] bg-[#003377]/5 text-[#003377] shadow-sm dark:border-[#FFC83D] dark:bg-[#FFC83D]/10 dark:text-[#FFC83D]"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400"
+                }`}
+              >
+                <User className="h-4 w-4" />
+                <span>{t("Direct Recipient")}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setForm((c) => ({ ...c, mode: "BROADCAST" }))}
+                className={`flex items-center justify-center gap-2 rounded-2xl border p-3.5 text-xs font-bold transition-all duration-200 ${
+                  form.mode === "BROADCAST"
+                    ? "border-[#003377] bg-[#003377]/5 text-[#003377] shadow-sm dark:border-[#FFC83D] dark:bg-[#FFC83D]/10 dark:text-[#FFC83D]"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400"
+                }`}
+              >
+                <Users className="h-4 w-4" />
+                <span>{t("Broadcast to All Users")}</span>
+              </button>
+            </div>
           </div>
 
+          {/* Direct Recipient Selector */}
+          {form.mode === "DIRECT" ? (
+            <div className="space-y-2">
+              <Label className="text-base">{t("Recipient")} <span className="text-red-500">*</span></Label>
+              <NotificationUserSelector
+                value={form.user}
+                onChange={(user) => {
+                  setForm((current) => ({ ...current, user }));
+                  setErrors((current) => ({ ...current, user: undefined }));
+                }}
+                allowClear={false}
+                placeholder={t("Search and select a recipient")}
+              />
+              {errors.user && <p className="text-sm text-destructive">{errors.user}</p>}
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4 dark:border-blue-900/40 dark:bg-blue-950/20">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#003377] text-white dark:bg-[#FFC83D] dark:text-[#003377]">
+                <Radio className="h-4 w-4 animate-pulse" />
+              </div>
+              <div className="text-xs">
+                <p className="font-bold text-[#003377] dark:text-[#FFC83D]">
+                  {t("Broadcast Mode Active")}
+                </p>
+                <p className="text-slate-600 dark:text-slate-400">
+                  {t("This notification will be delivered to all active users on the platform.")}
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="space-y-2">
-            <Label htmlFor="notification-title" className="text-base">{t("Title")}</Label>
+            <Label htmlFor="notification-title" className="text-base">{t("Title")} <span className="text-red-500">*</span></Label>
             <Input
               id="notification-title"
               value={form.title}
@@ -153,7 +236,7 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notification-message" className="text-base">{t("Message")}</Label>
+            <Label htmlFor="notification-message" className="text-base">{t("Message")} <span className="text-red-500">*</span></Label>
             <textarea
               id="notification-message"
               value={form.message}
@@ -242,7 +325,7 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
             <Button type="button" variant="outline" className="h-11 min-w-28 rounded-xl text-base" onClick={() => onOpenChange(false)}>{t("Cancel")}</Button>
             <Button type="submit" disabled={isLoading} className="h-11 min-w-44 rounded-xl bg-[#FFC83D] px-5 text-base font-semibold text-[#003377] hover:bg-[#f0ba33]">
               <Send className="mr-2 size-4" />
-              {isLoading ? t("Sending...") : t("Send Notification")}
+              {isLoading ? (form.mode === "BROADCAST" ? t("Broadcasting...") : t("Sending...")) : (form.mode === "BROADCAST" ? t("Broadcast Notification") : t("Send Notification"))}
             </Button>
           </DialogClose>
         </form>
