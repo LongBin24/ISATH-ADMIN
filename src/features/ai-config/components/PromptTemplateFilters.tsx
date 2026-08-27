@@ -59,7 +59,7 @@ export function PromptTemplateFilters({
             type="text"
             value={filters.search}
             onChange={(e) => onFilterChange("search", e.target.value)}
-            placeholder={t("Search ...")}
+            placeholder={t("Search Ai model ...")}
             className="h-11 rounded-xl pl-9 pr-8 text-sm"
           />
           {filters.search && (

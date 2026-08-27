@@ -70,7 +70,7 @@ export default function NotificationUserSelector({
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder={t("Search by name, username, or email...")}
+            placeholder={t("Search by name, username, or email..")}
             className="h-10 pl-9 text-base"
             autoFocus
           />

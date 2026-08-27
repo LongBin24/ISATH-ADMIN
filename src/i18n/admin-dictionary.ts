@@ -457,12 +457,9 @@ const km: Record<string, string> = {
   "Include Hidden": "រួមបញ្ចូលប្រភេទដែលលាក់",
   "Visible Only": "តែប្រភេទដែលបង្ហាញ",
   "Exclude Hidden": "មិនរួមបញ្ចូលដែលលាក់",
-  "Search by title, description, or user...":
-    "ស្វែងរកតាមចំណងជើង ការពិពណ៌នា ឬអ្នកប្រើប្រាស់...",
-  "Search by title, message, or user...":
-    "ស្វែងរកតាមចំណងជើង សារ ឬអ្នកប្រើប្រាស់...",
-  "Search by rule, user, or reference...":
-    "ស្វែងរកតាមច្បាប់ អ្នកប្រើប្រាស់ ឬឯកសារយោង...",
+  "Search user...": "ស្វែងរកអ្នកប្រើប្រាស់...",
+  "Search user, or title...": "ស្វែងរកអ្នកប្រើប្រាស់...",
+  "Search user, or reference...": "ស្វែងរកអ្នកប្រើប្រាស់ ឬឯកសារយោង...",
   System: "ប្រព័ន្ធ",
   Default: "លំនាំដើម",
   Custom: "ផ្ទាល់ខ្លួន",
@@ -636,7 +633,7 @@ const km: Record<string, string> = {
   "Claude Model": "ម៉ូដែល Claude",
   requests: "សំណើ",
   "Quick Module": "ម៉ូឌុលរហ័ស",
-
+  "Search Ai model ...": "ស្វែងរកAi model ...",
   // Prompt Templates
   "Prompt Templates": "ពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិត",
   "Model & Assistant Capabilities": "សមត្ថភាពម៉ូដែល និងជំនួយការ",
@@ -845,8 +842,7 @@ const km: Record<string, string> = {
   "Hide confirmed password": "លាក់ពាក្យសម្ងាត់ដែលបានបញ្ជាក់",
   "Creating...": "កំពុងបង្កើត...",
   "Create User": "បង្កើតអ្នកប្រើប្រាស់",
-  "Search by name, username, or email...":
-    "ស្វែងរកតាមឈ្មោះ ឈ្មោះអ្នកប្រើ ឬអ៊ីមែល...",
+  "Search user ...": "ស្វែងរកអ្នកប្រើប្រាស់ ...",
   Verification: "ការផ្ទៀងផ្ទាត់",
   Verified: "បានផ្ទៀងផ្ទាត់",
   "Not Verified": "មិនទាន់ផ្ទៀងផ្ទាត់",
@@ -1003,8 +999,7 @@ const km: Record<string, string> = {
   "From public contact form": "ពីទម្រង់ទំនាក់ទំនងសាធារណៈ",
   "Today's Messages": "សារថ្ងៃនេះ",
   "Received today": "ទទួលបានក្នុងថ្ងៃនេះ",
-  "Search by name, email, phone, or subject...":
-    "ស្វែងរកតាមឈ្មោះ អ៊ីមែល លេខទូរស័ព្ទ ឬប្រធានបទ...",
+  // "Search user...": "ស្វែងរកអ្នកប្រើប្រាស់ ...",
   "All User Types": "គ្រប់ប្រភេទអ្នកផ្ញើ",
   Guest: "ភ្ញៀវ",
   Sender: "អ្នកផ្ញើ",
@@ -1060,8 +1055,7 @@ const km: Record<string, string> = {
     "ប្រវត្តិលម្អិតនៃសកម្មភាពរបស់អ្នកប្រើប្រាស់ និងអ្នកគ្រប់គ្រងលើប្រព័ន្ធ។",
   "Search by action, entity type, entity ID, user ID, or IP...":
     "ស្វែងរកតាមសកម្មភាព ប្រភេទអង្គភាព លេខសម្គាល់ ឬ IP...",
-  "Search by action, entity type, user ID, or IP...":
-    "ស្វែងរកតាមសកម្មភាព ប្រភេទអង្គភាព លេខសម្គាល់គណនី ឬ IP...",
+  "Search user Id.​..": "ស្វែងរកលេខសម្គាល់គណនី...",
   "Search by action, entity type, or actor...":
     "ស្វែងរកតាមសកម្មភាព ប្រភេទអង្គភាព ឬអ្នកអនុវត្ត...",
   "All Actions": "គ្រប់សកម្មភាព",
@@ -1161,7 +1155,6 @@ const km: Record<string, string> = {
   "User ID:": "លេខសម្គាល់អ្នកប្រើ៖",
 
   // AI Configuration & Prompts
-  "Search...": "ស្វែងរក...",
   "Failed to save AI configuration.": "មិនអាចរក្សាទុកការកំណត់ AI បានទេ។",
   "POST /api/v1/admin/ai/prompt-templates/{templateId}/versions":
     "POST /api/v1/admin/ai/prompt-templates/{templateId}/versions",

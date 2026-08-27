@@ -93,7 +93,9 @@ function dateText(value?: string | null, exact = false) {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return exact ? format(date, "PPpp") : formatDistanceToNow(date, { addSuffix: true });
+  return exact
+    ? format(date, "PPpp")
+    : formatDistanceToNow(date, { addSuffix: true });
 }
 
 export function AuditLogManager() {
@@ -120,9 +122,21 @@ export function AuditLogManager() {
 
   const auditQuery = useGetAuditLogsQuery(queryParams);
   const totalQuery = useGetAuditLogsQuery({ page: 0, size: 1 });
-  const createQuery = useGetAuditLogsQuery({ action: "CREATE", page: 0, size: 1 });
-  const updateQuery = useGetAuditLogsQuery({ action: "UPDATE", page: 0, size: 1 });
-  const suspendQuery = useGetAuditLogsQuery({ action: "SUSPEND", page: 0, size: 1 });
+  const createQuery = useGetAuditLogsQuery({
+    action: "CREATE",
+    page: 0,
+    size: 1,
+  });
+  const updateQuery = useGetAuditLogsQuery({
+    action: "UPDATE",
+    page: 0,
+    size: 1,
+  });
+  const suspendQuery = useGetAuditLogsQuery({
+    action: "SUSPEND",
+    page: 0,
+    size: 1,
+  });
 
   const logs = auditQuery.data?.content ?? [];
   const totalElements = auditQuery.data?.totalElements ?? 0;
@@ -140,32 +154,32 @@ export function AuditLogManager() {
           item.entityId.toLowerCase().includes(term) ||
           (item.ipAddress && item.ipAddress.toLowerCase().includes(term)) ||
           (item.userId && item.userId.toLowerCase().includes(term)) ||
-          item.id.toLowerCase().includes(term)
+          item.id.toLowerCase().includes(term),
       );
     }
     if (actionFilter !== "ALL") {
       result = result.filter(
-        (item) => item.action.toUpperCase() === actionFilter.toUpperCase()
+        (item) => item.action.toUpperCase() === actionFilter.toUpperCase(),
       );
     }
     if (entityTypeFilter !== "ALL") {
       result = result.filter(
         (item) =>
-          item.entityType.toUpperCase() === entityTypeFilter.toUpperCase()
+          item.entityType.toUpperCase() === entityTypeFilter.toUpperCase(),
       );
     }
     return result;
   }, [logs, search, actionFilter, entityTypeFilter]);
 
   const hasFilters = Boolean(
-    search.trim() || actionFilter !== "ALL" || entityTypeFilter !== "ALL"
+    search.trim() || actionFilter !== "ALL" || entityTypeFilter !== "ALL",
   );
 
   const pageNumbers = useMemo(() => {
     const start = Math.max(0, Math.min(safePage - 2, totalPages - 5));
     return Array.from(
       { length: Math.min(5, totalPages) },
-      (_, index) => start + index
+      (_, index) => start + index,
     );
   }, [safePage, totalPages]);
 
@@ -200,7 +214,7 @@ export function AuditLogManager() {
           </h1>
           <p className="mt-1 max-w-3xl text-sm text-muted-foreground font-normal">
             {t(
-              "Track, monitor, and review all administrative and system events, mutations, and security activities."
+              "Track, monitor, and review all administrative and system events, mutations, and security activities.",
             )}
           </p>
         </div>
@@ -250,7 +264,7 @@ export function AuditLogManager() {
           </CardTitle>
           <p className="text-sm text-muted-foreground font-normal">
             {t(
-              "Comprehensive history of user and administrator actions across the platform."
+              "Comprehensive history of user and administrator actions across the platform.",
             )}
           </p>
         </CardHeader>
@@ -265,9 +279,7 @@ export function AuditLogManager() {
                   setSearch(event.target.value);
                   setPage(0);
                 }}
-                placeholder={t(
-                  "Search by action, entity type, user ID, or IP..."
-                )}
+                placeholder={t("Search user Id.​..")}
                 className="h-11 rounded-xl pl-9 pr-8 text-sm"
               />
               {search && (
@@ -477,7 +489,9 @@ function StatCard({
         <div>
           <p className="text-sm font-medium text-muted-foreground">{label}</p>
           <p className="mt-1 text-3xl font-bold">{value}</p>
-          <p className="mt-1 text-sm text-muted-foreground font-normal">{helper}</p>
+          <p className="mt-1 text-sm text-muted-foreground font-normal">
+            {helper}
+          </p>
         </div>
       </CardContent>
     </Card>
@@ -502,12 +516,16 @@ function FilterSelect({
         className={cn(
           "h-11 rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D] min-w-[150px]",
           isSelected &&
-            "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
+            "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
         )}
       >
         <SelectValue placeholder={label} value={options[value]} />
       </SelectTrigger>
-      <SelectContent value={value} onValueChange={onChange} className="rounded-xl">
+      <SelectContent
+        value={value}
+        onValueChange={onChange}
+        className="rounded-xl"
+      >
         {Object.entries(options).map(([key, labelText]) => (
           <SelectItem key={key} value={key}>
             {labelText}
@@ -591,13 +609,7 @@ function EntityTypeBadge({ entityType }: { entityType: string }) {
   );
 }
 
-function AuditLogRow({
-  item,
-  onView,
-}: {
-  item: AuditLog;
-  onView: () => void;
-}) {
+function AuditLogRow({ item, onView }: { item: AuditLog; onView: () => void }) {
   const { t } = useAdminI18n();
 
   return (
@@ -684,10 +696,14 @@ function AuditDetailSheet({
 }) {
   const { t } = useAdminI18n();
 
-  const { data: detailData, isLoading, isError, refetch } =
-    useGetAuditLogByIdQuery(log?.id ?? "", {
-      skip: !log?.id || !open,
-    });
+  const {
+    data: detailData,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetAuditLogByIdQuery(log?.id ?? "", {
+    skip: !log?.id || !open,
+  });
 
   const activeLog = detailData || log;
 
@@ -700,7 +716,7 @@ function AuditDetailSheet({
     },
     {
       skip: !activeLog?.entityId || !open,
-    }
+    },
   );
 
   if (!open) return null;
@@ -715,7 +731,9 @@ function AuditDetailSheet({
   const copyPayload = (payload: any, label: string) => {
     if (payload !== undefined && payload !== null) {
       navigator.clipboard.writeText(
-        typeof payload === "string" ? payload : JSON.stringify(payload, null, 2)
+        typeof payload === "string"
+          ? payload
+          : JSON.stringify(payload, null, 2),
       );
       toast.success(`${label} ${t("Copied!")}`);
     }
@@ -865,7 +883,8 @@ function AuditDetailSheet({
             </section>
 
             {/* State Changes & Payload (oldValues / newValues) */}
-            {(activeLog.oldValues !== undefined || activeLog.newValues !== undefined) && (
+            {(activeLog.oldValues !== undefined ||
+              activeLog.newValues !== undefined) && (
               <section className="rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
                 <div className="mb-3 flex items-center justify-between">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -888,7 +907,9 @@ function AuditDetailSheet({
                       {activeLog.oldValues && (
                         <button
                           type="button"
-                          onClick={() => copyPayload(activeLog.oldValues, "Before payload")}
+                          onClick={() =>
+                            copyPayload(activeLog.oldValues, "Before payload")
+                          }
                           className="text-[10px] font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                         >
                           {t("Copy")}
@@ -918,7 +939,9 @@ function AuditDetailSheet({
                       {activeLog.newValues && (
                         <button
                           type="button"
-                          onClick={() => copyPayload(activeLog.newValues, "After payload")}
+                          onClick={() =>
+                            copyPayload(activeLog.newValues, "After payload")
+                          }
                           className="text-[10px] font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                         >
                           {t("Copy")}
@@ -949,7 +972,10 @@ function AuditDetailSheet({
                     <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                       {t("Entity Mutation History")}
                     </p>
-                    <Badge variant="secondary" className="px-2 py-0.5 text-[10px] font-semibold">
+                    <Badge
+                      variant="secondary"
+                      className="px-2 py-0.5 text-[10px] font-semibold"
+                    >
                       {entityLogs.totalElements} {t("events")}
                     </Badge>
                   </div>
@@ -965,7 +991,7 @@ function AuditDetailSheet({
                           "flex items-center justify-between rounded-xl border p-3 text-xs transition",
                           isCurrent
                             ? "border-[#003377]/40 bg-[#003377]/5 dark:border-[#FFC83D]/40 dark:bg-[#FFC83D]/10"
-                            : "border-slate-200/70 bg-slate-50/40 hover:bg-slate-50/80 dark:border-slate-800 dark:bg-slate-800/40"
+                            : "border-slate-200/70 bg-slate-50/40 hover:bg-slate-50/80 dark:border-slate-800 dark:bg-slate-800/40",
                         )}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
@@ -1034,8 +1060,14 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 py-14 text-center">
       <ShieldAlert className="size-8 text-destructive" />
       <p className="text-lg font-semibold">{t("Unable to load audit logs")}</p>
-      <p className="text-sm text-muted-foreground font-normal">{t("Please try again.")}</p>
-      <Button variant="outline" onClick={onRetry} className="text-sm font-medium">
+      <p className="text-sm text-muted-foreground font-normal">
+        {t("Please try again.")}
+      </p>
+      <Button
+        variant="outline"
+        onClick={onRetry}
+        className="text-sm font-medium"
+      >
         <RefreshCw className="mr-2 size-3.5" />
         {t("Retry")}
       </Button>
@@ -1059,11 +1091,19 @@ function EmptyState({
       </p>
       <p className="text-xs text-muted-foreground font-normal">
         {filtered
-          ? t("No audit log events match the current filter or search criteria.")
-          : t("Administrative and mutation events will be recorded and displayed here.")}
+          ? t(
+              "No audit log events match the current filter or search criteria.",
+            )
+          : t(
+              "Administrative and mutation events will be recorded and displayed here.",
+            )}
       </p>
       {filtered && (
-        <Button variant="outline" onClick={onReset} className="text-xs font-medium">
+        <Button
+          variant="outline"
+          onClick={onReset}
+          className="text-xs font-medium"
+        >
           {t("Reset Filters")}
         </Button>
       )}
