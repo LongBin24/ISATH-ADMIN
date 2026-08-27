@@ -483,9 +483,7 @@ const km: Record<string, string> = {
   "Unable to load categories.": "មិនអាចទាញយកប្រភេទបានទេ។",
   "No categories found": "រកមិនឃើញប្រភេទទេ",
   "No categories yet": "មិនទាន់មានប្រភេទទេ",
-
-  "Search by category name or keyword...": "ស្វែងរកប្រភេទ...",
-
+  "Search category...": "ស្វែងរកប្រភេទ...",
   "Search, organize, and manage the category hierarchy.":
     "ស្វែងរក រៀបចំ និងគ្រប់គ្រងឋានានុក្រមនៃប្រភេទ។",
   "Subcategory of": "ប្រភេទរងនៃ",
@@ -521,7 +519,7 @@ const km: Record<string, string> = {
   "Available currencies": "រូបិយប័ណ្ណដែលមាន",
   "Enabled in iStash": "បានបើកក្នុង iStash",
   "Currently disabled": "បានបិទបច្ចុប្បន្ន",
-  "Search by currency code or name...": "ស្វែងរក...",
+  "Search currency...": "ស្វែងរករូបិយប័ណ្ណ...",
   "Manage which synchronized currencies are enabled in iStash.":
     "គ្រប់គ្រងរូបិយប័ណ្ណដែលបានធ្វើសមកាលកម្មក្នុង iStash។",
   "Unable to load currency information.": "មិនអាចទាញយកព័ត៌មានរូបិយប័ណ្ណបានទេ។",
@@ -636,6 +634,7 @@ const km: Record<string, string> = {
   requests: "សំណើ",
   "Quick Module": "ម៉ូឌុលរហ័ស",
   "Search Ai model ...": "ស្វែងរកAi model ...",
+
   // Prompt Templates
   "Prompt Templates": "ពាក្យបញ្ជាបញ្ញាសិប្បនិម្មិត",
   "Model & Assistant Capabilities": "សមត្ថភាពម៉ូដែល និងជំនួយការ",
@@ -668,8 +667,7 @@ const km: Record<string, string> = {
   "Localized templates": "គំរូតាមមូលដ្ឋាន",
   "English Prompts (en)": "សារបញ្ជាភាសាអង់គ្លេស (en)",
   "Standard templates": "គំរូបទដ្ឋាន",
-  "Search by template name, key, or description...":
-    "ស្វែងរក...",
+  "Search by template name, key, or description...": "ស្វែងរក...",
   "Task Type": "ប្រភេទកិច្ចការ",
   "All Tasks": "កិច្ចការទាំងអស់",
   "Category Prediction": "ការទស្សន៍ទាយប្រភេទ",
@@ -1058,8 +1056,7 @@ const km: Record<string, string> = {
   "Search by action, entity type, entity ID, user ID, or IP...":
     "ស្វែងរកតាមសកម្មភាព ប្រភេទអង្គភាព លេខសម្គាល់ ឬ IP...",
   "Search user Id.​..": "ស្វែងរកលេខសម្គាល់គណនី...",
-  "Search by action, entity type, or actor...":
-    "ស្វែងរក...",
+  "Search by action, entity type, or actor...": "ស្វែងរក...",
   "All Actions": "គ្រប់សកម្មភាព",
   "Entity Type": "ប្រភេទអង្គភាព",
   "All Entity Types": "គ្រប់ប្រភេទអង្គភាព",
@@ -1155,7 +1152,7 @@ const km: Record<string, string> = {
   "Last successful synchronization:": "ការធ្វើសមកាលកម្មជោគជ័យចុងក្រោយ៖",
   "Provider:": "អ្នកផ្តល់សេវា៖",
   "User ID:": "លេខសម្គាល់អ្នកប្រើ៖",
-  
+
   // AI Configuration & Prompts
   "Failed to save AI configuration.": "មិនអាចរក្សាទុកការកំណត់ AI បានទេ។",
   "POST /api/v1/admin/ai/prompt-templates/{templateId}/versions":
@@ -1230,6 +1227,9 @@ const km: Record<string, string> = {
     "មិនមានការជូនដំណឹងដែលត្រូវនឹងតម្រងបច្ចុប្បន្នទេ។",
   DAILY_REMINDER: "ការរំឭកប្រចាំថ្ងៃ",
   BUDGET_WARNING: "ការព្រមានថវិកា",
+   "Wallet": "កាបូប",
+  "Wallet Invitation": "ប្រើកាបូបរួម",
+  "Transaction": "ប្រតិបត្តិការ",
 
   // Audit Logs
   CREATE: "បង្កើត",
