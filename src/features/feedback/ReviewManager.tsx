@@ -193,9 +193,9 @@ function initials(user?: AdminUser) {
 }
 
 function dateText(value?: string | null, exact = false) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
+  if (Number.isNaN(date.getTime())) return "N/A";
   return exact
     ? format(date, "PPp")
     : formatDistanceToNow(date, { addSuffix: true });
@@ -356,25 +356,25 @@ export default function ReviewManager() {
             <StatCard
               icon={MessageSquareText}
               label={t("Total Reviews")}
-              value={totalQuery.data?.totalElements ?? "—"}
+              value={totalQuery.data?.totalElements ?? "N/A"}
               helper={t("User submissions")}
             />
             <StatCard
               icon={Clock3}
               label={t("Pending")}
-              value={pendingQuery.data?.totalElements ?? "—"}
+              value={pendingQuery.data?.totalElements ?? "N/A"}
               helper={t("Awaiting review")}
             />
             <StatCard
               icon={CircleDot}
               label={t("In Review")}
-              value={inReviewQuery.data?.totalElements ?? "—"}
+              value={inReviewQuery.data?.totalElements ?? "N/A"}
               helper={t("Currently handled")}
             />
             <StatCard
               icon={CircleCheck}
               label={t("Resolved")}
-              value={resolvedQuery.data?.totalElements ?? "—"}
+              value={resolvedQuery.data?.totalElements ?? "N/A"}
               helper={t("Completed reviews")}
             />
           </>
@@ -765,7 +765,7 @@ function Rating({
           detailed ? "text-base font-medium" : "text-base font-semibold"
         }
       >
-        {value == null ? "—" : detailed ? `${value} / 5` : value}
+        {value == null ? "N/A" : detailed ? `${value} / 5` : value}
       </span>
     </div>
   );
@@ -818,11 +818,13 @@ function ReviewRow({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
+              type="button"
               variant="ghost"
               size="icon"
               aria-label={`${review.title} actions`}
+              className="size-8.5 rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
             >
-              <MoreHorizontal className="size-4" />
+              <MoreHorizontal className="size-4.5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

@@ -91,9 +91,9 @@ function getInitials(name: string): string {
 }
 
 function dateText(value?: string | null, exact = false) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
+  if (Number.isNaN(date.getTime())) return "N/A";
   return exact
     ? format(date, "PPp")
     : formatDistanceToNow(date, { addSuffix: true });
@@ -246,13 +246,13 @@ export function ContactUsManager() {
             <StatCard
               icon={UserCheck}
               label={t("Registered Users")}
-              value={registeredQuery.data?.totalElements ?? "—"}
+              value={registeredQuery.data?.totalElements ?? "N/A"}
               helper={t("From logged-in accounts")}
             />
             <StatCard
               icon={UserX}
               label={t("Guest Inquiries")}
-              value={guestQuery.data?.totalElements ?? "—"}
+              value={guestQuery.data?.totalElements ?? "N/A"}
               helper={t("From public contact form")}
             />
             <StatCard
@@ -603,7 +603,7 @@ function ContactRow({
             {item.phone}
           </a>
         ) : (
-          "—"
+          "N/A"
         )}
       </TableCell>
       <TableCell className="py-4">

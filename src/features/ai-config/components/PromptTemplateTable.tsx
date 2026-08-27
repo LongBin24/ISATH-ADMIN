@@ -61,7 +61,7 @@ export function PromptTemplateTable({
   const [activateTemplate] = useActivatePromptTemplateMutation();
 
   function formatDate(val?: string | null) {
-    if (!val) return "—";
+    if (!val) return "N/A";
     try {
       const date = new Date(val);
       return format(date, "MMM dd, yyyy");
@@ -170,7 +170,7 @@ export function PromptTemplateTable({
                       variant="outline"
                       className="rounded-lg border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300"
                     >
-                      {tmpl.taskType ? t(tmpl.taskType) : "—"}
+                      {tmpl.taskType ? t(tmpl.taskType) : "N/A"}
                     </Badge>
                     {tmpl.templateScope && (
                       <p className="text-xs font-normal text-muted-foreground">
@@ -219,7 +219,7 @@ export function PromptTemplateTable({
                         : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
                     }`}
                   >
-                    {tmpl.templateStatus ? t(tmpl.templateStatus) : "—"}
+                    {tmpl.templateStatus ? t(tmpl.templateStatus) : "N/A"}
                   </Badge>
                 </TableCell>
 
@@ -246,9 +246,9 @@ export function PromptTemplateTable({
                       <DropdownMenuTrigger asChild>
                         <button
                           type="button"
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground transition-all duration-150 hover:border-[#003377] hover:bg-[#003377]/10 hover:text-[#003377] active:scale-95 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/20 dark:hover:text-[#FFC83D]"
+                          className="inline-flex size-8.5 items-center justify-center rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] active:scale-95 dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
                         >
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreHorizontal className="size-4.5" />
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48 rounded-2xl p-1.5 font-google-sans dark:border-slate-800 dark:bg-slate-900">

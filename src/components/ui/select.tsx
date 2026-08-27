@@ -77,7 +77,7 @@ export const SelectTrigger = React.forwardRef<
       aria-expanded={open}
       aria-haspopup="listbox"
       className={cn(
-        "flex h-10 w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-base text-foreground shadow-sm outline-none transition-colors hover:border-primary/40 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-10 w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-base text-foreground shadow-sm outline-none transition-colors hover:border-[#003377] focus-visible:border-[#003377] focus-visible:ring-1 focus-visible:ring-[#003377]/30 dark:hover:border-[#FFC83D] dark:focus-visible:border-[#FFC83D] dark:focus-visible:ring-[#FFC83D]/30 disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       onClick={(event) => {

@@ -40,6 +40,8 @@ export function DialogContent({
 }: React.HTMLAttributes<HTMLDivElement> & { onClose?: () => void }) {
   return (
     <div
+      role="dialog"
+      aria-modal="true"
       className={cn(
         "admin-readable relative w-full max-w-xl rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl dark:shadow-black/40 font-google-sans",
         className

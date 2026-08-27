@@ -20,6 +20,7 @@ import {
 } from "../types";
 import NotificationUserSelector from "./NotificationUserSelector";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { cn } from "@/lib/utils";
 
 type SendMode = "DIRECT" | "BROADCAST";
 
@@ -246,7 +247,12 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
               }}
               rows={5}
               maxLength={2000}
-              className="w-full rounded-xl border border-input bg-background px-3 py-3 text-base leading-6 text-foreground shadow-sm outline-none focus:ring-2 focus:ring-ring"
+              className={cn(
+                "w-full rounded-xl border bg-background px-3 py-3 text-base leading-6 text-foreground shadow-sm outline-none transition focus-visible:outline-none",
+                errors.message
+                  ? "border-destructive focus:border-destructive focus-visible:border-destructive focus:ring-1 focus:ring-destructive/30"
+                  : "border-input focus:border-[#003377] focus-visible:border-[#003377] focus:ring-1 focus:ring-[#003377]/30 dark:focus:border-[#FFC83D] dark:focus-visible:border-[#FFC83D] dark:focus:ring-[#FFC83D]/30"
+              )}
             />
             <div className="flex justify-between gap-3 text-sm">
               <span className="text-destructive">{errors.message}</span>

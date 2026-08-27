@@ -101,13 +101,13 @@ export default function UserFilterToolbar({
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           placeholder={t("Search user...")}
-          className ="-xl pl-9 pr-8 text-sm"
+          className="h-11 rounded-xl pl-9 pr-8 text-sm focus-visible:border-[#003377] dark:focus-visible:border-[#FFC83D]"
         />
         {searchInput && (
           <button
             type="button"
             onClick={() => {
-              setSearchInput(" m");
+              setSearchInput("");
               onFiltersChange({ ...filters, query: "" });
             }}
             className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"

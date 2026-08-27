@@ -27,8 +27,8 @@ const REVIEW_TYPES: Record<ReviewType, string> = { SUGGESTION: "Suggestion", BUG
 const REVIEW_STATUS: Record<ReviewStatus, string> = { PENDING: "Pending", IN_REVIEW: "In Review", RESOLVED: "Resolved", CLOSED: "Closed" };
 const NOTIFICATION_TYPES: Record<string, string> = { DAILY_REMINDER: "Daily Reminder", BUDGET_WARNING: "Budget Warning", SAVINGS_REMINDER: "Savings Reminder", RECURRING_REMINDER: "Recurring Reminder", MONTHLY_SUMMARY: "Monthly Summary" };
 
-function relative(value?: string | null) { if (!value) return "—"; const date = new Date(value); return Number.isNaN(date.getTime()) ? "—" : formatDistanceToNow(date, { addSuffix: true }); }
-function exact(value?: string | null) { if (!value) return "—"; const date = new Date(value); return Number.isNaN(date.getTime()) ? "—" : format(date, "PPp"); }
+function relative(value?: string | null) { if (!value) return "N/A"; const date = new Date(value); return Number.isNaN(date.getTime()) ? "N/A" : formatDistanceToNow(date, { addSuffix: true }); }
+function exact(value?: string | null) { if (!value) return "N/A"; const date = new Date(value); return Number.isNaN(date.getTime()) ? "N/A" : format(date, "PPp"); }
 function name(user?: AdminUser) { return user?.displayName || `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || user?.username || "User"; }
 function greeting() { const hour = new Date().getHours(); return hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening"; }
 
@@ -131,7 +131,7 @@ function KpiCard({ tone, icon: Icon, title, value, loading, error, description, 
               <p className="mt-1 text-sm text-destructive">{t("Unavailable")}</p>
             ) : (
               <p className={`mt-1 text-3xl font-bold tracking-tight card-number ${styles.value}`}>
-                {value?.toLocaleString() ?? "—"}
+                {value?.toLocaleString() ?? "N/A"}
               </p>
             )}
             <p className="mt-2 text-sm text-muted-foreground font-normal">{description}</p>
@@ -375,7 +375,7 @@ function SystemHealth({ data, loading, error, retry }: { data: Provider; loading
                 label={t("Currencies Received")}
                 value={
                   <span className="text-sm font-bold text-foreground">
-                    {data.currenciesReceived?.toLocaleString() ?? "—"}
+                    {data.currenciesReceived?.toLocaleString() ?? "N/A"}
                   </span>
                 }
               />
@@ -384,7 +384,7 @@ function SystemHealth({ data, loading, error, retry }: { data: Provider; loading
                 label={t("Rates Updated")}
                 value={
                   <span className="text-sm font-bold text-foreground">
-                    {data.ratesUpdated?.toLocaleString() ?? "—"}
+                    {data.ratesUpdated?.toLocaleString() ?? "N/A"}
                   </span>
                 }
               />
@@ -468,7 +468,7 @@ function AttentionCard({ tone, icon: Icon, title, value, loading, description, h
             </div>
             <p className="mt-5 text-sm font-semibold text-foreground md:text-base">{title}</p>
             <p className={`mt-2 text-3xl font-bold tracking-tight card-number ${styles.value}`}>
-              {typeof value === "number" ? value.toLocaleString() : value ?? "—"}
+              {typeof value === "number" ? value.toLocaleString() : value ?? "N/A"}
             </p>
             <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground font-normal">
               <span className={`size-2 rounded-full ${tone === "emerald" ? "bg-emerald-500" : tone === "rose" ? "bg-rose-500" : "bg-amber-500"}`} />

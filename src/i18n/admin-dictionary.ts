@@ -1062,6 +1062,8 @@ const km: Record<string, string> = {
   "All Entity Types": "គ្រប់ប្រភេទអង្គភាព",
   "Entity ID": "លេខសម្គាល់អង្គភាព",
   "Actor / User ID": "អ្នកអនុវត្ត / លេខសម្គាល់គណនី",
+  "Search by action, entity, user, or IP...":
+    "ស្វែងរកតាមសកម្មភាព ប្រភេទអង្គភាព អ្នកប្រើប្រាស់ ឬ IP...",
   "IP Address": "អាសយដ្ឋាន IP",
   Timestamp: "ពេលវេលា",
   "audit logs": "របាយការណ៍សកម្មភាព",

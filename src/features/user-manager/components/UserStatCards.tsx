@@ -38,7 +38,7 @@ function StatCard({ icon: Icon, label, value, helperText, iconClassName, isLoadi
             </p>
           ) : (
             <p className="text-3xl font-semibold text-foreground">
-              {value !== null ? value.toLocaleString() : "—"}
+              {value !== null ? value.toLocaleString() : "N/A"}
             </p>
           )}
           <p className="mt-1 text-sm font-medium text-foreground">{t(label)}</p>

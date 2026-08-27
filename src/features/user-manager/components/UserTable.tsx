@@ -104,7 +104,7 @@ export default function UserTable({ users, isLoading, onViewDetails, onSuspend, 
                     <OnboardingBadge completed={user.onboardingCompleted} />
                   </TableCell>
                   <TableCell className="py-3.5 text-sm text-muted-foreground">
-                    {user.createdAt ? format(new Date(user.createdAt), "MMM d, yyyy") : "—"}
+                    {user.createdAt ? format(new Date(user.createdAt), "MMM d, yyyy") : "N/A"}
                   </TableCell>
                   <TableCell className="py-3.5 text-right" onClick={(e) => e.stopPropagation()}>
                     <UserRowActions

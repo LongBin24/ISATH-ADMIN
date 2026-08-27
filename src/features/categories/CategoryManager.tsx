@@ -182,9 +182,9 @@ function categoryTypeValue(type?: string): FormState["categoryType"] {
 }
 
 function exactDate(value?: string | null) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : format(date, "PPp");
+  return Number.isNaN(date.getTime()) ? "N/A" : format(date, "PPp");
 }
 
 function errorMessage(error: unknown, fallback: string) {
@@ -393,25 +393,25 @@ export default function CategoryManager() {
             <StatCard
               icon={Tags}
               label={t("Total Categories")}
-              value={totalQuery.data?.totalElements ?? "—"}
+              value={totalQuery.data?.totalElements ?? "N/A"}
               helper={t("All categories")}
             />
             <StatCard
               icon={CircleDollarSign}
               label={t("Income")}
-              value={incomeQuery.data?.totalElements ?? "—"}
+              value={incomeQuery.data?.totalElements ?? "N/A"}
               helper={t("Income categories")}
             />
             <StatCard
               icon={WalletCards}
               label={t("Expense")}
-              value={expenseQuery.data?.totalElements ?? "—"}
+              value={expenseQuery.data?.totalElements ?? "N/A"}
               helper={t("Expense categories")}
             />
             <StatCard
               icon={ShieldCheck}
               label={t("System Categories")}
-              value={systemQuery.data?.totalElements ?? "—"}
+              value={systemQuery.data?.totalElements ?? "N/A"}
               helper={t("Managed by iStash")}
             />
           </>
@@ -865,7 +865,7 @@ function CategoryRow({
               {category.name}
             </p>
             <p className="text-sm text-muted-foreground">
-              {category.categoryKey || "—"}
+              {category.categoryKey || "N/A"}
             </p>
           </div>
         </div>
@@ -892,11 +892,13 @@ function CategoryRow({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
+              type="button"
               size="icon"
               variant="ghost"
               aria-label={`${category.name} actions`}
+              className="size-8.5 rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
             >
-              <MoreHorizontal className="size-4" />
+              <MoreHorizontal className="size-4.5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -984,7 +986,7 @@ function CategoryDetailSheet({
                 <h3 className="text-2xl font-semibold">{category.name}</h3>
               </div>
               <p className="text-base text-muted-foreground">
-                {category.categoryKey || "—"}
+                {category.categoryKey || "N/A"}
               </p>
             </div>
           </div>
@@ -1003,7 +1005,7 @@ function CategoryDetailSheet({
             />
             <Detail
               label={t("Category Key")}
-              value={category.categoryKey || "—"}
+              value={category.categoryKey || "N/A"}
             />
             <Detail
               label={t("Default Category")}
@@ -1023,7 +1025,7 @@ function CategoryDetailSheet({
               label={t("Icon")}
               value={category.icon || "Fallback icon"}
             />
-            <Detail label={t("Color")} value={category.color || "—"} />
+            <Detail label={t("Color")} value={category.color || "N/A"} />
           </DetailSection>
           <DetailSection title={t("Timeline")}>
             <Detail

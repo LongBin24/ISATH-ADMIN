@@ -113,8 +113,14 @@ export default function NotificationTable({
                   <TableCell className="py-3.5 text-right" onClick={(event) => event.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button type="button" variant="ghost" size="icon" aria-label="Notification actions">
-                          <MoreHorizontal className="size-4" />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Notification actions"
+                          className="size-8.5 rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
+                        >
+                          <MoreHorizontal className="size-4.5" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>

@@ -37,6 +37,8 @@ export function AlertDialogContent({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
+      role="alertdialog"
+      aria-modal="true"
       className={cn(
         "w-full rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl font-google-sans",
         className

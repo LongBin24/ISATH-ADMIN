@@ -123,15 +123,15 @@ function initials(user?: AdminUser) {
   );
 }
 function exactDate(value?: string | null) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : format(date, "PPp");
+  return Number.isNaN(date.getTime()) ? "N/A" : format(date, "PPp");
 }
 function relativeDate(value?: string | null) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
   return Number.isNaN(date.getTime())
-    ? "—"
+    ? "N/A"
     : formatDistanceToNow(date, { addSuffix: true });
 }
 function friendlyEnum(value?: string | null) {
@@ -140,7 +140,7 @@ function friendlyEnum(value?: string | null) {
         .toLowerCase()
         .replaceAll("_", " ")
         .replace(/\b\w/g, (letter) => letter.toUpperCase())
-    : "—";
+    : "N/A";
 }
 
 export default function AlertRuleManager() {
@@ -301,25 +301,25 @@ export default function AlertRuleManager() {
             <StatCard
               icon={BellRing}
               label={t("Total Rules")}
-              value={totalQuery.data?.page.totalElements ?? "—"}
+              value={totalQuery.data?.page.totalElements ?? "N/A"}
               helper={t("All alert rules")}
             />
             <StatCard
               icon={CircleCheck}
               label={t("Enabled")}
-              value={enabledQuery.data?.page.totalElements ?? "—"}
+              value={enabledQuery.data?.page.totalElements ?? "N/A"}
               helper={t("Currently active")}
             />
             <StatCard
               icon={ShieldAlert}
               label={t("Critical")}
-              value={criticalQuery.data?.page.totalElements ?? "—"}
+              value={criticalQuery.data?.page.totalElements ?? "N/A"}
               helper={t("High-priority rules")}
             />
             <StatCard
               icon={TriangleAlert}
               label={t("Warning")}
-              value={warningQuery.data?.page.totalElements ?? "—"}
+              value={warningQuery.data?.page.totalElements ?? "N/A"}
               helper={t("Warning-level rules")}
             />
           </>
@@ -847,7 +847,7 @@ function RuleRow({
             <TooltipContent>{exactDate(rule.nextTriggerAt)}</TooltipContent>
           </Tooltip>
         ) : (
-          "—"
+          "N/A"
         )}
       </TableCell>
       <TableCell
@@ -857,11 +857,13 @@ function RuleRow({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
+              type="button"
               variant="ghost"
               size="icon"
               aria-label={`${rule.ruleName} actions`}
+              className="size-8.5 rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
             >
-              <MoreHorizontal className="size-4" />
+              <MoreHorizontal className="size-4.5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

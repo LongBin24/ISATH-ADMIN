@@ -64,7 +64,7 @@ export default function FeedbackPage() {
           <div className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input value={search} onChange={(event) => setSearch(event.target.value)} type="search" placeholder="ស្វែងរកមតិកែលម្អ…" className="w-full rounded-3xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-base text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100" />
+              <input value={search} onChange={(event) => setSearch(event.target.value)} type="search" placeholder="ស្វែងរកមតិកែលម្អ…" className="w-full rounded-3xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-base text-slate-800 outline-none transition hover:border-[#003377] focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D] dark:focus:ring-[#FFC83D]/25" />
             </div>
             <div className="min-w-0">
               <FeedbackTabs tabs={feedbackTabs} activeTab={activeTab} onChange={setActiveTab} />

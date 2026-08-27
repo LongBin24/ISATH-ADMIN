@@ -234,7 +234,7 @@ function ProviderCard({
         <div className="grid gap-4 rounded-2xl bg-muted/40 p-4 sm:grid-cols-2 lg:grid-cols-3">
           <ProviderMetric
             label={t("Provider")}
-            value={provider.provider || "—"}
+            value={provider.provider || "N/A"}
           />
           <ProviderMetric
             label={t("Last Attempt")}
@@ -246,11 +246,11 @@ function ProviderCard({
           />
           <ProviderMetric
             label={t("Currencies Received")}
-            value={provider.currenciesReceived?.toLocaleString() ?? "—"}
+            value={provider.currenciesReceived?.toLocaleString() ?? "N/A"}
           />
           <ProviderMetric
             label={t("Rates Updated")}
-            value={provider.ratesUpdated?.toLocaleString() ?? "—"}
+            value={provider.ratesUpdated?.toLocaleString() ?? "N/A"}
           />
           <ProviderMetric
             label={t("Data Status")}
@@ -534,19 +534,19 @@ export default function CurrencyManager() {
             <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-4">
               <ProviderMetric
                 label={t("Currencies Received")}
-                value={syncResult.currenciesReceived ?? "—"}
+                value={syncResult.currenciesReceived ?? "N/A"}
               />
               <ProviderMetric
                 label={t("Currencies Updated")}
-                value={syncResult.currenciesUpdated ?? "—"}
+                value={syncResult.currenciesUpdated ?? "N/A"}
               />
               <ProviderMetric
                 label={t("Rates Received")}
-                value={syncResult.ratesReceived ?? "—"}
+                value={syncResult.ratesReceived ?? "N/A"}
               />
               <ProviderMetric
                 label={t("Rates Updated")}
-                value={syncResult.ratesUpdated ?? "—"}
+                value={syncResult.ratesUpdated ?? "N/A"}
               />
             </div>
           </CardContent>
@@ -716,11 +716,11 @@ export default function CurrencyManager() {
                             <Tooltip>
                               <TooltipTrigger>
                                 <span className="block max-w-40 truncate text-base text-foreground">
-                                  {currency.provider || "—"}
+                                  {currency.provider || "N/A"}
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent>
-                                {currency.provider || "—"}
+                                {currency.provider || "N/A"}
                               </TooltipContent>
                             </Tooltip>
                           </TableCell>
@@ -748,11 +748,13 @@ export default function CurrencyManager() {
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button
+                                  type="button"
                                   variant="ghost"
                                   size="icon"
                                   aria-label={`${currency.code} actions`}
+                                  className="size-8.5 rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
                                 >
-                                  <MoreHorizontal className="size-4" />
+                                  <MoreHorizontal className="size-4.5" />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent>
@@ -935,16 +937,16 @@ function CurrencyDetailSheet({
               {currency.decimalPlaces ?? 2}
             </DetailField>
             <DetailField label={t("Provider")}>
-              {currency.provider || "—"}
+              {currency.provider || "N/A"}
             </DetailField>
             <DetailField label={t("Last Synced")}>
               {safeDate(currency.lastSyncedAt, true)}
             </DetailField>
             <DetailField label={t("Created")}>
-              {currency.createdAt ? safeDate(currency.createdAt, true) : "—"}
+              {currency.createdAt ? safeDate(currency.createdAt, true) : "N/A"}
             </DetailField>
             <DetailField label={t("Updated")}>
-              {currency.updatedAt ? safeDate(currency.updatedAt, true) : "—"}
+              {currency.updatedAt ? safeDate(currency.updatedAt, true) : "N/A"}
             </DetailField>
           </div>
         </SheetBody>
