@@ -234,14 +234,14 @@ const km: Record<string, string> = {
   "Please try again.": "សូមព្យាយាមម្តងទៀត។",
   All: "ទាំងអស់",
   "All Types": "ប្រភេទទាំងអស់",
-  "All Statuses": "ស្ថានភាពទាំងអស់",
+  "All Statuses": "គ្រប់ស្ថានភាព",
   "All Categories": "ប្រភេទទាំងអស់",
   "All Levels": "កម្រិតទាំងអស់",
   "All Users": "អ្នកប្រើទាំងអស់",
-  "All Alert Types": "ប្រភេទជូនដំណឹងទាំងអស់",
-  "All Triggers": "សកម្មភាពបង្កទាំងអស់",
-  "All Severities": "កម្រិតទាំងអស់",
-  "All References": "ឯកសារយោងទាំងអស់",
+  "All Alert Types": "គ្រប់ប្រភេទ",
+  "All Triggers": "គ្រប់សកម្មភាព",
+  "All Severities": "គ្រប់កម្រិត",
+  "All References": "គ្រប់ឯកសារយោង",
   "All Notification Types": "ប្រភេទការជូនដំណឹងទាំងអស់",
   "All Reference Types": "ប្រភេទឯកសារយោងទាំងអស់",
   Recipient: "អ្នកទទួល",
@@ -429,7 +429,7 @@ const km: Record<string, string> = {
   "Dismiss alert": "បិទការជូនដំណឹង",
   "Details for:": "ព័ត៌មានលម្អិតសម្រាប់៖",
   "Alert Type": "ប្រភេទការជូនដំណឹង",
-  "Search by rule name...": "ស្វែងរកតាមឈ្មោះច្បាប់...",
+  "Search by rule name...": "ស្វែងរក...",
   "Clear search": "សម្អាតការស្វែងរក",
   "Filter by severity": "ត្រងតាមកម្រិត",
   "Filter by status": "ត្រងតាមស្ថានភាព",
@@ -477,13 +477,15 @@ const km: Record<string, string> = {
   Timeline: "បន្ទាត់ពេលវេលា",
   "Category Name": "ឈ្មោះប្រភេទ",
   "Parent Category": "ប្រភេទមេ",
-  "Search root categories...": "ស្វែងរកប្រភេទដើម...",
+  "Search root categories...": "ស្វែងរក...",
   "None — Root Category": "គ្មាន — ប្រភេទដើម",
   "Saving...": "កំពុងរក្សាទុក...",
   "Unable to load categories.": "មិនអាចទាញយកប្រភេទបានទេ។",
   "No categories found": "រកមិនឃើញប្រភេទទេ",
   "No categories yet": "មិនទាន់មានប្រភេទទេ",
-  "Search by category name or keyword...": "ស្វែងរកដ...",
+
+  "Search by category name or keyword...": "ស្វែងរកប្រភេទ...",
+
   "Search, organize, and manage the category hierarchy.":
     "ស្វែងរក រៀបចំ និងគ្រប់គ្រងឋានានុក្រមនៃប្រភេទ។",
   "Subcategory of": "ប្រភេទរងនៃ",
@@ -519,7 +521,7 @@ const km: Record<string, string> = {
   "Available currencies": "រូបិយប័ណ្ណដែលមាន",
   "Enabled in iStash": "បានបើកក្នុង iStash",
   "Currently disabled": "បានបិទបច្ចុប្បន្ន",
-  "Search by currency code or name...": "ស្វែងរកតាមកូដ ឬឈ្មោះរូបិយប័ណ្ណ...",
+  "Search by currency code or name...": "ស្វែងរក...",
   "Manage which synchronized currencies are enabled in iStash.":
     "គ្រប់គ្រងរូបិយប័ណ្ណដែលបានធ្វើសមកាលកម្មក្នុង iStash។",
   "Unable to load currency information.": "មិនអាចទាញយកព័ត៌មានរូបិយប័ណ្ណបានទេ។",
@@ -667,7 +669,7 @@ const km: Record<string, string> = {
   "English Prompts (en)": "សារបញ្ជាភាសាអង់គ្លេស (en)",
   "Standard templates": "គំរូបទដ្ឋាន",
   "Search by template name, key, or description...":
-    "ស្វែងរកតាមឈ្មោះគំរូ កូនសោ ឬការពិពណ៌នា...",
+    "ស្វែងរក...",
   "Task Type": "ប្រភេទកិច្ចការ",
   "All Tasks": "កិច្ចការទាំងអស់",
   "Category Prediction": "ការទស្សន៍ទាយប្រភេទ",
@@ -1057,7 +1059,7 @@ const km: Record<string, string> = {
     "ស្វែងរកតាមសកម្មភាព ប្រភេទអង្គភាព លេខសម្គាល់ ឬ IP...",
   "Search user Id.​..": "ស្វែងរកលេខសម្គាល់គណនី...",
   "Search by action, entity type, or actor...":
-    "ស្វែងរកតាមសកម្មភាព ប្រភេទអង្គភាព ឬអ្នកអនុវត្ត...",
+    "ស្វែងរក...",
   "All Actions": "គ្រប់សកម្មភាព",
   "Entity Type": "ប្រភេទអង្គភាព",
   "All Entity Types": "គ្រប់ប្រភេទអង្គភាព",
@@ -1153,7 +1155,7 @@ const km: Record<string, string> = {
   "Last successful synchronization:": "ការធ្វើសមកាលកម្មជោគជ័យចុងក្រោយ៖",
   "Provider:": "អ្នកផ្តល់សេវា៖",
   "User ID:": "លេខសម្គាល់អ្នកប្រើ៖",
-
+  
   // AI Configuration & Prompts
   "Failed to save AI configuration.": "មិនអាចរក្សាទុកការកំណត់ AI បានទេ។",
   "POST /api/v1/admin/ai/prompt-templates/{templateId}/versions":
