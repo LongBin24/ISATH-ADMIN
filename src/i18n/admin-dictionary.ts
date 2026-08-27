@@ -1262,5 +1262,5 @@ const km: Record<string, string> = {
 };
 
 export function translateAdmin(locale: AdminLocale, text: string) {
-  return locale === "km" ? (km[text] ?? text) : text;
+  return locale === "km" ? (km[text] ?? text) : text
 }
