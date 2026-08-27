@@ -372,7 +372,10 @@ export default function CurrencyManager() {
   );
   const pageNumbers = useMemo(() => {
     const start = Math.max(1, Math.min(visiblePage - 2, totalPages - 4));
-    return Array.from({ length: Math.min(5, totalPages) }, (_, index) => start + index);
+    return Array.from(
+      { length: Math.min(5, totalPages) },
+      (_, index) => start + index,
+    );
   }, [visiblePage, totalPages]);
 
   async function handleSynchronize() {
@@ -569,7 +572,7 @@ export default function CurrencyManager() {
                   setQuery(event.target.value);
                   setCurrentPage(1);
                 }}
-                placeholder={t("Search by currency code or name...")}
+                placeholder={t("Search currency...")}
                 className="h-11 rounded-xl pl-9 text-base"
               />
             </div>

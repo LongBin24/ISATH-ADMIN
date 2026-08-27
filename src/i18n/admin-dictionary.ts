@@ -486,7 +486,7 @@ const km: Record<string, string> = {
   "Unable to load categories.": "មិនអាចទាញយកប្រភេទបានទេ។",
   "No categories found": "រកមិនឃើញប្រភេទទេ",
   "No categories yet": "មិនទាន់មានប្រភេទទេ",
-  "Search by category name or keyword...": "ស្វែងរកតាមឈ្មោះ ឬពាក្យគន្លឹះ...",
+  "Search by category name or keyword...": "ស្វែងរកដ...",
   "Search, organize, and manage the category hierarchy.":
     "ស្វែងរក រៀបចំ និងគ្រប់គ្រងឋានានុក្រមនៃប្រភេទ។",
   "Subcategory of": "ប្រភេទរងនៃ",
@@ -1161,8 +1161,7 @@ const km: Record<string, string> = {
   "User ID:": "លេខសម្គាល់អ្នកប្រើ៖",
 
   // AI Configuration & Prompts
-  "Search by name, key, description, model...":
-    "ស្វែងរកតាមឈ្មោះ កូនសោ ការពិពណ៌នា ម៉ូដែល...",
+  "Search...": "ស្វែងរក...",
   "Failed to save AI configuration.": "មិនអាចរក្សាទុកការកំណត់ AI បានទេ។",
   "POST /api/v1/admin/ai/prompt-templates/{templateId}/versions":
     "POST /api/v1/admin/ai/prompt-templates/{templateId}/versions",
@@ -1260,11 +1259,11 @@ const km: Record<string, string> = {
   "Enter a valid 3, 6, or 8 digit hex color.":
     "សូមបញ្ចូលកូដពណ៌ hex ត្រឹមត្រូវ (3, 6 ឬ 8 ខ្ទង់)។",
   "You do not have permission to access this Admin Dashboard.":
-  "អ្នកមិនមានសិទ្ធិចូលប្រើ Admin Dashboard នេះទេ។",
-  "TRANSFER_CREATE": "បង្កើតការផ្ទេរប្រាក់",
-  "TRANSFER": "ការផ្ទេរប្រាក់",
+    "អ្នកមិនមានសិទ្ធិចូលប្រើ Admin Dashboard នេះទេ។",
+  TRANSFER_CREATE: "បង្កើតការផ្ទេរប្រាក់",
+  TRANSFER: "ការផ្ទេរប្រាក់",
 };
 
 export function translateAdmin(locale: AdminLocale, text: string) {
-  return locale === "km" ? (km[text] ?? text) : text
+  return locale === "km" ? (km[text] ?? text) : text;
 }
