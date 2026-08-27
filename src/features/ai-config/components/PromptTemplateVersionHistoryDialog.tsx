@@ -23,6 +23,10 @@ import {
   CheckCircle2,
   Layers,
   X,
+  Bot,
+  Sliders,
+  RotateCcw,
+  FileText,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useAdminI18n } from "@/i18n/admin-i18n";
@@ -50,6 +54,17 @@ interface PromptTemplateVersionHistoryDialogProps {
   onOpenTest?: (template: PromptTemplateItem) => void;
 }
 
+const MODEL_PRESETS = [
+  "gemini-2.5-flash",
+  "gemini-1.5-flash",
+  "gemini-1.5-pro",
+  "claude-3-5-sonnet",
+];
+
+const MIME_PRESETS = ["application/json", "text/plain"];
+
+const TEMPLATE_VARIABLES = ["{{question}}", "{{financialContext}}", "{{currencyCode}}"];
+
 export function PromptTemplateVersionHistoryDialog({
   template,
   isOpen,
@@ -59,6 +74,7 @@ export function PromptTemplateVersionHistoryDialog({
   const [activeTab, setActiveTab] = useState<"list" | "create">("list");
   const [expandedVersionId, setExpandedVersionId] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
@@ -76,7 +92,7 @@ export function PromptTemplateVersionHistoryDialog({
   const [systemPrompt, setSystemPrompt] = useState("");
   const [userPromptTemplate, setUserPromptTemplate] = useState("");
   const [versionNote, setVersionNote] = useState("");
-  const [temperature, setTemperature] = useState<number>(0);
+  const [temperature, setTemperature] = useState<number>(0.3);
   const [responseMimeType, setResponseMimeType] = useState("application/json");
 
   // Advanced JSON Schema inputs
@@ -98,6 +114,59 @@ export function PromptTemplateVersionHistoryDialog({
     useCreatePromptTemplateVersionMutation();
   const [setDefaultTemplate, { isLoading: isSettingDefault }] =
     useSetDefaultPromptTemplateMutation();
+
+  function formatInputSchema() {
+    if (!inputSchemaJson.trim()) return;
+    try {
+      const parsed = JSON.parse(inputSchemaJson);
+      setInputSchemaJson(JSON.stringify(parsed, null, 2));
+      setSchemaError(null);
+    } catch {
+      setSchemaError(t("Invalid JSON in Input Schema"));
+    }
+  }
+
+  function formatOutputSchema() {
+    if (!outputSchemaJson.trim()) return;
+    try {
+      const parsed = JSON.parse(outputSchemaJson);
+      setOutputSchemaJson(JSON.stringify(parsed, null, 2));
+      setSchemaError(null);
+    } catch {
+      setSchemaError(t("Invalid JSON in Output Schema"));
+    }
+  }
+
+  function insertVariable(variableName: string) {
+    setUserPromptTemplate((prev) => {
+      if (!prev) return variableName;
+      if (prev.includes(variableName)) return prev;
+      return `${prev}\n${variableName}`;
+    });
+    if (fieldErrors.userPromptTemplate) {
+      setFieldErrors((prev) => ({ ...prev, userPromptTemplate: [] }));
+    }
+  }
+
+  function copyPromptToClipboard(text: string, key: string) {
+    navigator.clipboard.writeText(text);
+    setCopiedPrompt(key);
+    setTimeout(() => setCopiedPrompt(null), 1800);
+  }
+
+  function validateJsonSyntax(jsonStr: string): { valid: boolean; error?: string } {
+    if (!jsonStr.trim()) return { valid: true };
+    try {
+      JSON.parse(jsonStr);
+      return { valid: true };
+    } catch (e: unknown) {
+      return { valid: false, error: e instanceof Error ? e.message : "Syntax error" };
+    }
+  }
+
+  const inputJsonCheck = validateJsonSyntax(inputSchemaJson);
+  const outputJsonCheck = validateJsonSyntax(outputSchemaJson);
+  const hasSchemasConfigured = Boolean(inputSchemaJson.trim() || outputSchemaJson.trim());
 
   function populateFormFromSource(source: PromptTemplateItem | PromptTemplateVersion) {
     const raw = source as Record<string, unknown>;
@@ -693,18 +762,19 @@ export function PromptTemplateVersionHistoryDialog({
             )}
           </div>
         ) : (
-          <form onSubmit={handleCreateVersion} className="space-y-5 pt-4">
-            <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-4 dark:border-blue-900/40 dark:bg-blue-950/20">
+          <form onSubmit={handleCreateVersion} className="space-y-4 pt-2">
+            <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-3.5 dark:border-blue-900/40 dark:bg-blue-950/20">
               <div className="flex items-center gap-2 text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
                 <Sparkles className="h-4 w-4" />
                 <span>{t("POST /api/v1/admin/ai/prompt-templates/{templateId}/versions")}</span>
               </div>
               <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-                {t("Publishing this version creates an immutable record tied to template ID")} <code className="font-mono font-semibold">{template.id}</code>.
+                {t("Publishing this version creates an immutable record tied to template ID")}{" "}
+                <code className="font-mono font-semibold text-[#003377] dark:text-[#FFC83D]">{template.id}</code>.
               </p>
             </div>
 
-            {/* Version note */}
+            {/* Version Note */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 {t("Version Note / Changelog Summary")}
@@ -714,326 +784,565 @@ export function PromptTemplateVersionHistoryDialog({
                 value={versionNote}
                 onChange={(e) => setVersionNote(e.target.value)}
                 placeholder={t("e.g. Updated financial classification accuracy and added Khmer intent support")}
-                className="h-10 w-full rounded-2xl border border-slate-200 bg-slate-50 px-3.5 text-xs text-slate-800 focus:border-[#003377] focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
               />
             </div>
 
-            {/* Name & Key */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {t("Template Name")} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={templateName}
-                  onChange={(e) => {
-                    setTemplateName(e.target.value);
-                    if (fieldErrors.templateName) {
-                      setFieldErrors((prev) => ({ ...prev, templateName: [] }));
-                    }
-                  }}
-                  className={`h-10 w-full rounded-2xl border bg-slate-50 px-3.5 text-xs text-slate-800 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D] ${
-                    fieldErrors.templateName?.length
-                      ? "border-red-400 focus:border-red-500"
-                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
-                  }`}
-                  required
-                />
-                {fieldErrors.templateName?.[0] && (
-                  <p className="text-[11px] font-medium text-red-500">
-                    {fieldErrors.templateName[0]}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                    {t("Template Key")} <span className="text-red-500">*</span>
+            {/* Section 1: Basic Information */}
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/50 space-y-3.5">
+              <div className="grid gap-3.5 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {t("Template Name")} <span className="text-red-500">*</span>
                   </label>
-                  <span className="text-[10px] text-slate-400 font-mono">
-                    a-z, 0-9, ., _, -
-                  </span>
+                  <input
+                    type="text"
+                    value={templateName}
+                    onChange={(e) => {
+                      setTemplateName(e.target.value);
+                      if (fieldErrors.templateName) {
+                        setFieldErrors((prev) => ({ ...prev, templateName: [] }));
+                      }
+                    }}
+                    className={`h-10 w-full rounded-xl border bg-white px-3.5 text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
+                      fieldErrors.templateName?.length
+                        ? "border-red-400 focus:border-red-500"
+                        : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
+                    }`}
+                    required
+                  />
+                  {fieldErrors.templateName?.[0] && (
+                    <p className="text-[11px] font-medium text-red-500">
+                      {fieldErrors.templateName[0]}
+                    </p>
+                  )}
                 </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      {t("Template Key")} <span className="text-red-500">*</span>
+                    </label>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      a-z, 0-9, ., _, -
+                    </span>
+                  </div>
+                  <input
+                    type="text"
+                    value={templateKey}
+                    onChange={(e) => {
+                      setTemplateKey(e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, "-"));
+                      if (fieldErrors.templateKey) {
+                        setFieldErrors((prev) => ({ ...prev, templateKey: [] }));
+                      }
+                    }}
+                    placeholder="financial-assistant-category-prediction"
+                    className={`h-10 w-full rounded-xl border bg-white px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
+                      fieldErrors.templateKey?.length
+                        ? "border-red-400 focus:border-red-500"
+                        : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
+                    }`}
+                    required
+                  />
+                  {fieldErrors.templateKey?.[0] ? (
+                    <p className="text-[11px] font-medium text-red-500">
+                      {fieldErrors.templateKey[0]}
+                    </p>
+                  ) : (
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500">
+                      {t("Lowercase letters, numbers, '.', '_' and '-' only.")}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {t("Description")}
+                </label>
+                <textarea
+                  rows={2}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder={t("Classifies a user's message into the appropriate iStash financial assistant category.")}
+                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
+                />
+              </div>
+
+              {/* Default toggle */}
+              <label className="flex items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white p-3 text-xs text-slate-700 shadow-xs cursor-pointer transition hover:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D]">
                 <input
-                  type="text"
-                  value={templateKey}
+                  type="checkbox"
+                  checked={isDefault}
+                  onChange={(e) => setIsDefault(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-[#003377] focus:ring-[#003377] dark:border-slate-700 dark:bg-slate-800"
+                />
+                <span className="font-semibold">{t("Make this new version the default version immediately")}</span>
+              </label>
+            </div>
+
+            {/* Section 2: Scope, Task, Language, Status */}
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/50 space-y-3.5">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
+                <Sliders className="h-4 w-4" />
+                <span>{t("Scope & Classification")}</span>
+              </div>
+
+              <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {t("Task Type")}
+                  </label>
+                  <Select value={taskType} onValueChange={(val) => setTaskType(val as TaskType)}>
+                    <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl">
+                      <SelectItem value="CATEGORY_PREDICTION">{t("Category Prediction")}</SelectItem>
+                      <SelectItem value="FINANCIAL_ASSISTANT">{t("Financial Assistant")}</SelectItem>
+                      <SelectItem value="SAVINGS_GOAL_ANALYSIS">{t("Savings Goal Analysis")}</SelectItem>
+                      <SelectItem value="BUDGET_ADVICE">{t("Budget Advice")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {t("Template Scope")}
+                  </label>
+                  <Select value={templateScope} onValueChange={(val) => setTemplateScope(val as TemplateScope)}>
+                    <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl">
+                      <SelectItem value="GENERAL_CONVERSATION">{t("General Conversation")}</SelectItem>
+                      <SelectItem value="SAVINGS_ANALYSIS">{t("Savings Analysis")}</SelectItem>
+                      <SelectItem value="SPENDING_ANALYSIS">{t("Spending Analysis")}</SelectItem>
+                      <SelectItem value="INCOME_ANALYSIS">{t("Income Analysis")}</SelectItem>
+                      <SelectItem value="GENERAL_QUESTION">{t("General Question")}</SelectItem>
+                      <SelectItem value="MONTHLY_SUMMARY">{t("Monthly Summary")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {t("Language")}
+                  </label>
+                  <Select value={languageCode} onValueChange={(val) => setLanguageCode(val as LanguageCode)}>
+                    <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl">
+                      <SelectItem value="km">
+                        <div className="flex items-center gap-2">
+                          <LanguageFlag locale="km" className="h-3.5 w-4" />
+                          <span>{t("Khmer (km)")}</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="en">
+                        <div className="flex items-center gap-2">
+                          <LanguageFlag locale="en" className="h-3.5 w-4" />
+                          <span>{t("English (en)")}</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {t("Initial Status")}
+                  </label>
+                  <Select value={templateStatus} onValueChange={(val) => setTemplateStatus(val as PromptTemplateStatus)}>
+                    <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl">
+                      <SelectItem value="ACTIVE">
+                        <span className="flex items-center gap-1.5 text-emerald-600 font-semibold dark:text-emerald-400">
+                          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                          {t("Active")}
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="DRAFT">
+                        <span className="flex items-center gap-1.5 text-amber-600 font-semibold dark:text-amber-400">
+                          <span className="h-2 w-2 rounded-full bg-amber-500" />
+                          {t("Draft")}
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 3: Model & Config */}
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/50 space-y-3.5">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
+                <Bot className="h-4 w-4" />
+                <span>{t("Model & Parameters")}</span>
+              </div>
+
+              <div className="grid gap-3.5 sm:grid-cols-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {t("Model Name")}
+                  </label>
+                  <input
+                    type="text"
+                    value={modelName}
+                    onChange={(e) => setModelName(e.target.value)}
+                    placeholder="gemini-2.5-flash"
+                    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
+                  />
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    {MODEL_PRESETS.map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setModelName(preset)}
+                        className={`rounded-lg px-2 py-0.5 font-mono text-[10px] transition ${
+                          modelName === preset
+                            ? "bg-[#003377] text-white font-bold dark:bg-[#FFC83D] dark:text-[#003377]"
+                            : "bg-slate-200/70 text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                        }`}
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      {t("Temperature")}
+                    </label>
+                    <span className="rounded-md bg-[#003377]/10 px-2 py-0.5 font-mono text-[11px] font-bold text-[#003377] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D]">
+                      {temperature.toFixed(1)} {temperature <= 0.2 ? `(${t("Precise")})` : temperature <= 0.7 ? `(${t("Balanced")})` : `(${t("Creative")})`}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 pt-1">
+                    <input
+                      type="range"
+                      min={0}
+                      max={2}
+                      step={0.1}
+                      value={temperature}
+                      onChange={(e) => setTemperature(Number(e.target.value))}
+                      className="h-2 w-full cursor-pointer accent-[#003377] dark:accent-[#FFC83D]"
+                    />
+                    <input
+                      type="number"
+                      min={0}
+                      max={2}
+                      step={0.1}
+                      value={temperature}
+                      onChange={(e) => setTemperature(Math.max(0, Math.min(2, Number(e.target.value))))}
+                      className="h-9 w-16 rounded-xl border border-slate-200 bg-white px-2 text-center font-mono text-xs text-slate-800 shadow-sm focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-[#FFC83D]"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {t("Response MIME Type")}
+                  </label>
+                  <input
+                    type="text"
+                    value={responseMimeType}
+                    onChange={(e) => setResponseMimeType(e.target.value)}
+                    placeholder="application/json"
+                    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
+                  />
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    {MIME_PRESETS.map((mime) => (
+                      <button
+                        key={mime}
+                        type="button"
+                        onClick={() => setResponseMimeType(mime)}
+                        className={`rounded-lg px-2 py-0.5 font-mono text-[10px] transition ${
+                          responseMimeType === mime
+                            ? "bg-[#003377] text-white font-bold dark:bg-[#FFC83D] dark:text-[#003377]"
+                            : "bg-slate-200/70 text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                        }`}
+                      >
+                        {mime}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 4: System Prompt */}
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/50 space-y-4">
+              <div className="flex items-center justify-between text-xs font-bold text-[#003377] dark:text-[#FFC83D]">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  <span>{t("Prompt Instructions")}</span>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex flex-wrap items-center justify-between gap-1">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {t("System Prompt")} <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-slate-400">
+                      {systemPrompt.length} {t("chars")}
+                    </span>
+                    {systemPrompt && (
+                      <button
+                        type="button"
+                        onClick={() => copyPromptToClipboard(systemPrompt, "sys")}
+                        className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D] transition"
+                      >
+                        {copiedPrompt === "sys" ? (
+                          <Check className="h-3 w-3 text-emerald-500" />
+                        ) : (
+                          <Copy className="h-3 w-3" />
+                        )}
+                        {copiedPrompt === "sys" ? t("Copied") : t("Copy")}
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {t("Defines role, classification rules, and response schema")}
+                </p>
+                <textarea
+                  rows={6}
+                  value={systemPrompt}
                   onChange={(e) => {
-                    setTemplateKey(e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, "-"));
-                    if (fieldErrors.templateKey) {
-                      setFieldErrors((prev) => ({ ...prev, templateKey: [] }));
+                    setSystemPrompt(e.target.value);
+                    if (fieldErrors.systemPrompt) {
+                      setFieldErrors((prev) => ({ ...prev, systemPrompt: [] }));
                     }
                   }}
-                  placeholder="financial-assistant-category-prediction"
-                  className={`h-10 w-full rounded-2xl border bg-slate-50 px-3.5 font-mono text-xs text-slate-800 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D] ${
-                    fieldErrors.templateKey?.length
+                  className={`w-full rounded-xl border bg-white p-3.5 font-mono text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
+                    fieldErrors.systemPrompt?.length
                       ? "border-red-400 focus:border-red-500"
-                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800"
+                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                   }`}
                   required
                 />
-                {fieldErrors.templateKey?.[0] ? (
+                {fieldErrors.systemPrompt?.[0] && (
                   <p className="text-[11px] font-medium text-red-500">
-                    {fieldErrors.templateKey[0]}
+                    {fieldErrors.systemPrompt[0]}
                   </p>
-                ) : (
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">
-                    {t("Lowercase letters, numbers, '.', '_' and '-' only (no uppercase or spaces).")}
+                )}
+              </div>
+
+              {/* User Prompt Template */}
+              <div className="space-y-1.5">
+                <div className="flex flex-wrap items-center justify-between gap-1">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {t("User Prompt Template")} <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-slate-400">
+                      {userPromptTemplate.length} {t("chars")}
+                    </span>
+                    {userPromptTemplate && (
+                      <button
+                        type="button"
+                        onClick={() => copyPromptToClipboard(userPromptTemplate, "usr")}
+                        className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D] transition"
+                      >
+                        {copiedPrompt === "usr" ? (
+                          <Check className="h-3 w-3 text-emerald-500" />
+                        ) : (
+                          <Copy className="h-3 w-3" />
+                        )}
+                        {copiedPrompt === "usr" ? t("Copied") : t("Copy")}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Variable insertion helpers */}
+                <div className="flex flex-wrap items-center gap-1.5 py-1">
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                    {t("Supported variable syntax:")}
+                  </span>
+                  {TEMPLATE_VARIABLES.map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => insertVariable(v)}
+                      title={t("Click to insert variable")}
+                      className="inline-flex items-center gap-1 rounded-md border border-[#003377]/20 bg-[#003377]/5 px-2 py-0.5 font-mono text-[11px] font-semibold text-[#003377] transition hover:bg-[#003377]/10 hover:border-[#003377] active:scale-95 dark:border-[#FFC83D]/30 dark:bg-[#FFC83D]/10 dark:text-[#FFC83D] dark:hover:bg-[#FFC83D]/20"
+                    >
+                      <span>{v}</span>
+                      <Plus className="h-2.5 w-2.5" />
+                    </button>
+                  ))}
+                </div>
+
+                <textarea
+                  rows={5}
+                  value={userPromptTemplate}
+                  onChange={(e) => {
+                    setUserPromptTemplate(e.target.value);
+                    if (fieldErrors.userPromptTemplate) {
+                      setFieldErrors((prev) => ({ ...prev, userPromptTemplate: [] }));
+                    }
+                  }}
+                  className={`w-full rounded-xl border bg-white p-3.5 font-mono text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
+                    fieldErrors.userPromptTemplate?.length
+                      ? "border-red-400 focus:border-red-500"
+                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
+                  }`}
+                  required
+                />
+                {fieldErrors.userPromptTemplate?.[0] && (
+                  <p className="text-[11px] font-medium text-red-500">
+                    {fieldErrors.userPromptTemplate[0]}
                   </p>
                 )}
               </div>
             </div>
 
-            {/* Description */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {t("Description")}
-              </label>
-              <input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder={t("Classifies a user's message into the appropriate iStash financial assistant category.")}
-                className="h-10 w-full rounded-2xl border border-slate-200 bg-slate-50 px-3.5 text-xs text-slate-800 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
-              />
-            </div>
-
-            {/* Scope, Task, Language, Status */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {t("Task Type")}
-                </label>
-                <Select value={taskType} onValueChange={(val) => setTaskType(val as TaskType)}>
-                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-2xl">
-                    <SelectItem value="CATEGORY_PREDICTION">{t("Category Prediction")}</SelectItem>
-                    <SelectItem value="FINANCIAL_ASSISTANT">{t("Financial Assistant")}</SelectItem>
-                    <SelectItem value="SAVINGS_GOAL_ANALYSIS">{t("Savings Goal Analysis")}</SelectItem>
-                    <SelectItem value="BUDGET_ADVICE">{t("Budget Advice")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {t("Template Scope")}
-                </label>
-                <Select value={templateScope} onValueChange={(val) => setTemplateScope(val as TemplateScope)}>
-                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-2xl">
-                    <SelectItem value="GENERAL_CONVERSATION">{t("General Conversation")}</SelectItem>
-                    <SelectItem value="SAVINGS_ANALYSIS">{t("Savings Analysis")}</SelectItem>
-                    <SelectItem value="SPENDING_ANALYSIS">{t("Spending Analysis")}</SelectItem>
-                    <SelectItem value="INCOME_ANALYSIS">{t("Income Analysis")}</SelectItem>
-                    <SelectItem value="GENERAL_QUESTION">{t("General Question")}</SelectItem>
-                    <SelectItem value="MONTHLY_SUMMARY">{t("Monthly Summary")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {t("Language")}
-                </label>
-                <Select value={languageCode} onValueChange={(val) => setLanguageCode(val as LanguageCode)}>
-                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-2xl">
-                    <SelectItem value="km">{t("Khmer (km)")}</SelectItem>
-                    <SelectItem value="en">{t("English (en)")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {t("Initial Status")}
-                </label>
-                <Select value={templateStatus} onValueChange={(val) => setTemplateStatus(val as PromptTemplateStatus)}>
-                  <SelectTrigger className="h-10 rounded-2xl border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-2xl">
-                    <SelectItem value="DRAFT">{t("Draft")}</SelectItem>
-                    <SelectItem value="ACTIVE">{t("Active")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Model & Config */}
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {t("Model Name")}
-                </label>
-                <input
-                  type="text"
-                  value={modelName}
-                  onChange={(e) => setModelName(e.target.value)}
-                  placeholder="gemini-2.5-flash"
-                  className="h-10 w-full rounded-2xl border border-slate-200 bg-slate-50 px-3.5 font-mono text-xs text-slate-800 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {t("Temperature")} ({temperature})
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  max="2"
-                  value={temperature}
-                  onChange={(e) => setTemperature(parseFloat(e.target.value) || 0)}
-                  className="h-10 w-full rounded-2xl border border-slate-200 bg-slate-50 px-3.5 text-xs text-slate-800 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {t("Response MIME Type")}
-                </label>
-                <input
-                  type="text"
-                  value={responseMimeType}
-                  onChange={(e) => setResponseMimeType(e.target.value)}
-                  placeholder="application/json"
-                  className="h-10 w-full rounded-2xl border border-slate-200 bg-slate-50 px-3.5 font-mono text-xs text-slate-800 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
-                />
-              </div>
-            </div>
-
-            {/* System Prompt */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {t("System Prompt")} <span className="text-red-500">*</span>
-                </label>
-                <span className="text-[11px] text-slate-400">
-                  {t("Defines role, classification rules, and response schema")}
-                </span>
-              </div>
-              <textarea
-                rows={7}
-                value={systemPrompt}
-                onChange={(e) => {
-                  setSystemPrompt(e.target.value);
-                  if (fieldErrors.systemPrompt) {
-                    setFieldErrors((prev) => ({ ...prev, systemPrompt: [] }));
-                  }
-                }}
-                className={`w-full rounded-2xl border bg-slate-50 p-3.5 font-mono text-xs leading-relaxed text-slate-800 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
-                  fieldErrors.systemPrompt?.length
-                    ? "border-red-400 focus:border-red-500"
-                    : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
-                }`}
-                required
-              />
-              {fieldErrors.systemPrompt?.[0] && (
-                <p className="text-[11px] font-medium text-red-500">
-                  {fieldErrors.systemPrompt[0]}
-                </p>
-              )}
-            </div>
-
-            {/* User Prompt Template */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {t("User Prompt Template")} <span className="text-red-500">*</span>
-                </label>
-                <span className="text-[11px] text-slate-400">
-                  {t("Supports variables like")} <code className="font-mono font-semibold text-[#003377] dark:text-[#FFC83D]">{"{{question}}"}</code>
-                </span>
-              </div>
-              <textarea
-                rows={5}
-                value={userPromptTemplate}
-                onChange={(e) => {
-                  setUserPromptTemplate(e.target.value);
-                  if (fieldErrors.userPromptTemplate) {
-                    setFieldErrors((prev) => ({ ...prev, userPromptTemplate: [] }));
-                  }
-                }}
-                className={`w-full rounded-2xl border bg-slate-50 p-3.5 font-mono text-xs leading-relaxed text-slate-800 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
-                  fieldErrors.userPromptTemplate?.length
-                    ? "border-red-400 focus:border-red-500"
-                    : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
-                }`}
-                required
-              />
-              {fieldErrors.userPromptTemplate?.[0] && (
-                <p className="text-[11px] font-medium text-red-500">
-                  {fieldErrors.userPromptTemplate[0]}
-                </p>
-              )}
-            </div>
-
-            {/* Default toggle */}
-            <label className="flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-slate-50/50 p-3.5 text-xs text-slate-700 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-300">
-              <input
-                type="checkbox"
-                checked={isDefault}
-                onChange={(e) => setIsDefault(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-[#003377] focus:ring-[#003377]"
-              />
-              <span className="font-semibold">{t("Make this new version the default version immediately")}</span>
-            </label>
-
-            {/* Advanced Schemas Collapsible */}
-            <div className="rounded-2xl border border-slate-200 bg-slate-50/40 dark:border-slate-800 dark:bg-slate-900/40">
+            {/* Section 5: Advanced Schemas Collapsible */}
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/50 transition-all duration-200">
               <button
                 type="button"
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="flex w-full items-center justify-between p-4 text-xs font-bold text-slate-700 dark:text-slate-300"
+                className="flex w-full items-center justify-between text-xs font-bold text-slate-700 transition-all duration-150 hover:text-[#003377] active:scale-[0.99] dark:text-slate-300 dark:hover:text-[#FFC83D]"
               >
                 <span className="flex items-center gap-2">
                   <Code2 className="h-4 w-4 text-[#003377] dark:text-[#FFC83D]" />
-                  {t("Advanced JSON Schemas (Input Schema & Output Schema)")}
+                  <span>{t("Input & Output JSON Schemas")}</span>
+                  {hasSchemasConfigured && (
+                    <Badge
+                      variant="outline"
+                      className="rounded-full border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300"
+                    >
+                      {t("Configured")}
+                    </Badge>
+                  )}
                 </span>
-                {showAdvanced ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-normal text-slate-400">
+                    {showAdvanced ? t("Hide Schemas") : t("Show / Edit Schemas")}
+                  </span>
+                  {showAdvanced ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </div>
               </button>
 
               {showAdvanced && (
-                <div className="space-y-4 border-t border-slate-200 p-4 dark:border-slate-800">
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 pt-3 border-t border-slate-200/80 dark:border-slate-800">
                   {schemaError && (
-                    <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">
+                    <div className="col-span-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">
                       {schemaError}
                     </div>
                   )}
 
+                  {/* Input Schema */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      {t("Input Schema (JSON)")}
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                        {t("Input Schema (JSON)")}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        {inputSchemaJson.trim() && (
+                          <span
+                            className={`inline-flex items-center gap-1 text-[10px] font-semibold ${
+                              inputJsonCheck.valid
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-amber-600 dark:text-amber-400"
+                            }`}
+                          >
+                            {inputJsonCheck.valid ? (
+                              <CheckCircle2 className="h-3 w-3" />
+                            ) : (
+                              <AlertCircle className="h-3 w-3" />
+                            )}
+                            {inputJsonCheck.valid ? t("Valid JSON") : t("Invalid Syntax")}
+                          </span>
+                        )}
+                        {inputSchemaJson.trim() && (
+                          <button
+                            type="button"
+                            onClick={formatInputSchema}
+                            title={t("Prettify JSON")}
+                            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800"
+                          >
+                            <RotateCcw className="h-2.5 w-2.5" />
+                            {t("Prettify")}
+                          </button>
+                        )}
+                      </div>
+                    </div>
                     <textarea
-                      rows={5}
+                      rows={6}
                       value={inputSchemaJson}
-                      onChange={(e) => setInputSchemaJson(e.target.value)}
+                      onChange={(e) => {
+                        setInputSchemaJson(e.target.value);
+                        setSchemaError(null);
+                      }}
                       placeholder='{ "type": "OBJECT", "properties": { "question": { "type": "STRING" } } }'
-                      className="w-full rounded-xl border border-slate-200 bg-white p-3 font-mono text-xs text-slate-800 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
+                      className={`w-full rounded-xl border bg-white p-3 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-950 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
+                        !inputJsonCheck.valid && inputSchemaJson.trim()
+                          ? "border-amber-400 focus:border-amber-500"
+                          : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
+                      }`}
                     />
                   </div>
 
+                  {/* Output Schema */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      {t("Output Schema (JSON)")}
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                        {t("Output Schema (JSON)")}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        {outputSchemaJson.trim() && (
+                          <span
+                            className={`inline-flex items-center gap-1 text-[10px] font-semibold ${
+                              outputJsonCheck.valid
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-amber-600 dark:text-amber-400"
+                            }`}
+                          >
+                            {outputJsonCheck.valid ? (
+                              <CheckCircle2 className="h-3 w-3" />
+                            ) : (
+                              <AlertCircle className="h-3 w-3" />
+                            )}
+                            {outputJsonCheck.valid ? t("Valid JSON") : t("Invalid Syntax")}
+                          </span>
+                        )}
+                        {outputSchemaJson.trim() && (
+                          <button
+                            type="button"
+                            onClick={formatOutputSchema}
+                            title={t("Prettify JSON")}
+                            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800"
+                          >
+                            <RotateCcw className="h-2.5 w-2.5" />
+                            {t("Prettify")}
+                          </button>
+                        )}
+                      </div>
+                    </div>
                     <textarea
-                      rows={5}
+                      rows={6}
                       value={outputSchemaJson}
-                      onChange={(e) => setOutputSchemaJson(e.target.value)}
+                      onChange={(e) => {
+                        setOutputSchemaJson(e.target.value);
+                        setSchemaError(null);
+                      }}
                       placeholder='{ "type": "OBJECT", "properties": { "predictedCategory": { "type": "STRING" } } }'
-                      className="w-full rounded-xl border border-slate-200 bg-white p-3 font-mono text-xs text-slate-800 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
+                      className={`w-full rounded-xl border bg-white p-3 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-950 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
+                        !outputJsonCheck.valid && outputSchemaJson.trim()
+                          ? "border-amber-400 focus:border-amber-500"
+                          : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
+                      }`}
                     />
                   </div>
                 </div>
@@ -1045,7 +1354,7 @@ export function PromptTemplateVersionHistoryDialog({
               <button
                 type="button"
                 onClick={() => setActiveTab("list")}
-                className="rounded-2xl border border-slate-200 px-5 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-100 hover:border-[#003377] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
+                className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-150 hover:bg-slate-100 hover:border-[#003377] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:border-[#FFC83D] active:text-[#003377] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
               >
                 {t("Cancel")}
               </button>
@@ -1053,7 +1362,7 @@ export function PromptTemplateVersionHistoryDialog({
               <button
                 type="submit"
                 disabled={isCreating}
-                className="inline-flex items-center gap-2 rounded-2xl bg-[#FFC83D] px-6 py-2.5 text-xs font-bold text-[#003377] shadow-md shadow-[#FFC83D]/15 transition-all duration-150 hover:bg-[#f0ba33] hover:shadow-lg active:scale-95 active:bg-[#003377] active:text-[#FFC83D] disabled:opacity-50 dark:bg-[#FFC83D] dark:text-[#003377] dark:hover:bg-[#f7c948] dark:active:bg-[#002255] dark:active:text-[#FFC83D]"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#FFC83D] px-6 py-2.5 text-xs font-bold text-[#003377] shadow-md shadow-[#FFC83D]/15 transition-all duration-150 hover:bg-[#f0ba33] hover:shadow-lg active:scale-95 active:bg-[#003377] active:text-[#FFC83D] disabled:opacity-50 dark:bg-[#FFC83D] dark:text-[#003377] dark:hover:bg-[#f7c948] dark:active:bg-[#002255] dark:active:text-[#FFC83D]"
               >
                 {isCreating && <RefreshCw className="h-3.5 w-3.5 animate-spin" />}
                 {isCreating ? t("Publishing Version...") : t("Publish Version")}
