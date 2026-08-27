@@ -1256,7 +1256,8 @@ const km: Record<string, string> = {
   "Unable to load user statistics.": "មិនអាចផ្ទុកស្ថិតិអ្នកប្រើប្រាស់បានទេ។",
   "Unable to load age distribution.": "មិនអាចផ្ទុកការបែងចែកអាយុបានទេ។",
   "Unable to load gender distribution.": "មិនអាចផ្ទុកការបែងចែកយេនឌ័របានទេ។",
-  "Enter a valid 3, 6, or 8 digit hex color.": "សូមបញ្ចូលកូដពណ៌ hex ត្រឹមត្រូវ (3, 6 ឬ 8 ខ្ទង់)។",
+  "Enter a valid 3, 6, or 8 digit hex color.":
+    "សូមបញ្ចូលកូដពណ៌ hex ត្រឹមត្រូវ (3, 6 ឬ 8 ខ្ទង់)។",
   "You do not have permission to access this Admin Dashboard.":
     "អ្នកមិនមានសិទ្ធិចូលប្រើ Admin Dashboard នេះទេ។",
 };
