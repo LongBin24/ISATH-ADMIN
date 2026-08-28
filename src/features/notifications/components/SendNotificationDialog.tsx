@@ -77,13 +77,13 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
   }
 
   function validate() {
-    const next: typeof errors = {};
-    if (form.mode === "DIRECT" && !form.user) next.user = t("Select a recipient.");
-    if (!form.title.trim()) next.title = t("Title is required.");
-    else if (form.title.trim().length > 200) next.title = t("Title must be 200 characters or fewer.");
-    if (!form.message.trim()) next.message = t("Message is required.");
-    else if (form.message.trim().length > 2000) next.message = t("Message must be 2,000 characters or fewer.");
-    if (form.channels.length === 0) next.channels = t("Select at least one delivery channel.");
+    const next: Partial<Record<"user" | "title" | "message" | "channels", string>> = {};
+    if (form.mode === "DIRECT" && !form.user) next.user = "Select a recipient.";
+    if (!form.title.trim()) next.title = "Title is required.";
+    else if (form.title.trim().length > 200) next.title = "Title must be 200 characters or fewer.";
+    if (!form.message.trim()) next.message = "Message is required.";
+    else if (form.message.trim().length > 2000) next.message = "Message must be 2,000 characters or fewer.";
+    if (form.channels.length === 0) next.channels = "Select at least one delivery channel.";
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -154,8 +154,8 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           {/* Target Audience Mode Toggle */}
-          <div className="space-y-2 space-x-2">
-            <Label className="text-base font-semibold text-slate-800 dark:text-slate-200">
+          <div className="space-y-2">
+            <Label className="block text-base font-semibold text-slate-800 dark:text-slate-200">
               {t("Delivery Mode")}
             </Label>
             <div className="grid grid-cols-2 gap-3">
@@ -189,18 +189,22 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
 
           {/* Direct Recipient Selector */}
           {form.mode === "DIRECT" ? (
-            <div className="space-y-2 space-x-2">
-              <Label className="text-base">{t("Recipient")} <span className="text-red-500">*</span></Label>
-              <NotificationUserSelector
-                value={form.user}
-                onChange={(user) => {
-                  setForm((current) => ({ ...current, user }));
-                  setErrors((current) => ({ ...current, user: undefined }));
-                }}
-                allowClear={false}
-                placeholder={t("Search and select a recipient")}
-              />
-              {errors.user && <p className="text-sm text-destructive">{errors.user}</p>}
+            <div className="space-y-2">
+              <Label className="block text-base font-semibold">
+                {t("Recipient")} <span className="ml-1 text-red-500">*</span>
+              </Label>
+              <div className="w-full">
+                <NotificationUserSelector
+                  value={form.user}
+                  onChange={(user) => {
+                    setForm((current) => ({ ...current, user }));
+                    setErrors((current) => ({ ...current, user: undefined }));
+                  }}
+                  allowClear={false}
+                  placeholder="Search and select a recipient"
+                />
+              </div>
+              {errors.user && <p className="text-sm text-destructive">{t(errors.user)}</p>}
             </div>
           ) : (
             <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4 dark:border-blue-900/40 dark:bg-blue-950/20">
@@ -218,8 +222,10 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
             </div>
           )}
 
-          <div className="space-y-2 space-x-2">
-            <Label htmlFor="notification-title" className="text-base">{t("Title")} <span className="text-red-500">*</span></Label>
+          <div className="space-y-2">
+            <Label htmlFor="notification-title" className="block text-base font-semibold">
+              {t("Title")} <span className="ml-1 text-red-500">*</span>
+            </Label>
             <Input
               id="notification-title"
               value={form.title}
@@ -227,17 +233,20 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
                 setForm((current) => ({ ...current, title: event.target.value }));
                 setErrors((current) => ({ ...current, title: undefined }));
               }}
+              placeholder={t("Enter notification title")}
               className="h-11 text-base"
               maxLength={200}
             />
             <div className="flex justify-between gap-3 text-sm">
-              <span className="text-destructive">{errors.title}</span>
+              {errors.title && <span className="text-destructive">{t(errors.title)}</span>}
               <span className="ml-auto text-muted-foreground">{form.title.length}/200</span>
             </div>
           </div>
 
-          <div className="space-y-2 space-x-2">
-            <Label htmlFor="notification-message" className="text-base">{t("Message")} <span className="text-red-500">*</span></Label>
+          <div className="space-y-2">
+            <Label htmlFor="notification-message" className="block text-base font-semibold">
+              {t("Message")} <span className="ml-1 text-red-500">*</span>
+            </Label>
             <textarea
               id="notification-message"
               value={form.message}
@@ -245,6 +254,7 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
                 setForm((current) => ({ ...current, message: event.target.value }));
                 setErrors((current) => ({ ...current, message: undefined }));
               }}
+              placeholder={t("Enter notification message...")}
               rows={5}
               maxLength={2000}
               className={cn(
@@ -255,14 +265,14 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
               )}
             />
             <div className="flex justify-between gap-3 text-sm">
-              <span className="text-destructive">{errors.message}</span>
+              {errors.message && <span className="text-destructive">{t(errors.message)}</span>}
               <span className="ml-auto text-muted-foreground">{form.message.length}/2,000</span>
             </div>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            <div className="space-y-2 space-x-2">
-              <Label className="text-base">{t("Notification Type")}</Label>
+            <div className="space-y-2">
+              <Label className="block text-base font-semibold">{t("Notification Type")}</Label>
               <Select value={form.notificationType} onValueChange={(value) => setForm((current) => ({ ...current, notificationType: value as AdminNotificationType }))}>
                 <SelectTrigger className="h-11 text-base"><SelectValue value={t(notificationTypeLabel(form.notificationType))} /></SelectTrigger>
                 <SelectContent value={form.notificationType} onValueChange={(value) => setForm((current) => ({ ...current, notificationType: value as AdminNotificationType }))}>
@@ -271,8 +281,8 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
               </Select>
             </div>
 
-            <fieldset className="space-y-2 space-x-2">
-              <legend className="text-base font-medium text-foreground">{t("Delivery Channels")}</legend>
+            <fieldset className="space-y-2">
+              <legend className="block text-base font-semibold text-foreground">{t("Delivery Channels")}</legend>
               <div className="flex min-h-11 items-center gap-5 rounded-xl border border-input px-3">
                 {(["IN_APP", "EMAIL"] as const).map((channel) => (
                   <label key={channel} className="flex cursor-pointer items-center gap-2 text-base">
@@ -286,7 +296,7 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
                   </label>
                 ))}
               </div>
-              {errors.channels && <p className="text-sm text-destructive">{errors.channels}</p>}
+              {errors.channels && <p className="text-sm text-destructive">{t(errors.channels)}</p>}
             </fieldset>
           </div>
 
@@ -294,15 +304,15 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
             <button
               type="button"
               onClick={() => setAdvancedOpen((value) => !value)}
-              className="flex w-full items-center justify-between px-4 py-3 text-base font-medium text-foreground"
+              className="flex w-full items-center justify-between px-4 py-3 text-base font-semibold text-foreground"
             >
               {t("Advanced Options")}
               {advancedOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
             </button>
             {advancedOpen && (
               <div className="space-y-4 border-t border-border p-4">
-                <div className="space-y-2 space-x-2">
-                  <Label className="text-base">{t("Reference Type")}</Label>
+                <div className="space-y-2">
+                  <Label className="block text-base font-semibold">{t("Reference Type")}</Label>
                   <Select value={form.referenceType} onValueChange={(value) => setForm((current) => ({ ...current, referenceType: value as FormState["referenceType"] }))}>
                     <SelectTrigger className="h-11 text-base"><SelectValue value={form.referenceType === "NONE" ? t("No reference") : t(referenceTypeLabel(form.referenceType))} /></SelectTrigger>
                     <SelectContent value={form.referenceType} onValueChange={(value) => setForm((current) => ({ ...current, referenceType: value as FormState["referenceType"] }))}>
@@ -311,16 +321,16 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2 space-x-2">
-                  <Label htmlFor="reference-id" className="text-base">{t("Reference ID (technical, optional)")}</Label>
-                  <Input id="reference-id" value={form.referenceId} onChange={(event) => setForm((current) => ({ ...current, referenceId: event.target.value }))} className="h-11 text-base" placeholder="UUID" />
+                <div className="space-y-2">
+                  <Label htmlFor="reference-id" className="block text-base font-semibold">{t("Reference ID (technical, optional)")}</Label>
+                  <Input id="reference-id" value={form.referenceId} onChange={(event) => setForm((current) => ({ ...current, referenceId: event.target.value }))} className="h-11 text-base" placeholder={t("Enter reference ID (e.g. UUID)")} />
                 </div>
-                <div className="space-y-2 space-x-2">
-                  <Label htmlFor="action-url" className="text-base">{t("Action URL (optional)")}</Label>
-                  <Input id="action-url" value={form.actionUrl} onChange={(event) => setForm((current) => ({ ...current, actionUrl: event.target.value }))} className="h-11 text-base" placeholder="/budgets/..." />
+                <div className="space-y-2">
+                  <Label htmlFor="action-url" className="block text-base font-semibold">{t("Action URL (optional)")}</Label>
+                  <Input id="action-url" value={form.actionUrl} onChange={(event) => setForm((current) => ({ ...current, actionUrl: event.target.value }))} className="h-11 text-base" placeholder={t("e.g. /budgets/...")} />
                 </div>
-                <div className="space-y-2 space-x-2">
-                  <Label htmlFor="expires-at" className="text-base">{t("Expiration (optional)")}</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="expires-at" className="block text-base font-semibold">{t("Expiration (optional)")}</Label>
                   <Input id="expires-at" type="datetime-local" value={form.expiresAt} onChange={(event) => setForm((current) => ({ ...current, expiresAt: event.target.value }))} className="h-11 text-base" />
                 </div>
               </div>

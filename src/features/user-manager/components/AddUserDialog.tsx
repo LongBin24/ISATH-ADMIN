@@ -135,7 +135,7 @@ export default function AddUserDialog({ open, onOpenChange }: AddUserDialogProps
                 <div><h3 className="text-lg font-semibold">{t("Account information")}</h3><p className="text-base text-muted-foreground">{t("Enter the user's basic details and access role.")}</p></div>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Field label={t("First Name")} htmlFor="firstName" error={errors.firstName}>
+                <Field label={t("First Name")} htmlFor="firstName" error={errors.firstName} required>
                   <Input
                     id="firstName"
                     autoComplete="given-name"
@@ -146,7 +146,7 @@ export default function AddUserDialog({ open, onOpenChange }: AddUserDialogProps
                     className="h-12 rounded-xl bg-background px-4 text-base"
                   />
                 </Field>
-                <Field label={t("Last Name")} htmlFor="lastName" error={errors.lastName}>
+                <Field label={t("Last Name")} htmlFor="lastName" error={errors.lastName} required>
                   <Input
                     id="lastName"
                     autoComplete="family-name"
@@ -160,10 +160,10 @@ export default function AddUserDialog({ open, onOpenChange }: AddUserDialogProps
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Field label={t("Email")} htmlFor="email" error={errors.email}>
+                <Field label={t("Email")} htmlFor="email" error={errors.email} required>
                   <div className="relative"><Mail className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" /><Input id="email" type="email" autoComplete="email" placeholder="name@example.com" value={form.email} onChange={(e) => update("email", e.target.value)} aria-invalid={Boolean(errors.email)} className="h-12 rounded-xl bg-background pl-12 pr-4 text-base" /></div>
                 </Field>
-                <Field label={t("Role")} htmlFor="role">
+                <Field label={t("Role")} htmlFor="role" required>
                   <Select className="w-full" value={form.role} onValueChange={(value) => update("role", value as FormState["role"])}>
                     <SelectTrigger id="role" className="h-12 w-full rounded-xl bg-background px-4 text-base">
                       <SelectValue value={t(ROLE_LABEL[form.role])} />
@@ -181,10 +181,10 @@ export default function AddUserDialog({ open, onOpenChange }: AddUserDialogProps
             <section className="space-y-4 border-t border-border/70 pt-6">
               <div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-xl bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300"><KeyRound className="size-5" /></span><div><h3 className="text-lg font-semibold">{t("Temporary password")}</h3><p className="text-base text-muted-foreground">{t("Set the credentials the user will use for their first sign in.")}</p></div></div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Field label={t("Temporary Password")} htmlFor="temporaryPassword" error={errors.temporaryPassword} helper={!errors.temporaryPassword ? t("Use at least 8 characters.") : undefined}>
+                <Field label={t("Temporary Password")} htmlFor="temporaryPassword" error={errors.temporaryPassword} helper={!errors.temporaryPassword ? t("Use at least 8 characters.") : undefined} required>
                   <PasswordInput id="temporaryPassword" value={form.temporaryPassword} visible={showTemporaryPassword} onChange={(value) => update("temporaryPassword", value)} onToggle={() => setShowTemporaryPassword((value) => !value)} invalid={Boolean(errors.temporaryPassword)} showLabel={t("Show temporary password")} hideLabel={t("Hide temporary password")} />
                 </Field>
-                <Field label={t("Confirm Password")} htmlFor="confirmPassword" error={errors.confirmPassword}>
+                <Field label={t("Confirm Password")} htmlFor="confirmPassword" error={errors.confirmPassword} required>
                   <PasswordInput id="confirmPassword" value={form.confirmPassword} visible={showConfirmPassword} onChange={(value) => update("confirmPassword", value)} onToggle={() => setShowConfirmPassword((value) => !value)} invalid={Boolean(errors.confirmPassword)} showLabel={t("Show confirmed password")} hideLabel={t("Hide confirmed password")} />
                 </Field>
               </div>
@@ -203,8 +203,17 @@ export default function AddUserDialog({ open, onOpenChange }: AddUserDialogProps
   );
 }
 
-function Field({ label, htmlFor, error, helper, children }: { label: string; htmlFor: string; error?: string; helper?: string; children: React.ReactNode }) {
-  return <div className="space-y-2"><Label htmlFor={htmlFor} className="text-base font-semibold">{label}</Label>{children}{error ? <p className="text-base text-destructive" role="alert">{error}</p> : helper ? <p className="text-base text-muted-foreground">{helper}</p> : null}</div>;
+function Field({ label, htmlFor, error, helper, required = false, children }: { label: string; htmlFor: string; error?: string; helper?: string; required?: boolean; children: React.ReactNode }) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={htmlFor} className="text-base font-semibold">
+        {label}
+        {required && <span className="ml-1 text-red-500">*</span>}
+      </Label>
+      {children}
+      {error ? <p className="text-base text-destructive" role="alert">{error}</p> : helper ? <p className="text-base text-muted-foreground">{helper}</p> : null}
+    </div>
+  );
 }
 
 function PasswordInput({ id, value, visible, invalid, onChange, onToggle, showLabel, hideLabel }: { id: string; value: string; visible: boolean; invalid: boolean; onChange: (value: string) => void; onToggle: () => void; showLabel: string; hideLabel: string }) {

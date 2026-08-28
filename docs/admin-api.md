@@ -613,6 +613,45 @@ Path: `ruleId` (uuid). **Response:** `AlertRuleResponse` (no `ApiResponse` wrapp
 
 ---
 
+## Admin Search
+
+| Method | Path | Operation ID | Auth |
+|---|---|---|---|
+| GET | `/api/v1/admin/search` | `search` | ✅ |
+
+### `GET /api/v1/admin/search` — Search across admin entities
+
+Query parameters:
+
+| Name | Type | Notes |
+|---|---|---|
+| `q` / `query` | string | search query string (e.g. `admin`) |
+| `limit` | int32 | optional result limit per group (e.g. `10`) |
+
+**Response 200:** `ApiResponse<SearchResultData>`:
+
+```jsonc
+{
+  "success": true,
+  "message": "Search results retrieved successfully.",
+  "data": {
+    "query": "",
+    "totalResults": 0,
+    "groups": {
+      "users": [],
+      "categories": [],
+      "currencies": [],
+      "reviews": [],
+      "alertRules": [],
+      "notifications": []
+    }
+  },
+  "timestamp": "2026-08-28T12:40:27.761124522Z"
+}
+```
+
+---
+
 ## Response-wrapping inconsistencies (worth knowing when integrating)
 
 | Group | Wrapped in `ApiResponse<T>`? |

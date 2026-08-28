@@ -5,6 +5,8 @@ import { format, formatDistanceToNow } from "date-fns";
 import {
   BellRing,
   CalendarClock,
+  Check,
+  ChevronsUpDown,
   CircleAlert,
   CircleCheck,
   CircleX,
@@ -17,6 +19,7 @@ import {
   Search,
   ShieldAlert,
   TriangleAlert,
+  UserRound,
   X,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -46,6 +49,11 @@ import {
   PaginationPrevious,
   PaginationSummary,
 } from "@/components/ui/pagination";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -672,45 +680,161 @@ function UserFilter({
   onChange: (value: string) => void;
 }) {
   const { t } = useAdminI18n();
-  const labels = Object.fromEntries(
-    users.map((user) => [user.id, `${userName(user)} · ${user.email}`]),
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const selectedUser = useMemo(
+    () => users.find((user) => user.id === value),
+    [users, value]
   );
+
+  const filteredUsers = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return users;
+    return users.filter((user) => {
+      const name = userName(user).toLowerCase();
+      const email = (user.email || "").toLowerCase();
+      const username = (user.username || "").toLowerCase();
+      return name.includes(q) || email.includes(q) || username.includes(q);
+    });
+  }, [users, query]);
+
   const isSelected = Boolean(value && value !== "ALL");
+
   return (
-    <Select
-      value={value || "ALL"}
-      onValueChange={(next) => onChange(next === "ALL" ? "" : next)}
-    >
-      <SelectTrigger
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
         className={cn(
-          "h-11 min-w-[150px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+          "flex h-11 min-w-[170px] items-center justify-between gap-2.5 rounded-xl border border-input bg-muted/60 px-3 text-left text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
           isSelected &&
-            "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
+            "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
         )}
       >
-        <SelectValue
-          value={
-            value
-              ? labels[value] || t("Selected User")
-              : loading
-                ? t("Loading users...")
-                : t("All Users")
-          }
-        />
-      </SelectTrigger>
-      <SelectContent
-        value={value || "ALL"}
-        onValueChange={(next) => onChange(next === "ALL" ? "" : next)}
-        className="rounded-xl"
+        <span className="min-w-0 flex-1 truncate">
+          {selectedUser ? (
+            <span className="flex min-w-0 items-center gap-2">
+              <Avatar className="size-6">
+                <AvatarImage
+                  src={selectedUser.profileImageUrl ?? undefined}
+                  alt={userName(selectedUser)}
+                />
+                <AvatarFallback className="text-[10px]">
+                  {initials(selectedUser)}
+                </AvatarFallback>
+              </Avatar>
+              <span className="truncate text-sm font-medium">
+                {userName(selectedUser)}
+              </span>
+            </span>
+          ) : (
+            <span className="text-sm font-medium text-muted-foreground">
+              {loading ? t("Loading users...") : t("All Users")}
+            </span>
+          )}
+        </span>
+        <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="w-[min(24rem,calc(100vw-2rem))] p-2 text-base font-google-sans"
       >
-        <SelectItem value="ALL">{t("All Users")}</SelectItem>
-        {users.map((user) => (
-          <SelectItem key={user.id} value={user.id}>
-            {userName(user)} · {user.email}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={t("Search by name, username, or email...")}
+            className="h-10 pl-9 pr-8 text-sm"
+            autoFocus
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+            >
+              <X className="size-3.5" />
+            </button>
+          )}
+        </div>
+
+        <div className="mt-2 max-h-72 space-y-1 overflow-y-auto">
+          {/* Option for All Users */}
+          <button
+            type="button"
+            onClick={() => {
+              onChange("");
+              setOpen(false);
+              setQuery("");
+            }}
+            className={cn(
+              "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm font-medium hover:bg-accent transition-colors",
+              !isSelected &&
+                "bg-accent/60 font-semibold text-[#003377] dark:text-[#FFC83D]"
+            )}
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-8 place-items-center rounded-lg bg-muted text-muted-foreground">
+                <UserRound className="size-4" />
+              </span>
+              <span>{t("All Users")}</span>
+            </div>
+            {!isSelected && <Check className="size-4 text-emerald-600" />}
+          </button>
+
+          {loading ? (
+            Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton key={index} className="h-12 w-full rounded-xl" />
+            ))
+          ) : filteredUsers.length === 0 ? (
+            <p className="px-3 py-6 text-center text-sm text-muted-foreground">
+              {t("No users found.")}
+            </p>
+          ) : (
+            filteredUsers.map((user) => {
+              const name = userName(user);
+              const isCurrent = user.id === value;
+              return (
+                <button
+                  key={user.id}
+                  type="button"
+                  onClick={() => {
+                    onChange(user.id);
+                    setOpen(false);
+                    setQuery("");
+                  }}
+                  className={cn(
+                    "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-accent transition-colors",
+                    isCurrent && "bg-accent/60"
+                  )}
+                >
+                  <Avatar className="size-8">
+                    <AvatarImage
+                      src={user.profileImageUrl ?? undefined}
+                      alt={name}
+                    />
+                    <AvatarFallback className="text-xs">
+                      {initials(user)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium text-foreground">
+                      {name}
+                    </span>
+                    <span className="block truncate text-xs text-muted-foreground font-normal">
+                      {user.email}
+                    </span>
+                  </span>
+                  {isCurrent && (
+                    <Check className="size-4 shrink-0 text-emerald-600" />
+                  )}
+                </button>
+              );
+            })
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 

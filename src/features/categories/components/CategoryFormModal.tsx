@@ -154,7 +154,9 @@ export function CategoryFormModal({
           className="space-y-5 p-6"
         >
           <div>
-            <label htmlFor="category-name" className="mb-2 block text-sm font-bold text-[#003377] dark:text-slate-100">{t("Category Name")}</label>
+            <label htmlFor="category-name" className="mb-2 block text-sm font-bold text-[#003377] dark:text-slate-100">
+              {t("Category Name")} <span className="text-red-500">*</span>
+            </label>
             <input
               id="category-name"
               autoFocus
@@ -172,7 +174,9 @@ export function CategoryFormModal({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <fieldset>
-              <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">{t("Type")}</legend>
+              <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">
+                {t("Type")} <span className="text-red-500">*</span>
+              </legend>
               <div className="grid h-12 grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800">
                 {(["expense", "income"] as const).map((type) => (
                   <button key={type} type="button" onClick={() => setValue("type", type, { shouldDirty: true })} className={`rounded-xl text-sm font-semibold capitalize transition ${selectedType === type ? "bg-white text-[#003377] shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500"}`}>
@@ -237,7 +241,9 @@ export function CategoryFormModal({
           )}
 
           <fieldset>
-            <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">{t("Color")}</legend>
+            <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">
+              {t("Color")} <span className="text-red-500">*</span>
+            </legend>
             <div className="flex flex-wrap gap-2.5">
               {COLORS.map((color) => (
                 <button key={color} type="button" aria-label={`Use color ${color}`} aria-pressed={selectedColor === color} onClick={() => setValue("color", color, { shouldDirty: true })} className="size-9 rounded-full border-2 transition hover:scale-105" style={{ backgroundColor: color, borderColor: selectedColor === color ? "#0f172a" : "transparent" }} />
@@ -246,7 +252,9 @@ export function CategoryFormModal({
           </fieldset>
 
           <fieldset>
-            <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">{t("Icon")}</legend>
+            <legend className="mb-2 text-sm font-bold text-[#003377] dark:text-slate-100">
+              {t("Icon")} <span className="text-red-500">*</span>
+            </legend>
             <div className="flex flex-wrap gap-2.5">
               {ICONS.map(([name, asset]) => (
                 <button key={name} type="button" aria-label={`Use icon ${name}`} aria-pressed={selectedIcon === name} onClick={() => setValue("icon", name, { shouldDirty: true })} className={`flex size-11 items-center justify-center rounded-2xl border-2 transition ${selectedIcon === name ? "border-[#facc15] bg-[#facc15]/10" : "border-slate-200 dark:border-slate-700"}`}>

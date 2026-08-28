@@ -1320,7 +1320,7 @@ function CategoryFormContents({
       >
         <div>
           <Label htmlFor="category-name" className="text-base">
-            {t("Category Name")}
+            {t("Category Name")} <span className="text-destructive">*</span>
           </Label>
           <Input
             id="category-name"
@@ -1335,7 +1335,9 @@ function CategoryFormContents({
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label className="text-base">{t("Type")}</Label>
+            <Label className="text-base">
+              {t("Type")} <span className="text-destructive">*</span>
+            </Label>
             <div className="mt-2">
               <FilterSelect
                 label="Type"
@@ -1390,7 +1392,9 @@ function CategoryFormContents({
           </div>
         )}
         <div>
-          <Label className="text-base">{t("Icon")}</Label>
+          <Label className="text-base">
+            {t("Icon")} <span className="text-destructive">*</span>
+          </Label>
           <div className="mt-2 grid grid-cols-6 gap-2 sm:grid-cols-12">
             {ICONS.map((icon) => (
               <Tooltip key={icon}>
@@ -1410,7 +1414,7 @@ function CategoryFormContents({
         </div>
         <div>
           <Label htmlFor="category-color" className="text-base">
-            {t("Color")}
+            {t("Color")} <span className="text-destructive">*</span>
           </Label>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {COLORS.map((color) => (
