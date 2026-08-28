@@ -217,7 +217,6 @@ export default function CategoryManager() {
   const [status, setStatus] = useState<CategoryStatus>("ALL");
   const [classification, setClassification] = useState<Classification>("ALL");
   const [level, setLevel] = useState<Level>("ALL");
-  const [includeHidden, setIncludeHidden] = useState(true);
   const [pageNumber, setPageNumber] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [selected, setSelected] = useState<Category | null>(null);
@@ -233,7 +232,7 @@ export default function CategoryManager() {
       ...(status !== "ALL" ? { status } : {}),
       ...queryForClassification(classification),
       ...(level === "ROOT" ? { rootOnly: true } : {}),
-      includeHidden,
+      includeHidden: true,
       pageNumber,
       pageSize,
       sortBy: "name",
@@ -242,7 +241,6 @@ export default function CategoryManager() {
     [
       classification,
       deferredKeyword,
-      includeHidden,
       level,
       pageNumber,
       pageSize,
@@ -297,7 +295,6 @@ export default function CategoryManager() {
     setStatus("ALL");
     setClassification("ALL");
     setLevel("ALL");
-    setIncludeHidden(true);
     setPageNumber(0);
   }
 
@@ -356,8 +353,7 @@ export default function CategoryManager() {
     type !== "ALL" ||
     status !== "ALL" ||
     classification !== "ALL" ||
-    level !== "ALL" ||
-    !includeHidden,
+    level !== "ALL",
   );
 
   return (
@@ -428,9 +424,15 @@ export default function CategoryManager() {
           </p>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <div
+            className={`grid gap-2 md:grid-cols-2 xl:items-center ${
+              hasActiveFilters
+                ? "xl:grid-cols-[minmax(240px,3.5fr)_repeat(5,minmax(130px,1fr))]"
+                : "xl:grid-cols-[minmax(280px,4.5fr)_repeat(4,minmax(130px,1fr))]"
+            }`}
+          >
+            <div className="relative md:col-span-2 xl:col-span-1">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={keyword}
                 onChange={(event) => {
@@ -438,7 +440,7 @@ export default function CategoryManager() {
                   setPageNumber(0);
                 }}
                 placeholder={t("Search category...")}
-                className="h-11 rounded-xl pl-9 pr-8 text-sm"
+                className="h-11 rounded-xl bg-background pl-10 pr-9 text-sm shadow-sm"
               />
               {keyword && (
                 <button
@@ -453,82 +455,71 @@ export default function CategoryManager() {
                 </button>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <FilterSelect
-                label="Type"
-                value={type}
-                options={{
-                  ALL: t("All Types"),
-                  INCOME: t("Income"),
-                  EXPENSE: t("Expense"),
-                  BOTH: t("Income & Expense"),
-                }}
-                onChange={(value) => {
-                  setType(value as CategoryType);
-                  setPageNumber(0);
-                }}
-              />
-              <FilterSelect
-                label="Status"
-                value={status}
-                options={{
-                  ALL: t("All Statuses"),
-                  ACTIVE: t("Active"),
-                  INACTIVE: t("Inactive"),
-                  DELETED: t("Deleted"),
-                }}
-                onChange={(value) => {
-                  setStatus(value as CategoryStatus);
-                  setPageNumber(0);
-                }}
-              />
-              <FilterSelect
-                label="Classification"
-                value={classification}
-                options={{
-                  ALL: t("All Categories"),
-                  SYSTEM: t("System Categories"),
-                  DEFAULT: t("Default Categories"),
-                  CUSTOM: t("Custom Categories"),
-                }}
-                onChange={(value) => {
-                  setClassification(value as Classification);
-                  setPageNumber(0);
-                }}
-              />
-              <FilterSelect
-                label="Level"
-                value={level}
-                options={{ ALL: t("All Levels"), ROOT: t("Root Categories") }}
-                onChange={(value) => {
-                  setLevel(value as Level);
-                  setPageNumber(0);
-                }}
-              />
-              {hasActiveFilters && (
-                <>
-                  <FilterSelect
-                    label="Visibility"
-                    value={includeHidden ? "ALL" : "VISIBLE"}
-                    options={{
-                      ALL: t("Include Hidden"),
-                      VISIBLE: t("Visible Only"),
-                    }}
-                    onChange={(value) => {
-                      setIncludeHidden(value === "ALL");
-                      setPageNumber(0);
-                    }}
-                  />
-                  <Button
-                    variant="ghost"
-                    className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium"
-                    onClick={resetFilters}
-                  >
-                    {t("Reset")}
-                  </Button>
-                </>
-              )}
-            </div>
+            <FilterSelect
+              label="Type"
+              value={type}
+              toolbar
+              options={{
+                ALL: t("All Types"),
+                INCOME: t("Income"),
+                EXPENSE: t("Expense"),
+                BOTH: t("Income & Expense"),
+              }}
+              onChange={(value) => {
+                setType(value as CategoryType);
+                setPageNumber(0);
+              }}
+            />
+            <FilterSelect
+              label="Status"
+              value={status}
+              toolbar
+              options={{
+                ALL: t("All Statuses"),
+                ACTIVE: t("Active"),
+                INACTIVE: t("Inactive"),
+                DELETED: t("Deleted"),
+              }}
+              onChange={(value) => {
+                setStatus(value as CategoryStatus);
+                setPageNumber(0);
+              }}
+            />
+            <FilterSelect
+              label="Classification"
+              value={classification}
+              toolbar
+              options={{
+                ALL: t("All Categories"),
+                SYSTEM: t("System Categories"),
+                DEFAULT: t("Default Categories"),
+                CUSTOM: t("Custom Categories"),
+              }}
+              onChange={(value) => {
+                setClassification(value as Classification);
+                setPageNumber(0);
+              }}
+            />
+            <FilterSelect
+              label="Level"
+              value={level}
+              toolbar
+              options={{ ALL: t("All Levels"), ROOT: t("Root Categories") }}
+              onChange={(value) => {
+                setLevel(value as Level);
+                setPageNumber(0);
+              }}
+            />
+            {hasActiveFilters && (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={resetFilters}
+                className="h-11 w-full rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
+              >
+                {t("Reset")}
+              </Button>
+            )}
           </div>
 
           {categoriesQuery.isError ? (
@@ -721,17 +712,26 @@ function FilterSelect({
   options,
   onChange,
   compact = false,
+  toolbar = false,
 }: {
   label: string;
   value: string;
   options: Record<string, string>;
   onChange: (value: string) => void;
   compact?: boolean;
+  toolbar?: boolean;
 }) {
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
-        className={`h-11 rounded-xl text-sm ${compact ? "admin-page-size w-36" : "w-auto min-w-[130px]"}`}
+        aria-label={label}
+        className={`h-11 rounded-xl text-sm ${
+          compact
+            ? "admin-page-size w-36"
+            : toolbar
+              ? "w-full bg-muted/60 px-3.5 shadow-sm"
+              : "w-auto min-w-[130px]"
+        }`}
       >
         <SelectValue value={options[value]} />
       </SelectTrigger>
@@ -742,7 +742,6 @@ function FilterSelect({
           </SelectItem>
         ))}
       </SelectContent>
-      <span className="sr-only">{label}</span>
     </Select>
   );
 }

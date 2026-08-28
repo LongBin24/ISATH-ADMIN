@@ -423,6 +423,8 @@ export default function CurrencyManager() {
     setCurrentPage(1);
   }
 
+  const hasFilters = Boolean(query.trim() || statusFilter !== "ALL");
+
   return (
     <div className="space-y-7 font-google-sans">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -563,9 +565,15 @@ export default function CurrencyManager() {
           </p>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="filter-card flex flex-col gap-3 text-base sm:flex-row">
+          <div
+            className={`filter-card grid gap-2 text-base md:items-center ${
+              hasFilters
+                ? "md:grid-cols-[minmax(240px,3.5fr)_repeat(2,minmax(150px,1fr))]"
+                : "md:grid-cols-[minmax(280px,4.5fr)_minmax(150px,1fr)]"
+            }`}
+          >
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={query}
                 onChange={(event) => {
@@ -573,7 +581,7 @@ export default function CurrencyManager() {
                   setCurrentPage(1);
                 }}
                 placeholder={t("Search currency...")}
-                className="h-11 rounded-xl pl-9 text-base"
+                className="h-11 rounded-xl bg-background pl-10 text-base shadow-sm"
               />
             </div>
             <Select
@@ -583,7 +591,7 @@ export default function CurrencyManager() {
                 setCurrentPage(1);
               }}
             >
-              <SelectTrigger className="h-11 w-full rounded-xl text-base sm:w-48">
+              <SelectTrigger className="h-11 w-full rounded-xl bg-muted/60 text-base shadow-sm">
                 <SelectValue
                   value={
                     {
@@ -605,6 +613,16 @@ export default function CurrencyManager() {
                 <SelectItem value="INACTIVE">{t("Inactive")}</SelectItem>
               </SelectContent>
             </Select>
+            {hasFilters && (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={resetFilters}
+                className="h-11 w-full rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
+              >
+                {t("Reset")}
+              </Button>
+            )}
           </div>
 
           {currenciesQuery.isError ? (
