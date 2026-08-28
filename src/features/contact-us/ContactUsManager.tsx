@@ -71,10 +71,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 import { cn } from "@/lib/utils";
-import {
-  useGetContactByIdQuery,
-  useGetContactMessagesQuery,
-} from "./api";
+import { useGetContactByIdQuery, useGetContactMessagesQuery } from "./api";
 import type {
   ContactMessage,
   ContactQueryParams,
@@ -94,10 +91,12 @@ function getInitials(name: string): string {
 }
 
 function dateText(value?: string | null, exact = false) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
-  return exact ? format(date, "PPp") : formatDistanceToNow(date, { addSuffix: true });
+  if (Number.isNaN(date.getTime())) return "N/A";
+  return exact
+    ? format(date, "PPp")
+    : formatDistanceToNow(date, { addSuffix: true });
 }
 
 export function ContactUsManager() {
@@ -160,7 +159,7 @@ export function ContactUsManager() {
           (m.phone && m.phone.includes(term)) ||
           m.subject.toLowerCase().includes(term) ||
           (m.messagePreview && m.messagePreview.toLowerCase().includes(term)) ||
-          (m.message && m.message.toLowerCase().includes(term))
+          (m.message && m.message.toLowerCase().includes(term)),
       );
     }
     if (userType === "REGISTERED") {
@@ -171,12 +170,12 @@ export function ContactUsManager() {
     if (sortBy === "NEWEST") {
       result.sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
     } else if (sortBy === "OLDEST") {
       result.sort(
         (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       );
     } else if (sortBy === "NAME") {
       result.sort((a, b) => a.name.localeCompare(b.name));
@@ -185,14 +184,14 @@ export function ContactUsManager() {
   }, [messages, search, userType, sortBy]);
 
   const hasFilters = Boolean(
-    search.trim() || userType !== "ALL" || sortBy !== "NEWEST"
+    search.trim() || userType !== "ALL" || sortBy !== "NEWEST",
   );
 
   const pageNumbers = useMemo(() => {
     const start = Math.max(0, Math.min(safePage - 2, totalPages - 5));
     return Array.from(
       { length: Math.min(5, totalPages) },
-      (_, index) => start + index
+      (_, index) => start + index,
     );
   }, [safePage, totalPages]);
 
@@ -224,7 +223,7 @@ export function ContactUsManager() {
           </h1>
           <p className="mt-1 max-w-3xl text-sm text-muted-foreground font-normal">
             {t(
-              "Manage, view, and respond to incoming contact requests from registered users and public visitors."
+              "Manage, view, and respond to incoming contact requests from registered users and public visitors.",
             )}
           </p>
         </div>
@@ -247,13 +246,13 @@ export function ContactUsManager() {
             <StatCard
               icon={UserCheck}
               label={t("Registered Users")}
-              value={registeredQuery.data?.totalElements ?? "—"}
+              value={registeredQuery.data?.totalElements ?? "N/A"}
               helper={t("From logged-in accounts")}
             />
             <StatCard
               icon={UserX}
               label={t("Guest Inquiries")}
-              value={guestQuery.data?.totalElements ?? "—"}
+              value={guestQuery.data?.totalElements ?? "N/A"}
               helper={t("From public contact form")}
             />
             <StatCard
@@ -288,23 +287,30 @@ export function ContactUsManager() {
           </CardTitle>
           <p className="text-sm text-muted-foreground font-normal">
             {t(
-              "Monitor, search, and respond to inquiries submitted through the contact form."
+              "Monitor, search, and respond to inquiries submitted through the contact form.",
             )}
           </p>
         </CardHeader>
         <CardContent className="space-y-5">
           {/* Filters Row */}
-          <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <div
+            className={cn(
+              "grid gap-2 md:grid-cols-2 xl:items-center",
+              hasFilters
+                ? "xl:grid-cols-[minmax(240px,3.5fr)_repeat(3,minmax(140px,1fr))]"
+                : "xl:grid-cols-[minmax(280px,4.5fr)_repeat(2,minmax(140px,1fr))]",
+            )}
+          >
+            <div className="relative md:col-span-2 xl:col-span-1">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(event) => {
                   setSearch(event.target.value);
                   setPage(0);
                 }}
-                placeholder={t("Search by name, email, phone, or subject...")}
-                className="h-11 rounded-xl pl-9 pr-8 text-sm"
+                placeholder={t("Search user...")}
+                className="h-11 rounded-xl bg-background pl-10 pr-9 text-sm shadow-sm"
               />
               {search && (
                 <button
@@ -319,7 +325,7 @@ export function ContactUsManager() {
                 </button>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="grid gap-2 sm:grid-cols-2 md:col-span-2 xl:contents">
               <FilterSelect
                 label={t("User Type")}
                 value={userType}
@@ -349,7 +355,7 @@ export function ContactUsManager() {
               {hasFilters && (
                 <Button
                   variant="ghost"
-                  className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium"
+                  className="h-11 w-full shrink-0 rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
                   onClick={resetFilters}
                 >
                   {t("Reset")}
@@ -500,7 +506,9 @@ function StatCard({
         <div>
           <p className="text-sm font-medium text-muted-foreground">{label}</p>
           <p className="mt-1 text-3xl font-bold">{value}</p>
-          <p className="mt-1 text-sm text-muted-foreground font-normal">{helper}</p>
+          <p className="mt-1 text-sm text-muted-foreground font-normal">
+            {helper}
+          </p>
         </div>
       </CardContent>
     </Card>
@@ -523,14 +531,18 @@ function FilterSelect({
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
         className={cn(
-          "h-11 rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D] min-w-[140px]",
+          "h-11 min-w-[140px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
           isSelected &&
-            "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
+            "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
         )}
       >
         <SelectValue placeholder={label} value={options[value]} />
       </SelectTrigger>
-      <SelectContent value={value} onValueChange={onChange} className="rounded-xl">
+      <SelectContent
+        value={value}
+        onValueChange={onChange}
+        className="rounded-xl"
+      >
         {Object.entries(options).map(([key, labelText]) => (
           <SelectItem key={key} value={key}>
             {labelText}
@@ -598,11 +610,13 @@ function ContactRow({
             {item.phone}
           </a>
         ) : (
-          "—"
+          "N/A"
         )}
       </TableCell>
       <TableCell className="py-4">
-        <p className="max-w-72 truncate text-base font-semibold">{item.subject}</p>
+        <p className="max-w-72 truncate text-base font-semibold">
+          {item.subject}
+        </p>
         <p className="mt-1 max-w-72 truncate text-sm text-muted-foreground font-normal">
           {item.messagePreview || item.message}
         </p>
@@ -718,7 +732,7 @@ function ContactDetail({
     navigator.clipboard.writeText(
       `Name: ${data.name}\nEmail: ${data.email}\nPhone: ${
         data.phone || "N/A"
-      }\nSubject: ${data.subject}\nMessage: ${data.message || data.messagePreview}`
+      }\nSubject: ${data.subject}\nMessage: ${data.message || data.messagePreview}`,
     );
     toast.success(t("Contact info copied to clipboard!"));
   };
@@ -817,7 +831,7 @@ function ContactDetail({
               type="button"
               onClick={() => {
                 navigator.clipboard.writeText(
-                  data.message || data.messagePreview || ""
+                  data.message || data.messagePreview || "",
                 );
                 toast.success(t("Copied!"));
               }}
@@ -893,9 +907,9 @@ function ContactDetail({
             onClick={() => {
               window.open(
                 `mailto:${data.email}?subject=Re: ${encodeURIComponent(
-                  data.subject
+                  data.subject,
                 )}`,
-                "_blank"
+                "_blank",
               );
             }}
           >
@@ -934,9 +948,17 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 py-14 text-center">
       <Mail className="size-8 text-destructive" />
-      <p className="text-lg font-semibold">{t("Unable to load contact messages")}</p>
-      <p className="text-sm text-muted-foreground font-normal">{t("Please try again.")}</p>
-      <Button variant="outline" onClick={onRetry} className="text-sm font-medium">
+      <p className="text-lg font-semibold">
+        {t("Unable to load contact messages")}
+      </p>
+      <p className="text-sm text-muted-foreground font-normal">
+        {t("Please try again.")}
+      </p>
+      <Button
+        variant="outline"
+        onClick={onRetry}
+        className="text-sm font-medium"
+      >
         <RefreshCw className="mr-2 size-3.5" />
         {t("Retry")}
       </Button>
@@ -960,11 +982,19 @@ function EmptyState({
       </p>
       <p className="text-xs text-muted-foreground font-normal">
         {filtered
-          ? t("No contact messages match the current search or filter criteria.")
-          : t("Incoming messages from website visitors and users will appear here.")}
+          ? t(
+              "No contact messages match the current search or filter criteria.",
+            )
+          : t(
+              "Incoming messages from website visitors and users will appear here.",
+            )}
       </p>
       {filtered && (
-        <Button variant="outline" onClick={onReset} className="text-xs font-medium">
+        <Button
+          variant="outline"
+          onClick={onReset}
+          className="text-xs font-medium"
+        >
           {t("Reset Filters")}
         </Button>
       )}

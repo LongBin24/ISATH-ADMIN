@@ -44,7 +44,7 @@ export function ContactUsFilters({
         <Input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={t("Search by name, email, phone, or subject...")}
+          placeholder={t("Search user...")}
           className="h-11 w-full rounded-xl border-slate-200/80 bg-white/80 pl-10 pr-9 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-[#003377] focus:bg-white dark:border-slate-800 dark:bg-slate-900/80 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-[#FFC83D]"
         />
         {search && (

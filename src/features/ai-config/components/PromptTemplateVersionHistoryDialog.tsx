@@ -367,7 +367,7 @@ export function PromptTemplateVersionHistoryDialog({
   }
 
   function formatDate(val?: string | null) {
-    if (!val) return "—";
+    if (!val) return "N/A";
     try {
       return format(new Date(val), "PPp");
     } catch {

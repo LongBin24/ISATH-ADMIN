@@ -25,22 +25,79 @@ import {
   X,
   XCircle,
 } from "lucide-react";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationSummary } from "@/components/ui/pagination";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationSummary,
+} from "@/components/ui/pagination";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetBody, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetBody,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { DynamicIcon } from "./components/DynamicIcon";
 import {
   type AdminCreateCategoryPayload,
@@ -58,7 +115,10 @@ type CategoryType = "ALL" | "INCOME" | "EXPENSE" | "BOTH";
 type CategoryStatus = "ALL" | "ACTIVE" | "INACTIVE" | "DELETED";
 type Classification = "ALL" | "SYSTEM" | "DEFAULT" | "CUSTOM";
 type Level = "ALL" | "ROOT";
-type ConfirmAction = { kind: "activate" | "deactivate" | "delete" | "root"; category: Category } | null;
+type ConfirmAction = {
+  kind: "activate" | "deactivate" | "delete" | "root";
+  category: Category;
+} | null;
 type FormState = {
   name: string;
   categoryType: Exclude<CategoryType, "ALL">;
@@ -71,9 +131,41 @@ type FormState = {
   status: Exclude<CategoryStatus, "ALL" | "DELETED">;
 };
 
-const ICONS = ["Utensils", "Car", "Home", "ShoppingBag", "WalletCards", "BriefcaseBusiness", "Heart", "GraduationCap", "Plane", "Coffee", "Music", "Box"];
-const COLORS = ["#F59E0B", "#22C55E", "#3B82F6", "#8B5CF6", "#EC4899", "#EF4444", "#06B6D4", "#64748B"];
-const EMPTY_FORM: FormState = { name: "", categoryType: "EXPENSE", parentId: "", categoryKey: "", icon: "Box", color: "#F59E0B", systemCategory: false, defaultCategory: false, status: "ACTIVE" };
+const ICONS = [
+  "Utensils",
+  "Car",
+  "Home",
+  "ShoppingBag",
+  "WalletCards",
+  "BriefcaseBusiness",
+  "Heart",
+  "GraduationCap",
+  "Plane",
+  "Coffee",
+  "Music",
+  "Box",
+];
+const COLORS = [
+  "#F59E0B",
+  "#22C55E",
+  "#3B82F6",
+  "#8B5CF6",
+  "#EC4899",
+  "#EF4444",
+  "#06B6D4",
+  "#64748B",
+];
+const EMPTY_FORM: FormState = {
+  name: "",
+  categoryType: "EXPENSE",
+  parentId: "",
+  categoryKey: "",
+  icon: "Box",
+  color: "#F59E0B",
+  systemCategory: false,
+  defaultCategory: false,
+  status: "ACTIVE",
+};
 
 function friendlyType(type?: string) {
   if (type?.toLowerCase() === "income") return "Income";
@@ -82,27 +174,38 @@ function friendlyType(type?: string) {
 }
 
 function categoryTypeValue(type?: string): FormState["categoryType"] {
-  return type?.toLowerCase() === "income" ? "INCOME" : type?.toLowerCase() === "both" ? "BOTH" : "EXPENSE";
+  return type?.toLowerCase() === "income"
+    ? "INCOME"
+    : type?.toLowerCase() === "both"
+      ? "BOTH"
+      : "EXPENSE";
 }
 
 function exactDate(value?: string | null) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : format(date, "PPp");
+  return Number.isNaN(date.getTime()) ? "N/A" : format(date, "PPp");
 }
 
 function errorMessage(error: unknown, fallback: string) {
-  if (typeof error !== "object" || error === null || !("data" in error)) return fallback;
+  if (typeof error !== "object" || error === null || !("data" in error))
+    return fallback;
   const data = (error as { data?: unknown }).data;
-  if (typeof data !== "object" || data === null || !("message" in data)) return fallback;
+  if (typeof data !== "object" || data === null || !("message" in data))
+    return fallback;
   const message = (data as { message?: unknown }).message;
-  return typeof message === "string" && message.length < 240 ? message : fallback;
+  return typeof message === "string" && message.length < 240
+    ? message
+    : fallback;
 }
 
-function queryForClassification(value: Classification): Pick<CategoryQueryParams, "systemCategory" | "defaultCategory"> {
+function queryForClassification(
+  value: Classification,
+): Pick<CategoryQueryParams, "systemCategory" | "defaultCategory"> {
   if (value === "SYSTEM") return { systemCategory: true };
   if (value === "DEFAULT") return { defaultCategory: true };
-  if (value === "CUSTOM") return { systemCategory: false, defaultCategory: false };
+  if (value === "CUSTOM")
+    return { systemCategory: false, defaultCategory: false };
   return {};
 }
 
@@ -114,7 +217,6 @@ export default function CategoryManager() {
   const [status, setStatus] = useState<CategoryStatus>("ALL");
   const [classification, setClassification] = useState<Classification>("ALL");
   const [level, setLevel] = useState<Level>("ALL");
-  const [includeHidden, setIncludeHidden] = useState(true);
   const [pageNumber, setPageNumber] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [selected, setSelected] = useState<Category | null>(null);
@@ -123,24 +225,54 @@ export default function CategoryManager() {
   const [editing, setEditing] = useState<Category | null>(null);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
 
-  const listParams = useMemo<CategoryQueryParams>(() => ({
-    ...(deferredKeyword ? { keyword: deferredKeyword } : {}),
-    ...(type !== "ALL" ? { type } : {}),
-    ...(status !== "ALL" ? { status } : {}),
-    ...queryForClassification(classification),
-    ...(level === "ROOT" ? { rootOnly: true } : {}),
-    includeHidden,
-    pageNumber,
-    pageSize,
-    sortBy: "name",
-    sortDirection: "ASC",
-  }), [classification, deferredKeyword, includeHidden, level, pageNumber, pageSize, status, type]);
+  const listParams = useMemo<CategoryQueryParams>(
+    () => ({
+      ...(deferredKeyword ? { keyword: deferredKeyword } : {}),
+      ...(type !== "ALL" ? { type } : {}),
+      ...(status !== "ALL" ? { status } : {}),
+      ...queryForClassification(classification),
+      ...(level === "ROOT" ? { rootOnly: true } : {}),
+      includeHidden: true,
+      pageNumber,
+      pageSize,
+      sortBy: "name",
+      sortDirection: "ASC",
+    }),
+    [
+      classification,
+      deferredKeyword,
+      level,
+      pageNumber,
+      pageSize,
+      status,
+      type,
+    ],
+  );
 
   const categoriesQuery = useGetAdminCategoriesQuery(listParams);
-  const totalQuery = useGetAdminCategoriesQuery({ pageNumber: 0, pageSize: 1, includeHidden: true });
-  const incomeQuery = useGetAdminCategoriesQuery({ type: "INCOME", pageNumber: 0, pageSize: 1, includeHidden: true });
-  const expenseQuery = useGetAdminCategoriesQuery({ type: "EXPENSE", pageNumber: 0, pageSize: 1, includeHidden: true });
-  const systemQuery = useGetAdminCategoriesQuery({ systemCategory: true, pageNumber: 0, pageSize: 1, includeHidden: true });
+  const totalQuery = useGetAdminCategoriesQuery({
+    pageNumber: 0,
+    pageSize: 1,
+    includeHidden: true,
+  });
+  const incomeQuery = useGetAdminCategoriesQuery({
+    type: "INCOME",
+    pageNumber: 0,
+    pageSize: 1,
+    includeHidden: true,
+  });
+  const expenseQuery = useGetAdminCategoriesQuery({
+    type: "EXPENSE",
+    pageNumber: 0,
+    pageSize: 1,
+    includeHidden: true,
+  });
+  const systemQuery = useGetAdminCategoriesQuery({
+    systemCategory: true,
+    pageNumber: 0,
+    pageSize: 1,
+    includeHidden: true,
+  });
   const [createCategory, createState] = useCreateAdminCategoryMutation();
   const [updateCategory, updateState] = useUpdateCategoryMutation();
   const [deleteCategory, deleteState] = useDeleteCategoryMutation();
@@ -151,15 +283,29 @@ export default function CategoryManager() {
 
   const pageNumbers = useMemo(() => {
     const start = Math.max(0, Math.min(safePage - 2, totalPages - 5));
-    return Array.from({ length: Math.min(5, totalPages) }, (_, index) => start + index);
+    return Array.from(
+      { length: Math.min(5, totalPages) },
+      (_, index) => start + index,
+    );
   }, [safePage, totalPages]);
 
   function resetFilters() {
-    setKeyword(""); setType("ALL"); setStatus("ALL"); setClassification("ALL"); setLevel("ALL"); setIncludeHidden(true); setPageNumber(0);
+    setKeyword("");
+    setType("ALL");
+    setStatus("ALL");
+    setClassification("ALL");
+    setLevel("ALL");
+    setPageNumber(0);
   }
 
-  function openCreate() { setEditing(null); setFormOpen(true); }
-  function openEdit(category: Category) { setEditing(category); setFormOpen(true); }
+  function openCreate() {
+    setEditing(null);
+    setFormOpen(true);
+  }
+  function openEdit(category: Category) {
+    setEditing(category);
+    setFormOpen(true);
+  }
 
   async function runConfirm() {
     if (!confirmAction) return;
@@ -168,12 +314,25 @@ export default function CategoryManager() {
       if (kind === "delete") {
         await deleteCategory(category.id).unwrap();
         toast.success(`${category.name} deleted successfully.`);
-        if (selected?.id === category.id) { setDetailOpen(false); setSelected(null); }
+        if (selected?.id === category.id) {
+          setDetailOpen(false);
+          setSelected(null);
+        }
       } else {
-        const data: UpdateCategoryPayload = kind === "root" ? { moveToRoot: true } : { status: kind === "activate" ? "ACTIVE" : "INACTIVE" };
-        const updated = await updateCategory({ id: category.id, data }).unwrap();
+        const data: UpdateCategoryPayload =
+          kind === "root"
+            ? { moveToRoot: true }
+            : { status: kind === "activate" ? "ACTIVE" : "INACTIVE" };
+        const updated = await updateCategory({
+          id: category.id,
+          data,
+        }).unwrap();
         if (selected?.id === updated.id) setSelected(updated);
-        toast.success(kind === "root" ? `${category.name} moved to root.` : `${category.name} ${kind}d successfully.`);
+        toast.success(
+          kind === "root"
+            ? `${category.name} moved to root.`
+            : `${category.name} ${kind}d successfully.`,
+        );
       }
       setConfirmAction(null);
     } catch (error) {
@@ -181,98 +340,226 @@ export default function CategoryManager() {
     }
   }
 
-  const statLoading = totalQuery.isLoading || incomeQuery.isLoading || expenseQuery.isLoading || systemQuery.isLoading;
+  const statLoading =
+    totalQuery.isLoading ||
+    incomeQuery.isLoading ||
+    expenseQuery.isLoading ||
+    systemQuery.isLoading;
   const start = page?.totalElements ? safePage * pageSize + 1 : 0;
   const end = Math.min((safePage + 1) * pageSize, page?.totalElements ?? 0);
 
   const hasActiveFilters = Boolean(
     deferredKeyword ||
-      type !== "ALL" ||
-      status !== "ALL" ||
-      classification !== "ALL" ||
-      level !== "ALL" ||
-      !includeHidden
+    type !== "ALL" ||
+    status !== "ALL" ||
+    classification !== "ALL" ||
+    level !== "ALL",
   );
 
   return (
     <div className="space-y-7 font-google-sans">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">{t("Category Management")}</h1>
-          <p className="mt-1 max-w-3xl text-sm text-muted-foreground font-normal">{t("Manage income, expense, system, default, and hierarchical categories used throughout iStash.")}</p>
+          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
+            {t("Category Management")}
+          </h1>
+          <p className="mt-1 max-w-3xl text-sm text-muted-foreground font-normal">
+            {t(
+              "Manage income, expense, system, default, and hierarchical categories used throughout iStash.",
+            )}
+          </p>
         </div>
-        <Button size="lg" onClick={openCreate} className="bg-[#FEDB55] text-base font-medium text-[#003377] hover:bg-[#f0ca43]">
-          <Plus className="mr-2 size-4" />{t("Add Category")}
+        <Button
+          size="lg"
+          onClick={openCreate}
+          className="bg-[#FEDB55] text-base font-medium text-[#003377] hover:bg-[#f0ca43]"
+        >
+          <Plus className="mr-2 size-4" />
+          {t("Add Category")}
         </Button>
       </header>
 
       <div className="admin-stat-grid grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {statLoading ? Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-36 rounded-2xl" />) : <>
-          <StatCard icon={Tags} label={t("Total Categories")} value={totalQuery.data?.totalElements ?? "—"} helper={t("All categories")} />
-          <StatCard icon={CircleDollarSign} label={t("Income")} value={incomeQuery.data?.totalElements ?? "—"} helper={t("Income categories")} />
-          <StatCard icon={WalletCards} label={t("Expense")} value={expenseQuery.data?.totalElements ?? "—"} helper={t("Expense categories")} />
-          <StatCard icon={ShieldCheck} label={t("System Categories")} value={systemQuery.data?.totalElements ?? "—"} helper={t("Managed by iStash")} />
-        </>}
+        {statLoading ? (
+          Array.from({ length: 4 }).map((_, index) => (
+            <Skeleton key={index} className="h-36 rounded-2xl" />
+          ))
+        ) : (
+          <>
+            <StatCard
+              icon={Tags}
+              label={t("Total Categories")}
+              value={totalQuery.data?.totalElements ?? "N/A"}
+              helper={t("All categories")}
+            />
+            <StatCard
+              icon={CircleDollarSign}
+              label={t("Income")}
+              value={incomeQuery.data?.totalElements ?? "N/A"}
+              helper={t("Income categories")}
+            />
+            <StatCard
+              icon={WalletCards}
+              label={t("Expense")}
+              value={expenseQuery.data?.totalElements ?? "N/A"}
+              helper={t("Expense categories")}
+            />
+            <StatCard
+              icon={ShieldCheck}
+              label={t("System Categories")}
+              value={systemQuery.data?.totalElements ?? "N/A"}
+              helper={t("Managed by iStash")}
+            />
+          </>
+        )}
       </div>
 
       <Card className="rounded-2xl border-border shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold md:text-xl">{t("Categories")}</CardTitle>
-          <p className="text-sm text-muted-foreground font-normal">{t("Search, organize, and manage the category hierarchy.")}</p>
+          <CardTitle className="text-lg font-semibold md:text-xl">
+            {t("Categories")}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground font-normal">
+            {t("Search, organize, and manage the category hierarchy.")}
+          </p>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <div
+            className={`grid gap-2 md:grid-cols-2 xl:items-center ${
+              hasActiveFilters
+                ? "xl:grid-cols-[minmax(240px,3.5fr)_repeat(5,minmax(130px,1fr))]"
+                : "xl:grid-cols-[minmax(280px,4.5fr)_repeat(4,minmax(130px,1fr))]"
+            }`}
+          >
+            <div className="relative md:col-span-2 xl:col-span-1">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={keyword}
-                onChange={(event) => { setKeyword(event.target.value); setPageNumber(0); }}
-                placeholder={t("Search by category name or keyword...")}
-                className="h-11 rounded-xl pl-9 pr-8 text-sm"
+                onChange={(event) => {
+                  setKeyword(event.target.value);
+                  setPageNumber(0);
+                }}
+                placeholder={t("Search category...")}
+                className="h-11 rounded-xl bg-background pl-10 pr-9 text-sm shadow-sm"
               />
               {keyword && (
                 <button
                   type="button"
-                  onClick={() => { setKeyword(""); setPageNumber(0); }}
+                  onClick={() => {
+                    setKeyword("");
+                    setPageNumber(0);
+                  }}
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
                 >
                   <X className="size-3.5" />
                 </button>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <FilterSelect label="Type" value={type} options={{ ALL: t("All Types"), INCOME: t("Income"), EXPENSE: t("Expense"), BOTH: t("Income & Expense") }} onChange={(value) => { setType(value as CategoryType); setPageNumber(0); }} />
-              <FilterSelect label="Status" value={status} options={{ ALL: t("All Statuses"), ACTIVE: t("Active"), INACTIVE: t("Inactive"), DELETED: t("Deleted") }} onChange={(value) => { setStatus(value as CategoryStatus); setPageNumber(0); }} />
-              <FilterSelect label="Classification" value={classification} options={{ ALL: t("All Categories"), SYSTEM: t("System Categories"), DEFAULT: t("Default Categories"), CUSTOM: t("Custom Categories") }} onChange={(value) => { setClassification(value as Classification); setPageNumber(0); }} />
-              <FilterSelect label="Level" value={level} options={{ ALL: t("All Levels"), ROOT: t("Root Categories") }} onChange={(value) => { setLevel(value as Level); setPageNumber(0); }} />
-              {hasActiveFilters && (
-                <>
-                  <FilterSelect label="Visibility" value={includeHidden ? "ALL" : "VISIBLE"} options={{ ALL: t("Include Hidden"), VISIBLE: t("Visible Only") }} onChange={(value) => { setIncludeHidden(value === "ALL"); setPageNumber(0); }} />
-                  <Button variant="ghost" className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium" onClick={resetFilters}>{t("Reset")}</Button>
-                </>
-              )}
-            </div>
+            <FilterSelect
+              label="Type"
+              value={type}
+              toolbar
+              options={{
+                ALL: t("All Types"),
+                INCOME: t("Income"),
+                EXPENSE: t("Expense"),
+                BOTH: t("Income & Expense"),
+              }}
+              onChange={(value) => {
+                setType(value as CategoryType);
+                setPageNumber(0);
+              }}
+            />
+            <FilterSelect
+              label="Status"
+              value={status}
+              toolbar
+              options={{
+                ALL: t("All Statuses"),
+                ACTIVE: t("Active"),
+                INACTIVE: t("Inactive"),
+                DELETED: t("Deleted"),
+              }}
+              onChange={(value) => {
+                setStatus(value as CategoryStatus);
+                setPageNumber(0);
+              }}
+            />
+            <FilterSelect
+              label="Classification"
+              value={classification}
+              toolbar
+              options={{
+                ALL: t("All Categories"),
+                SYSTEM: t("System Categories"),
+                DEFAULT: t("Default Categories"),
+                CUSTOM: t("Custom Categories"),
+              }}
+              onChange={(value) => {
+                setClassification(value as Classification);
+                setPageNumber(0);
+              }}
+            />
+            <FilterSelect
+              label="Level"
+              value={level}
+              toolbar
+              options={{ ALL: t("All Levels"), ROOT: t("Root Categories") }}
+              onChange={(value) => {
+                setLevel(value as Level);
+                setPageNumber(0);
+              }}
+            />
+            {hasActiveFilters && (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={resetFilters}
+                className="h-11 w-full rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
+              >
+                {t("Reset")}
+              </Button>
+            )}
           </div>
 
           {categoriesQuery.isError ? (
             <ErrorState onRetry={() => categoriesQuery.refetch()} />
-          ) : categoriesQuery.isLoading || (categoriesQuery.isFetching && !page) ? (
+          ) : categoriesQuery.isLoading ||
+            (categoriesQuery.isFetching && !page) ? (
             <TableSkeleton />
           ) : categories.length === 0 ? (
-            <EmptyState filtered={hasActiveFilters} onReset={resetFilters} onCreate={openCreate} />
+            <EmptyState
+              filtered={hasActiveFilters}
+              onReset={resetFilters}
+              onCreate={openCreate}
+            />
           ) : (
             <>
               <div className="overflow-x-auto rounded-2xl border border-border">
                 <Table>
                   <TableHeader className="bg-muted/40">
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="min-w-64 text-base font-semibold">{t("Category")}</TableHead>
-                      <TableHead className="text-base font-semibold">{t("Type")}</TableHead>
-                      <TableHead className="min-w-36 text-base font-semibold">{t("Parent")}</TableHead>
-                      <TableHead className="min-w-40 text-base font-semibold">{t("Classification")}</TableHead>
-                      <TableHead className="text-base font-semibold">{t("Status")}</TableHead>
-                      <TableHead className="min-w-40 text-base font-semibold">{t("Updated")}</TableHead>
-                      <TableHead className="w-14 text-right text-base font-semibold">{t("Actions")}</TableHead>
+                      <TableHead className="min-w-64 text-base font-semibold">
+                        {t("Category")}
+                      </TableHead>
+                      <TableHead className="text-base font-semibold">
+                        {t("Type")}
+                      </TableHead>
+                      <TableHead className="min-w-36 text-base font-semibold">
+                        {t("Parent")}
+                      </TableHead>
+                      <TableHead className="min-w-40 text-base font-semibold">
+                        {t("Classification")}
+                      </TableHead>
+                      <TableHead className="text-base font-semibold">
+                        {t("Status")}
+                      </TableHead>
+                      <TableHead className="min-w-40 text-base font-semibold">
+                        {t("Updated")}
+                      </TableHead>
+                      <TableHead className="w-14 text-right text-base font-semibold">
+                        {t("Actions")}
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -280,9 +567,14 @@ export default function CategoryManager() {
                       <CategoryRow
                         key={category.id}
                         category={category}
-                        onView={() => { setSelected(category); setDetailOpen(true); }}
+                        onView={() => {
+                          setSelected(category);
+                          setDetailOpen(true);
+                        }}
                         onEdit={() => openEdit(category)}
-                        onConfirm={(kind) => setConfirmAction({ kind, category })}
+                        onConfirm={(kind) =>
+                          setConfirmAction({ kind, category })
+                        }
                       />
                     ))}
                   </TableBody>
@@ -324,7 +616,9 @@ export default function CategoryManager() {
                       <PaginationItem>
                         <PaginationPrevious
                           disabled={safePage === 0}
-                          onClick={() => setPageNumber((p) => Math.max(0, p - 1))}
+                          onClick={() =>
+                            setPageNumber((p) => Math.max(0, p - 1))
+                          }
                         />
                       </PaginationItem>
                       {pageNumbers.map((num) => (
@@ -340,7 +634,11 @@ export default function CategoryManager() {
                       <PaginationItem>
                         <PaginationNext
                           disabled={safePage >= totalPages - 1}
-                          onClick={() => setPageNumber((p) => Math.min(totalPages - 1, p + 1))}
+                          onClick={() =>
+                            setPageNumber((p) =>
+                              Math.min(totalPages - 1, p + 1),
+                            )
+                          }
                         />
                       </PaginationItem>
                     </PaginationContent>
@@ -352,14 +650,44 @@ export default function CategoryManager() {
         </CardContent>
       </Card>
 
-      <CategoryDetailSheet category={selected} open={detailOpen} onOpenChange={setDetailOpen} onEdit={openEdit} />
-      <CategoryFormDialog category={editing} open={formOpen} onOpenChange={setFormOpen} onSaved={(category) => { if (selected?.id === category.id) setSelected(category); }} createCategory={createCategory} updateCategory={updateCategory} isLoading={createState.isLoading || updateState.isLoading} />
-      <ConfirmationDialog action={confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)} onConfirm={runConfirm} isLoading={deleteState.isLoading || updateState.isLoading} />
+      <CategoryDetailSheet
+        category={selected}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        onEdit={openEdit}
+      />
+      <CategoryFormDialog
+        category={editing}
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        onSaved={(category) => {
+          if (selected?.id === category.id) setSelected(category);
+        }}
+        createCategory={createCategory}
+        updateCategory={updateCategory}
+        isLoading={createState.isLoading || updateState.isLoading}
+      />
+      <ConfirmationDialog
+        action={confirmAction}
+        onOpenChange={(open) => !open && setConfirmAction(null)}
+        onConfirm={runConfirm}
+        isLoading={deleteState.isLoading || updateState.isLoading}
+      />
     </div>
   );
 }
 
-function StatCard({ icon: Icon, label, value, helper }: { icon: typeof Tags; label: string; value: React.ReactNode; helper: string }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  helper,
+}: {
+  icon: typeof Tags;
+  label: string;
+  value: React.ReactNode;
+  helper: string;
+}) {
   return (
     <Card className="rounded-2xl shadow-sm">
       <CardContent className="flex gap-4 p-5 sm:p-6">
@@ -369,25 +697,51 @@ function StatCard({ icon: Icon, label, value, helper }: { icon: typeof Tags; lab
         <div>
           <p className="text-sm font-medium text-muted-foreground">{label}</p>
           <p className="mt-1 text-3xl font-bold text-foreground">{value}</p>
-          <p className="mt-1 text-sm text-muted-foreground font-normal">{helper}</p>
+          <p className="mt-1 text-sm text-muted-foreground font-normal">
+            {helper}
+          </p>
         </div>
       </CardContent>
     </Card>
   );
 }
 
-function FilterSelect({ label, value, options, onChange, compact = false }: { label: string; value: string; options: Record<string, string>; onChange: (value: string) => void; compact?: boolean }) {
+function FilterSelect({
+  label,
+  value,
+  options,
+  onChange,
+  compact = false,
+  toolbar = false,
+}: {
+  label: string;
+  value: string;
+  options: Record<string, string>;
+  onChange: (value: string) => void;
+  compact?: boolean;
+  toolbar?: boolean;
+}) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className={`h-11 rounded-xl text-sm ${compact ? "admin-page-size w-36" : "w-auto min-w-[130px]"}`}>
+      <SelectTrigger
+        aria-label={label}
+        className={`h-11 rounded-xl text-sm ${
+          compact
+            ? "admin-page-size w-36"
+            : toolbar
+              ? "w-full bg-muted/60 px-3.5 shadow-sm"
+              : "w-auto min-w-[130px]"
+        }`}
+      >
         <SelectValue value={options[value]} />
       </SelectTrigger>
       <SelectContent value={value} onValueChange={onChange}>
         {Object.entries(options).map(([key, text]) => (
-          <SelectItem key={key} value={key}>{text}</SelectItem>
+          <SelectItem key={key} value={key}>
+            {text}
+          </SelectItem>
         ))}
       </SelectContent>
-      <span className="sr-only">{label}</span>
     </Select>
   );
 }
@@ -426,7 +780,11 @@ function StatusBadge({ status }: { status?: string }) {
             : "gap-1 border-slate-200 bg-slate-100 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
       }
     >
-      {active ? <CheckCircle2 className="size-3.5" /> : <XCircle className="size-3.5" />}
+      {active ? (
+        <CheckCircle2 className="size-3.5" />
+      ) : (
+        <XCircle className="size-3.5" />
+      )}
       {t(active ? "Active" : status === "DELETED" ? "Deleted" : "Inactive")}
     </Badge>
   );
@@ -437,18 +795,34 @@ function ClassificationBadge({ category }: { category: Category }) {
   return (
     <div className="flex items-center gap-2">
       <Badge variant="outline" className="gap-1 text-sm">
-        {category.systemCategory ? <ShieldCheck className="size-3.5" /> : category.defaultCategory ? <Star className="size-3.5" /> : <Tags className="size-3.5" />}
-        {t(category.systemCategory ? "System" : category.defaultCategory ? "Default" : "Custom")}
+        {category.systemCategory ? (
+          <ShieldCheck className="size-3.5" />
+        ) : category.defaultCategory ? (
+          <Star className="size-3.5" />
+        ) : (
+          <Tags className="size-3.5" />
+        )}
+        {t(
+          category.systemCategory
+            ? "System"
+            : category.defaultCategory
+              ? "Default"
+              : "Custom",
+        )}
       </Badge>
       {category.systemCategory && category.defaultCategory && (
         <Tooltip>
-          <TooltipTrigger><Star className="size-4 text-amber-500" /></TooltipTrigger>
+          <TooltipTrigger>
+            <Star className="size-4 text-amber-500" />
+          </TooltipTrigger>
           <TooltipContent>{t("Default Category")}</TooltipContent>
         </Tooltip>
       )}
       {category.hiddenForCurrentUser && (
         <Tooltip>
-          <TooltipTrigger><EyeOff className="size-4 text-muted-foreground" /></TooltipTrigger>
+          <TooltipTrigger>
+            <EyeOff className="size-4 text-muted-foreground" />
+          </TooltipTrigger>
           <TooltipContent>{t("Hidden")}</TooltipContent>
         </Tooltip>
       )}
@@ -456,60 +830,118 @@ function ClassificationBadge({ category }: { category: Category }) {
   );
 }
 
-function CategoryRow({ category, onView, onEdit, onConfirm }: { category: Category; onView: () => void; onEdit: () => void; onConfirm: (kind: NonNullable<ConfirmAction>["kind"]) => void }) {
+function CategoryRow({
+  category,
+  onView,
+  onEdit,
+  onConfirm,
+}: {
+  category: Category;
+  onView: () => void;
+  onEdit: () => void;
+  onConfirm: (kind: NonNullable<ConfirmAction>["kind"]) => void;
+}) {
   const { t } = useAdminI18n();
   const deleted = category.status === "DELETED";
   return (
     <TableRow className="cursor-pointer" onClick={onView}>
       <TableCell className="py-3.5">
-        <div className={`flex items-center gap-3 ${category.parentId ? "pl-6" : ""}`}>
-          {category.parentId && <span className="text-lg text-muted-foreground">↳</span>}
-          <span className="size-3 shrink-0 rounded-full border border-black/10" style={{ backgroundColor: category.color || "#64748B" }} />
+        <div
+          className={`flex items-center gap-3 ${category.parentId ? "pl-6" : ""}`}
+        >
+          {category.parentId && (
+            <span className="text-lg text-muted-foreground">↳</span>
+          )}
+          <span
+            className="size-3 shrink-0 rounded-full border border-black/10"
+            style={{ backgroundColor: category.color || "#64748B" }}
+          />
           <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-muted">
             <DynamicIcon name={category.icon || "Tags"} className="size-5" />
           </span>
           <div>
-            <p className="text-base font-medium text-foreground">{category.name}</p>
-            <p className="text-sm text-muted-foreground">{category.categoryKey || "—"}</p>
+            <p className="text-base font-medium text-foreground">
+              {category.name}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {category.categoryKey || "N/A"}
+            </p>
           </div>
         </div>
       </TableCell>
-      <TableCell className="py-3.5"><TypeBadge type={category.type} /></TableCell>
-      <TableCell className="py-3.5 text-base text-foreground">{category.parentName || t("Root")}</TableCell>
-      <TableCell className="py-3.5"><ClassificationBadge category={category} /></TableCell>
-      <TableCell className="py-3.5"><StatusBadge status={category.status} /></TableCell>
-      <TableCell className="py-3.5 text-base text-muted-foreground">{exactDate(category.updatedAt)}</TableCell>
-      <TableCell className="py-3.5 text-right" onClick={(event) => event.stopPropagation()}>
+      <TableCell className="py-3.5">
+        <TypeBadge type={category.type} />
+      </TableCell>
+      <TableCell className="py-3.5 text-base text-foreground">
+        {category.parentName || t("Root")}
+      </TableCell>
+      <TableCell className="py-3.5">
+        <ClassificationBadge category={category} />
+      </TableCell>
+      <TableCell className="py-3.5">
+        <StatusBadge status={category.status} />
+      </TableCell>
+      <TableCell className="py-3.5 text-base text-muted-foreground">
+        {exactDate(category.updatedAt)}
+      </TableCell>
+      <TableCell
+        className="py-3.5 text-right"
+        onClick={(event) => event.stopPropagation()}
+      >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="ghost" aria-label={`${category.name} actions`}>
-              <MoreHorizontal className="size-4" />
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              aria-label={`${category.name} actions`}
+              className="size-8.5 rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
+            >
+              <MoreHorizontal className="size-4.5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={onView}>
-              <Eye className="size-4" />{t("View Details")}
+              <Eye className="size-4" />
+              {t("View Details")}
             </DropdownMenuItem>
             {!deleted && (
               <>
                 <DropdownMenuItem onClick={onEdit}>
-                  <Pencil className="size-4" />{t("Edit Category")}
+                  <Pencil className="size-4" />
+                  {t("Edit Category")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={onEdit}>
-                  <Move className="size-4" />{t("Move Category")}
+                  <Move className="size-4" />
+                  {t("Move Category")}
                 </DropdownMenuItem>
                 {category.parentId && (
                   <DropdownMenuItem onClick={() => onConfirm("root")}>
-                    <ArrowUpToLine className="size-4" />{t("Move to Root")}
+                    <ArrowUpToLine className="size-4" />
+                    {t("Move to Root")}
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={() => onConfirm(category.status === "ACTIVE" ? "deactivate" : "activate")}>
-                  {category.status === "ACTIVE" ? <XCircle className="size-4" /> : <CheckCircle2 className="size-4" />}
+                <DropdownMenuItem
+                  onClick={() =>
+                    onConfirm(
+                      category.status === "ACTIVE" ? "deactivate" : "activate",
+                    )
+                  }
+                >
+                  {category.status === "ACTIVE" ? (
+                    <XCircle className="size-4" />
+                  ) : (
+                    <CheckCircle2 className="size-4" />
+                  )}
                   {t(category.status === "ACTIVE" ? "Deactivate" : "Activate")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem destructive onClick={() => onConfirm("delete")}>
-                  <Trash2 className="size-4" />{t("Delete Category")}
+                <DropdownMenuItem
+                  destructive
+                  onClick={() => onConfirm("delete")}
+                >
+                  <Trash2 className="size-4" />
+                  {t("Delete Category")}
                 </DropdownMenuItem>
               </>
             )}
@@ -520,7 +952,17 @@ function CategoryRow({ category, onView, onEdit, onConfirm }: { category: Catego
   );
 }
 
-function CategoryDetailSheet({ category, open, onOpenChange, onEdit }: { category: Category | null; open: boolean; onOpenChange: (open: boolean) => void; onEdit: (category: Category) => void }) {
+function CategoryDetailSheet({
+  category,
+  open,
+  onOpenChange,
+  onEdit,
+}: {
+  category: Category | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onEdit: (category: Category) => void;
+}) {
   const { t } = useAdminI18n();
   if (!category) return null;
   return (
@@ -536,10 +978,15 @@ function CategoryDetailSheet({ category, open, onOpenChange, onEdit }: { categor
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <span className="size-3 rounded-full" style={{ backgroundColor: category.color || "#64748B" }} />
+                <span
+                  className="size-3 rounded-full"
+                  style={{ backgroundColor: category.color || "#64748B" }}
+                />
                 <h3 className="text-2xl font-semibold">{category.name}</h3>
               </div>
-              <p className="text-base text-muted-foreground">{category.categoryKey || "—"}</p>
+              <p className="text-base text-muted-foreground">
+                {category.categoryKey || "N/A"}
+              </p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -551,26 +998,54 @@ function CategoryDetailSheet({ category, open, onOpenChange, onEdit }: { categor
           <DetailSection title={t("Category Information")}>
             <Detail label={t("Name")} value={category.name} />
             <Detail label={t("Type")} value={t(friendlyType(category.type))} />
-            <Detail label={t("Parent")} value={category.parentName || t("Root")} />
-            <Detail label={t("Category Key")} value={category.categoryKey || "—"} />
-            <Detail label={t("Default Category")} value={category.defaultCategory ? t("Yes") : t("No")} />
-            <Detail label={t("System Category")} value={category.systemCategory ? t("Yes") : t("No")} />
-            <Detail label={t("Hidden")} value={category.hiddenForCurrentUser ? t("Yes") : t("No")} />
+            <Detail
+              label={t("Parent")}
+              value={category.parentName || t("Root")}
+            />
+            <Detail
+              label={t("Category Key")}
+              value={category.categoryKey || "N/A"}
+            />
+            <Detail
+              label={t("Default Category")}
+              value={category.defaultCategory ? t("Yes") : t("No")}
+            />
+            <Detail
+              label={t("System Category")}
+              value={category.systemCategory ? t("Yes") : t("No")}
+            />
+            <Detail
+              label={t("Hidden")}
+              value={category.hiddenForCurrentUser ? t("Yes") : t("No")}
+            />
           </DetailSection>
           <DetailSection title={t("Appearance")}>
-            <Detail label={t("Icon")} value={category.icon || "Fallback icon"} />
-            <Detail label={t("Color")} value={category.color || "—"} />
+            <Detail
+              label={t("Icon")}
+              value={category.icon || "Fallback icon"}
+            />
+            <Detail label={t("Color")} value={category.color || "N/A"} />
           </DetailSection>
           <DetailSection title={t("Timeline")}>
-            <Detail label={t("Created")} value={exactDate(category.createdAt)} />
-            <Detail label={t("Updated")} value={exactDate(category.updatedAt)} />
-            <Detail label={t("Deleted")} value={exactDate(category.deletedAt)} />
+            <Detail
+              label={t("Created")}
+              value={exactDate(category.createdAt)}
+            />
+            <Detail
+              label={t("Updated")}
+              value={exactDate(category.updatedAt)}
+            />
+            <Detail
+              label={t("Deleted")}
+              value={exactDate(category.deletedAt)}
+            />
           </DetailSection>
         </SheetBody>
         {category.status !== "DELETED" && (
           <SheetFooter>
             <Button onClick={() => onEdit(category)}>
-              <Pencil className="mr-2 size-4" />{t("Edit Category")}
+              <Pencil className="mr-2 size-4" />
+              {t("Edit Category")}
             </Button>
           </SheetFooter>
         )}
@@ -579,7 +1054,13 @@ function CategoryDetailSheet({ category, open, onOpenChange, onEdit }: { categor
   );
 }
 
-function DetailSection({ title, children }: { title: string; children: React.ReactNode }) {
+function DetailSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <section>
       <h4 className="mb-2 text-lg font-semibold">{title}</h4>
@@ -597,27 +1078,58 @@ function Detail({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-function ParentSelector({ value, onChange, excludedId }: { value: string; onChange: (value: string) => void; excludedId?: string }) {
+function ParentSelector({
+  value,
+  onChange,
+  excludedId,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  excludedId?: string;
+}) {
   const { t } = useAdminI18n();
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
-  const rootsQuery = useGetAdminCategoriesQuery({ rootOnly: true, ...(deferredSearch ? { keyword: deferredSearch } : {}), status: "ACTIVE", pageNumber: 0, pageSize: 100, sortBy: "name", sortDirection: "ASC" });
-  const options = rootsQuery.data?.content.filter((category) => category.id !== excludedId) ?? [];
+  const rootsQuery = useGetAdminCategoriesQuery({
+    rootOnly: true,
+    ...(deferredSearch ? { keyword: deferredSearch } : {}),
+    status: "ACTIVE",
+    pageNumber: 0,
+    pageSize: 100,
+    sortBy: "name",
+    sortDirection: "ASC",
+  });
+  const options =
+    rootsQuery.data?.content.filter((category) => category.id !== excludedId) ??
+    [];
   const selectedName = options.find((category) => category.id === value)?.name;
 
   return (
     <Popover>
       <PopoverTrigger className="flex h-11 w-full items-center justify-between rounded-xl border border-input px-3 text-left text-base">
-        <span className="truncate">{value ? selectedName || t("Selected parent") : t("None — Root Category")}</span>
+        <span className="truncate">
+          {value
+            ? selectedName || t("Selected parent")
+            : t("None — Root Category")}
+        </span>
         <ChevronDown className="size-4 text-muted-foreground" />
       </PopoverTrigger>
       <PopoverContent className="w-[min(24rem,calc(100vw-3rem))] space-y-2 p-2">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("Search root categories...")} className="pl-9 text-base" />
+          <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder={t("Search root categories...")}
+            className="pl-9 text-base"
+          />
         </div>
         <div className="max-h-56 overflow-y-auto">
-          <button type="button" onClick={() => onChange("")} className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm hover:bg-accent">
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm hover:bg-accent"
+          >
             <span>{t("None — Root Category")}</span>
             {!value && <Check className="size-4" />}
           </button>
@@ -625,10 +1137,19 @@ function ParentSelector({ value, onChange, excludedId }: { value: string; onChan
             <Skeleton className="m-2 h-24" />
           ) : (
             options.map((category) => (
-              <button key={category.id} type="button" onClick={() => onChange(category.id)} className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left hover:bg-accent">
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => onChange(category.id)}
+                className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left hover:bg-accent"
+              >
                 <span>
-                  <span className="block text-sm font-medium">{category.name}</span>
-                  <span className="block text-xs text-muted-foreground">{category.categoryKey || t(friendlyType(category.type))}</span>
+                  <span className="block text-sm font-medium">
+                    {category.name}
+                  </span>
+                  <span className="block text-xs text-muted-foreground">
+                    {category.categoryKey || t(friendlyType(category.type))}
+                  </span>
                 </span>
                 {value === category.id && <Check className="size-4" />}
               </button>
@@ -640,12 +1161,52 @@ function ParentSelector({ value, onChange, excludedId }: { value: string; onChan
   );
 }
 
-function CategoryFormDialog({ category, open, onOpenChange, onSaved, createCategory, updateCategory, isLoading }: { category: Category | null; open: boolean; onOpenChange: (open: boolean) => void; onSaved: (category: Category) => void; createCategory: (payload: AdminCreateCategoryPayload) => { unwrap: () => Promise<Category> }; updateCategory: (payload: { id: string; data: UpdateCategoryPayload }) => { unwrap: () => Promise<Category> }; isLoading: boolean }) {
-  const initial = useMemo<FormState>(() => category ? { name: category.name, categoryType: categoryTypeValue(category.type), parentId: category.parentId || "", categoryKey: category.categoryKey || "", icon: category.icon || "Box", color: category.color || "#F59E0B", systemCategory: Boolean(category.systemCategory), defaultCategory: Boolean(category.defaultCategory), status: category.status === "INACTIVE" ? "INACTIVE" : "ACTIVE" } : EMPTY_FORM, [category]);
+function CategoryFormDialog({
+  category,
+  open,
+  onOpenChange,
+  onSaved,
+  createCategory,
+  updateCategory,
+  isLoading,
+}: {
+  category: Category | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSaved: (category: Category) => void;
+  createCategory: (payload: AdminCreateCategoryPayload) => {
+    unwrap: () => Promise<Category>;
+  };
+  updateCategory: (payload: { id: string; data: UpdateCategoryPayload }) => {
+    unwrap: () => Promise<Category>;
+  };
+  isLoading: boolean;
+}) {
+  const initial = useMemo<FormState>(
+    () =>
+      category
+        ? {
+            name: category.name,
+            categoryType: categoryTypeValue(category.type),
+            parentId: category.parentId || "",
+            categoryKey: category.categoryKey || "",
+            icon: category.icon || "Box",
+            color: category.color || "#F59E0B",
+            systemCategory: Boolean(category.systemCategory),
+            defaultCategory: Boolean(category.defaultCategory),
+            status: category.status === "INACTIVE" ? "INACTIVE" : "ACTIVE",
+          }
+        : EMPTY_FORM,
+    [category],
+  );
   const formKey = `${category?.id ?? "new"}-${open}`;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent key={formKey} onClose={() => onOpenChange(false)} className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <DialogContent
+        key={formKey}
+        onClose={() => onOpenChange(false)}
+        className="max-h-[90vh] max-w-2xl overflow-y-auto"
+      >
         <CategoryFormContents
           initial={initial}
           category={category}
@@ -654,13 +1215,46 @@ function CategoryFormDialog({ category, open, onOpenChange, onSaved, createCateg
           onSubmit={async (current) => {
             try {
               const saved = category
-                ? await updateCategory({ id: category.id, data: { name: current.name.trim(), categoryType: current.categoryType, ...(current.parentId ? { parentId: current.parentId } : { moveToRoot: true }), icon: current.icon, color: current.color, defaultCategory: current.defaultCategory, status: current.status } }).unwrap()
-                : await createCategory({ name: current.name.trim(), categoryType: current.categoryType, ...(current.parentId ? { parentId: current.parentId } : {}), categoryKey: current.categoryKey, icon: current.icon, color: current.color, systemCategory: current.systemCategory, defaultCategory: current.defaultCategory }).unwrap();
-              toast.success(category ? "Category updated successfully." : "Category created successfully.");
+                ? await updateCategory({
+                    id: category.id,
+                    data: {
+                      name: current.name.trim(),
+                      categoryType: current.categoryType,
+                      ...(current.parentId
+                        ? { parentId: current.parentId }
+                        : { moveToRoot: true }),
+                      icon: current.icon,
+                      color: current.color,
+                      defaultCategory: current.defaultCategory,
+                      status: current.status,
+                    },
+                  }).unwrap()
+                : await createCategory({
+                    name: current.name.trim(),
+                    categoryType: current.categoryType,
+                    ...(current.parentId ? { parentId: current.parentId } : {}),
+                    categoryKey: current.categoryKey,
+                    icon: current.icon,
+                    color: current.color,
+                    systemCategory: current.systemCategory,
+                    defaultCategory: current.defaultCategory,
+                  }).unwrap();
+              toast.success(
+                category
+                  ? "Category updated successfully."
+                  : "Category created successfully.",
+              );
               onSaved(saved);
               onOpenChange(false);
             } catch (error) {
-              toast.error(errorMessage(error, category ? "Unable to update category." : "Unable to create category."));
+              toast.error(
+                errorMessage(
+                  error,
+                  category
+                    ? "Unable to update category."
+                    : "Unable to create category.",
+                ),
+              );
             }
           }}
         />
@@ -669,17 +1263,38 @@ function CategoryFormDialog({ category, open, onOpenChange, onSaved, createCateg
   );
 }
 
-function CategoryFormContents({ initial, category, isLoading, onCancel, onSubmit }: { initial: FormState; category: Category | null; isLoading: boolean; onCancel: () => void; onSubmit: (form: FormState) => void }) {
+function CategoryFormContents({
+  initial,
+  category,
+  isLoading,
+  onCancel,
+  onSubmit,
+}: {
+  initial: FormState;
+  category: Category | null;
+  isLoading: boolean;
+  onCancel: () => void;
+  onSubmit: (form: FormState) => void;
+}) {
   const { t } = useAdminI18n();
   const [form, setForm] = useState(initial);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
-  const update = <K extends keyof FormState>(key: K, value: FormState[K]) => { setForm({ ...form, [key]: value }); setErrors({ ...errors, [key]: undefined }); };
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof FormState, string>>
+  >({});
+  const update = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+    setForm({ ...form, [key]: value });
+    setErrors({ ...errors, [key]: undefined });
+  };
 
   const submit = () => {
     const nextErrors: typeof errors = {};
     if (!form.name.trim()) nextErrors.name = t("Category name is required.");
-    if (!category && !/^[A-Z][A-Z0-9_]*$/.test(form.categoryKey)) nextErrors.categoryKey = t("Use uppercase letters, numbers, and underscores. Begin with a letter.");
-    if (!/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(form.color)) nextErrors.color = t("Enter a valid 3, 6, or 8 digit hex color.");
+    if (!category && !/^[A-Z][A-Z0-9_]*$/.test(form.categoryKey))
+      nextErrors.categoryKey = t(
+        "Use uppercase letters, numbers, and underscores. Begin with a letter.",
+      );
+    if (!/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(form.color))
+      nextErrors.color = t("Enter a valid 3, 6, or 8 digit hex color.");
     setErrors(nextErrors);
     if (!Object.keys(nextErrors).length) onSubmit(form);
   };
@@ -687,37 +1302,91 @@ function CategoryFormContents({ initial, category, isLoading, onCancel, onSubmit
   return (
     <>
       <DialogHeader>
-        <DialogTitle>{category ? t("Edit Category") : t("Add Category")}</DialogTitle>
+        <DialogTitle>
+          {category ? t("Edit Category") : t("Add Category")}
+        </DialogTitle>
         <DialogDescription className="text-base">
-          {category ? t("Update category information and hierarchy.") : t("Create a new root category or subcategory for iStash.")}
+          {category
+            ? t("Update category information and hierarchy.")
+            : t("Create a new root category or subcategory for iStash.")}
         </DialogDescription>
       </DialogHeader>
-      <form onSubmit={(event) => { event.preventDefault(); submit(); }} className="space-y-5">
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          submit();
+        }}
+        className="space-y-5"
+      >
         <div>
-          <Label htmlFor="category-name" className="text-base">{t("Category Name")}</Label>
-          <Input id="category-name" value={form.name} onChange={(event) => update("name", event.target.value)} maxLength={100} className="mt-2 h-11 text-base" />
-          {errors.name && <p className="mt-1 text-sm text-destructive">{errors.name}</p>}
+          <Label htmlFor="category-name" className="text-base">
+            {t("Category Name")}
+          </Label>
+          <Input
+            id="category-name"
+            value={form.name}
+            onChange={(event) => update("name", event.target.value)}
+            maxLength={100}
+            className="mt-2 h-11 text-base"
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-destructive">{errors.name}</p>
+          )}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label className="text-base">{t("Type")}</Label>
             <div className="mt-2">
-              <FilterSelect label="Type" value={form.categoryType} options={{ INCOME: t("Income"), EXPENSE: t("Expense"), BOTH: t("Income & Expense") }} onChange={(value) => update("categoryType", value as FormState["categoryType"])} />
+              <FilterSelect
+                label="Type"
+                value={form.categoryType}
+                options={{
+                  INCOME: t("Income"),
+                  EXPENSE: t("Expense"),
+                  BOTH: t("Income & Expense"),
+                }}
+                onChange={(value) =>
+                  update("categoryType", value as FormState["categoryType"])
+                }
+              />
             </div>
           </div>
           <div>
             <Label className="text-base">{t("Parent Category")}</Label>
             <div className="mt-2">
-              <ParentSelector value={form.parentId} excludedId={category?.id} onChange={(value) => update("parentId", value)} />
+              <ParentSelector
+                value={form.parentId}
+                excludedId={category?.id}
+                onChange={(value) => update("parentId", value)}
+              />
             </div>
           </div>
         </div>
         {!category && (
           <div>
-            <Label htmlFor="category-key" className="text-base">{t("Category Key")}</Label>
-            <Input id="category-key" value={form.categoryKey} onChange={(event) => update("categoryKey", event.target.value.toUpperCase())} maxLength={100} placeholder="FOOD_DINING" className="mt-2 h-11 font-mono text-base uppercase" />
-            <p className="mt-1 text-sm text-muted-foreground">{t("Use uppercase letters, numbers, and underscores. Must begin with a letter.")}</p>
-            {errors.categoryKey && <p className="mt-1 text-sm text-destructive">{errors.categoryKey}</p>}
+            <Label htmlFor="category-key" className="text-base">
+              {t("Category Key")}
+            </Label>
+            <Input
+              id="category-key"
+              value={form.categoryKey}
+              onChange={(event) =>
+                update("categoryKey", event.target.value.toUpperCase())
+              }
+              maxLength={100}
+              placeholder="FOOD_DINING"
+              className="mt-2 h-11 font-mono text-base uppercase"
+            />
+            <p className="mt-1 text-sm text-muted-foreground">
+              {t(
+                "Use uppercase letters, numbers, and underscores. Must begin with a letter.",
+              )}
+            </p>
+            {errors.categoryKey && (
+              <p className="mt-1 text-sm text-destructive">
+                {errors.categoryKey}
+              </p>
+            )}
           </div>
         )}
         <div>
@@ -726,7 +1395,11 @@ function CategoryFormContents({ initial, category, isLoading, onCancel, onSubmit
             {ICONS.map((icon) => (
               <Tooltip key={icon}>
                 <TooltipTrigger>
-                  <button type="button" onClick={() => update("icon", icon)} className={`grid size-10 place-items-center rounded-xl border ${form.icon === icon ? "border-[#FEDB55] bg-[#FEDB55]/20" : "border-border"}`}>
+                  <button
+                    type="button"
+                    onClick={() => update("icon", icon)}
+                    className={`grid size-10 place-items-center rounded-xl border ${form.icon === icon ? "border-[#FEDB55] bg-[#FEDB55]/20" : "border-border"}`}
+                  >
                     <DynamicIcon name={icon} className="size-5" />
                   </button>
                 </TooltipTrigger>
@@ -736,33 +1409,79 @@ function CategoryFormContents({ initial, category, isLoading, onCancel, onSubmit
           </div>
         </div>
         <div>
-          <Label htmlFor="category-color" className="text-base">{t("Color")}</Label>
+          <Label htmlFor="category-color" className="text-base">
+            {t("Color")}
+          </Label>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {COLORS.map((color) => (
-              <button key={color} type="button" aria-label={`Use ${color}`} onClick={() => update("color", color)} className={`size-9 rounded-full border-2 ${form.color.toUpperCase() === color ? "border-foreground" : "border-transparent"}`} style={{ backgroundColor: color }} />
+              <button
+                key={color}
+                type="button"
+                aria-label={`Use ${color}`}
+                onClick={() => update("color", color)}
+                className={`size-9 rounded-full border-2 ${form.color.toUpperCase() === color ? "border-foreground" : "border-transparent"}`}
+                style={{ backgroundColor: color }}
+              />
             ))}
-            <Input id="category-color" value={form.color} onChange={(event) => update("color", event.target.value)} className="h-10 w-36 font-mono text-base" />
+            <Input
+              id="category-color"
+              value={form.color}
+              onChange={(event) => update("color", event.target.value)}
+              className="h-10 w-36 font-mono text-base"
+            />
           </div>
-          {errors.color && <p className="mt-1 text-sm text-destructive">{errors.color}</p>}
+          {errors.color && (
+            <p className="mt-1 text-sm text-destructive">{errors.color}</p>
+          )}
         </div>
         {!category && (
           <div className="grid gap-3 sm:grid-cols-2">
-            <CheckField label={t("System Category")} checked={form.systemCategory} onChange={(checked) => update("systemCategory", checked)} />
-            <CheckField label={t("Default Category")} checked={form.defaultCategory} onChange={(checked) => update("defaultCategory", checked)} />
+            <CheckField
+              label={t("System Category")}
+              checked={form.systemCategory}
+              onChange={(checked) => update("systemCategory", checked)}
+            />
+            <CheckField
+              label={t("Default Category")}
+              checked={form.defaultCategory}
+              onChange={(checked) => update("defaultCategory", checked)}
+            />
           </div>
         )}
         {category && (
           <div>
             <Label className="text-base">{t("Status")}</Label>
             <div className="mt-2">
-              <FilterSelect label="Status" value={form.status} options={{ ACTIVE: t("Active"), INACTIVE: t("Inactive") }} onChange={(value) => update("status", value as FormState["status"])} />
+              <FilterSelect
+                label="Status"
+                value={form.status}
+                options={{ ACTIVE: t("Active"), INACTIVE: t("Inactive") }}
+                onChange={(value) =>
+                  update("status", value as FormState["status"])
+                }
+              />
             </div>
           </div>
         )}
         <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
-          <Button type="button" variant="outline" disabled={isLoading} onClick={onCancel}>{t("Cancel")}</Button>
-          <Button type="submit" disabled={isLoading} className="bg-[#FEDB55] text-[#003377] hover:bg-[#f0ca43]">
-            {isLoading ? t("Saving...") : category ? t("Save Changes") : t("Create Category")}
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isLoading}
+            onClick={onCancel}
+          >
+            {t("Cancel")}
+          </Button>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="bg-[#FEDB55] text-[#003377] hover:bg-[#f0ca43]"
+          >
+            {isLoading
+              ? t("Saving...")
+              : category
+                ? t("Save Changes")
+                : t("Create Category")}
           </Button>
         </div>
       </form>
@@ -770,25 +1489,65 @@ function CategoryFormContents({ initial, category, isLoading, onCancel, onSubmit
   );
 }
 
-function CheckField({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) {
+function CheckField({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
   return (
     <label className="flex items-center gap-3 rounded-xl border border-border p-3 text-base">
-      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 accent-[#003377]" />
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        className="size-4 accent-[#003377]"
+      />
       {label}
     </label>
   );
 }
 
-function ConfirmationDialog({ action, onOpenChange, onConfirm, isLoading }: { action: ConfirmAction; onOpenChange: (open: boolean) => void; onConfirm: () => void; isLoading: boolean }) {
+function ConfirmationDialog({
+  action,
+  onOpenChange,
+  onConfirm,
+  isLoading,
+}: {
+  action: ConfirmAction;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+  isLoading: boolean;
+}) {
   const { t } = useAdminI18n();
   if (!action) return null;
-  const copy = action.kind === "delete"
-    ? { title: `Delete “${action.category.name}”?`, text: "This category may be referenced by existing configuration or subcategory relationships. Only continue when you are sure it is safe.", button: t("Delete Category") }
-    : action.kind === "root"
-      ? { title: `Move “${action.category.name}” to root?`, text: "This category will no longer be nested under its current parent.", button: t("Move to Root") }
-      : action.kind === "activate"
-        ? { title: `Activate “${action.category.name}”?`, text: "This category will become available where active categories are supported.", button: t("Activate") }
-        : { title: `Deactivate “${action.category.name}”?`, text: "This category will no longer be available where only active categories can be selected.", button: t("Deactivate") };
+  const copy =
+    action.kind === "delete"
+      ? {
+          title: `Delete “${action.category.name}”?`,
+          text: "This category may be referenced by existing configuration or subcategory relationships. Only continue when you are sure it is safe.",
+          button: t("Delete Category"),
+        }
+      : action.kind === "root"
+        ? {
+            title: `Move “${action.category.name}” to root?`,
+            text: "This category will no longer be nested under its current parent.",
+            button: t("Move to Root"),
+          }
+        : action.kind === "activate"
+          ? {
+              title: `Activate “${action.category.name}”?`,
+              text: "This category will become available where active categories are supported.",
+              button: t("Activate"),
+            }
+          : {
+              title: `Deactivate “${action.category.name}”?`,
+              text: "This category will no longer be available where only active categories can be selected.",
+              button: t("Deactivate"),
+            };
 
   return (
     <AlertDialog open onOpenChange={onOpenChange}>
@@ -798,8 +1557,21 @@ function ConfirmationDialog({ action, onOpenChange, onConfirm, isLoading }: { ac
           <AlertDialogDescription>{copy.text}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading} onClick={() => onOpenChange(false)}>{t("Cancel")}</AlertDialogCancel>
-          <AlertDialogAction variant={action.kind === "delete" || action.kind === "deactivate" ? "destructive" : "default"} disabled={isLoading} onClick={onConfirm}>
+          <AlertDialogCancel
+            disabled={isLoading}
+            onClick={() => onOpenChange(false)}
+          >
+            {t("Cancel")}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            variant={
+              action.kind === "delete" || action.kind === "deactivate"
+                ? "destructive"
+                : "default"
+            }
+            disabled={isLoading}
+            onClick={onConfirm}
+          >
             {isLoading ? t("Updating...") : copy.button}
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -825,20 +1597,40 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 py-14 text-center">
       <FolderTree className="size-8 text-destructive" />
       <p className="text-lg font-semibold">{t("Unable to load categories.")}</p>
-      <p className="text-base text-muted-foreground">{t("Please try again.")}</p>
-      <Button variant="outline" onClick={onRetry}>{t("Retry")}</Button>
+      <p className="text-base text-muted-foreground">
+        {t("Please try again.")}
+      </p>
+      <Button variant="outline" onClick={onRetry}>
+        {t("Retry")}
+      </Button>
     </div>
   );
 }
 
-function EmptyState({ filtered, onReset, onCreate }: { filtered: boolean; onReset: () => void; onCreate: () => void }) {
+function EmptyState({
+  filtered,
+  onReset,
+  onCreate,
+}: {
+  filtered: boolean;
+  onReset: () => void;
+  onCreate: () => void;
+}) {
   const { t } = useAdminI18n();
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border py-14 text-center">
       <FolderTree className="size-8 text-muted-foreground" />
-      <p className="text-lg font-semibold">{filtered ? t("No categories found") : t("No categories yet")}</p>
-      <p className="text-base text-muted-foreground">{filtered ? t("Try changing your search or filters.") : t("Create the first category used by iStash.")}</p>
-      <Button onClick={filtered ? onReset : onCreate}>{filtered ? t("Reset Filters") : t("Add Category")}</Button>
+      <p className="text-lg font-semibold">
+        {filtered ? t("No categories found") : t("No categories yet")}
+      </p>
+      <p className="text-base text-muted-foreground">
+        {filtered
+          ? t("Try changing your search or filters.")
+          : t("Create the first category used by iStash.")}
+      </p>
+      <Button onClick={filtered ? onReset : onCreate}>
+        {filtered ? t("Reset Filters") : t("Add Category")}
+      </Button>
     </div>
   );
 }

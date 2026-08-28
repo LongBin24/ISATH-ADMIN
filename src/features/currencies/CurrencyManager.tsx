@@ -234,7 +234,7 @@ function ProviderCard({
         <div className="grid gap-4 rounded-2xl bg-muted/40 p-4 sm:grid-cols-2 lg:grid-cols-3">
           <ProviderMetric
             label={t("Provider")}
-            value={provider.provider || "—"}
+            value={provider.provider || "N/A"}
           />
           <ProviderMetric
             label={t("Last Attempt")}
@@ -246,11 +246,11 @@ function ProviderCard({
           />
           <ProviderMetric
             label={t("Currencies Received")}
-            value={provider.currenciesReceived?.toLocaleString() ?? "—"}
+            value={provider.currenciesReceived?.toLocaleString() ?? "N/A"}
           />
           <ProviderMetric
             label={t("Rates Updated")}
-            value={provider.ratesUpdated?.toLocaleString() ?? "—"}
+            value={provider.ratesUpdated?.toLocaleString() ?? "N/A"}
           />
           <ProviderMetric
             label={t("Data Status")}
@@ -372,7 +372,10 @@ export default function CurrencyManager() {
   );
   const pageNumbers = useMemo(() => {
     const start = Math.max(1, Math.min(visiblePage - 2, totalPages - 4));
-    return Array.from({ length: Math.min(5, totalPages) }, (_, index) => start + index);
+    return Array.from(
+      { length: Math.min(5, totalPages) },
+      (_, index) => start + index,
+    );
   }, [visiblePage, totalPages]);
 
   async function handleSynchronize() {
@@ -419,6 +422,8 @@ export default function CurrencyManager() {
     setStatusFilter("ALL");
     setCurrentPage(1);
   }
+
+  const hasFilters = Boolean(query.trim() || statusFilter !== "ALL");
 
   return (
     <div className="space-y-7 font-google-sans">
@@ -531,19 +536,19 @@ export default function CurrencyManager() {
             <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-4">
               <ProviderMetric
                 label={t("Currencies Received")}
-                value={syncResult.currenciesReceived ?? "—"}
+                value={syncResult.currenciesReceived ?? "N/A"}
               />
               <ProviderMetric
                 label={t("Currencies Updated")}
-                value={syncResult.currenciesUpdated ?? "—"}
+                value={syncResult.currenciesUpdated ?? "N/A"}
               />
               <ProviderMetric
                 label={t("Rates Received")}
-                value={syncResult.ratesReceived ?? "—"}
+                value={syncResult.ratesReceived ?? "N/A"}
               />
               <ProviderMetric
                 label={t("Rates Updated")}
-                value={syncResult.ratesUpdated ?? "—"}
+                value={syncResult.ratesUpdated ?? "N/A"}
               />
             </div>
           </CardContent>
@@ -560,17 +565,23 @@ export default function CurrencyManager() {
           </p>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="filter-card flex flex-col gap-3 text-base sm:flex-row">
+          <div
+            className={`filter-card grid gap-2 text-base md:items-center ${
+              hasFilters
+                ? "md:grid-cols-[minmax(240px,3.5fr)_repeat(2,minmax(150px,1fr))]"
+                : "md:grid-cols-[minmax(280px,4.5fr)_minmax(150px,1fr)]"
+            }`}
+          >
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={query}
                 onChange={(event) => {
                   setQuery(event.target.value);
                   setCurrentPage(1);
                 }}
-                placeholder={t("Search by currency code or name...")}
-                className="h-11 rounded-xl pl-9 text-base"
+                placeholder={t("Search currency...")}
+                className="h-11 rounded-xl bg-background pl-10 text-base shadow-sm"
               />
             </div>
             <Select
@@ -580,7 +591,7 @@ export default function CurrencyManager() {
                 setCurrentPage(1);
               }}
             >
-              <SelectTrigger className="h-11 w-full rounded-xl text-base sm:w-48">
+              <SelectTrigger className="h-11 w-full rounded-xl bg-muted/60 text-base shadow-sm">
                 <SelectValue
                   value={
                     {
@@ -602,6 +613,16 @@ export default function CurrencyManager() {
                 <SelectItem value="INACTIVE">{t("Inactive")}</SelectItem>
               </SelectContent>
             </Select>
+            {hasFilters && (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={resetFilters}
+                className="h-11 w-full rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
+              >
+                {t("Reset")}
+              </Button>
+            )}
           </div>
 
           {currenciesQuery.isError ? (
@@ -713,11 +734,11 @@ export default function CurrencyManager() {
                             <Tooltip>
                               <TooltipTrigger>
                                 <span className="block max-w-40 truncate text-base text-foreground">
-                                  {currency.provider || "—"}
+                                  {currency.provider || "N/A"}
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent>
-                                {currency.provider || "—"}
+                                {currency.provider || "N/A"}
                               </TooltipContent>
                             </Tooltip>
                           </TableCell>
@@ -745,11 +766,13 @@ export default function CurrencyManager() {
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button
+                                  type="button"
                                   variant="ghost"
                                   size="icon"
                                   aria-label={`${currency.code} actions`}
+                                  className="size-8.5 rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
                                 >
-                                  <MoreHorizontal className="size-4" />
+                                  <MoreHorizontal className="size-4.5" />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent>
@@ -932,16 +955,16 @@ function CurrencyDetailSheet({
               {currency.decimalPlaces ?? 2}
             </DetailField>
             <DetailField label={t("Provider")}>
-              {currency.provider || "—"}
+              {currency.provider || "N/A"}
             </DetailField>
             <DetailField label={t("Last Synced")}>
               {safeDate(currency.lastSyncedAt, true)}
             </DetailField>
             <DetailField label={t("Created")}>
-              {currency.createdAt ? safeDate(currency.createdAt, true) : "—"}
+              {currency.createdAt ? safeDate(currency.createdAt, true) : "N/A"}
             </DetailField>
             <DetailField label={t("Updated")}>
-              {currency.updatedAt ? safeDate(currency.updatedAt, true) : "—"}
+              {currency.updatedAt ? safeDate(currency.updatedAt, true) : "N/A"}
             </DetailField>
           </div>
         </SheetBody>

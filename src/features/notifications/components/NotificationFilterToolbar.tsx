@@ -5,8 +5,18 @@ import { CalendarIcon, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar, type DateRange } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { AdminUser } from "@/features/user-manager/types";
 import {
   ADMIN_NOTIFICATION_TYPES,
@@ -61,14 +71,23 @@ export default function NotificationFilterToolbar({
     !!filters.createdTo;
 
   return (
-    <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
-      <div className="relative flex-1 min-w-[200px]">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+    <div
+      className={cn(
+        "grid gap-2 md:grid-cols-2 xl:items-center",
+        hasFilters
+          ? "xl:grid-cols-[minmax(220px,2fr)_repeat(6,minmax(130px,1fr))]"
+          : "xl:grid-cols-[minmax(240px,2fr)_repeat(5,minmax(150px,1fr))]",
+      )}
+    >
+      <div className="relative md:col-span-2 xl:col-span-1">
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={filters.search ?? ""}
-          onChange={(event) => onChange({ ...filters, search: event.target.value })}
-          placeholder={t("Search by title, message, or user...")}
-          className="h-11 rounded-xl pl-9 pr-8 text-sm"
+          onChange={(event) =>
+            onChange({ ...filters, search: event.target.value })
+          }
+          placeholder={t("Search user, or title...")}
+          className="h-11 rounded-xl bg-background pl-10 pr-9 text-sm shadow-sm"
         />
         {filters.search && (
           <button
@@ -81,7 +100,7 @@ export default function NotificationFilterToolbar({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="grid gap-2 sm:grid-cols-2 md:col-span-2 xl:contents">
         <NotificationUserSelector
           value={filters.user}
           onChange={(user) => onChange({ ...filters, user })}
@@ -90,55 +109,98 @@ export default function NotificationFilterToolbar({
 
         <Select
           value={filters.notificationType}
-          onValueChange={(value) => onChange({ ...filters, notificationType: value as NotificationFilters["notificationType"] })}
+          onValueChange={(value) =>
+            onChange({
+              ...filters,
+              notificationType:
+                value as NotificationFilters["notificationType"],
+            })
+          }
         >
           <SelectTrigger
             className={cn(
-              "h-11 min-w-[130px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
-              filters.notificationType !== "ALL" && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
+              "h-11 min-w-[130px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              filters.notificationType !== "ALL" &&
+                "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
             )}
           >
-            <SelectValue placeholder={t("Type")} value={filters.notificationType === "ALL" ? t("All types") : t(notificationTypeLabel(filters.notificationType))} />
+            <SelectValue
+              placeholder={t("Type")}
+              value={
+                filters.notificationType === "ALL"
+                  ? t("All types")
+                  : t(notificationTypeLabel(filters.notificationType))
+              }
+            />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
             <SelectItem value="ALL">{t("All types")}</SelectItem>
             {ADMIN_NOTIFICATION_TYPES.map((type) => (
-              <SelectItem key={type} value={type}>{t(notificationTypeLabel(type))}</SelectItem>
+              <SelectItem key={type} value={type}>
+                {t(notificationTypeLabel(type))}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <Select
           value={filters.referenceType}
-          onValueChange={(value) => onChange({ ...filters, referenceType: value as NotificationFilters["referenceType"] })}
+          onValueChange={(value) =>
+            onChange({
+              ...filters,
+              referenceType: value as NotificationFilters["referenceType"],
+            })
+          }
         >
           <SelectTrigger
             className={cn(
-              "h-11 min-w-[130px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
-              filters.referenceType !== "ALL" && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
+              "h-11 min-w-[130px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              filters.referenceType !== "ALL" &&
+                "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
             )}
           >
-            <SelectValue placeholder={t("Reference")} value={filters.referenceType === "ALL" ? t("All references") : t(referenceTypeLabel(filters.referenceType))} />
+            <SelectValue
+              placeholder={t("Reference")}
+              value={
+                filters.referenceType === "ALL"
+                  ? t("All references")
+                  : t(referenceTypeLabel(filters.referenceType))
+              }
+            />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
             <SelectItem value="ALL">{t("All references")}</SelectItem>
             {ADMIN_REFERENCE_TYPES.map((type) => (
-              <SelectItem key={type} value={type}>{t(referenceTypeLabel(type))}</SelectItem>
+              <SelectItem key={type} value={type}>
+                {t(referenceTypeLabel(type))}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <Select
           value={filters.read}
-          onValueChange={(value) => onChange({ ...filters, read: value as NotificationFilters["read"] })}
+          onValueChange={(value) =>
+            onChange({ ...filters, read: value as NotificationFilters["read"] })
+          }
         >
           <SelectTrigger
             className={cn(
-              "h-11 min-w-[120px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
-              filters.read !== "ALL" && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
+              "h-11 min-w-[120px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              filters.read !== "ALL" &&
+                "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
             )}
           >
-            <SelectValue placeholder={t("Status")} value={{ ALL: t("All read statuses"), READ: t("Read"), UNREAD: t("Unread") }[filters.read]} />
+            <SelectValue
+              placeholder={t("Status")}
+              value={
+                {
+                  ALL: t("All read statuses"),
+                  READ: t("Read"),
+                  UNREAD: t("Unread"),
+                }[filters.read]
+              }
+            />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
             <SelectItem value="ALL">{t("All read statuses")}</SelectItem>
@@ -150,8 +212,9 @@ export default function NotificationFilterToolbar({
         <Popover>
           <PopoverTrigger
             className={cn(
-              "flex h-11 min-w-[160px] items-center justify-between gap-2 rounded-xl border border-input bg-background px-3 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
-              (dateRange.from || dateRange.to) && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
+              "flex h-11 w-full min-w-[160px] items-center justify-between gap-2 rounded-xl border border-input bg-muted/60 px-3 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              (dateRange.from || dateRange.to) &&
+                "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
             )}
           >
             <span className="flex min-w-0 items-center gap-2 truncate">
@@ -167,7 +230,11 @@ export default function NotificationFilterToolbar({
                 className="size-3.5 shrink-0 text-muted-foreground hover:text-foreground"
                 onClick={(event) => {
                   event.stopPropagation();
-                  onChange({ ...filters, createdFrom: undefined, createdTo: undefined });
+                  onChange({
+                    ...filters,
+                    createdFrom: undefined,
+                    createdTo: undefined,
+                  });
                 }}
               />
             )}
@@ -180,8 +247,12 @@ export default function NotificationFilterToolbar({
                 const range = selection as DateRange;
                 onChange({
                   ...filters,
-                  createdFrom: range.from ? `${format(range.from, "yyyy-MM-dd")}T00:00:00Z` : undefined,
-                  createdTo: range.to ? `${format(range.to, "yyyy-MM-dd")}T23:59:59Z` : undefined,
+                  createdFrom: range.from
+                    ? `${format(range.from, "yyyy-MM-dd")}T00:00:00Z`
+                    : undefined,
+                  createdTo: range.to
+                    ? `${format(range.to, "yyyy-MM-dd")}T23:59:59Z`
+                    : undefined,
                 });
               }}
             />
@@ -192,7 +263,7 @@ export default function NotificationFilterToolbar({
           <Button
             type="button"
             variant="ghost"
-            className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium"
+            className="h-11 w-full shrink-0 rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
             onClick={onReset}
           >
             {t("Reset")}

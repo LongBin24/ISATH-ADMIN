@@ -54,5 +54,5 @@ export function notificationTypeLabel(type: AdminNotificationType) {
 }
 
 export function referenceTypeLabel(type?: AdminReferenceType) {
-  return type ? REFERENCE_TYPE_UI[type]?.label ?? type : "—";
+  return type ? REFERENCE_TYPE_UI[type]?.label ?? type : "N/A";
 }

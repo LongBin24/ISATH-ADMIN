@@ -39,10 +39,10 @@ function PaginationLink({
       type="button"
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "flex size-10 items-center justify-center rounded-lg border text-base font-medium shadow-sm transition-colors",
+        "flex size-10 items-center justify-center rounded-xl border text-base font-medium shadow-2xs transition-colors",
         isActive
           ? "border-[#003377] bg-[#003377] text-white font-bold dark:border-[#FFC83D] dark:bg-[#FFC83D] dark:text-[#003377]"
-          : "border-border bg-background text-foreground hover:border-[#003377] hover:text-[#003377] hover:bg-accent dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]",
+          : "border-slate-200/80 bg-transparent text-slate-600 hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]",
         className
       )}
       {...props}
@@ -63,7 +63,7 @@ function PaginationPrevious({
       type="button"
       aria-label={t("Go to previous page")}
       className={cn(
-        "flex h-10 items-center gap-1.5 rounded-lg border border-border bg-background px-3.5 text-base font-medium text-foreground shadow-sm transition-colors hover:border-[#003377] hover:text-[#003377] hover:bg-accent dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] disabled:pointer-events-none disabled:opacity-40",
+        "flex h-10 items-center gap-1.5 rounded-xl border border-slate-200/80 bg-transparent px-3.5 text-base font-medium text-slate-600 shadow-2xs transition-colors hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D] disabled:pointer-events-none disabled:opacity-40",
         className
       )}
       {...props}
@@ -87,7 +87,7 @@ function PaginationNext({
       type="button"
       aria-label={t("Go to next page")}
       className={cn(
-        "flex h-10 items-center gap-1.5 rounded-lg border border-border bg-background px-3.5 text-base font-medium text-foreground shadow-sm transition-colors hover:border-[#003377] hover:text-[#003377] hover:bg-accent dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] disabled:pointer-events-none disabled:opacity-40",
+        "flex h-10 items-center gap-1.5 rounded-xl border border-slate-200/80 bg-transparent px-3.5 text-base font-medium text-slate-600 shadow-2xs transition-colors hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D] disabled:pointer-events-none disabled:opacity-40",
         className
       )}
       {...props}
@@ -102,7 +102,7 @@ function PaginationEllipsis({ className, ...props }: React.HTMLAttributes<HTMLSp
   return (
     <span
       aria-hidden
-      className={cn("flex size-9 items-center justify-center text-muted-foreground", className)}
+      className={cn("flex size-9 items-center justify-center rounded-xl border border-transparent text-muted-foreground transition hover:border-slate-300 hover:bg-transparent dark:hover:border-slate-700 dark:hover:bg-transparent", className)}
       {...props}
     >
       <MoreHorizontal className="size-4" />

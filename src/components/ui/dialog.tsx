@@ -40,6 +40,8 @@ export function DialogContent({
 }: React.HTMLAttributes<HTMLDivElement> & { onClose?: () => void }) {
   return (
     <div
+      role="dialog"
+      aria-modal="true"
       className={cn(
         "admin-readable relative w-full max-w-xl rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl dark:shadow-black/40 font-google-sans",
         className
@@ -49,10 +51,10 @@ export function DialogContent({
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition"
+          className="absolute right-4 top-4 z-50 flex size-9 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition cursor-pointer"
           aria-label="Close"
         >
-          <X className="h-4 w-4" />
+          <X className="size-5" />
         </button>
       )}
       {children}

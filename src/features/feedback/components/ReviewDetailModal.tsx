@@ -24,7 +24,7 @@ const statuses: Array<{ value: ReviewStatus; label: string }> = [
 ];
 
 function formatDate(value: string | null) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
   return Number.isNaN(date.getTime())
     ? value
@@ -81,14 +81,14 @@ function ReviewForm({ review, onClose }: { review: Review; onClose: () => void }
           {ratings.map(([label, value]) => (
             <div key={label} className="rounded-2xl bg-slate-50 p-3 dark:bg-slate-800">
               <div className="text-xs text-slate-500 dark:text-slate-400">{label}</div>
-              <div className="mt-1 flex items-center gap-1 font-bold text-slate-800 dark:text-white"><Star className="h-4 w-4 text-amber-400" /> {value ?? "—"}</div>
+              <div className="mt-1 flex items-center gap-1 font-bold text-slate-800 dark:text-white"><Star className="h-4 w-4 text-amber-400" /> {value ?? "N/A"}</div>
             </div>
           ))}
         </div>
 
         <dl className="space-y-3 rounded-2xl border border-slate-200 p-4 text-sm dark:border-slate-700">
-          <div><dt className="text-slate-500">{t("User ID")}</dt><dd className="break-all font-medium text-slate-800 dark:text-slate-100">{review.userId || "—"}</dd></div>
-          <div><dt className="text-slate-500">{t("Reviewed By")}</dt><dd className="break-all font-medium text-slate-800 dark:text-slate-100">{review.reviewedBy || "—"}</dd></div>
+          <div><dt className="text-slate-500">{t("User ID")}</dt><dd className="break-all font-medium text-slate-800 dark:text-slate-100">{review.userId || "N/A"}</dd></div>
+          <div><dt className="text-slate-500">{t("Reviewed By")}</dt><dd className="break-all font-medium text-slate-800 dark:text-slate-100">{review.reviewedBy || "N/A"}</dd></div>
           <div><dt className="text-slate-500">{t("Reviewed At")}</dt><dd className="font-medium text-slate-800 dark:text-slate-100">{formatDate(review.reviewedAt)}</dd></div>
           <div><dt className="text-slate-500">{t("Updated At")}</dt><dd className="font-medium text-slate-800 dark:text-slate-100">{formatDate(review.updatedAt)}</dd></div>
         </dl>

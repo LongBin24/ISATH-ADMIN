@@ -281,3 +281,47 @@ export interface BroadcastNotificationResponse {
 
 export type BroadcastNotificationPayload = BroadcastNotificationRequest;
 
+// Mark Seen Notification API models (POST /api/v1/admin/notifications/mark-seen)
+export interface MarkNotificationSeenRequest {
+  seenThrough?: string;
+  lastSeenAt?: string;
+  unseenCount?: number;
+}
+
+export interface MarkNotificationSeenResponse {
+  seenThrough?: string;
+  lastSeenAt?: string;
+  unseenCount?: number;
+}
+
+export type MarkNotificationSeenPayload = MarkNotificationSeenRequest;
+export type MarkSeenRequest = MarkNotificationSeenRequest;
+export type MarkSeenResponse = MarkNotificationSeenResponse;
+export type MarkSeenPayload = MarkNotificationSeenRequest;
+
+// Notification Activity Summary API models (GET /api/v1/admin/notifications/activity-summary)
+export interface NotificationActivityItem {
+  activityId: string;
+  activityType: string;
+  title: string;
+  message: string;
+  notificationType: string;
+  recipientCount: number;
+  createdAt: string;
+}
+
+export interface NotificationActivitySummaryResponse {
+  stateInitialized: boolean;
+  unseenCount: number;
+  lastSeenAt: string | null;
+  seenThrough: string | null;
+  activities: NotificationActivityItem[];
+}
+
+export interface NotificationActivitySummaryQueryParams {
+  limit?: number;
+}
+
+export type AdminNotificationActivitySummaryResponse = NotificationActivitySummaryResponse;
+export type ActivitySummaryResponse = NotificationActivitySummaryResponse;
+

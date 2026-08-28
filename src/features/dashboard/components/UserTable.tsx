@@ -191,7 +191,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                   setCurrentPage(1);
                 }}
                 placeholder="ស្វែងរកតាម ឈ្មោះ អ៊ីម៉ែល ឬ លេខសម្គាល់..."
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-base text-slate-800 outline-none transition focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-base text-slate-800 outline-none transition hover:border-[#003377] focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D] dark:focus:ring-[#FFC83D]/25"
               />
             </div>
 
@@ -201,14 +201,14 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                 onClick={() => setShowFilters(!showFilters)}
                 className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-base font-semibold transition ${
                   showFilters || hasActiveFilters
-                    ? "border-[#003377] bg-[#003377] text-white"
+                    ? "border-[#003377] bg-[#003377] text-white dark:border-[#FFC83D] dark:bg-[#FFC83D] dark:text-[#003377]"
                     : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
                 }`}
               >
                 <Filter className="size-4" />
                 <span>តម្រងស្វែងរក</span>
                 {hasActiveFilters && (
-                  <span className="size-2 rounded-full bg-[#FFC83D]" />
+                  <span className="size-2 rounded-full bg-amber-500" />
                 )}
               </button>
 
@@ -216,7 +216,6 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  title="លុបតម្រង"
                   className="inline-flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-base font-semibold text-rose-600 hover:bg-rose-50 dark:border-slate-800 dark:bg-slate-900"
                 >
                   <RotateCcw className="size-3.5" />
@@ -232,7 +231,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                     setPageSize(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="rounded-xl border border-slate-200 bg-white px-2 py-1 text-base text-slate-700 outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                  className="rounded-xl border border-slate-200 bg-white px-2 py-1 text-base text-slate-700 outline-none transition hover:border-[#003377] focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D] dark:focus:ring-[#FFC83D]/25"
                 >
                   <option value={5}>5 នាក់</option>
                   <option value={10}>10 នាក់</option>
@@ -257,7 +256,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                     setAccountStatusFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none transition hover:border-[#003377] focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D] dark:focus:ring-[#FFC83D]/25"
                 >
                   <option value="ALL">ទាំងអស់</option>
                   <option value="ACTIVE">សកម្ម</option>
@@ -277,7 +276,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                     setOnboardingFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none transition hover:border-[#003377] focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D] dark:focus:ring-[#FFC83D]/25"
                 >
                   <option value="ALL">ទាំងអស់</option>
                   <option value="COMPLETED">រួចរាល់</option>
@@ -296,7 +295,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
                     setEmailVerifiedFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  className="w-full rounded-xl border border-slate-200 bg-white p-2 text-base font-medium text-slate-800 outline-none transition hover:border-[#003377] focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D] dark:focus:ring-[#FFC83D]/25"
                 >
                   <option value="ALL">ទាំងអស់</option>
                   <option value="VERIFIED">ផ្ទៀងផ្ទាត់រួចរាល់</option>
@@ -337,7 +336,7 @@ export default function UserTable({ users, showSearch = true, initialPageSize = 
 
               const dateStr = user.rawUser?.createdAt
                 ? new Date(user.rawUser.createdAt).toLocaleDateString("km-KH")
-                : user.lastActive || "—";
+                : user.lastActive || "N/A";
 
               return (
                 <TableRow

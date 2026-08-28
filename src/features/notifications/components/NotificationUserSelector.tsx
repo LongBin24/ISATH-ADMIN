@@ -45,7 +45,7 @@ export default function NotificationUserSelector({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         className={cn(
-          "flex h-11 min-w-[150px] items-center justify-between gap-2.5 rounded-xl border border-input bg-background px-3 text-left text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+          "flex h-11 w-full min-w-[150px] items-center justify-between gap-2.5 rounded-xl border border-input bg-muted/60 px-3 text-left text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
           value && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
         )}
       >
@@ -70,7 +70,7 @@ export default function NotificationUserSelector({
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder={t("Search by name, username, or email...")}
+            placeholder={t("Search by name, username, or email..")}
             className="h-10 pl-9 text-base"
             autoFocus
           />

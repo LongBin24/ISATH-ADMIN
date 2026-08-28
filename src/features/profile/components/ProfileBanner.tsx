@@ -43,7 +43,7 @@ export default function ProfileBanner({ profile, onSuccess, onError }: { profile
                 </p>
               )}
               <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground font-normal sm:justify-start">
-                <span className="inline-flex items-center gap-1.5"><Mail className="size-4 text-sky-600 dark:text-sky-400" />{profile.email || "—"}</span>
+                <span className="inline-flex items-center gap-1.5"><Mail className="size-4 text-sky-600 dark:text-sky-400" />{profile.email || "N/A"}</span>
                 <span className="inline-flex items-center gap-1.5"><MapPin className="size-4 text-rose-500 dark:text-rose-400" />{profile.location || t("Location not provided")}</span>
                 <span className="inline-flex items-center gap-1.5"><CalendarDays className="size-4 text-amber-500 dark:text-amber-400" />{profile.joinDate ? `${t("Joined")} ${profile.joinDate}` : t("Join date unavailable")}</span>
               </div>

@@ -37,7 +37,7 @@ export default function FeedbackCard({ feedback, onView }: FeedbackCardProps) {
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
             <div className="inline-flex items-center gap-1">
-              <Star className="h-4 w-4 text-amber-400" /> {feedback.overallRating ?? "—"}
+              <Star className="h-4 w-4 text-amber-400" /> {feedback.overallRating ?? "N/A"}
             </div>
             <div>{new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(new Date(feedback.createdAt))}</div>
           </div>

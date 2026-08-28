@@ -30,3 +30,11 @@ export const broadcastNotificationSchema = z.object({
 
 export type CreateAdminNotificationFormData = z.infer<typeof createAdminNotificationSchema>;
 export type BroadcastNotificationFormData = z.infer<typeof broadcastNotificationSchema>;
+
+export const markNotificationSeenSchema = z.object({
+  seenThrough: z.string().optional(),
+  lastSeenAt: z.string().optional(),
+  unseenCount: z.number().int().nonnegative().optional(),
+});
+
+export type MarkNotificationSeenFormData = z.infer<typeof markNotificationSeenSchema>;

@@ -26,11 +26,11 @@ interface UserDetailSheetProps {
 }
 
 function displayDate(value: string | null | undefined) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   try {
     return format(new Date(value), "MMM d, yyyy");
   } catch {
-    return "—";
+    return "N/A";
   }
 }
 
@@ -152,11 +152,11 @@ export default function UserDetailSheet({
               <div>
                 <SectionTitle>{t("Personal Information")}</SectionTitle>
                 <div className="mt-2 divide-y divide-border">
-                  <Field label={t("Phone")} value={user.phoneNumber || "—"} />
+                  <Field label={t("Phone")} value={user.phoneNumber || "N/A"} />
                   <Field label={t("Gender")} value={t(formatGender(user.gender))} />
                   <Field label={t("Date of Birth")} value={displayDate(user.dateOfBirth)} />
-                  <Field label={t("Occupation")} value={user.occupation || "—"} />
-                  <Field label={t("Country")} value={user.countryCode || "—"} />
+                  <Field label={t("Occupation")} value={user.occupation || "N/A"} />
+                  <Field label={t("Country")} value={user.countryCode || "N/A"} />
                 </div>
               </div>
 
@@ -165,11 +165,11 @@ export default function UserDetailSheet({
               <div>
                 <SectionTitle>{t("Address")}</SectionTitle>
                 <div className="mt-2 divide-y divide-border">
-                  <Field label={t("Address Line 1")} value={user.addressLine1 || "—"} />
-                  <Field label={t("Address Line 2")} value={user.addressLine2 || "—"} />
-                  <Field label={t("City")} value={user.city || "—"} />
-                  <Field label={t("State / Province")} value={user.stateProvince || "—"} />
-                  <Field label={t("Postal Code")} value={user.postalCode || "—"} />
+                  <Field label={t("Address Line 1")} value={user.addressLine1 || "N/A"} />
+                  <Field label={t("Address Line 2")} value={user.addressLine2 || "N/A"} />
+                  <Field label={t("City")} value={user.city || "N/A"} />
+                  <Field label={t("State / Province")} value={user.stateProvince || "N/A"} />
+                  <Field label={t("Postal Code")} value={user.postalCode || "N/A"} />
                 </div>
               </div>
 
@@ -244,7 +244,7 @@ export default function UserDetailSheet({
                     <Field label={t("User ID")} value={<span className="font-mono text-sm">{user.id}</span>} />
                     <Field
                       label={t("Keycloak User ID")}
-                      value={<span className="font-mono text-sm">{user.keycloakUserId || "—"}</span>}
+                      value={<span className="font-mono text-sm">{user.keycloakUserId || "N/A"}</span>}
                     />
                   </div>
                 )}
@@ -274,7 +274,7 @@ export default function UserDetailSheet({
 }
 
 function formatGender(value: string | null | undefined) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   return value
     .toLowerCase()
     .split("_")
