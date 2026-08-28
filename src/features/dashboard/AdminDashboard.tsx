@@ -55,7 +55,10 @@ export default function AdminDashboard() {
         <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
           {t(greeting())}, {adminName}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground font-normal">
+        <p
+          className="mt-1 text-muted-foreground font-normal"
+          style={{ fontSize: "16px", lineHeight: "24px" }}
+        >
           {t("Here’s what’s happening across iStash today.")}
         </p>
       </header>
@@ -215,15 +218,15 @@ function UserOverview({ stats, loading, error, tab, setTab, retry }: { stats: Us
             <div className="flex flex-1 flex-col justify-between">
               <TabsContent value="gender" className="mt-0 space-y-4">
                 <div className="grid min-h-60 items-center gap-4 sm:grid-cols-[minmax(200px,1fr)_minmax(200px,1.2fr)]">
-                  <div className="relative flex h-56 w-full items-center justify-center sm:h-60">
+                  <div className="relative flex h-64 w-full items-center justify-center">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={genderRows}
                           dataKey="value"
                           nameKey="label"
-                          innerRadius={56}
-                          outerRadius={84}
+                          innerRadius={64}
+                          outerRadius={100}
                           paddingAngle={3}
                           strokeWidth={0}
                         >
@@ -248,7 +251,7 @@ function UserOverview({ stats, loading, error, tab, setTab, retry }: { stats: Us
                       return (
                         <div
                           key={row.name}
-                          className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-muted/20 px-3.5 py-2 transition-colors hover:bg-muted/40"
+                          className="flex items-center justify-between gap-3 rounded-xl px-3.5 py-2"
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
                             <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />

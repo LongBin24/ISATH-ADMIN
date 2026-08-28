@@ -1,5 +1,5 @@
-import AdminDashboard from "@/features/dashboard/AdminDashboard";
 import { Metadata } from "next";
+import AdminDashboard from "@/features/dashboard/AdminDashboard";
 
 export const metadata: Metadata = {
     title: "Dashboard | iStash admin",

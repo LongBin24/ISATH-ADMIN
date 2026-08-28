@@ -38,7 +38,7 @@ export default function Navbar({
   const { locale, mounted: localeMounted, setLocale, t } = useAdminI18n();
 
   return (
-    <header className="sticky top-0 z-20 w-full border-b border-slate-200/60 bg-white/90 px-3 pt-[max(env(safe-area-inset-top,0px),0.5rem)] pb-2 backdrop-blur-md dark:border-slate-800/60 dark:bg-slate-900/90 sm:px-4 lg:px-5">
+    <header className="sticky top-0 z-20 w-full border-b border-slate-200/60 bg-white/90 px-3.5 pt-[max(env(safe-area-inset-top,0px),0.5rem)] pb-2 backdrop-blur-md dark:border-slate-800/60 dark:bg-slate-900/90 sm:px-5 md:px-6 lg:px-8">
       <div className="flex items-center justify-between gap-2 sm:gap-3">
         <div className="flex flex-1 items-center gap-2 sm:gap-3">
           <Tooltip>
@@ -130,7 +130,10 @@ export default function Navbar({
             className="flex items-center gap-2.5 border-l border-slate-200/80 pl-2 transition hover:opacity-80 dark:border-slate-800 sm:pl-3"
           >
             <div className="hidden text-right font-google-sans sm:block">
-              <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+              <p
+                className="font-bold text-slate-800 dark:text-slate-200"
+                style={{ fontSize: "16px", lineHeight: "24px" }}
+              >
                 {profile?.displayName || t("Administrator")}
               </p>
               <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
