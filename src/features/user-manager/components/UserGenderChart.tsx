@@ -132,7 +132,7 @@ export default function UserGenderChart() {
                 return (
                   <div
                     key={row.key}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-muted/20 px-3.5 py-2 transition-colors hover:bg-muted/40"
+                    className="flex items-center justify-between gap-3 rounded-xl px-3.5 py-2"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <span
