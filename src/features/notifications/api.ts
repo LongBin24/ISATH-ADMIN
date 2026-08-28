@@ -16,6 +16,10 @@ import {
   RetryNotificationDeliveriesRequest,
   BroadcastNotificationPayload,
   BroadcastNotificationResponse,
+  MarkNotificationSeenRequest,
+  MarkNotificationSeenResponse,
+  NotificationActivitySummaryResponse,
+  NotificationActivitySummaryQueryParams,
 } from "./types";
 
 function buildAdminNotificationQuery(params?: AdminNotificationQueryParams) {
@@ -23,18 +27,19 @@ function buildAdminNotificationQuery(params?: AdminNotificationQueryParams) {
   query.set("pageNumber", String(params?.pageNumber ?? 0));
   query.set("pageSize", String(params?.pageSize ?? 20));
 
-  const optionalParams: Array<[string, string | number | boolean | undefined]> = [
-    ["userId", params?.userId],
-    ["notificationType", params?.notificationType],
-    ["referenceType", params?.referenceType],
-    ["referenceId", params?.referenceId],
-    ["read", params?.read],
-    ["alertRuleId", params?.alertRuleId],
-    ["createdFrom", params?.createdFrom],
-    ["createdTo", params?.createdTo],
-    ["sortBy", params?.sortBy],
-    ["sortDirection", params?.sortDirection],
-  ];
+  const optionalParams: Array<[string, string | number | boolean | undefined]> =
+    [
+      ["userId", params?.userId],
+      ["notificationType", params?.notificationType],
+      ["referenceType", params?.referenceType],
+      ["referenceId", params?.referenceId],
+      ["read", params?.read],
+      ["alertRuleId", params?.alertRuleId],
+      ["createdFrom", params?.createdFrom],
+      ["createdTo", params?.createdTo],
+      ["sortBy", params?.sortBy],
+      ["sortDirection", params?.sortDirection],
+    ];
 
   optionalParams.forEach(([key, value]) => {
     if (value !== undefined && value !== "") query.set(key, String(value));
@@ -68,7 +73,8 @@ export const notificationApi = baseApi.injectEndpoints({
       AdminNotificationPageResponse,
       AdminNotificationQueryParams | void
     >({
-      query: (params) => `${ENDPOINTS.NOTIFICATIONS}?${buildAdminNotificationQuery(params || undefined)}`,
+      query: (params) =>
+        `${ENDPOINTS.NOTIFICATIONS}?${buildAdminNotificationQuery(params || undefined)}`,
       providesTags: [{ type: API_TAGS.NOTIFICATION, id: "LIST" }],
     }),
 
@@ -94,10 +100,94 @@ export const notificationApi = baseApi.injectEndpoints({
       invalidatesTags: [{ type: API_TAGS.NOTIFICATION, id: "LIST" }],
     }),
 
+    // 2c. POST /api/v1/admin/notifications/mark-seen
+    markNotificationSeen: builder.mutation<
+      MarkNotificationSeenResponse,
+      MarkNotificationSeenRequest | void
+    >({
+      query: (body) => {
+        const timestamp =
+          body?.seenThrough ||
+          body?.lastSeenAt ||
+          new Date().toISOString();
+        return {
+          url: ENDPOINTS.NOTIFICATIONS_MARK_SEEN,
+          method: "POST",
+          body: {
+            seenThrough: timestamp,
+            lastSeenAt: timestamp,
+            ...(typeof body?.unseenCount === "number"
+              ? { unseenCount: body.unseenCount }
+              : {}),
+          },
+        };
+      },
+      invalidatesTags: [
+        { type: API_TAGS.NOTIFICATION, id: "LIST" },
+        { type: API_TAGS.NOTIFICATION, id: "ACTIVITY_SUMMARY" },
+      ],
+    }),
+    markSeen: builder.mutation<
+      MarkNotificationSeenResponse,
+      MarkNotificationSeenRequest | void
+    >({
+      query: (body) => {
+        const timestamp =
+          body?.seenThrough ||
+          body?.lastSeenAt ||
+          new Date().toISOString();
+        return {
+          url: ENDPOINTS.NOTIFICATIONS_MARK_SEEN,
+          method: "POST",
+          body: {
+            seenThrough: timestamp,
+            lastSeenAt: timestamp,
+            ...(typeof body?.unseenCount === "number"
+              ? { unseenCount: body.unseenCount }
+              : {}),
+          },
+        };
+      },
+      invalidatesTags: [
+        { type: API_TAGS.NOTIFICATION, id: "LIST" },
+        { type: API_TAGS.NOTIFICATION, id: "ACTIVITY_SUMMARY" },
+      ],
+    }),
+
+    // 2d. GET /api/v1/admin/notifications/activity-summary
+    getAdminNotificationActivitySummary: builder.query<
+      NotificationActivitySummaryResponse,
+      NotificationActivitySummaryQueryParams | void
+    >({
+      query: (params) => {
+        const limit = params?.limit;
+        return limit !== undefined
+          ? `${ENDPOINTS.NOTIFICATIONS_ACTIVITY_SUMMARY}?limit=${limit}`
+          : ENDPOINTS.NOTIFICATIONS_ACTIVITY_SUMMARY;
+      },
+      providesTags: [{ type: API_TAGS.NOTIFICATION, id: "ACTIVITY_SUMMARY" }],
+    }),
+    getNotificationActivitySummary: builder.query<
+      NotificationActivitySummaryResponse,
+      NotificationActivitySummaryQueryParams | void
+    >({
+      query: (params) => {
+        const limit = params?.limit;
+        return limit !== undefined
+          ? `${ENDPOINTS.NOTIFICATIONS_ACTIVITY_SUMMARY}?limit=${limit}`
+          : ENDPOINTS.NOTIFICATIONS_ACTIVITY_SUMMARY;
+      },
+      providesTags: [{ type: API_TAGS.NOTIFICATION, id: "ACTIVITY_SUMMARY" }],
+    }),
+
     // 3. POST /api/v1/admin/notifications/{notificationId}/deliveries/retry
     retryNotificationDelivery: builder.mutation<
       NotificationDeliveryResponse[],
-      { notificationId: string; channel?: RetryNotificationDeliveriesRequest["channel"] } | string
+      | {
+          notificationId: string;
+          channel?: RetryNotificationDeliveriesRequest["channel"];
+        }
+      | string
     >({
       query: (arg) => {
         const notificationId =
@@ -143,7 +233,9 @@ export const notificationApi = baseApi.injectEndpoints({
           `${ENDPOINTS.NOTIFICATIONS}?pageNumber=0&pageSize=20`,
         );
         if (result.error) return { error: result.error };
-        const content = (result.data as LegacyNotificationResponse | undefined)?.content ?? [];
+        const content =
+          (result.data as LegacyNotificationResponse | undefined)?.content ??
+          [];
 
         const categoryMap: Record<string, NotificationCategory> = {
           DAILY_REMINDER: "DAILY_EXPENSE",
@@ -176,14 +268,26 @@ export const notificationApi = baseApi.injectEndpoints({
       async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
         const [totalResult, unreadResult] = await Promise.all([
           baseQuery(`${ENDPOINTS.NOTIFICATIONS}?pageNumber=0&pageSize=1`),
-          baseQuery(`${ENDPOINTS.NOTIFICATIONS}?read=false&pageNumber=0&pageSize=1`),
+          baseQuery(
+            `${ENDPOINTS.NOTIFICATIONS}?read=false&pageNumber=0&pageSize=1`,
+          ),
         ]);
         if (totalResult.error) return { error: totalResult.error };
         if (unreadResult.error) return { error: unreadResult.error };
-        const totalResponse = totalResult.data as LegacyNotificationResponse | undefined;
-        const unreadResponse = unreadResult.data as LegacyNotificationResponse | undefined;
-        const total = totalResponse?.page.totalElements ?? totalResponse?.content.length ?? 0;
-        const unreadCount = unreadResponse?.page.totalElements ?? unreadResponse?.content.length ?? 0;
+        const totalResponse = totalResult.data as
+          | LegacyNotificationResponse
+          | undefined;
+        const unreadResponse = unreadResult.data as
+          | LegacyNotificationResponse
+          | undefined;
+        const total =
+          totalResponse?.page.totalElements ??
+          totalResponse?.content.length ??
+          0;
+        const unreadCount =
+          unreadResponse?.page.totalElements ??
+          unreadResponse?.content.length ??
+          0;
         return {
           data: {
             total,
@@ -232,12 +336,18 @@ export const notificationApi = baseApi.injectEndpoints({
       },
       invalidatesTags: [{ type: API_TAGS.NOTIFICATION, id: "LIST" }],
     }),
-    updatePreferences: builder.mutation<Record<string, never>, UserNotificationPreferences>({
+    updatePreferences: builder.mutation<
+      Record<string, never>,
+      UserNotificationPreferences
+    >({
       async queryFn() {
         return { data: {} };
       },
     }),
-    triggerNotification: builder.mutation<AdminNotificationItem, LegacyTriggerPayload>({
+    triggerNotification: builder.mutation<
+      AdminNotificationItem,
+      LegacyTriggerPayload
+    >({
       query: (data) => ({
         url: ENDPOINTS.NOTIFICATIONS,
         method: "POST",
@@ -272,6 +382,12 @@ export const {
   useGetAdminNotificationsQuery,
   useCreateAdminNotificationMutation,
   useBroadcastAdminNotificationMutation,
+  useMarkNotificationSeenMutation,
+  useMarkSeenMutation,
+  useGetAdminNotificationActivitySummaryQuery,
+  useGetNotificationActivitySummaryQuery,
+  useLazyGetAdminNotificationActivitySummaryQuery,
+  useLazyGetNotificationActivitySummaryQuery,
   useRetryNotificationDeliveryMutation,
   useGetAdminNotificationByIdQuery,
   useGetAdminAlertRulesQuery,

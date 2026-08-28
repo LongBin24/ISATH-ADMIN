@@ -5,8 +5,10 @@ import { formatDistanceToNow } from "date-fns";
 import {
   useGetNotificationsQuery,
   useGetNotificationStatsQuery,
+  useGetAdminNotificationActivitySummaryQuery,
   useMarkAllAsReadMutation,
   useMarkAsReadMutation,
+  useMarkNotificationSeenMutation,
 } from "../api";
 import { useNotificationUI } from "../hook";
 import { useAdminI18n } from "@/i18n/admin-i18n";
@@ -30,10 +32,17 @@ export default function NotificationBellDropdown() {
     refetchOnFocus: true,
     refetchOnReconnect: true,
   } as const;
-  const { data: stats, refetch: refetchStats } = useGetNotificationStatsQuery(undefined, liveQueryOptions);
-  const { data: notifications = [], refetch: refetchNotifications } = useGetNotificationsQuery(undefined, liveQueryOptions);
+  const { data: summary, refetch: refetchSummary } =
+    useGetAdminNotificationActivitySummaryQuery(undefined, liveQueryOptions);
+  const { data: stats, refetch: refetchStats } = useGetNotificationStatsQuery(
+    undefined,
+    liveQueryOptions,
+  );
+  const { data: notifications = [], refetch: refetchNotifications } =
+    useGetNotificationsQuery(undefined, liveQueryOptions);
   const [markAllAsRead] = useMarkAllAsReadMutation();
   const [markAsRead] = useMarkAsReadMutation();
+  const [markNotificationSeen] = useMarkNotificationSeenMutation();
   const { selectNotification } = useNotificationUI();
 
   // Close dropdown on click outside
@@ -52,11 +61,26 @@ export default function NotificationBellDropdown() {
 
   useEffect(() => {
     if (!isOpen) return;
+    refetchSummary();
     refetchStats();
     refetchNotifications();
-  }, [isOpen, refetchNotifications, refetchStats]);
+    const now = new Date().toISOString();
+    markNotificationSeen({
+      seenThrough: now,
+      lastSeenAt: now,
+      unseenCount: 0,
+    })
+      .unwrap()
+      .catch(() => {});
+  }, [
+    isOpen,
+    markNotificationSeen,
+    refetchNotifications,
+    refetchStats,
+    refetchSummary,
+  ]);
 
-  const unreadCount = stats?.unreadCount || 0;
+  const unreadCount = summary?.unseenCount ?? stats?.unreadCount ?? 0;
   const recentNotifications = notifications.slice(0, 5);
 
   return (
@@ -65,7 +89,7 @@ export default function NotificationBellDropdown() {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="relative rounded-xl border border-border bg-card p-2.5 text-foreground/80 transition hover:border-[#FFC83D] hover:text-[#003377] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
+        className="relative flex size-10 items-center justify-center rounded-xl border border-border bg-card text-foreground/80 transition hover:border-[#003377] hover:text-[#003377] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
         aria-label={t("Notifications")}
       >
         <Bell size={20} />

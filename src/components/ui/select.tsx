@@ -56,7 +56,7 @@ export function Select({ value = "", onValueChange, children, className }: Selec
 
   return (
     <SelectContext.Provider value={{ value, open, listboxId, setOpen, select }}>
-      <div ref={rootRef} className={cn("relative inline-block w-full sm:w-auto", className)}>
+      <div ref={rootRef} className={cn("relative inline-block w-full", className)}>
         {children}
       </div>
     </SelectContext.Provider>

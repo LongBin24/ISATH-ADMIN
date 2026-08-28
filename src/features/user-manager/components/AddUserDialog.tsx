@@ -114,7 +114,7 @@ export default function AddUserDialog({ open, onOpenChange }: AddUserDialogProps
         onOpenChange(next);
       }}
     >
-      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-3xl overflow-hidden p-0" onClose={() => onOpenChange(false)}>
+      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-3xl overflow-hidden p-0" onClose={() => { reset(); onOpenChange(false); }}>
         <DialogHeader className="relative mb-0 border-b border-border/70 bg-gradient-to-r from-[#003377]/8 via-background to-[#FEDB55]/12 px-6 py-6 pr-14 sm:px-8">
           <div className="flex items-start gap-4 text-left">
             <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#FEDB55] text-[#003377] shadow-sm">
@@ -136,34 +136,43 @@ export default function AddUserDialog({ open, onOpenChange }: AddUserDialogProps
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label={t("First Name")} htmlFor="firstName" error={errors.firstName}>
-              <Input
-                id="firstName"
-                autoComplete="given-name"
-                placeholder={t("Enter first name")}
-                value={form.firstName}
-                onChange={(e) => update("firstName", e.target.value)}
-                aria-invalid={Boolean(errors.firstName)}
-                className="h-12 rounded-xl bg-background px-4 text-base"
-              />
+                  <Input
+                    id="firstName"
+                    autoComplete="given-name"
+                    placeholder={t("Enter first name")}
+                    value={form.firstName}
+                    onChange={(e) => update("firstName", e.target.value)}
+                    aria-invalid={Boolean(errors.firstName)}
+                    className="h-12 rounded-xl bg-background px-4 text-base"
+                  />
                 </Field>
                 <Field label={t("Last Name")} htmlFor="lastName" error={errors.lastName}>
-              <Input
-                id="lastName"
-                autoComplete="family-name"
-                placeholder={t("Enter last name")}
-                value={form.lastName}
-                onChange={(e) => update("lastName", e.target.value)}
-                aria-invalid={Boolean(errors.lastName)}
-                className="h-12 rounded-xl bg-background px-4 text-base"
-              />
+                  <Input
+                    id="lastName"
+                    autoComplete="family-name"
+                    placeholder={t("Enter last name")}
+                    value={form.lastName}
+                    onChange={(e) => update("lastName", e.target.value)}
+                    aria-invalid={Boolean(errors.lastName)}
+                    className="h-12 rounded-xl bg-background px-4 text-base"
+                  />
                 </Field>
               </div>
+
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label={t("Email")} htmlFor="email" error={errors.email}>
                   <div className="relative"><Mail className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" /><Input id="email" type="email" autoComplete="email" placeholder="name@example.com" value={form.email} onChange={(e) => update("email", e.target.value)} aria-invalid={Boolean(errors.email)} className="h-12 rounded-xl bg-background pl-12 pr-4 text-base" /></div>
                 </Field>
                 <Field label={t("Role")} htmlFor="role">
-                  <Select value={form.role} onValueChange={(value) => update("role", value as FormState["role"])}><SelectTrigger id="role" className="h-12 rounded-xl text-base"><SelectValue value={t(ROLE_LABEL[form.role])} /></SelectTrigger><SelectContent value={form.role} onValueChange={(value) => update("role", value as FormState["role"])}><SelectItem value="USER">{t("User")}</SelectItem><SelectItem value="ADMIN">{t("Administrator")}</SelectItem></SelectContent></Select>
+                  <Select className="w-full" value={form.role} onValueChange={(value) => update("role", value as FormState["role"])}>
+                    <SelectTrigger id="role" className="h-12 w-full rounded-xl bg-background px-4 text-base">
+                      <SelectValue value={t(ROLE_LABEL[form.role])} />
+                    </SelectTrigger>
+                    <SelectContent className="w-full min-w-full">
+                      <SelectItem value="USER">{t("User")}</SelectItem>
+                      <SelectItem value="ADMIN">{t("Administrator")}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </Field>
               </div>
               {form.role === "ADMIN" && <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-base text-blue-800 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-200"><AlertTriangle className="mt-0.5 size-5 shrink-0" /><span>{t("Administrator accounts have elevated access to management features.")}</span></div>}

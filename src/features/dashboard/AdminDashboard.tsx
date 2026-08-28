@@ -208,23 +208,23 @@ function UserOverview({ stats, loading, error, tab, setTab, retry }: { stats: Us
 
         <CardContent className="flex flex-1 flex-col justify-between p-4 sm:p-5">
           {loading ? (
-            <Skeleton className="h-72 w-full rounded-xl" />
+            <Skeleton className="h-80 w-full rounded-xl" />
           ) : error ? (
             <WidgetError message={t("Unable to load user statistics.")} retry={retry} />
           ) : (
             <div className="flex flex-1 flex-col justify-between">
               <TabsContent value="gender" className="mt-0 space-y-4">
-                <div className="grid min-h-60 items-center gap-4 sm:grid-cols-[minmax(200px,1fr)_minmax(200px,1.2fr)]">
-                  <div className="relative flex h-56 w-full items-center justify-center sm:h-60">
+                <div className="grid min-h-72 items-center gap-6 sm:grid-cols-[minmax(240px,1.1fr)_minmax(220px,1fr)]">
+                  <div className="relative flex h-72 w-full items-center justify-center sm:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={genderRows}
                           dataKey="value"
                           nameKey="label"
-                          innerRadius={56}
-                          outerRadius={84}
-                          paddingAngle={3}
+                          innerRadius={72}
+                          outerRadius={110}
+                          paddingAngle={3.5}
                           strokeWidth={0}
                         >
                           {genderRows.map((row, index) => (
@@ -235,28 +235,28 @@ function UserOverview({ stats, loading, error, tab, setTab, retry }: { stats: Us
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-2xl font-bold tracking-tight card-number text-[#003377] dark:text-[#FEDB55]">
+                      <span className="text-3xl sm:text-4xl font-bold tracking-tight card-number text-[#003377] dark:text-[#FEDB55]">
                         {totalUsers.toLocaleString()}
                       </span>
-                      <span className="text-xs font-medium text-muted-foreground">{t("Users")}</span>
+                      <span className="mt-0.5 text-xs sm:text-sm font-semibold text-muted-foreground">{t("Users")}</span>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {genderRows.map((row, index) => {
                       const percent = totalUsers > 0 ? Math.round((row.value / totalUsers) * 100) : 0;
                       return (
                         <div
                           key={row.name}
-                          className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-muted/20 px-3.5 py-2 transition-colors hover:bg-muted/40"
+                          className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-muted/20 px-4 py-2.5 transition-colors hover:bg-muted/40"
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                            <span className="size-3 shrink-0 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
                             <span className="truncate text-sm font-medium text-foreground">{row.label}</span>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <span className="text-sm font-bold text-foreground">{row.value.toLocaleString()}</span>
-                            <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
+                            <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
                               {percent}%
                             </span>
                           </div>
@@ -268,7 +268,7 @@ function UserOverview({ stats, loading, error, tab, setTab, retry }: { stats: Us
               </TabsContent>
 
               <TabsContent value="age" className="mt-0 space-y-4">
-                <div className="h-60 w-full">
+                <div className="h-72 sm:h-80 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={ageRows} margin={{ top: 8, left: -18, right: 8, bottom: 0 }}>
                       <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border/60" />

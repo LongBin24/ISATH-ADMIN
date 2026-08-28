@@ -21,7 +21,6 @@ import {
   X,
   Sun,
   Moon,
-  Globe2,
   ChevronRight,
 } from "lucide-react";
 import { useGetNotificationStatsQuery } from "@/features/notifications/api";
@@ -87,7 +86,7 @@ export default function MobileBottomNav() {
       {/* Ultra-Clean Mobile Bottom Navigation Bar (PWA Standard) */}
       <nav
         aria-label="Mobile Navigation"
-        className="fixed bottom-0 left-0 right-0 z-30 block lg:hidden border-t border-slate-200/60 bg-white/90 pt-1 pb-[max(env(safe-area-inset-bottom,0px),0.25rem)] backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/90 shadow-[0_-2px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_-2px_12px_rgba(0,0,0,0.3)] font-google-sans transition-colors"
+        className="fixed bottom-0 left-0 right-0 z-30 block lg:hidden border-t border-slate-200/70 bg-white/95 pt-1 pb-[max(env(safe-area-inset-bottom,0px),0.25rem)] backdrop-blur-xl dark:border-[#172338] dark:bg-[#070d18]/95 shadow-[0_-2px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.5)] font-google-sans"
       >
         <div className="flex h-14 items-center justify-around px-1">
           {primaryNavItems.map((item) => {
@@ -168,17 +167,17 @@ export default function MobileBottomNav() {
         <div className="fixed inset-0 z-50 flex flex-col justify-end lg:hidden font-google-sans">
           {/* Subtle Backdrop */}
           <div
-            className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
+            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
             onClick={() => setMoreOpen(false)}
           />
 
           {/* Clean Card Sheet */}
-          <div className="relative z-10 max-h-[85vh] w-full overflow-y-auto rounded-t-3xl border-t border-slate-200/80 bg-white px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] shadow-2xl transition-transform duration-300 dark:border-slate-800 dark:bg-slate-900 animate-in slide-in-from-bottom">
+          <div className="relative z-10 max-h-[85vh] w-full overflow-y-auto rounded-t-3xl border-t border-slate-200/80 bg-white px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] shadow-2xl transition-transform duration-300 dark:border-[#172338] dark:bg-[#0b1120] animate-in slide-in-from-bottom">
             {/* Grab Handle */}
             <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-300 dark:bg-slate-700" />
 
             {/* Profile Header */}
-            <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3.5 dark:border-slate-800">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3.5 dark:border-[#1e293b]">
               <Link
                 href="/profile"
                 onClick={() => setMoreOpen(false)}
@@ -209,7 +208,7 @@ export default function MobileBottomNav() {
               <button
                 type="button"
                 onClick={() => setMoreOpen(false)}
-                className="grid h-7 w-7 place-items-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+                className="grid h-7 w-7 place-items-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-[#111d35] dark:text-slate-400 dark:hover:bg-[#172554]"
                 aria-label={t("Close")}
               >
                 <X size={15} />
@@ -221,7 +220,7 @@ export default function MobileBottomNav() {
               <button
                 type="button"
                 onClick={() => setLocale(locale === "en" ? "km" : "en")}
-                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200/70 bg-slate-50/80 py-2 px-3 text-xs font-semibold text-slate-700 transition active:scale-95 hover:border-[#003377] dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:border-[#FFC83D]"
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200/70 bg-slate-50/80 py-2 px-3 text-xs font-semibold text-slate-700 transition active:scale-95 hover:border-[#003377] dark:border-[#1e293b] dark:bg-[#111d35]/70 dark:text-slate-200 dark:hover:border-[#FFC83D]"
               >
                 <LanguageFlag locale={localeMounted ? locale : "en"} className="w-5 h-3.5" />
                 <span>{localeMounted ? (locale === "km" ? "ខ្មែរ" : "English") : "Language"}</span>
@@ -229,17 +228,20 @@ export default function MobileBottomNav() {
 
               <button
                 type="button"
-                onClick={toggleTheme}
-                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200/70 bg-slate-50/80 py-2 px-3 text-xs font-semibold text-slate-700 transition active:scale-95 hover:border-[#003377] dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:border-[#FFC83D]"
+                onClick={(e) => {
+                  e.currentTarget.blur();
+                  toggleTheme(e);
+                }}
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200/70 bg-slate-50/80 py-2 px-3 text-xs font-semibold text-slate-700 transition active:scale-95 dark:border-[#1e293b] dark:bg-[#111d35]/70 dark:text-slate-200"
               >
                 {themeMounted && theme === "dark" ? (
                   <>
-                    <Sun size={14} className="text-[#FFC83D]" />
+                    <Sun size={14} className="text-[#FFC83D] shrink-0" />
                     <span>{t("Light Mode")}</span>
                   </>
                 ) : (
                   <>
-                    <Moon size={14} className="text-[#003377]" />
+                    <Moon size={14} className="text-[#003377] shrink-0" />
                     <span>{t("Dark Mode")}</span>
                   </>
                 )}
@@ -264,7 +266,7 @@ export default function MobileBottomNav() {
                       className={`flex items-center gap-2.5 rounded-xl p-2.5 border transition-all duration-150 active:scale-95 ${
                         isActive
                           ? "border-[#003377]/40 bg-[#003377]/5 text-[#003377] font-bold dark:border-[#FFC83D]/40 dark:bg-[#FFC83D]/10 dark:text-[#FFC83D]"
-                          : "border-slate-100 bg-slate-50/50 text-slate-700 hover:border-slate-300 hover:bg-white dark:border-slate-800/60 dark:bg-slate-800/40 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:bg-slate-800"
+                          : "border-slate-100 bg-slate-50/50 text-slate-700 hover:border-slate-300 hover:bg-white dark:border-[#1e293b] dark:bg-[#070d18]/60 dark:text-slate-300 dark:hover:border-[#334155] dark:hover:bg-[#111d35]"
                       }`}
                     >
                       <div

@@ -57,7 +57,7 @@ export default function Sidebar({
       />
 
       <aside
-        className={`fixed left-0 top-0 z-40 flex h-screen w-65 flex-col gap-8 border-r border-slate-200 bg-slate-50 p-6 transition-transform duration-300 dark:border-slate-800 dark:bg-slate-900 ${isOpen ? "translate-x-0" : "-translate-x-full"} ${isCollapsed ? "lg:-translate-x-full" : "lg:translate-x-0"}`}
+        className={`fixed left-0 top-0 z-40 flex h-screen w-65 flex-col gap-8 border-r border-slate-200/80 bg-white p-6 transition-transform duration-300 dark:border-[#172338] dark:bg-[#070d18] ${isOpen ? "translate-x-0" : "-translate-x-full"} ${isCollapsed ? "lg:-translate-x-full" : "lg:translate-x-0"}`}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-2xl font-bold text-[#003377] dark:text-[#FFC83D]">
@@ -101,7 +101,7 @@ export default function Sidebar({
                 key={item.label}
                 href={item.href}
                 onClick={onClose}
-                className={`flex items-center gap-3 rounded-xl p-3 transition-all ${isActive ? "bg-[#FFC83D]/20 text-[#003377] dark:text-[#FFC83D]" : "text-slate-600 hover:bg-white hover:text-[#003377] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-[#FFC83D]"} font-google-sans`}
+                className={`flex items-center gap-3 rounded-xl p-3 transition-all ${isActive ? "bg-[#003377]/10 font-bold text-[#003377] dark:bg-[#FFC83D]/10 dark:text-[#FFC83D] dark:shadow-[0_0_15px_-3px_rgba(255,200,61,0.15)]" : "text-slate-600 hover:bg-slate-50 hover:text-[#003377] dark:text-slate-400 dark:hover:bg-[#0b1120] dark:hover:text-[#FFC83D]"} font-google-sans`}
               >
                 <item.icon size={20} />
                 <span className="text-base font-medium">{t(item.label)}</span>

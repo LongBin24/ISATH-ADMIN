@@ -4,35 +4,39 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f8f9fa;
+  --background: #f4f6fa;
   --foreground: #0f172a;
   --brand-primary: #FFC83D;
   --brand-secondary: #003377;
   --brand-accent: #334155;
 
-  /* shadcn/ui tokens, tuned to the iStash brand palette above */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.24 0.08 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.24 0.08 250);
-  --primary: oklch(0.83 0.17 84);
-  --primary-foreground: oklch(0.22 0.08 250);
-  --secondary: oklch(0.96 0.03 85);
-  --secondary-foreground: oklch(0.3 0.08 250);
-  --muted: oklch(0.96 0.01 250);
-  --muted-foreground: oklch(0.48 0.04 250);
-  --accent: oklch(0.95 0.04 85);
-  --accent-foreground: oklch(0.25 0.08 250);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.98 0.01 25);
-  --border: oklch(0.91 0.01 250);
-  --input: oklch(0.91 0.01 250);
-  --ring: oklch(0.83 0.17 84 / 50%);
-  --chart-1: oklch(0.83 0.17 84);
-  --chart-2: oklch(0.35 0.09 250);
-  --chart-3: oklch(0.55 0.15 160);
-  --chart-4: oklch(0.65 0.18 45);
-  --chart-5: oklch(0.5 0.2 25);
+  /* Clean Command-Center Light tokens */
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #FFC83D;
+  --primary-foreground: #003377;
+  --secondary: #eef2f8;
+  --secondary-foreground: #003377;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f8fafc;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: rgba(0, 51, 119, 0.25);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+
+  --chart-1: #003377;
+  --chart-2: #FFC83D;
+  --chart-3: #10b981;
+  --chart-4: #6366f1;
+  --chart-5: #f43f5e;
   --radius: 0.75rem;
 
   --font-sans: "Google Sans", "Battambang", "Khmer OS", sans-serif;
@@ -243,6 +247,16 @@ small {
   line-height: 1.5rem !important;
 }
 
+/* Hide native browser password reveal and clear buttons (e.g. Edge / Chromium / IE) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 /* Primary & Secondary border on focus for inputs, textareas & search */
 textarea:focus,
 textarea:focus-visible,
@@ -368,31 +382,39 @@ input[placeholder*="ស្វែងរក"]:focus-visible {
 }
 
 .dark {
-  --background: #020617;
+  /* Dark Mode - PoliceAI-Inspired Command Center */
+  --background: #030712;
   --foreground: #f8fafc;
+  --brand-primary: #FFC83D;
+  --brand-secondary: #003377;
+  --brand-accent: #64748b;
 
-  --card: oklch(0.16 0.03 255);
-  --card-foreground: oklch(0.97 0.01 250);
-  --popover: oklch(0.16 0.03 255);
-  --popover-foreground: oklch(0.97 0.01 250);
-  --primary: oklch(0.83 0.17 84);
-  --primary-foreground: oklch(0.15 0.06 250);
-  --secondary: oklch(0.2 0.04 255);
-  --secondary-foreground: oklch(0.85 0.15 85);
-  --muted: oklch(0.2 0.03 255);
-  --muted-foreground: oklch(0.68 0.03 250);
-  --accent: oklch(0.22 0.04 255);
-  --accent-foreground: oklch(0.85 0.15 85);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.15 0.02 25);
-  --border: oklch(0.24 0.03 255);
-  --input: oklch(0.24 0.03 255);
-  --ring: oklch(0.83 0.17 84 / 40%);
-  --chart-1: oklch(0.83 0.17 84);
-  --chart-2: oklch(0.48 0.12 250);
-  --chart-3: oklch(0.65 0.16 160);
-  --chart-4: oklch(0.72 0.19 45);
-  --chart-5: oklch(0.6 0.22 25);
+  --card: #0b1120;
+  --card-foreground: #f8fafc;
+  --popover: #0e1629;
+  --popover-foreground: #f8fafc;
+  --primary: #FFC83D;
+  --primary-foreground: #020617;
+  --secondary: #111d35;
+  --secondary-foreground: #FFC83D;
+  --muted: #0f172a;
+  --muted-foreground: #94a3b8;
+  --accent: #172554;
+  --accent-foreground: #f8fafc;
+  --destructive: #f87171;
+  --destructive-foreground: #020617;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: rgba(255, 200, 61, 0.4);
+  --sidebar: #070d18;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-border: #172338;
+
+  --chart-1: #FFC83D;
+  --chart-2: #38bdf8;
+  --chart-3: #34d399;
+  --chart-4: #a78bfa;
+  --chart-5: #fb7185;
 }
 
 @theme inline {
@@ -421,6 +443,9 @@ input[placeholder*="ស្វែងរក"]:focus-visible {
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -440,30 +465,67 @@ html.dark {
   color-scheme: dark;
 }
 
-/* Smooth View Transitions API theme crossfade */
+/* ==========================================================================
+   PoliceAI Futuristic View Transition (Radial/Circular Theme Reveal)
+   ========================================================================== */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.3s;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation: none;
+  mix-blend-mode: normal;
+  display: block;
 }
 
-/* Smooth 0.25s CSS transition across layout components */
-body,
-header,
-aside,
-main,
-nav,
-div,
-section,
-button,
-input,
-select,
-a,
-span,
-p {
-  transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-              color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 999999;
+}
+
+/* Prevent internal layout transitions during root snapshot reveal */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: none !important;
+}
+
+/* ==========================================================================
+   Tactile Theme Toggle Button Subtle Glow Keyframes (Zero Rotation)
+   ========================================================================== */
+@keyframes theme-btn-charge {
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(255, 200, 61, 0.4);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 12px 3px rgba(255, 200, 61, 0.2);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 200, 61, 0);
+  }
+}
+
+.theme-toggle-active {
+  animation: theme-btn-charge 0.28s ease-out forwards;
+}
+
+/* PoliceAI Futuristic Soft Glows */
+.dark .police-panel {
+  background-color: #0b1120;
+  border-color: #1e293b;
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.dark .police-glow-gold {
+  box-shadow: 0 0 22px -2px rgba(255, 200, 61, 0.28);
+}
+
+.dark .police-glow-blue {
+  box-shadow: 0 0 24px -2px rgba(0, 51, 119, 0.45);
 }
 
 .font-google-sans {
