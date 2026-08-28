@@ -193,9 +193,9 @@ function initials(user?: AdminUser) {
 }
 
 function dateText(value?: string | null, exact = false) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
+  if (Number.isNaN(date.getTime())) return "N/A";
   return exact
     ? format(date, "PPp")
     : formatDistanceToNow(date, { addSuffix: true });
@@ -356,25 +356,25 @@ export default function ReviewManager() {
             <StatCard
               icon={MessageSquareText}
               label={t("Total Reviews")}
-              value={totalQuery.data?.totalElements ?? "—"}
+              value={totalQuery.data?.totalElements ?? "N/A"}
               helper={t("User submissions")}
             />
             <StatCard
               icon={Clock3}
               label={t("Pending")}
-              value={pendingQuery.data?.totalElements ?? "—"}
+              value={pendingQuery.data?.totalElements ?? "N/A"}
               helper={t("Awaiting review")}
             />
             <StatCard
               icon={CircleDot}
               label={t("In Review")}
-              value={inReviewQuery.data?.totalElements ?? "—"}
+              value={inReviewQuery.data?.totalElements ?? "N/A"}
               helper={t("Currently handled")}
             />
             <StatCard
               icon={CircleCheck}
               label={t("Resolved")}
-              value={resolvedQuery.data?.totalElements ?? "—"}
+              value={resolvedQuery.data?.totalElements ?? "N/A"}
               helper={t("Completed reviews")}
             />
           </>
@@ -391,9 +391,16 @@ export default function ReviewManager() {
           </p>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <div
+            className={cn(
+              "grid gap-2 md:grid-cols-2 xl:items-center",
+              hasFilters
+                ? "xl:grid-cols-[minmax(240px,3.5fr)_repeat(4,minmax(140px,1fr))]"
+                : "xl:grid-cols-[minmax(280px,4.5fr)_repeat(3,minmax(140px,1fr))]",
+            )}
+          >
+            <div className="relative md:col-span-2 xl:col-span-1">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(event) => {
@@ -401,7 +408,7 @@ export default function ReviewManager() {
                   setPage(0);
                 }}
                 placeholder={t("Search user...")}
-                className="h-11 rounded-xl pl-9 pr-8 text-sm"
+                className="h-11 rounded-xl bg-background pl-10 pr-9 text-sm shadow-sm"
               />
               {search && (
                 <button
@@ -416,7 +423,7 @@ export default function ReviewManager() {
                 </button>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="grid gap-2 sm:grid-cols-2 md:col-span-2 xl:contents">
               <ReviewSelect
                 label="Type"
                 value={type}
@@ -464,7 +471,7 @@ export default function ReviewManager() {
               {hasFilters && (
                 <Button
                   variant="ghost"
-                  className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium"
+                  className="h-11 w-full shrink-0 rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
                   onClick={resetFilters}
                 >
                   {t("Reset")}
@@ -679,7 +686,7 @@ function ReviewSelect({
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
         className={cn(
-          "h-11 rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+          "h-11 rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
           compact ? "admin-page-size w-32" : "min-w-[140px]",
           isSelected &&
             "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
@@ -765,7 +772,7 @@ function Rating({
           detailed ? "text-base font-medium" : "text-base font-semibold"
         }
       >
-        {value == null ? "—" : detailed ? `${value} / 5` : value}
+        {value == null ? "N/A" : detailed ? `${value} / 5` : value}
       </span>
     </div>
   );
@@ -818,11 +825,13 @@ function ReviewRow({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
+              type="button"
               variant="ghost"
               size="icon"
               aria-label={`${review.title} actions`}
+              className="size-8.5 rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
             >
-              <MoreHorizontal className="size-4" />
+              <MoreHorizontal className="size-4.5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

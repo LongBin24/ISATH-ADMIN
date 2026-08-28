@@ -53,71 +53,71 @@
 }
 
 :root {
-  --background: oklch(0.99 0.005 85);
-  --foreground: oklch(0.24 0.08 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.24 0.08 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.24 0.08 250);
-  --primary: oklch(0.83 0.17 84);
-  --primary-foreground: oklch(0.22 0.08 250);
-  --secondary: oklch(0.96 0.03 85);
-  --secondary-foreground: oklch(0.3 0.08 250);
-  --muted: oklch(0.96 0.01 250);
-  --muted-foreground: oklch(0.48 0.04 250);
-  --accent: oklch(0.95 0.04 85);
-  --accent-foreground: oklch(0.25 0.08 250);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.91 0.01 250);
-  --input: oklch(0.91 0.01 250);
-  --ring: oklch(0.83 0.17 84 / 50%);
-  --chart-1: oklch(0.83 0.17 84);
-  --chart-2: oklch(0.35 0.09 250);
-  --chart-3: oklch(0.55 0.15 160);
-  --chart-4: oklch(0.65 0.18 45);
-  --chart-5: oklch(0.5 0.2 25);
+  --background: #f4f6fa;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #FFC83D;
+  --primary-foreground: #003377;
+  --secondary: #eef2f8;
+  --secondary-foreground: #003377;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f8fafc;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: rgba(0, 51, 119, 0.25);
+  --chart-1: #003377;
+  --chart-2: #FFC83D;
+  --chart-3: #10b981;
+  --chart-4: #6366f1;
+  --chart-5: #f43f5e;
   --radius: 0.75rem;
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.22 0.08 250);
-  --sidebar-primary: oklch(0.83 0.17 84);
-  --sidebar-primary-foreground: oklch(0.22 0.08 250);
-  --sidebar-accent: oklch(0.96 0.04 85);
-  --sidebar-accent-foreground: oklch(0.35 0.12 85);
-  --sidebar-border: oklch(0.91 0.01 250);
-  --sidebar-ring: oklch(0.83 0.17 84 / 50%);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #FFC83D;
+  --sidebar-primary-foreground: #003377;
+  --sidebar-accent: #eef2f8;
+  --sidebar-accent-foreground: #003377;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: rgba(0, 51, 119, 0.25);
 }
 .dark {
-  --background: oklch(0.12 0.03 255);
-  --foreground: oklch(0.97 0.01 250);
-  --card: oklch(0.16 0.03 255);
-  --card-foreground: oklch(0.97 0.01 250);
-  --popover: oklch(0.16 0.03 255);
-  --popover-foreground: oklch(0.97 0.01 250);
-  --primary: oklch(0.83 0.17 84);
-  --primary-foreground: oklch(0.15 0.06 250);
-  --secondary: oklch(0.2 0.04 255);
-  --secondary-foreground: oklch(0.85 0.15 85);
-  --muted: oklch(0.2 0.03 255);
-  --muted-foreground: oklch(0.68 0.03 250);
-  --accent: oklch(0.22 0.04 255);
-  --accent-foreground: oklch(0.85 0.15 85);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.24 0.03 255);
-  --input: oklch(0.24 0.03 255);
-  --ring: oklch(0.83 0.17 84 / 40%);
-  --chart-1: oklch(0.83 0.17 84);
-  --chart-2: oklch(0.48 0.12 250);
-  --chart-3: oklch(0.65 0.16 160);
-  --chart-4: oklch(0.72 0.19 45);
-  --chart-5: oklch(0.6 0.22 25);
-  --sidebar: oklch(0.14 0.03 255);
-  --sidebar-foreground: oklch(0.97 0.01 250);
-  --sidebar-primary: oklch(0.83 0.17 84);
-  --sidebar-primary-foreground: oklch(0.15 0.06 250);
-  --sidebar-accent: oklch(0.22 0.04 255);
-  --sidebar-accent-foreground: oklch(0.85 0.15 85);
-  --sidebar-border: oklch(0.22 0.03 255);
-  --sidebar-ring: oklch(0.83 0.17 84 / 40%);
+  --background: #030712;
+  --foreground: #f8fafc;
+  --card: #0b1120;
+  --card-foreground: #f8fafc;
+  --popover: #0e1629;
+  --popover-foreground: #f8fafc;
+  --primary: #FFC83D;
+  --primary-foreground: #020617;
+  --secondary: #111d35;
+  --secondary-foreground: #FFC83D;
+  --muted: #0f172a;
+  --muted-foreground: #94a3b8;
+  --accent: #172554;
+  --accent-foreground: #f8fafc;
+  --destructive: #f87171;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: rgba(255, 200, 61, 0.4);
+  --chart-1: #FFC83D;
+  --chart-2: #38bdf8;
+  --chart-3: #34d399;
+  --chart-4: #a78bfa;
+  --chart-5: #fb7185;
+  --sidebar: #070d18;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #FFC83D;
+  --sidebar-primary-foreground: #020617;
+  --sidebar-accent: #111d35;
+  --sidebar-accent-foreground: #FFC83D;
+  --sidebar-border: #172338;
+  --sidebar-ring: rgba(255, 200, 61, 0.4);
 }
 
 @layer base {
@@ -146,4 +146,91 @@
 .filter-card :where(input, select, textarea, button, [data-slot="select-trigger"], [data-slot="popover-trigger"], [data-slot="select-value"]) {
   font-size: 1rem !important; /* 16px */
   line-height: 1.5rem !important;
+}
+
+/* Primary & Secondary border on focus for inputs, textareas & search */
+textarea:focus,
+textarea:focus-visible,
+#notification-message:focus,
+#notification-message:focus-visible,
+.filter-card :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea, [data-slot="select-trigger"], [data-slot="popover-trigger"]):focus,
+.filter-card :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea, [data-slot="select-trigger"], [data-slot="popover-trigger"]):focus-visible,
+input[type="search"]:focus,
+input[type="search"]:focus-visible,
+input[placeholder*="Search"]:focus,
+input[placeholder*="Search"]:focus-visible,
+input[placeholder*="ស្វែងរក"]:focus,
+input[placeholder*="ស្វែងរក"]:focus-visible {
+  border-color: #003377 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px rgba(0, 51, 119, 0.25) !important;
+}
+
+.dark textarea:focus,
+.dark textarea:focus-visible,
+.dark #notification-message:focus,
+.dark #notification-message:focus-visible,
+.dark .filter-card :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea, [data-slot="select-trigger"], [data-slot="popover-trigger"]):focus,
+.dark .filter-card :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea, [data-slot="select-trigger"], [data-slot="popover-trigger"]):focus-visible,
+.dark input[type="search"]:focus,
+.dark input[type="search"]:focus-visible,
+.dark input[placeholder*="Search"]:focus,
+.dark input[placeholder*="Search"]:focus-visible,
+.dark input[placeholder*="ស្វែងរក"]:focus,
+.dark input[placeholder*="ស្វែងរក"]:focus-visible {
+  border-color: #FFC83D !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px rgba(255, 200, 61, 0.35) !important;
+}
+
+/* ==========================================================================
+   Global Scrollbar Hiding Across Entire Application
+   ========================================================================== */
+
+@utility no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+    width: 0;
+    height: 0;
+  }
+}
+
+@utility hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+@utility scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+html,
+body,
+*,
+*::before,
+*::after {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+::-webkit-scrollbar,
+*::-webkit-scrollbar,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }

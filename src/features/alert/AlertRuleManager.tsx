@@ -123,15 +123,15 @@ function initials(user?: AdminUser) {
   );
 }
 function exactDate(value?: string | null) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : format(date, "PPp");
+  return Number.isNaN(date.getTime()) ? "N/A" : format(date, "PPp");
 }
 function relativeDate(value?: string | null) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
   return Number.isNaN(date.getTime())
-    ? "—"
+    ? "N/A"
     : formatDistanceToNow(date, { addSuffix: true });
 }
 function friendlyEnum(value?: string | null) {
@@ -140,7 +140,7 @@ function friendlyEnum(value?: string | null) {
         .toLowerCase()
         .replaceAll("_", " ")
         .replace(/\b\w/g, (letter) => letter.toUpperCase())
-    : "—";
+    : "N/A";
 }
 
 export default function AlertRuleManager() {
@@ -301,25 +301,25 @@ export default function AlertRuleManager() {
             <StatCard
               icon={BellRing}
               label={t("Total Rules")}
-              value={totalQuery.data?.page.totalElements ?? "—"}
+              value={totalQuery.data?.page.totalElements ?? "N/A"}
               helper={t("All alert rules")}
             />
             <StatCard
               icon={CircleCheck}
               label={t("Enabled")}
-              value={enabledQuery.data?.page.totalElements ?? "—"}
+              value={enabledQuery.data?.page.totalElements ?? "N/A"}
               helper={t("Currently active")}
             />
             <StatCard
               icon={ShieldAlert}
               label={t("Critical")}
-              value={criticalQuery.data?.page.totalElements ?? "—"}
+              value={criticalQuery.data?.page.totalElements ?? "N/A"}
               helper={t("High-priority rules")}
             />
             <StatCard
               icon={TriangleAlert}
               label={t("Warning")}
-              value={warningQuery.data?.page.totalElements ?? "—"}
+              value={warningQuery.data?.page.totalElements ?? "N/A"}
               helper={t("Warning-level rules")}
             />
           </>
@@ -337,9 +337,16 @@ export default function AlertRuleManager() {
           </p>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <div
+            className={cn(
+              "grid gap-2 md:grid-cols-2 2xl:items-center",
+              hasFilters
+                ? "2xl:grid-cols-[minmax(220px,2fr)_repeat(7,minmax(125px,1fr))]"
+                : "2xl:grid-cols-[minmax(240px,2fr)_repeat(6,minmax(150px,1fr))]",
+            )}
+          >
+            <div className="relative md:col-span-2 2xl:col-span-1">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(event) => {
@@ -347,7 +354,7 @@ export default function AlertRuleManager() {
                   setPageNumber(0);
                 }}
                 placeholder={t("Search user, or reference...")}
-                className="h-11 rounded-xl pl-9 pr-8 text-sm"
+                className="h-11 rounded-xl bg-background pl-10 pr-9 text-sm shadow-sm"
               />
               {search && (
                 <button
@@ -362,7 +369,7 @@ export default function AlertRuleManager() {
                 </button>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="grid gap-2 sm:grid-cols-2 md:col-span-2 xl:grid-cols-3 2xl:contents">
               <UserFilter
                 value={userId}
                 users={users}
@@ -447,7 +454,7 @@ export default function AlertRuleManager() {
               {hasFilters && (
                 <Button
                   variant="ghost"
-                  className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium"
+                  className="h-11 w-full shrink-0 rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
                   onClick={resetFilters}
                 >
                   {t("Reset")}
@@ -630,7 +637,7 @@ function RuleSelect({
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
         className={cn(
-          "h-11 rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+          "h-11 rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
           compact ? "admin-page-size w-32" : "min-w-[130px]",
           isSelected &&
             "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
@@ -676,7 +683,7 @@ function UserFilter({
     >
       <SelectTrigger
         className={cn(
-          "h-11 min-w-[150px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+          "h-11 min-w-[150px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
           isSelected &&
             "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
         )}
@@ -847,7 +854,7 @@ function RuleRow({
             <TooltipContent>{exactDate(rule.nextTriggerAt)}</TooltipContent>
           </Tooltip>
         ) : (
-          "—"
+          "N/A"
         )}
       </TableCell>
       <TableCell
@@ -857,11 +864,13 @@ function RuleRow({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
+              type="button"
               variant="ghost"
               size="icon"
               aria-label={`${rule.ruleName} actions`}
+              className="size-8.5 rounded-xl border border-slate-200/80 bg-transparent text-slate-600 shadow-2xs transition hover:border-[#003377] hover:bg-transparent hover:text-[#003377] dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:bg-transparent dark:hover:text-[#FFC83D]"
             >
-              <MoreHorizontal className="size-4" />
+              <MoreHorizontal className="size-4.5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

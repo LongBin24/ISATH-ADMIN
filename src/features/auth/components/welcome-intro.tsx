@@ -9,10 +9,8 @@ import {
   Bell,
   FileText,
   LayoutGrid,
-  Moon,
   ShieldCheck,
   Sparkles,
-  Sun,
   UserCog,
   Wallet,
   type LucideIcon,
@@ -20,7 +18,7 @@ import {
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGetProfileQuery } from "@/features/profile/api";
-import { useTheme } from "@/hooks/use-theme";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useLocale, type Locale } from "@/hooks/use-locale";
 import { useSignOut } from "@/features/auth/hook";
 import { LanguageFlag } from "@/components/ui/LanguageFlag";
@@ -259,7 +257,6 @@ export default function WelcomeIntro() {
   const reducedMotion = useReducedMotion();
   const { data: profile } = useGetProfileQuery();
   const signOut = useSignOut();
-  const { theme, mounted: themeMounted, toggleTheme } = useTheme();
   const { locale, mounted: localeMounted, setLocale } = useLocale();
   const displayName = profile?.displayName || copy.fallbackName[locale];
 
@@ -302,17 +299,11 @@ export default function WelcomeIntro() {
           ))}
         </div>
 
-        <button
-          onClick={toggleTheme}
-          className="grid size-9 place-items-center rounded-full border border-slate-200/70 bg-white/80 text-[#003377] shadow-sm backdrop-blur transition hover:rotate-6 hover:bg-[#FFC83D] dark:border-[#1D2B3D] dark:bg-[#071221]/90 dark:text-[#FEDB55]"
-          aria-label="Toggle dark mode"
-        >
-          {themeMounted && theme === "dark" ? (
-            <Sun className="size-4" />
-          ) : (
-            <Moon className="size-4" />
-          )}
-        </button>
+        <ThemeToggle
+          variant="outline"
+          size="sm"
+          className="!size-9 !rounded-full border border-slate-200/70 bg-white/80 text-[#003377] shadow-sm backdrop-blur dark:border-[#1e293b] dark:bg-[#0b1120] dark:text-[#FFC83D]"
+        />
       </div>
 
       <motion.div

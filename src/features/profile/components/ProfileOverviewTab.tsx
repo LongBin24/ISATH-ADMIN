@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 import type { UserProfile } from "../types";
 
-function value(text?: string) { return text?.trim() || "—"; }
+function value(text?: string) { return text?.trim() || "N/A"; }
 
 export default function ProfileOverviewTab({ profile }: { profile: UserProfile }) {
   const { t } = useAdminI18n();

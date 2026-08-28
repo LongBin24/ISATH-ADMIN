@@ -74,7 +74,7 @@ function getInitials(name: string): string {
 function formatDate(dateStr: string, exact = false): string {
   try {
     const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return "—";
+    if (isNaN(d.getTime())) return "N/A";
     return exact ? format(d, "PPp") : formatDistanceToNow(d, { addSuffix: true });
   } catch {
     return dateStr;
@@ -230,7 +230,7 @@ export function ContactUsTable({
                         <span>{item.phone}</span>
                       </a>
                     ) : (
-                      <span className="text-slate-400">—</span>
+                      <span className="text-slate-400">N/A</span>
                     )}
                   </TableCell>
 

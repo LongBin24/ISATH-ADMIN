@@ -51,16 +51,23 @@ export function PromptTemplateFilters({
 
   return (
     <div className="space-y-3 font-google-sans">
-      <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
+      <div
+        className={cn(
+          "grid gap-2 md:grid-cols-2 xl:items-center",
+          hasActiveFilters
+            ? "xl:grid-cols-[minmax(240px,3.5fr)_repeat(4,minmax(130px,1fr))]"
+            : "xl:grid-cols-[minmax(280px,4.5fr)_repeat(3,minmax(130px,1fr))]",
+        )}
+      >
         {/* Search Input Box */}
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <div className="relative md:col-span-2 xl:col-span-1">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="text"
             value={filters.search}
             onChange={(e) => onFilterChange("search", e.target.value)}
             placeholder={t("Search Ai model ...")}
-            className="h-11 rounded-xl pl-9 pr-8 text-sm"
+            className="h-11 rounded-xl bg-background pl-10 pr-9 text-sm shadow-sm"
           />
           {filters.search && (
             <button
@@ -74,7 +81,7 @@ export function PromptTemplateFilters({
         </div>
 
         {/* Dropdown Selects */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid gap-2 sm:grid-cols-2 md:col-span-2 xl:contents">
           {/* Task Type Filter (ប្រភេទកិច្ចការ) */}
           <Select
             value={filters.taskType}
@@ -82,7 +89,7 @@ export function PromptTemplateFilters({
           >
             <SelectTrigger
               className={cn(
-                "h-11 min-w-[130px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+                "h-11 min-w-[130px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
                 isTaskTypeSelected &&
                   "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
               )}
@@ -128,7 +135,7 @@ export function PromptTemplateFilters({
           >
             <SelectTrigger
               className={cn(
-                "h-11 min-w-[130px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+                "h-11 min-w-[130px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
                 isScopeSelected &&
                   "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
               )}
@@ -184,7 +191,7 @@ export function PromptTemplateFilters({
           >
             <SelectTrigger
               className={cn(
-                "h-11 min-w-[120px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+                "h-11 min-w-[120px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
                 isStatusSelected &&
                   "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
               )}
@@ -219,7 +226,7 @@ export function PromptTemplateFilters({
           {hasActiveFilters && (
             <Button
               variant="ghost"
-              className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium"
+              className="h-11 w-full shrink-0 rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
               onClick={onReset}
             >
               {t("Reset")}

@@ -112,9 +112,9 @@ export default function NotificationDetailSheet({
                   <DetailField label={t("Reference")}>{t(referenceTypeLabel(detail.referenceType))}</DetailField>
                   {detail.referenceId && <DetailField label={t("Reference ID")}><span className="font-mono text-sm">{detail.referenceId}</span></DetailField>}
                   <DetailField label={t("Created")}>{format(new Date(detail.createdAt), "PPp")}</DetailField>
-                  <DetailField label={t("Expires")}>{detail.expiresAt ? format(new Date(detail.expiresAt), "PPp") : "—"}</DetailField>
+                  <DetailField label={t("Expires")}>{detail.expiresAt ? format(new Date(detail.expiresAt), "PPp") : "N/A"}</DetailField>
                   <DetailField label={t("Action URL")}>
-                    {detail.actionUrl ? <a href={detail.actionUrl} className="inline-flex items-center gap-1 text-[#003377] hover:underline dark:text-[#FFC83D]"><span className="break-all">{detail.actionUrl}</span><ExternalLink className="size-4 shrink-0" /></a> : "—"}
+                    {detail.actionUrl ? <a href={detail.actionUrl} className="inline-flex items-center gap-1 text-[#003377] hover:underline dark:text-[#FFC83D]"><span className="break-all">{detail.actionUrl}</span><ExternalLink className="size-4 shrink-0" /></a> : "N/A"}
                   </DetailField>
                 </div>
               </section>

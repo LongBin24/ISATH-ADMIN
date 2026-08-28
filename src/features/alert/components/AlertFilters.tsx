@@ -16,7 +16,7 @@ interface AlertFiltersProps {
 }
 
 const selectClassName =
-  "h-11 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white px-4 text-base font-semibold text-slate-700 outline-none transition hover:border-[#FFC83D] focus:border-[#FFC83D] focus:ring-4 focus:ring-[#FFC83D]/15 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200";
+  "h-11 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white px-4 text-base font-semibold text-slate-700 outline-none transition hover:border-[#003377] focus:border-[#003377] focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D] dark:focus:ring-[#FFC83D]/25";
 
 export function AlertFilters({
   filters,
@@ -66,7 +66,7 @@ export function AlertFilters({
               onFiltersChange({ ...filters, search: event.target.value })
             }
             placeholder={t("Search by rule name...")}
-            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-10 text-base text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-[#FFC83D] focus:border-[#FFC83D] focus:bg-white focus:ring-4 focus:ring-[#FFC83D]/15 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:bg-slate-900"
+            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-10 text-base text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-[#003377] focus:border-[#003377] focus:bg-white focus:ring-2 focus:ring-[#003377]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D] dark:focus:bg-slate-900 dark:focus:ring-[#FFC83D]/25"
           />
           {filters.search && (
             <button

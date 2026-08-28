@@ -57,7 +57,7 @@ export function PromptTemplateDetailsDialog({
   }
 
   function formatDate(val?: string | null) {
-    if (!val) return "—";
+    if (!val) return "N/A";
     try {
       return format(new Date(val), "PPpp");
     } catch {
@@ -98,7 +98,7 @@ export function PromptTemplateDetailsDialog({
                       : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
                   }`}
                 >
-                  {template.templateStatus ? t(template.templateStatus) : "—"}
+                  {template.templateStatus ? t(template.templateStatus) : "N/A"}
                 </Badge>
 
                 <Badge
@@ -149,13 +149,13 @@ export function PromptTemplateDetailsDialog({
             <div>
               <p className="text-xs text-slate-500 dark:text-slate-400">{t("Task Type")}</p>
               <p className="mt-1 font-semibold text-slate-800 dark:text-slate-200 text-xs">
-                {template.taskType ? t(template.taskType) : "—"}
+                {template.taskType ? t(template.taskType) : "N/A"}
               </p>
             </div>
             <div>
               <p className="text-xs text-slate-500 dark:text-slate-400">{t("Scope")}</p>
               <p className="mt-1 font-semibold text-slate-800 dark:text-slate-200 text-xs">
-                {template.templateScope ? t(template.templateScope) : "—"}
+                {template.templateScope ? t(template.templateScope) : "N/A"}
               </p>
             </div>
             <div>
@@ -188,7 +188,7 @@ export function PromptTemplateDetailsDialog({
               </button>
             </div>
             <div className="max-h-56 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-xs leading-relaxed text-slate-800 font-mono whitespace-pre-wrap dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300">
-              {template.systemPrompt || "—"}
+              {template.systemPrompt || "N/A"}
             </div>
           </div>
 
@@ -208,7 +208,7 @@ export function PromptTemplateDetailsDialog({
               </button>
             </div>
             <div className="max-h-56 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-xs leading-relaxed text-slate-800 font-mono whitespace-pre-wrap dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300">
-              {template.userPromptTemplate || "—"}
+              {template.userPromptTemplate || "N/A"}
             </div>
           </div>
 

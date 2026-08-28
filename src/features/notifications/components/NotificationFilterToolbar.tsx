@@ -71,16 +71,23 @@ export default function NotificationFilterToolbar({
     !!filters.createdTo;
 
   return (
-    <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
-      <div className="relative flex-1 min-w-[200px]">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+    <div
+      className={cn(
+        "grid gap-2 md:grid-cols-2 xl:items-center",
+        hasFilters
+          ? "xl:grid-cols-[minmax(220px,2fr)_repeat(6,minmax(130px,1fr))]"
+          : "xl:grid-cols-[minmax(240px,2fr)_repeat(5,minmax(150px,1fr))]",
+      )}
+    >
+      <div className="relative md:col-span-2 xl:col-span-1">
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={filters.search ?? ""}
           onChange={(event) =>
             onChange({ ...filters, search: event.target.value })
           }
           placeholder={t("Search user, or title...")}
-          className="h-11 rounded-xl pl-9 pr-8 text-sm"
+          className="h-11 rounded-xl bg-background pl-10 pr-9 text-sm shadow-sm"
         />
         {filters.search && (
           <button
@@ -93,7 +100,7 @@ export default function NotificationFilterToolbar({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="grid gap-2 sm:grid-cols-2 md:col-span-2 xl:contents">
         <NotificationUserSelector
           value={filters.user}
           onChange={(user) => onChange({ ...filters, user })}
@@ -112,7 +119,7 @@ export default function NotificationFilterToolbar({
         >
           <SelectTrigger
             className={cn(
-              "h-11 min-w-[130px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              "h-11 min-w-[130px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
               filters.notificationType !== "ALL" &&
                 "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
             )}
@@ -147,7 +154,7 @@ export default function NotificationFilterToolbar({
         >
           <SelectTrigger
             className={cn(
-              "h-11 min-w-[130px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              "h-11 min-w-[130px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
               filters.referenceType !== "ALL" &&
                 "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
             )}
@@ -179,7 +186,7 @@ export default function NotificationFilterToolbar({
         >
           <SelectTrigger
             className={cn(
-              "h-11 min-w-[120px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              "h-11 min-w-[120px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
               filters.read !== "ALL" &&
                 "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
             )}
@@ -205,7 +212,7 @@ export default function NotificationFilterToolbar({
         <Popover>
           <PopoverTrigger
             className={cn(
-              "flex h-11 min-w-[160px] items-center justify-between gap-2 rounded-xl border border-input bg-background px-3 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              "flex h-11 w-full min-w-[160px] items-center justify-between gap-2 rounded-xl border border-input bg-muted/60 px-3 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
               (dateRange.from || dateRange.to) &&
                 "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
             )}
@@ -256,7 +263,7 @@ export default function NotificationFilterToolbar({
           <Button
             type="button"
             variant="ghost"
-            className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium"
+            className="h-11 w-full shrink-0 rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
             onClick={onReset}
           >
             {t("Reset")}

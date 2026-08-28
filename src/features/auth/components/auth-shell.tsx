@@ -1,9 +1,9 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Moon, ShieldCheck, Sparkles, Sun, TrendingUp, Wallet } from 'lucide-react';
+import { ShieldCheck, Sparkles, TrendingUp, Wallet } from 'lucide-react';
 import Image from 'next/image';
-import { useTheme } from '@/hooks/use-theme';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import type { ReactNode } from 'react';
 
 const highlights = [
@@ -13,7 +13,6 @@ const highlights = [
 ];
 
 export function AuthShell({ children }: { children: ReactNode }) {
-  const { theme, toggleTheme } = useTheme();
   const reduceMotion = useReducedMotion();
 
   return (
@@ -21,13 +20,12 @@ export function AuthShell({ children }: { children: ReactNode }) {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-20 opacity-70 bg-[linear-gradient(to_right,#00337707_1px,transparent_1px),linear-gradient(to_bottom,#00337707_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_85%)] dark:bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)]" />
       <motion.div aria-hidden="true" animate={reduceMotion ? undefined : { x: [0, 45, 0], y: [0, -25, 0], scale: [1, 1.1, 1] }} transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }} className="pointer-events-none absolute -left-52 -top-48 -z-10 size-[42rem] rounded-full bg-[#FFC83D]/18 blur-[120px] dark:bg-[#FFC83D]/9" />
       <motion.div aria-hidden="true" animate={reduceMotion ? undefined : { x: [0, -35, 0], y: [0, 32, 0] }} transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }} className="pointer-events-none absolute -bottom-64 right-[18%] -z-10 size-[46rem] rounded-full bg-[#2769ad]/12 blur-[140px] dark:bg-[#1d5c9e]/14" />
-      <button
-        onClick={toggleTheme}
-        className="absolute right-4 top-4 z-30 grid size-11 place-items-center rounded-2xl border border-slate-200/70 bg-white/80 text-[#003377] shadow-sm backdrop-blur transition hover:rotate-6 hover:bg-[#FFC83D] dark:border-slate-700 dark:bg-slate-900/80 dark:text-[#FFC83D] sm:right-7 sm:top-7"
-        aria-label="ប្តូររូបរាងភ្លឺ ឬ ងងឹត"
-      >
-        {theme === 'dark' ? <Sun className="size-5" /> : <Moon className="size-5" />}
-      </button>
+      
+      <ThemeToggle
+        variant="outline"
+        size="md"
+        className="absolute right-4 top-4 z-30 !size-11 !rounded-2xl shadow-sm backdrop-blur sm:right-7 sm:top-7"
+      />
 
       <div className="relative mx-auto grid min-h-[100dvh] max-w-[1440px] lg:grid-cols-[1.05fr_0.95fr]">
         <aside className="relative hidden overflow-hidden border-r border-[#9eb7d0] bg-[linear-gradient(145deg,#cbdced_0%,#d9e6f3_52%,#c7daec_100%)] px-10 py-6 text-[#003377] shadow-[22px_0_60px_-42px_rgba(0,51,119,0.5)] lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:flex-col xl:px-14 dark:border-[#173b61] dark:bg-[linear-gradient(145deg,#010711_0%,#031426_52%,#042342_100%)] dark:text-white dark:shadow-[24px_0_65px_-40px_rgba(0,0,0,0.98)]">

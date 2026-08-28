@@ -94,20 +94,27 @@ export default function UserFilterToolbar({
   }
 
   return (
-    <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
-      <div className="relative flex-1 min-w-[200px]">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+    <div
+      className={cn(
+        "grid gap-2 md:grid-cols-2 xl:items-center",
+        hasActiveFilters
+          ? "xl:grid-cols-[minmax(240px,3.5fr)_repeat(5,minmax(130px,1fr))]"
+          : "xl:grid-cols-[minmax(280px,4.5fr)_repeat(4,minmax(130px,1fr))]",
+      )}
+    >
+      <div className="relative md:col-span-2 xl:col-span-1">
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           placeholder={t("Search user...")}
-          className ="-xl pl-9 pr-8 text-sm"
+          className="h-11 rounded-xl bg-background pl-10 pr-9 text-sm shadow-sm focus-visible:border-[#003377] dark:focus-visible:border-[#FFC83D]"
         />
         {searchInput && (
           <button
             type="button"
             onClick={() => {
-              setSearchInput(" m");
+              setSearchInput("");
               onFiltersChange({ ...filters, query: "" });
             }}
             className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
@@ -117,14 +124,14 @@ export default function UserFilterToolbar({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="grid gap-2 sm:grid-cols-2 md:col-span-2 xl:contents">
         <Select
           value={filters.accountStatus}
           onValueChange={(value) => onFiltersChange({ ...filters, accountStatus: value })}
         >
           <SelectTrigger
             className={cn(
-              "h-11 min-w-[140px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              "h-11 min-w-[140px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
               filters.accountStatus !== "ALL" && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
             )}
           >
@@ -148,7 +155,7 @@ export default function UserFilterToolbar({
         >
           <SelectTrigger
             className={cn(
-              "h-11 min-w-[130px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              "h-11 min-w-[130px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
               filters.emailVerified !== "ALL" && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
             )}
           >
@@ -171,7 +178,7 @@ export default function UserFilterToolbar({
         >
           <SelectTrigger
             className={cn(
-              "h-11 min-w-[130px] rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              "h-11 min-w-[130px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
               filters.onboardingCompleted !== "ALL" && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
             )}
           >
@@ -191,7 +198,7 @@ export default function UserFilterToolbar({
         <Popover>
           <PopoverTrigger
             className={cn(
-              "flex h-11 min-w-[160px] items-center justify-between gap-2 rounded-xl border border-input bg-background px-3 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+              "flex h-11 w-full min-w-[160px] items-center justify-between gap-2 rounded-xl border border-input bg-muted/60 px-3 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
               (dateRange.from || dateRange.to) && "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
             )}
           >
@@ -232,7 +239,7 @@ export default function UserFilterToolbar({
         {hasActiveFilters && (
           <Button
             variant="ghost"
-            className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium"
+            className="h-11 w-full shrink-0 rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
             onClick={handleReset}
           >
             {t("Reset")}

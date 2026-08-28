@@ -26,6 +26,7 @@ import {
   UserX,
   X,
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -76,6 +77,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAdminI18n } from "@/i18n/admin-i18n";
+import { useGetAdminUsersQuery } from "@/features/user-manager/api";
+import type { AdminUser } from "@/features/user-manager/types";
 import { cn } from "@/lib/utils";
 import {
   useGetAuditLogByIdQuery,
@@ -89,10 +92,35 @@ import type {
   AuditLogQueryParams,
 } from "./types";
 
+function displayName(user?: AdminUser) {
+  if (!user) return "";
+  return (
+    user.displayName ||
+    `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() ||
+    user.username ||
+    user.email ||
+    ""
+  );
+}
+
+function initials(user?: AdminUser) {
+  if (!user) return "U";
+  const name = displayName(user);
+  if (!name) return "U";
+  return (
+    name
+      .split(/\s+/)
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "U"
+  );
+}
+
 function dateText(value?: string | null, exact = false) {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
+  if (Number.isNaN(date.getTime())) return "N/A";
   return exact
     ? format(date, "PPpp")
     : formatDistanceToNow(date, { addSuffix: true });
@@ -138,6 +166,13 @@ export function AuditLogManager() {
     size: 1,
   });
 
+  const usersQuery = useGetAdminUsersQuery({ pageNumber: 0, pageSize: 200 });
+  const usersById = useMemo(
+    () =>
+      new Map((usersQuery.data?.content ?? []).map((user) => [user.id, user])),
+    [usersQuery.data?.content],
+  );
+
   const logs = auditQuery.data?.content ?? [];
   const totalElements = auditQuery.data?.totalElements ?? 0;
   const totalPages = auditQuery.data?.totalPages ?? 0;
@@ -147,15 +182,23 @@ export function AuditLogManager() {
     let result = [...logs];
     if (search.trim()) {
       const term = search.toLowerCase().trim();
-      result = result.filter(
-        (item) =>
+      result = result.filter((item) => {
+        const user = item.userId ? usersById.get(item.userId) : undefined;
+        const name = displayName(user).toLowerCase();
+        const email = (user?.email || "").toLowerCase();
+        const username = (user?.username || "").toLowerCase();
+        return (
           item.action.toLowerCase().includes(term) ||
           item.entityType.toLowerCase().includes(term) ||
           item.entityId.toLowerCase().includes(term) ||
           (item.ipAddress && item.ipAddress.toLowerCase().includes(term)) ||
           (item.userId && item.userId.toLowerCase().includes(term)) ||
-          item.id.toLowerCase().includes(term),
-      );
+          name.includes(term) ||
+          email.includes(term) ||
+          username.includes(term) ||
+          item.id.toLowerCase().includes(term)
+        );
+      });
     }
     if (actionFilter !== "ALL") {
       result = result.filter(
@@ -169,7 +212,7 @@ export function AuditLogManager() {
       );
     }
     return result;
-  }, [logs, search, actionFilter, entityTypeFilter]);
+  }, [logs, search, actionFilter, entityTypeFilter, usersById]);
 
   const hasFilters = Boolean(
     search.trim() || actionFilter !== "ALL" || entityTypeFilter !== "ALL",
@@ -237,19 +280,19 @@ export function AuditLogManager() {
             <StatCard
               icon={ShieldCheck}
               label={t("Creation Events")}
-              value={createQuery.data?.totalElements ?? "—"}
+              value={createQuery.data?.totalElements ?? "N/A"}
               helper={t("Create operations")}
             />
             <StatCard
               icon={Layers}
               label={t("Update Events")}
-              value={updateQuery.data?.totalElements ?? "—"}
+              value={updateQuery.data?.totalElements ?? "N/A"}
               helper={t("Modifications and updates")}
             />
             <StatCard
               icon={ShieldAlert}
               label={t("Security Actions")}
-              value={suspendQuery.data?.totalElements ?? "—"}
+              value={suspendQuery.data?.totalElements ?? "N/A"}
               helper={t("Suspensions & sensitive actions")}
             />
           </>
@@ -270,17 +313,24 @@ export function AuditLogManager() {
         </CardHeader>
         <CardContent className="space-y-5">
           {/* Filters Row */}
-          <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <div
+            className={cn(
+              "grid gap-2 md:grid-cols-2 xl:items-center",
+              hasFilters
+                ? "xl:grid-cols-[minmax(240px,3.5fr)_repeat(3,minmax(150px,1fr))]"
+                : "xl:grid-cols-[minmax(280px,4.5fr)_repeat(2,minmax(150px,1fr))]",
+            )}
+          >
+            <div className="relative md:col-span-2 xl:col-span-1">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(event) => {
                   setSearch(event.target.value);
                   setPage(0);
                 }}
-                placeholder={t("Search user Id.​..")}
-                className="h-11 rounded-xl pl-9 pr-8 text-sm"
+                placeholder={t("Search by action, entity, user, or IP...")}
+                className="h-11 rounded-xl bg-background pl-10 pr-9 text-sm shadow-sm"
               />
               {search && (
                 <button
@@ -296,7 +346,7 @@ export function AuditLogManager() {
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="grid gap-2 sm:grid-cols-2 md:col-span-2 xl:contents">
               <FilterSelect
                 label={t("Action")}
                 value={actionFilter}
@@ -338,7 +388,7 @@ export function AuditLogManager() {
               {hasFilters && (
                 <Button
                   variant="ghost"
-                  className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium"
+                  className="h-11 w-full shrink-0 rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
                   onClick={resetFilters}
                 >
                   {t("Reset")}
@@ -367,7 +417,7 @@ export function AuditLogManager() {
                         {t("Entity Type")}
                       </TableHead>
                       <TableHead className="min-w-44 text-base font-semibold">
-                        {t("Actor / User ID")}
+                        {t("Actor")}
                       </TableHead>
                       <TableHead className="min-w-36 text-base font-semibold">
                         {t("IP Address")}
@@ -385,6 +435,7 @@ export function AuditLogManager() {
                       <AuditLogRow
                         key={item.id}
                         item={item}
+                        user={item.userId ? usersById.get(item.userId) : undefined}
                         onView={() => openDetail(item)}
                       />
                     ))}
@@ -462,6 +513,7 @@ export function AuditLogManager() {
       {/* Detail Popup Sheet */}
       <AuditDetailSheet
         log={selectedLog}
+        usersById={usersById}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
       />
@@ -514,7 +566,7 @@ function FilterSelect({
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
         className={cn(
-          "h-11 rounded-xl text-sm font-medium transition hover:border-[#003377] dark:hover:border-[#FFC83D] min-w-[150px]",
+          "h-11 min-w-[150px] rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
           isSelected &&
             "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
         )}
@@ -609,8 +661,17 @@ function EntityTypeBadge({ entityType }: { entityType: string }) {
   );
 }
 
-function AuditLogRow({ item, onView }: { item: AuditLog; onView: () => void }) {
+function AuditLogRow({
+  item,
+  user,
+  onView,
+}: {
+  item: AuditLog;
+  user?: AdminUser;
+  onView: () => void;
+}) {
   const { t } = useAdminI18n();
+  const name = displayName(user);
 
   return (
     <TableRow className="cursor-pointer hover:bg-muted/30" onClick={onView}>
@@ -620,17 +681,37 @@ function AuditLogRow({ item, onView }: { item: AuditLog; onView: () => void }) {
       <TableCell className="py-4">
         <EntityTypeBadge entityType={item.entityType} />
       </TableCell>
-      <TableCell className="py-4 text-sm text-muted-foreground">
+      <TableCell className="py-4">
         {item.userId ? (
-          <span className="inline-flex items-center gap-1 font-mono text-xs text-foreground">
-            <User className="size-3 text-slate-400" />
-            <span className="max-w-36 truncate">{item.userId}</span>
-          </span>
+          <div className="flex items-center gap-2.5">
+            <Avatar className="size-8.5 shrink-0 border border-slate-200/80 shadow-2xs dark:border-slate-800">
+              <AvatarImage src={user?.profileImageUrl ?? undefined} alt={name || "User"} />
+              <AvatarFallback className="bg-[#003377]/10 text-xs font-bold text-[#003377] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D]">
+                {initials(user)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0 max-w-44">
+              <p className="truncate text-base font-medium text-foreground">
+                {name || t("Registered User")}
+              </p>
+              {user?.email ? (
+                <p className="truncate text-xs text-muted-foreground font-normal">
+                  {user.email}
+                </p>
+              ) : user?.username ? (
+                <p className="truncate text-xs text-muted-foreground font-normal">
+                  @{user.username}
+                </p>
+              ) : null}
+            </div>
+          </div>
         ) : (
-          <span className="inline-flex items-center gap-1 text-xs text-slate-400">
-            <UserX className="size-3" />
-            {t("Guest / System")}
-          </span>
+          <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+            <span className="grid size-8 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <UserX className="size-4" />
+            </span>
+            <span className="font-medium">{t("Guest / System")}</span>
+          </div>
         )}
       </TableCell>
       <TableCell className="py-4 text-sm font-mono text-muted-foreground">
@@ -640,7 +721,7 @@ function AuditLogRow({ item, onView }: { item: AuditLog; onView: () => void }) {
             {item.ipAddress}
           </span>
         ) : (
-          "—"
+          "N/A"
         )}
       </TableCell>
       <TableCell className="py-4 text-sm text-muted-foreground font-normal">
@@ -687,10 +768,12 @@ function AuditLogRow({ item, onView }: { item: AuditLog; onView: () => void }) {
 
 function AuditDetailSheet({
   log,
+  usersById,
   open,
   onOpenChange,
 }: {
   log: AuditLog | null;
+  usersById: Map<string, AdminUser>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -706,6 +789,9 @@ function AuditDetailSheet({
   });
 
   const activeLog = detailData || log;
+  const activeUser = activeLog?.userId
+    ? usersById.get(activeLog.userId)
+    : undefined;
 
   const { data: entityLogs } = useGetAuditLogsByEntityQuery(
     {
@@ -807,16 +893,37 @@ function AuditDetailSheet({
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {/* Actor Card */}
                 <div className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-800/40">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                    <User className="size-4.5" />
-                  </span>
+                  {activeUser ? (
+                    <Avatar className="size-9 shrink-0 border border-slate-200/80 shadow-2xs dark:border-slate-800">
+                      <AvatarImage
+                        src={activeUser.profileImageUrl ?? undefined}
+                        alt=""
+                      />
+                      <AvatarFallback className="bg-[#003377]/10 text-xs font-bold text-[#003377] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D]">
+                        {initials(activeUser)}
+                      </AvatarFallback>
+                    </Avatar>
+                  ) : (
+                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                      <User className="size-4.5" />
+                    </span>
+                  )}
                   <div className="min-w-0 flex-1">
                     <p className="text-[11px] font-medium text-muted-foreground">
                       {t("Actor")}
                     </p>
                     <p className="mt-0.5 truncate font-semibold text-xs text-slate-900 dark:text-white">
-                      {activeLog.userId || t("System / Guest")}
+                      {activeUser
+                        ? displayName(activeUser)
+                        : activeLog.userId
+                          ? t("Registered User")
+                          : t("System / Guest")}
                     </p>
+                    {activeUser?.email && (
+                      <p className="truncate text-[11px] text-muted-foreground">
+                        {activeUser.email}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -845,7 +952,7 @@ function AuditDetailSheet({
                       )}
                     </div>
                     <p className="mt-0.5 font-mono text-xs font-semibold text-slate-900 dark:text-white">
-                      {activeLog.ipAddress || "—"}
+                      {activeLog.ipAddress || "N/A"}
                     </p>
                   </div>
                 </div>
@@ -984,6 +1091,9 @@ function AuditDetailSheet({
                 <div className="space-y-2.5">
                   {entityLogs.content.map((item) => {
                     const isCurrent = item.id === activeLog.id;
+                    const eventUser = item.userId
+                      ? usersById.get(item.userId)
+                      : undefined;
                     return (
                       <div
                         key={item.id}
@@ -997,7 +1107,11 @@ function AuditDetailSheet({
                         <div className="flex items-center gap-2.5 min-w-0">
                           <ActionBadge action={item.action} />
                           <span className="font-medium text-xs text-slate-700 dark:text-slate-300 truncate max-w-44">
-                            {item.userId || t("System / Guest")}
+                            {eventUser
+                              ? displayName(eventUser)
+                              : item.userId
+                                ? t("Registered User")
+                                : t("System / Guest")}
                           </span>
                           {isCurrent && (
                             <Badge
