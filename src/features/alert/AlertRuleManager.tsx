@@ -337,7 +337,14 @@ export default function AlertRuleManager() {
           </p>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="grid gap-2 md:grid-cols-2 2xl:grid-cols-[minmax(240px,2fr)_repeat(7,minmax(125px,1fr))] 2xl:items-center">
+          <div
+            className={cn(
+              "grid gap-2 md:grid-cols-2 2xl:items-center",
+              hasFilters
+                ? "2xl:grid-cols-[minmax(220px,2fr)_repeat(7,minmax(125px,1fr))]"
+                : "2xl:grid-cols-[minmax(240px,2fr)_repeat(6,minmax(150px,1fr))]",
+            )}
+          >
             <div className="relative md:col-span-2 2xl:col-span-1">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -447,7 +454,7 @@ export default function AlertRuleManager() {
               {hasFilters && (
                 <Button
                   variant="ghost"
-                  className="order-first h-11 w-full shrink-0 rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm md:col-span-2 xl:col-span-3 2xl:order-none 2xl:col-span-1"
+                  className="h-11 w-full shrink-0 rounded-xl bg-muted/60 px-3 text-sm font-medium shadow-sm"
                   onClick={resetFilters}
                 >
                   {t("Reset")}
