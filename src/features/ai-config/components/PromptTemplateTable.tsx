@@ -29,7 +29,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useAdminI18n } from "@/i18n/admin-i18n";
-import { LanguageFlag } from "@/components/ui/LanguageFlag";
 import {
   useSetDefaultPromptTemplateMutation,
   useArchivePromptTemplateMutation,
@@ -190,7 +189,6 @@ export function PromptTemplateTable({
                         : "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-900/50 dark:bg-purple-950/30 dark:text-purple-300"
                     }`}
                   >
-                    <LanguageFlag locale={tmpl.languageCode} className="w-4 h-3" />
                     <span>{tmpl.languageCode}</span>
                   </Badge>
                 </TableCell>
