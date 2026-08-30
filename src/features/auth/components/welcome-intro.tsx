@@ -130,7 +130,7 @@ const allFeatures: FeatureCard[] = [
     href: "/notifications",
     icon: Bell,
     angle: -48,
-    iconClass: "border border-[#FEDB55]/25 bg-[#0C1727] text-[#FEDB55]",
+    iconClass: "bg-[#F59E0B] text-white",
   },
   {
     title: { en: "Alert Rules", km: "រំឭក" },
@@ -180,7 +180,7 @@ const reveal: Variants = {
     scale: 1,
     y: 0,
     transition: {
-      delay: 0.3 + index * 0.1,
+      delay: 0.25 + index * 0.08,
       duration: 0.5,
       ease: [0.16, 1, 0.3, 1],
     },
@@ -219,30 +219,31 @@ function OrbitCard({
         whileInView="visible"
         viewport={{ once: true }}
         animate={reducedMotion ? undefined : { y: [0, -5, 0] }}
-        whileHover={{ y: -3 }}
+        whileHover={{ y: -3, scale: 1.02 }}
         transition={{
           y: {
             duration: 4 + index * 0.35,
             repeat: Infinity,
             ease: "easeInOut",
           },
+          scale: { duration: 0.2, ease: "easeOut" },
           default: { duration: 0.25, ease: "easeOut" },
         }}
         className="group block"
       >
         <div
-          className={`flex items-center gap-4 ${isLeft ? "flex-row-reverse text-right" : "text-left"}`}
+          className={`flex items-center gap-3.5 ${isLeft ? "flex-row-reverse text-right" : "text-left"}`}
         >
           <span
-            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-[0_6px_16px_-6px_rgba(2,6,23,.35)] transition-shadow duration-300 group-hover:shadow-[0_0_18px_rgba(254,219,85,.28)] ${feature.iconClass}`}
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-[0_6px_16px_-6px_rgba(2,6,23,.35)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(254,219,85,.35)] ${feature.iconClass}`}
           >
             <Icon className="h-5 w-5" strokeWidth={2} />
           </span>
-          <div className="w-[190px] rounded-[20px] border border-slate-200/70 bg-white px-4 py-3 shadow-[0_10px_28px_-20px_rgba(2,6,23,.2)] transition-colors duration-300 group-hover:border-[#FEDB55]/50 dark:border-[#1D2B3D] dark:bg-[#0C1727] dark:group-hover:border-[#FEDB55]/40">
-            <h3 className="text-[14px] font-semibold leading-5 text-[#0F172A] dark:text-[#F8FAFC]">
+          <div className="w-[200px] rounded-[20px] border border-slate-200/80 bg-white/95 px-4 py-3 shadow-[0_10px_28px_-20px_rgba(2,6,23,.2)] backdrop-blur-sm transition-all duration-300 group-hover:border-[#FEDB55]/60 group-hover:shadow-md dark:border-[#1D2B3D] dark:bg-[#0C1727]/95 dark:group-hover:border-[#FEDB55]/50">
+            <h3 className="text-[13.5px] font-semibold leading-5 text-[#0F172A] transition-colors group-hover:text-[#003377] dark:text-[#F8FAFC] dark:group-hover:text-[#FEDB55]">
               {feature.title[locale]}
             </h3>
-            <p className="mt-1 line-clamp-2 text-[12.5px] leading-[1.2rem] text-slate-500 dark:text-[#94A3B8]">
+            <p className="mt-1 line-clamp-2 text-[12px] leading-[1.25rem] text-slate-500 dark:text-[#94A3B8]">
               {feature.description[locale]}
             </p>
           </div>
@@ -412,7 +413,6 @@ export default function WelcomeIntro() {
             />
           </motion.div>
         </div>
-
       </div>
 
       <div className={`mx-auto hidden lg:block ${styles.orbitViewport}`}>

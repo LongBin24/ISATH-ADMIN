@@ -6,6 +6,7 @@ import "@fontsource/google-sans/600.css";
 import "@fontsource/google-sans/700.css";
 import "./globals.css";
 import { ReduxProvider } from "../redux/provider";
+import { AdminI18nProvider } from "@/i18n/admin-i18n";
 import { Toaster } from "react-hot-toast";
 import PWARegister from "@/components/pwa/PWARegister";
 
@@ -65,7 +66,11 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
       </head>
       <body className="min-h-full flex flex-col font-google-sans">
-        <ReduxProvider>{children}</ReduxProvider>
+        <ReduxProvider>
+          <AdminI18nProvider>
+            {children}
+          </AdminI18nProvider>
+        </ReduxProvider>
         <PWARegister />
 
         <Toaster

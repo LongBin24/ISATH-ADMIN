@@ -120,7 +120,7 @@ export default function UserAgeChart() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={rows}
-                margin={{ top: 8, right: 8, left: -20, bottom: 0 }}
+                margin={{ top: 12, right: 12, left: 0, bottom: 4 }}
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -129,16 +129,19 @@ export default function UserAgeChart() {
                 />
                 <XAxis
                   dataKey="name"
+                  interval={0}
                   tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
                   axisLine={false}
                   tickLine={false}
+                  tickMargin={8}
                 />
                 <YAxis
                   allowDecimals={false}
                   tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
                   axisLine={false}
                   tickLine={false}
-                  width={32}
+                  width={38}
+                  tickMargin={6}
                 />
                 <ChartTooltip
                   formatter={(value, name) => [

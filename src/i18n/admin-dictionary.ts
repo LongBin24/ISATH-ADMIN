@@ -126,6 +126,8 @@ const km: Record<string, string> = {
   "Total Categorized": "សរុបដែលបានកំណត់",
   "No gender data available.": "មិនមានទិន្នន័យភេទទេ",
   "No age data available.": "មិនមានទិន្នន័យអាយុទេ",
+  "Donut view": "ទិដ្ឋភាពរង្វង់",
+  "Bar view": "ទិដ្ឋភាពជួរឈរ",
 
   // System Health
   "System Health": "ស្ថានភាពប្រព័ន្ធ",
@@ -351,13 +353,25 @@ const km: Record<string, string> = {
   "Savings Goal": "គោលដៅសន្សំ",
   "Recurring Transaction": "ប្រតិបត្តិការប្រចាំ",
   "Send Notification": "ផ្ញើការជូនដំណឹង",
+  "Broadcast Notification": "ផ្សព្វផ្សាយការជូនដំណឹង",
   "Send a system notification to an iStash user.":
     "ផ្ញើប្រព័ន្ធការជូនដំណឹងទៅកាន់អ្នកប្រើប្រាស់ iStash។",
+  "Broadcast a system notification to all iStash users.":
+    "ផ្សព្វផ្សាយប្រព័ន្ធការជូនដំណឹងទៅកាន់អ្នកប្រើប្រាស់ iStash ទាំងអស់។",
+  "Delivery Mode": "របៀបបញ្ជូន",
+  "Direct Recipient": "អ្នកទទួលផ្ទាល់",
+  "Broadcast to All Users": "ផ្សព្វផ្សាយដល់អ្នកប្រើប្រាស់ទាំងអស់",
+  "Broadcast Mode Active": "របៀបផ្សព្វផ្សាយកំពុងដំណើរការ",
+  "This notification will be delivered to all active users on the platform.":
+    "ការជូនដំណឹងនេះនឹងត្រូវបានផ្ញើទៅកាន់អ្នកប្រើប្រាស់សកម្មទាំងអស់នៅលើប្រព័ន្ធ។",
   "Search and select a recipient": "ស្វែងរក និងជ្រើសរើសអ្នកទទួល",
+  "Select a user": "ជ្រើសរើសអ្នកប្រើប្រាស់",
   "Select a recipient.": "សូមជ្រើសរើសអ្នកទទួល។",
+  "Enter notification title": "បញ្ចូលចំណងជើងការជូនដំណឹង",
   "Title is required.": "ចំណងជើងត្រូវបានទាមទារ។",
   "Title must be 200 characters or fewer.":
     "ចំណងជើងត្រូវមានត្រឹម ២០០ តួអក្សរ ឬតិចជាងនេះ។",
+  "Enter notification message...": "បញ្ចូលសារការជូនដំណឹង...",
   "Message is required.": "សារត្រូវបានទាមទារ។",
   "Message must be 2,000 characters or fewer.":
     "សារត្រូវមានត្រឹម ២,០០០ តួអក្សរ ឬតិចជាងនេះ។",
@@ -367,16 +381,24 @@ const km: Record<string, string> = {
     "សូមជ្រើសរើសបណ្តាញបញ្ជូនយ៉ាងហោចណាស់មួយ។",
   "Advanced Options": "ជម្រើសកម្រិតខ្ពស់",
   "Reference Type": "ប្រភេទឯកសារយោង",
+  "No reference": "គ្មានឯកសារយោង",
   "Reference ID (technical, optional)":
     "លេខសម្គាល់ឯកសារយោង (បច្ចេកទេស, ស្រេចចិត្ត)",
+  "Enter reference ID (e.g. UUID)": "បញ្ចូលលេខសម្គាល់យោង (ឧ. UUID)",
+  UUID: "UUID",
   "Reference ID": "លេខសម្គាល់ឯកសារយោង",
   "Action URL (optional)": "តំណសកម្មភាព (ស្រេចចិត្ត)",
   "Action URL": "តំណសកម្មភាព",
+  "e.g. /budgets/...": "ឧ. /budgets/...",
+  "/budgets/...": "/budgets/...",
   "Expiration (optional)": "កាលបរិច្ឆេទផុតកំណត់ (ស្រេចចិត្ត)",
   Expires: "ផុតកំណត់",
+  "Broadcasting...": "កំពុងផ្សព្វផ្សាយ...",
   "Sending...": "កំពុងផ្ញើ...",
   "Notification sent successfully.": "បានផ្ញើការជូនដំណឹងដោយជោគជ័យ។",
   "Unable to send this notification.": "មិនអាចផ្ញើការជូនដំណឹងនេះបានទេ។",
+  "Search by name, username, or email...": "ស្វែងរកតាមឈ្មោះ ឈ្មោះអ្នកប្រើ ឬអ៊ីមែល...",
+  "Search by name, username, or email..": "ស្វែងរកតាមឈ្មោះ ឈ្មោះអ្នកប្រើ ឬអ៊ីមែល...",
   "Clear selection": "សម្អាតជម្រើស",
   "Notification Details": "ព័ត៌មានលម្អិតអំពីការជូនដំណឹង",
   "Review the message, recipient, and technical context.":
@@ -403,7 +425,6 @@ const km: Record<string, string> = {
   "Days Before": "ថ្ងៃមុនពេល",
   day: "ថ្ងៃ",
   days: "ថ្ងៃ",
-  "No reference": "គ្មានឯកសារយោង",
   "Last Trigger": "កេះចុងក្រោយ",
   "Never triggered": "មិនដែលកេះ",
   "No next trigger scheduled": "គ្មានកាលវិភាគកេះបន្ទាប់",
@@ -1229,9 +1250,6 @@ const km: Record<string, string> = {
     "មិនមានការជូនដំណឹងដែលត្រូវនឹងតម្រងបច្ចុប្បន្នទេ។",
   DAILY_REMINDER: "ការរំឭកប្រចាំថ្ងៃ",
   BUDGET_WARNING: "ការព្រមានថវិកា",
-   "Wallet": "កាបូប",
-  "Wallet Invitation": "ប្រើកាបូបរួម",
-  "Transaction": "ប្រតិបត្តិការ",
 
   // Audit Logs
   CREATE: "បង្កើត",
@@ -1243,6 +1261,8 @@ const km: Record<string, string> = {
   LOGOUT: "ចាកចេញ ",
   CONTACT_MESSAGE: "សារទំនាក់ទំនង",
   USER: "អ្នកប្រើប្រាស់",
+  ADMIN: "អ្នកគ្រប់គ្រងប្រព័ន្ធ",
+  SUPER_ADMIN: "អ្នកគ្រប់គ្រងជាន់ខ្ពស់",
   CATEGORY: "ប្រភេទ",
   CURRENCY: "រូបិយប័ណ្ណ",
   ALERT_RULE: "ច្បាប់រំឭក",
@@ -1259,6 +1279,34 @@ const km: Record<string, string> = {
     "អ្នកមិនមានសិទ្ធិចូលប្រើ Admin Dashboard នេះទេ។",
   TRANSFER_CREATE: "បង្កើតការផ្ទេរប្រាក់",
   TRANSFER: "ការផ្ទេរប្រាក់",
+
+  // Global Search & System Pages
+  "Search anything...": "ស្វែងរកអ្វីៗគ្រប់យ៉ាង...",
+  "Search users, categories, currencies, alerts...": "ស្វែងរកអ្នកប្រើប្រាស់ ប្រភេទ រូបិយប័ណ្ណ ការរំឭក...",
+  "Global Search": "ការស្វែងរកទូទៅ",
+  "All Results": "លទ្ធផលទាំងអស់",
+  "No results found for": "រកមិនឃើញលទ្ធផលសម្រាប់",
+  "Try searching with a different term": "សូមព្យាយាមស្វែងរកជាមួយពាក្យផ្សេងទៀត",
+  "Quick Links": "តំណភ្ជាប់រហ័ស",
+  "Total Results": "លទ្ធផលសរុប",
+  "Press ESC or click outside to close": "ចុច ESC ឬចុចខាងក្រៅដើម្បីបិទ",
+  "Search in progress...": "កំពុងស្វែងរក...",
+  "Search completed": "ការស្វែងរកបានបញ្ចប់",
+  "No data returned from search": "គ្មានទិន្នន័យពីការស្វែងរកទេ",
+  "View all results": "មើលលទ្ធផលទាំងអស់",
+  "Search across all resources": "ស្វែងរកលើគ្រប់ផ្នែកទាំងអស់",
+  "Search encountered an issue.": "ការស្វែងរកជួបបញ្ហា។",
+  "Please try again with another keyword.": "សូមព្យាយាមម្តងទៀតដោយប្រើពាក្យគន្លឹះផ្សេង។",
+  "results": "លទ្ធផល",
+  "result": "លទ្ធផល",
+
+  // System & 404 Pages
+  "Looking for something specific?": "កំពុងស្វែងរកទំព័រជាក់លាក់?",
+  "Here are some helpful links to get you back on track:":
+    "នេះជាតំណភ្ជាប់មានប្រយោជន៍ដើម្បីជួយអ្នក:",
+  "Search iStash": "ស្វែងរក iStash",
+  "Error 404": "កំហុស 404",
+  "Page Missing": "រកមិនឃើញទំព័រ",
 };
 
 export function translateAdmin(locale: AdminLocale, text: string) {

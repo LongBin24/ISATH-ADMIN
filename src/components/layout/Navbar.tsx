@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Search,
   User,
   PanelLeftClose,
   PanelLeftOpen,
@@ -13,8 +12,8 @@ import { useAdminI18n } from "@/i18n/admin-i18n";
 import { LanguageFlag } from "@/components/ui/LanguageFlag";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useGetProfileQuery } from "@/features/profile/api";
+import GlobalSearch from "@/features/search/components/GlobalSearch";
 import {
   Tooltip,
   TooltipContent,
@@ -72,17 +71,7 @@ export default function Navbar({
             </TooltipContent>
           </Tooltip>
 
-          <div className="relative w-full max-w-xs sm:max-w-sm">
-            <Search
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
-              size={18}
-            />
-            <Input
-              type="text"
-              placeholder={t("Search...")}
-              className="h-10 w-full rounded-xl border border-slate-200/70 bg-slate-50/70 pl-10 pr-3.5 text-sm font-normal font-google-sans hover:bg-slate-100/70 focus:border-[#003377] focus:bg-white dark:border-slate-800/80 dark:bg-slate-800/60 dark:hover:bg-slate-800 dark:focus:border-[#FFC83D] dark:focus:bg-slate-900"
-            />
-          </div>
+          <GlobalSearch />
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-3.5">
@@ -115,14 +104,14 @@ export default function Navbar({
             className="flex items-center gap-3.5 border-l border-slate-200/80 pl-3 transition hover:opacity-85 dark:border-slate-800 sm:pl-4"
           >
             <div className="hidden text-right font-google-sans sm:block space-y-0.5">
-              <p className="text-[15px] sm:text-base font-bold text-slate-900 dark:text-slate-100 leading-snug">
+              <p className="text-[16px] font-bold text-slate-900 dark:text-slate-100 leading-snug">
                 {profile?.displayName || t("Administrator")}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-none">
-                {profile?.role || t("Administrator")}
+              <p className="text-[14px] font-medium text-slate-500 dark:text-slate-400 leading-tight">
+                {profile?.role ? t(profile.role) : t("Administrator")}
               </p>
             </div>
-            <div className="relative grid size-11 place-items-center overflow-hidden rounded-full border-2 border-amber-300/90 bg-[#003377] text-[#FFC83D] shadow-sm">
+            <div className="relative grid size-12 place-items-center overflow-hidden rounded-full border-2 border-amber-300/90 bg-[#003377] text-[#FFC83D] shadow-sm transition-transform hover:scale-105">
               {profile?.avatar ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -131,7 +120,7 @@ export default function Navbar({
                   className="size-full object-cover"
                 />
               ) : (
-                <User size={22} />
+                <User size={24} />
               )}
             </div>
           </Link>

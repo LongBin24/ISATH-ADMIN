@@ -270,10 +270,10 @@ function UserOverview({ stats, loading, error, tab, setTab, retry }: { stats: Us
               <TabsContent value="age" className="mt-0 space-y-4">
                 <div className="h-72 sm:h-80 w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={ageRows} margin={{ top: 8, left: -18, right: 8, bottom: 0 }}>
+                    <BarChart data={ageRows} margin={{ top: 12, left: 0, right: 12, bottom: 4 }}>
                       <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border/60" />
-                      <XAxis dataKey="label" tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="label" interval={0} tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} tickMargin={8} />
+                      <YAxis allowDecimals={false} width={38} tickMargin={6} tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
                       <ChartTooltip contentStyle={{ borderRadius: 12, fontSize: 13, borderColor: "var(--border)", backgroundColor: "var(--card)" }} />
                       <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                         {ageRows.map((row, index) => (

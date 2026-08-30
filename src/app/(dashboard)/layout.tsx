@@ -6,7 +6,6 @@ import Sidebar from "@/components/layout/Sidebar";
 import Navbar from "@/components/layout/Navbar";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import PWAInstallPrompt from "@/components/pwa/PWAInstallPrompt";
-import { AdminI18nProvider } from "@/i18n/admin-i18n";
 
 function checkAdminRole(): boolean {
   if (typeof window === "undefined") return true;
@@ -71,23 +70,21 @@ export default function DashboardLayout({
   }
 
   return (
-    <AdminI18nProvider>
-      <div className="min-h-screen bg-background text-foreground font-google-sans pb-[calc(4.75rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
-        <Sidebar isOpen={sidebarOpen} isCollapsed={sidebarCollapsed} onClose={() => setSidebarOpen(false)} />
+    <div className="min-h-screen bg-background text-foreground font-google-sans pb-[calc(4.75rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
+      <Sidebar isOpen={sidebarOpen} isCollapsed={sidebarCollapsed} onClose={() => setSidebarOpen(false)} />
 
-        <div className={`flex min-h-screen flex-col transition-[margin] duration-300 ${sidebarCollapsed ? "lg:ml-0" : "lg:ml-[260px]"}`}>
-          <Navbar
-            onMenuToggle={toggleSidebar}
-            isSidebarOpen={sidebarOpen}
-            isSidebarCollapsed={sidebarCollapsed}
-          />
+      <div className={`flex min-h-screen flex-col transition-[margin] duration-300 ${sidebarCollapsed ? "lg:ml-0" : "lg:ml-[260px]"}`}>
+        <Navbar
+          onMenuToggle={toggleSidebar}
+          isSidebarOpen={sidebarOpen}
+          isSidebarCollapsed={sidebarCollapsed}
+        />
 
-          <main className="admin-readable flex-1 p-3.5 sm:p-5 md:p-6 lg:p-8">{children}</main>
-        </div>
-
-        <MobileBottomNav />
-        <PWAInstallPrompt />
+        <main className="admin-readable flex-1 p-3.5 sm:p-5 md:p-6 lg:p-8">{children}</main>
       </div>
-    </AdminI18nProvider>
+
+      <MobileBottomNav />
+      <PWAInstallPrompt />
+    </div>
   );
 }

@@ -39,6 +39,9 @@ export const ENDPOINTS = {
   ADMIN_AUDIT_LOGS_BY_USER: (userId: string) => `admin/audit-logs/users/${userId}`,
   ADMIN_AUDIT_LOGS_BY_ENTITY: (entityType: string, entityId: string) =>
     `admin/audit-logs/entities/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId)}`,
+
+  // Admin Search Endpoint
+  ADMIN_SEARCH: "admin/search",
 } as const;
 
 export const ENDPOINTS_CATEGORY = {
