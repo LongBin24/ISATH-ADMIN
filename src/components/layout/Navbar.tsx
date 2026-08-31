@@ -14,11 +14,7 @@ import { LanguageFlag } from "@/components/ui/LanguageFlag";
 import { Button } from "@/components/ui/button";
 import { useGetProfileQuery } from "@/features/profile/api";
 import GlobalSearch from "@/features/search/components/GlobalSearch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 
 interface NavbarProps {
   onMenuToggle?: () => void;
@@ -38,38 +34,31 @@ export default function Navbar({
     <header className="sticky top-0 z-20 w-full border-b border-slate-200/70 bg-white/85 px-3.5 py-3.5 backdrop-blur-md dark:border-[#172338] dark:bg-[#070d18]/90 sm:px-5 sm:py-4 md:px-6 lg:px-8">
       <div className="flex items-center justify-between gap-3 sm:gap-4">
         <div className="flex flex-1 items-center gap-2.5 sm:gap-3.5">
-          <Tooltip>
-            <TooltipTrigger>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={onMenuToggle}
-                className="size-10 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
-                aria-label={t(
-                  isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar",
-                )}
-              >
-                <span className="hidden lg:inline-flex">
-                  {isSidebarCollapsed ? (
-                    <PanelLeftOpen size={20} />
-                  ) : (
-                    <PanelLeftClose size={20} />
-                  )}
-                </span>
-                <span className="inline-flex lg:hidden">
-                  {isSidebarOpen ? (
-                    <PanelLeftClose size={20} />
-                  ) : (
-                    <PanelLeftOpen size={20} />
-                  )}
-                </span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {t(isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar")}
-            </TooltipContent>
-          </Tooltip>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onMenuToggle}
+            className="size-10 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+            aria-label={t(
+              isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar",
+            )}
+          >
+            <span className="hidden lg:inline-flex">
+              {isSidebarCollapsed ? (
+                <PanelLeftOpen size={20} />
+              ) : (
+                <PanelLeftClose size={20} />
+              )}
+            </span>
+            <span className="inline-flex lg:hidden">
+              {isSidebarOpen ? (
+                <PanelLeftClose size={20} />
+              ) : (
+                <PanelLeftOpen size={20} />
+              )}
+            </span>
+          </Button>
 
           <GlobalSearch />
         </div>

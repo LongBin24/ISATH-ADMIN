@@ -55,7 +55,7 @@ export function AlertFilters({
         )}
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-[minmax(260px,1fr)_220px_220px]">
+      <div className="grid gap-3 md:grid-cols-[minmax(220px,1fr)_200px_200px] lg:grid-cols-[minmax(260px,1fr)_220px_220px]">
         <label className="relative block">
           <span className="sr-only">{t("Search by rule name...")}</span>
           <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />

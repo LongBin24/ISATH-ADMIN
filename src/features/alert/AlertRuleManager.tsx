@@ -347,13 +347,13 @@ export default function AlertRuleManager() {
         <CardContent className="space-y-5">
           <div
             className={cn(
-              "grid gap-2 md:grid-cols-2 2xl:items-center",
+              "grid gap-2 md:grid-cols-2 xl:items-center",
               hasFilters
-                ? "2xl:grid-cols-[minmax(220px,2fr)_repeat(7,minmax(125px,1fr))]"
-                : "2xl:grid-cols-[minmax(240px,2fr)_repeat(6,minmax(150px,1fr))]",
+                ? "xl:grid-cols-[minmax(0,1.5fr)_repeat(7,minmax(0,1fr))]"
+                : "xl:grid-cols-[minmax(0,2fr)_repeat(6,minmax(0,1fr))]",
             )}
           >
-            <div className="relative md:col-span-2 2xl:col-span-1">
+            <div className="relative md:col-span-2 xl:col-span-1">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={search}
@@ -377,7 +377,7 @@ export default function AlertRuleManager() {
                 </button>
               )}
             </div>
-            <div className="grid gap-2 sm:grid-cols-2 md:col-span-2 xl:grid-cols-3 2xl:contents">
+            <div className="grid gap-2 sm:grid-cols-2 md:col-span-2 xl:contents">
               <UserFilter
                 value={userId}
                 users={users}
@@ -646,7 +646,7 @@ function RuleSelect({
       <SelectTrigger
         className={cn(
           "h-11 rounded-xl bg-muted/60 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
-          compact ? "admin-page-size w-32" : "min-w-[130px]",
+          compact ? "admin-page-size w-32" : "min-w-0",
           isSelected &&
             "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
         )}
@@ -705,7 +705,7 @@ function UserFilter({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         className={cn(
-          "flex h-11 min-w-[170px] items-center justify-between gap-2.5 rounded-xl border border-input bg-muted/60 px-3 text-left text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+          "flex h-11 w-full min-w-0 items-center justify-between gap-2.5 rounded-xl border border-input bg-muted/60 px-3 text-left text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
           isSelected &&
             "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]"
         )}
