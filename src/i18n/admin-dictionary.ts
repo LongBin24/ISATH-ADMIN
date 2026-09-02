@@ -1248,6 +1248,13 @@ const km: Record<string, string> = {
   "No notifications found": "រកមិនឃើញការជូនដំណឹងទេ",
   "There are no notifications matching the current filters.":
     "មិនមានការជូនដំណឹងដែលត្រូវនឹងតម្រងបច្ចុប្បន្នទេ។",
+  "Unknown user": "អ្នកប្រើប្រាស់មិនស្គាល់",
+  "Unknown User": "អ្នកប្រើប្រាស់មិនស្គាល់",
+  "System Recipient": "អ្នកទទួលប្រព័ន្ធ",
+  "Unlinked Account": "គណនីមិនបានភ្ជាប់",
+  "No account linked": "មិនមានគណនីភ្ជាប់",
+  "System Notification": "ការជូនដំណឹងប្រព័ន្ធ",
+  Channels: "ប៉ុស្តិ៍ជូនដំណឹង",
   DAILY_REMINDER: "ការរំឭកប្រចាំថ្ងៃ",
   BUDGET_WARNING: "ការព្រមានថវិកា",
 

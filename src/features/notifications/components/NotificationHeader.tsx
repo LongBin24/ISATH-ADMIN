@@ -30,12 +30,12 @@ export default function NotificationHeader() {
             <span>ប្រព័ន្ធជូនដំណឹងអូតូម៉ាតិក</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-google-sans">
+          <h1 className="text-2xl sm:text-3xl md:text-[32px] font-extrabold tracking-tight text-white font-google-sans">
             ប្រព័ន្ធជូនដំណឹងហិរញ្ញវត្ថុ{" "}
             <span className="text-[#FFC83D]">iStash</span>
           </h1>
 
-          <p className="text-sm text-slate-300 leading-relaxed font-google-sans">
+          <p className="text-[18px] text-slate-300 leading-relaxed font-google-sans">
             រំលឹក និងជូនដំណឹងព័ត៌មានហិរញ្ញវត្ថុសំខាន់ៗដល់អ្នកប្រើប្រាស់ តាមរយៈ
             <span className="text-[#FFC83D] font-medium font-sans">
               {" "}

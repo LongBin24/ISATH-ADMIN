@@ -18,6 +18,7 @@ import {
   RefreshCw,
   Search,
   ShieldAlert,
+  Tag,
   TriangleAlert,
   UserRound,
   X,
@@ -290,10 +291,10 @@ export default function AlertRuleManager() {
   return (
     <div className="space-y-7 font-google-sans">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
+        <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-[32px]">
           {t("Alert Rules")}
         </h1>
-        <p className="mt-1 max-w-3xl text-sm text-muted-foreground font-normal">
+        <p className="mt-1 max-w-3xl text-[18px] leading-relaxed text-muted-foreground font-normal">
           {t(
             "Monitor user alert rules, trigger conditions, severity, references, and execution schedules.",
           )}
@@ -858,8 +859,18 @@ function UserCell({ user }: { user?: AdminUser }) {
 
 function AlertTypeBadge({ type }: { type: AlertType }) {
   const { t } = useAdminI18n();
+  const classes =
+    type === "DAILY_EXPENSE_REMINDER"
+      ? "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/60 dark:text-blue-300"
+      : type === "BUDGET_THRESHOLD"
+        ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/60 dark:text-red-300"
+        : type === "SAVINGS_REMINDER"
+          ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300"
+          : type === "RECURRING_REMINDER"
+            ? "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-900 dark:bg-purple-950/60 dark:text-purple-300"
+            : "border-[#FFC83D] bg-[#FFC83D]/15 text-[#003377] dark:text-[#FFC83D]";
   return (
-    <Badge variant="outline" className="text-sm">
+    <Badge variant="outline" className={`text-sm font-semibold ${classes}`}>
       {t(ALERT_LABELS[type] || friendlyEnum(type))}
     </Badge>
   );
@@ -1027,18 +1038,26 @@ function RuleDetailDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-[90vh] max-w-[720px] overflow-hidden p-0"
+        className="flex max-h-[88vh] max-w-[720px] flex-col overflow-hidden p-0 font-google-sans"
         onClose={() => onOpenChange(false)}
       >
-        <DialogHeader className="mb-0 px-6 pb-4 pt-6">
-          <DialogTitle className="text-2xl">
-            {t("Alert Rule Details")}
-          </DialogTitle>
-          <DialogDescription className="text-base font-normal">
-            {t("Read-only rule configuration and execution information.")}
-          </DialogDescription>
+        <DialogHeader className="mb-0 shrink-0 border-b border-slate-200/80 px-6 py-5 dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[#003377]/10 text-[#003377] dark:bg-[#FFC83D]/10 dark:text-[#FFC83D]">
+              <BellRing className="size-5.5" />
+            </span>
+            <div>
+              <DialogTitle className="text-xl font-bold text-[#003377] dark:text-[#FFC83D]">
+                {t("Alert Rule Details")}
+              </DialogTitle>
+              <DialogDescription className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+                {t("Read-only rule configuration and execution information.")}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
-        <div className="max-h-[calc(90vh-110px)] overflow-y-auto px-6 pb-6">
+
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5">
           {query.isLoading ? (
             <DetailSkeleton />
           ) : query.isError || !query.data ? (
@@ -1050,6 +1069,17 @@ function RuleDetailDialog({
             />
           )}
         </div>
+
+        <div className="shrink-0 flex items-center justify-end border-t border-slate-200/80 bg-slate-50/70 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/70">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-xl border-slate-200 px-6 text-base font-semibold text-slate-700 transition hover:border-[#003377] hover:text-[#003377] dark:border-slate-700 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D]"
+            onClick={() => onOpenChange(false)}
+          >
+            {t("Close")}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -1059,132 +1089,236 @@ function RuleDetail({ rule, user }: { rule: AlertRule; user?: AdminUser }) {
   const { t } = useAdminI18n();
   return (
     <div className="space-y-6">
-      <section>
-        <h2 className="text-2xl font-semibold">{rule.ruleName}</h2>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <AlertTypeBadge type={rule.alertType} />
-          <SeverityBadge severity={rule.severity} />
-          <EnabledBadge rule={rule} />
+      {/* Rule Name Banner */}
+      <section className="rounded-2xl border border-slate-200/90 border-l-4 border-l-[#003377] bg-slate-50/70 p-5 dark:border-slate-800 dark:border-l-[#FFC83D] dark:bg-slate-900/40">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#003377] dark:text-[#FFC83D]">
+              {t("Rule Name")}
+            </p>
+            <h2 className="mt-1 text-xl font-bold text-slate-900 dark:text-white leading-snug">
+              {rule.ruleName}
+            </h2>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <AlertTypeBadge type={rule.alertType} />
+            <SeverityBadge severity={rule.severity} />
+            <EnabledBadge rule={rule} />
+          </div>
         </div>
-        <div className="mt-5">
-          <p className="mb-2 text-sm text-muted-foreground font-normal">
-            {t("User")}
+
+        {/* Assigned User */}
+        <div className="mt-4 rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs dark:border-slate-800 dark:bg-slate-950/60">
+          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            {t("Assigned User")}
           </p>
           <UserCell user={user} />
         </div>
       </section>
-      <Separator />
-      <DetailSection title={t("Rule Configuration")}>
+
+      {/* Rule Configuration */}
+      <DetailSection icon={Gauge} title={t("Rule Configuration")}>
         <Detail
           label={t("Alert Type")}
-          value={t(ALERT_LABELS[rule.alertType])}
+          value={
+            <span className="font-bold text-[#003377] dark:text-[#FFC83D]">
+              {t(ALERT_LABELS[rule.alertType])}
+            </span>
+          }
         />
         <Detail
           label={t("Trigger Type")}
-          value={t(TRIGGER_LABELS[rule.triggerType])}
+          value={
+            <span className="font-medium text-slate-800 dark:text-slate-200">
+              {t(TRIGGER_LABELS[rule.triggerType])}
+            </span>
+          }
         />
-        <Detail label={t("Severity")} value={t(friendlyEnum(rule.severity))} />
+        <Detail
+          label={t("Severity")}
+          value={<SeverityBadge severity={rule.severity} />}
+        />
         {rule.frequency && (
           <Detail
             label={t("Frequency")}
-            value={t(friendlyEnum(rule.frequency))}
+            value={
+              <span className="font-medium text-slate-800 dark:text-slate-200">
+                {t(friendlyEnum(rule.frequency))}
+              </span>
+            }
           />
         )}
         {rule.thresholdPercentage != null && (
           <Detail
             label={t("Threshold")}
-            value={`${rule.thresholdPercentage}%`}
+            value={
+              <span className="font-mono font-bold text-amber-600 dark:text-amber-400">
+                {`${rule.thresholdPercentage}%`}
+              </span>
+            }
           />
         )}
         {rule.reminderTime && (
-          <Detail label={t("Reminder Time")} value={rule.reminderTime} />
+          <Detail
+            label={t("Reminder Time")}
+            value={
+              <span className="rounded-md border border-slate-200 bg-slate-100 px-2 py-0.5 font-mono text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                {rule.reminderTime}
+              </span>
+            }
+          />
         )}
         {rule.daysBefore != null && (
           <Detail
             label={t("Days Before")}
-            value={`${rule.daysBefore} ${rule.daysBefore === 1 ? "day" : "days"}`}
+            value={
+              <span className="font-medium text-slate-800 dark:text-slate-200">
+                {`${rule.daysBefore} ${rule.daysBefore === 1 ? t("day") : t("days")}`}
+              </span>
+            }
           />
         )}
       </DetailSection>
-      <Separator />
-      <DetailSection title={t("Reference")}>
+
+      {/* Reference */}
+      <DetailSection icon={Tag} title={t("Reference")}>
         <Detail
           label={t("Type")}
           value={
-            rule.referenceType
-              ? t(REFERENCE_LABELS[rule.referenceType])
-              : t("No reference")
+            rule.referenceType ? (
+              <span className="font-medium text-slate-800 dark:text-slate-200">
+                {t(REFERENCE_LABELS[rule.referenceType])}
+              </span>
+            ) : (
+              <span className="text-slate-400 dark:text-slate-500">
+                {t("No reference")}
+              </span>
+            )
           }
         />
       </DetailSection>
-      <Separator />
-      <DetailSection title={t("Schedule")}>
+
+      {/* Schedule */}
+      <DetailSection icon={CalendarClock} title={t("Schedule")}>
         <Detail
           label={t("Next Trigger")}
           value={
-            rule.nextTriggerAt
-              ? exactDate(rule.nextTriggerAt)
-              : t("No next trigger scheduled")
+            rule.nextTriggerAt ? (
+              <span className="font-medium text-slate-800 dark:text-slate-200">
+                {exactDate(rule.nextTriggerAt)}
+              </span>
+            ) : (
+              <span className="text-slate-400 dark:text-slate-500">
+                {t("No next trigger scheduled")}
+              </span>
+            )
           }
         />
         <Detail
           label={t("Last Trigger")}
           value={
-            rule.lastTriggeredAt
-              ? exactDate(rule.lastTriggeredAt)
-              : t("Never triggered")
+            rule.lastTriggeredAt ? (
+              <span className="font-medium text-slate-800 dark:text-slate-200">
+                {exactDate(rule.lastTriggeredAt)}
+              </span>
+            ) : (
+              <span className="text-slate-400 dark:text-slate-500">
+                {t("Never triggered")}
+              </span>
+            )
           }
         />
       </DetailSection>
-      <Separator />
-      <DetailSection title={t("Rule Status")}>
+
+      {/* Rule Status */}
+      <DetailSection icon={ShieldAlert} title={t("Rule Status")}>
         <Detail
           label={t("Enabled")}
-          value={rule.enabled ? t("Yes") : t("No")}
+          value={
+            rule.enabled ? (
+              <span className="inline-flex items-center gap-1.5 font-bold text-emerald-600 dark:text-emerald-400">
+                <CircleCheck className="size-4" />
+                {t("Yes")}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 font-bold text-slate-500 dark:text-slate-400">
+                <CircleX className="size-4" />
+                {t("No")}
+              </span>
+            )
+          }
         />
         <Detail
           label={t("User Can Disable")}
           value={
-            <span className="inline-flex items-center gap-2">
-              {rule.canDisable ? t("Yes") : t("No")}
-              {!rule.canDisable && <LockKeyhole className="size-4" />}
+            <span className="inline-flex items-center gap-1.5 font-medium">
+              {rule.canDisable ? (
+                <span className="text-emerald-600 dark:text-emerald-400">{t("Yes")}</span>
+              ) : (
+                <span className="inline-flex items-center gap-1 font-medium text-slate-500">
+                  {t("No")}
+                  <LockKeyhole className="size-3.5 text-amber-500" />
+                </span>
+              )}
             </span>
           }
         />
       </DetailSection>
-      <Separator />
-      <DetailSection title={t("Timeline")}>
-        <Detail label={t("Created")} value={exactDate(rule.createdAt)} />
-        <Detail label={t("Updated")} value={exactDate(rule.updatedAt)} />
+
+      {/* Timeline */}
+      <DetailSection icon={Clock3} title={t("Timeline")}>
+        <Detail
+          label={t("Created")}
+          value={
+            <span className="font-medium text-slate-700 dark:text-slate-300">
+              {exactDate(rule.createdAt)}
+            </span>
+          }
+        />
+        <Detail
+          label={t("Updated")}
+          value={
+            <span className="font-medium text-slate-700 dark:text-slate-300">
+              {exactDate(rule.updatedAt)}
+            </span>
+          }
+        />
       </DetailSection>
     </div>
   );
 }
 
 function DetailSection({
+  icon: Icon,
   title,
   children,
 }: {
+  icon?: React.ComponentType<{ className?: string }>;
   title: string;
   children: React.ReactNode;
 }) {
   return (
-    <section>
-      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
-      <div className="divide-y">{children}</div>
+    <section className="space-y-2.5">
+      <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#003377] dark:text-[#FFC83D]">
+        {Icon && <Icon className="size-4 text-[#003377] dark:text-[#FFC83D]" />}
+        {title}
+      </h3>
+      <div className="rounded-2xl border border-slate-200/90 bg-slate-50/60 px-4 divide-y divide-slate-200/70 dark:border-slate-800 dark:bg-slate-900/40 dark:divide-slate-800/80">
+        {children}
+      </div>
     </section>
   );
 }
 
 function Detail({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex justify-between gap-4 py-3">
-      <span className="text-base text-muted-foreground font-normal">
+    <div className="flex items-center justify-between gap-4 py-3">
+      <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
         {label}
       </span>
-      <span className="text-right text-base font-medium text-foreground">
+      <div className="text-right text-base font-semibold text-slate-900 dark:text-slate-100">
         {value}
-      </span>
+      </div>
     </div>
   );
 }

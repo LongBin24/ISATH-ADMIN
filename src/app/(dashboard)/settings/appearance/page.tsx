@@ -17,7 +17,7 @@ export default function AppearanceSettingsPage() {
           </div>
           <h1 className="page-title">{t("Appearance & Theme Settings")}</h1>
         </div>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-[18px] leading-relaxed text-slate-500 dark:text-slate-400">
           {t("Customize your interface visual style, lighting atmosphere, and transition preferences.")}
         </p>
       </div>

@@ -53,10 +53,10 @@ export default function AIConfigForm() {
     <div className="space-y-6 font-google-sans">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] sm:text-2xl">
+          <h2 className="text-xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] sm:text-2xl md:text-[32px]">
             {t("Model & Assistant Capabilities")}
           </h2>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-[18px] leading-relaxed text-slate-500 dark:text-slate-400">
             {t(
               "Manage and configure AI assistant capabilities, models, and OCR."
             )}

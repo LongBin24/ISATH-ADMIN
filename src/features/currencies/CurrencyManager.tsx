@@ -429,10 +429,10 @@ export default function CurrencyManager() {
     <div className="space-y-7 font-google-sans">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-[32px]">
             {t("Currency Management")}
           </h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground font-normal">
+          <p className="mt-1 max-w-2xl text-[18px] leading-relaxed text-muted-foreground font-normal">
             {t(
               "Manage supported currencies, exchange-rate synchronization, and provider availability.",
             )}
@@ -926,7 +926,9 @@ function CurrencyDetailSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent onClose={() => onOpenChange(false)}>
         <SheetHeader>
-          <SheetTitle>{t("Currency Details")}</SheetTitle>
+          <SheetTitle className="text-[#003377] dark:text-[#FEDB55]">
+            {t("Currency Details")}
+          </SheetTitle>
           <p className="mt-1 text-sm text-muted-foreground font-normal">
             {t("Provider and synchronization information for")} {currency.code}.
           </p>

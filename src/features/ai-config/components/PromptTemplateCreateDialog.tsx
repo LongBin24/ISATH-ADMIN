@@ -65,7 +65,11 @@ const MODEL_PRESETS = [
 
 const MIME_PRESETS = ["application/json", "text/plain"];
 
-const TEMPLATE_VARIABLES = ["{{question}}", "{{financialContext}}", "{{currencyCode}}"];
+const TEMPLATE_VARIABLES = [
+  "{{question}}",
+  "{{financialContext}}",
+  "{{currencyCode}}",
+];
 
 export function PromptTemplateCreateDialog({
   templateToEdit,
@@ -80,9 +84,12 @@ export function PromptTemplateCreateDialog({
   const [templateName, setTemplateName] = useState("");
   const [description, setDescription] = useState("");
   const [taskType, setTaskType] = useState<TaskType>("CATEGORY_PREDICTION");
-  const [templateScope, setTemplateScope] = useState<TemplateScope>("GENERAL_CONVERSATION");
+  const [templateScope, setTemplateScope] = useState<TemplateScope>(
+    "GENERAL_CONVERSATION",
+  );
   const [languageCode, setLanguageCode] = useState<LanguageCode>("en");
-  const [templateStatus, setTemplateStatus] = useState<PromptTemplateStatus>("DRAFT");
+  const [templateStatus, setTemplateStatus] =
+    useState<PromptTemplateStatus>("DRAFT");
   const [isDefault, setIsDefault] = useState(false);
   const [modelName, setModelName] = useState("gemini-2.5-flash");
   const [systemPrompt, setSystemPrompt] = useState("");
@@ -99,23 +106,31 @@ export function PromptTemplateCreateDialog({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
 
-  const [createTemplate, { isLoading: isCreating }] = useCreatePromptTemplateMutation();
-  const [updateTemplate, { isLoading: isUpdating }] = useUpdatePromptTemplateMutation();
+  const [createTemplate, { isLoading: isCreating }] =
+    useCreatePromptTemplateMutation();
+  const [updateTemplate, { isLoading: isUpdating }] =
+    useUpdatePromptTemplateMutation();
 
   useEffect(() => {
     queueMicrotask(() => {
       if (templateToEdit) {
         setTemplateKey(templateToEdit.templateKey || "");
-        setTemplateName(templateToEdit.templateName || templateToEdit.name || "");
+        setTemplateName(
+          templateToEdit.templateName || templateToEdit.name || "",
+        );
         setDescription(templateToEdit.description || "");
         setTaskType(templateToEdit.taskType || "CATEGORY_PREDICTION");
-        setTemplateScope(templateToEdit.templateScope || "GENERAL_CONVERSATION");
+        setTemplateScope(
+          templateToEdit.templateScope || "GENERAL_CONVERSATION",
+        );
         setLanguageCode(templateToEdit.languageCode || "en");
         setTemplateStatus(templateToEdit.templateStatus || "DRAFT");
         setIsDefault(templateToEdit.isDefault ?? false);
         setModelName(templateToEdit.modelName || "gemini-2.5-flash");
         setSystemPrompt(templateToEdit.systemPrompt || "");
-        setUserPromptTemplate(templateToEdit.userPromptTemplate || templateToEdit.template || "");
+        setUserPromptTemplate(
+          templateToEdit.userPromptTemplate || templateToEdit.template || "",
+        );
 
         const genConfig = templateToEdit.generationConfig as
           | { temperature?: number; responseMimeType?: string }
@@ -126,14 +141,16 @@ export function PromptTemplateCreateDialog({
         setInputSchemaJson(
           templateToEdit.inputSchema
             ? JSON.stringify(templateToEdit.inputSchema, null, 2)
-            : ""
+            : "",
         );
         setOutputSchemaJson(
           templateToEdit.outputSchema
             ? JSON.stringify(templateToEdit.outputSchema, null, 2)
-            : ""
+            : "",
         );
-        setShowAdvanced(Boolean(templateToEdit.inputSchema || templateToEdit.outputSchema));
+        setShowAdvanced(
+          Boolean(templateToEdit.inputSchema || templateToEdit.outputSchema),
+        );
       } else {
         setTemplateKey("");
         setTemplateName("");
@@ -162,7 +179,7 @@ export function PromptTemplateCreateDialog({
     setTemplateKey("financial-assistant-spending");
     setTemplateName("ជំនួយការហិរញ្ញវត្ថុ - វិភាគការចំណាយ");
     setDescription(
-      "វិភាគការចំណាយតាមចំនួនសរុប ប្រភេទចំណាយ ការចំណាយកើតឡើងដដែលៗ និងការប្រែប្រួលពីរយៈពេលមុន។"
+      "វិភាគការចំណាយតាមចំនួនសរុប ប្រភេទចំណាយ ការចំណាយកើតឡើងដដែលៗ និងការប្រែប្រួលពីរយៈពេលមុន។",
     );
     setTaskType("FINANCIAL_ASSISTANT");
     setTemplateScope("SPENDING_ANALYSIS");
@@ -173,10 +190,10 @@ export function PromptTemplateCreateDialog({
     setTemperature(0.3);
     setResponseMimeType("application/json");
     setSystemPrompt(
-      "You are the iStash Financial Assistant.\n\nFINANCIAL_CONTEXT contains trusted values calculated from the user's own financial records.\n\nRules:\n1. Treat FINANCIAL_CONTEXT as authoritative.\n2. Never modify financial values.\n3. Never recalculate values already supplied.\n4. Never invent transactions.\n5. Never invent categories.\n6. Never invent merchants.\n7. Never invent balances.\n8. Never invent budget or savings values.\n9. Base all personalized claims only on FINANCIAL_CONTEXT.\n10. If required information is missing, clearly state that it is unavailable.\n11. Preserve currency exactly as provided.\n12. Respond using the requested language.\n13. Keep explanations concise, useful, and factual.\n14. Return only the required structured JSON.\n15. Never mention internal implementation details such as Spring, Spring Boot, backend, database, prompt, JSON schema, AI model, language model, or provider. Present the financial facts naturally as the user's own information, never as data supplied by a system."
+      "You are the iStash Financial Assistant.\n\nFINANCIAL_CONTEXT contains trusted values calculated from the user's own financial records.\n\nRules:\n1. Treat FINANCIAL_CONTEXT as authoritative.\n2. Never modify financial values.\n3. Never recalculate values already supplied.\n4. Never invent transactions.\n5. Never invent categories.\n6. Never invent merchants.\n7. Never invent balances.\n8. Never invent budget or savings values.\n9. Base all personalized claims only on FINANCIAL_CONTEXT.\n10. If required information is missing, clearly state that it is unavailable.\n11. Preserve currency exactly as provided.\n12. Respond using the requested language.\n13. Keep explanations concise, useful, and factual.\n14. Return only the required structured JSON.\n15. Never mention internal implementation details such as Spring, Spring Boot, backend, database, prompt, JSON schema, AI model, language model, or provider. Present the financial facts naturally as the user's own information, never as data supplied by a system.",
     );
     setUserPromptTemplate(
-      "សំណួររបស់អ្នកប្រើប្រាស់៖\n{{question}}\n\nភាសាឆ្លើយតប៖ km\n\nFINANCIAL_CONTEXT (ទិន្នន័យហិរញ្ញវត្ថុដែលបានផ្ទៀងផ្ទាត់ និងគណនារបស់អ្នកប្រើប្រាស់)៖\n{{financialContext}}\n\nពន្យល់តែទិន្នន័យខាងលើដោយប្រើភាសាធម្មជាតិ ដូចជាព័ត៌មានផ្ទាល់ខ្លួនរបស់អ្នកប្រើប្រាស់។ កុំលើកឡើងពាក្យបច្ចេកទេសផ្ទៃក្នុងណាមួយឡើយ។ បើគ្មានទិន្នន័យចាំបាច់ សូមប្រាប់ថាមិនមានព័ត៌មាន។"
+      "សំណួររបស់អ្នកប្រើប្រាស់៖\n{{question}}\n\nភាសាឆ្លើយតប៖ km\n\nFINANCIAL_CONTEXT (ទិន្នន័យហិរញ្ញវត្ថុដែលបានផ្ទៀងផ្ទាត់ និងគណនារបស់អ្នកប្រើប្រាស់)៖\n{{financialContext}}\n\nពន្យល់តែទិន្នន័យខាងលើដោយប្រើភាសាធម្មជាតិ ដូចជាព័ត៌មានផ្ទាល់ខ្លួនរបស់អ្នកប្រើប្រាស់។ កុំលើកឡើងពាក្យបច្ចេកទេសផ្ទៃក្នុងណាមួយឡើយ។ បើគ្មានទិន្នន័យចាំបាច់ សូមប្រាប់ថាមិនមានព័ត៌មាន។",
     );
     setInputSchemaJson(
       JSON.stringify(
@@ -193,8 +210,8 @@ export function PromptTemplateCreateDialog({
           },
         },
         null,
-        2
-      )
+        2,
+      ),
     );
     setOutputSchemaJson(
       JSON.stringify(
@@ -243,8 +260,8 @@ export function PromptTemplateCreateDialog({
           },
         },
         null,
-        2
-      )
+        2,
+      ),
     );
     setShowAdvanced(true);
     setErrorMsg(null);
@@ -291,19 +308,27 @@ export function PromptTemplateCreateDialog({
     setTimeout(() => setCopiedPrompt(null), 1800);
   }
 
-  function validateJsonSyntax(jsonStr: string): { valid: boolean; error?: string } {
+  function validateJsonSyntax(jsonStr: string): {
+    valid: boolean;
+    error?: string;
+  } {
     if (!jsonStr.trim()) return { valid: true };
     try {
       JSON.parse(jsonStr);
       return { valid: true };
     } catch (e: unknown) {
-      return { valid: false, error: e instanceof Error ? e.message : "Syntax error" };
+      return {
+        valid: false,
+        error: e instanceof Error ? e.message : "Syntax error",
+      };
     }
   }
 
   const inputJsonCheck = validateJsonSyntax(inputSchemaJson);
   const outputJsonCheck = validateJsonSyntax(outputSchemaJson);
-  const hasSchemasConfigured = Boolean(inputSchemaJson.trim() || outputSchemaJson.trim());
+  const hasSchemasConfigured = Boolean(
+    inputSchemaJson.trim() || outputSchemaJson.trim(),
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -355,7 +380,9 @@ export function PromptTemplateCreateDialog({
     if (!zodResult.success) {
       const flattened = zodResult.error.flatten();
       setFieldErrors(flattened.fieldErrors as Record<string, string[]>);
-      const firstIssue = zodResult.error.issues[0]?.message || t("Please correct the form errors.");
+      const firstIssue =
+        zodResult.error.issues[0]?.message ||
+        t("Please correct the form errors.");
       setErrorMsg(firstIssue);
       return;
     }
@@ -399,7 +426,7 @@ export function PromptTemplateCreateDialog({
           const formattedErrors = data.fieldErrors
             .map(
               (f: { field?: string; message?: string }) =>
-                `${f.field ? `[${f.field}] ` : ""}${f.message}`
+                `${f.field ? `[${f.field}] ` : ""}${f.message}`,
             )
             .join(" | ");
           setErrorMsg(formattedErrors);
@@ -410,7 +437,9 @@ export function PromptTemplateCreateDialog({
           return;
         }
       }
-      setErrorMsg(t("Failed to save prompt template. Please check all required fields."));
+      setErrorMsg(
+        t("Failed to save prompt template. Please check all required fields."),
+      );
     }
   }
 
@@ -424,16 +453,26 @@ export function PromptTemplateCreateDialog({
           <div className="flex items-center justify-between gap-3 pr-11 sm:pr-12">
             <div className="flex items-center gap-3">
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#003377] text-[#FFC83D] shadow-sm">
-                {isEditing ? <Edit className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+                {isEditing ? (
+                  <Edit className="h-5 w-5" />
+                ) : (
+                  <Plus className="h-5 w-5" />
+                )}
               </span>
               <div>
                 <DialogTitle className="text-xl font-bold text-[#003377] dark:text-[#FFC83D] sm:text-2xl">
-                  {isEditing ? t("Edit Prompt Template") : t("Create Prompt Template")}
+                  {isEditing
+                    ? t("Edit Prompt Template")
+                    : t("Create Prompt Template")}
                 </DialogTitle>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   {isEditing
-                    ? t("Update configuration, schemas, or prompt instructions.")
-                    : t("Register a new system/user prompt template (POST /api/v1/admin/ai/prompt-templates).")}
+                    ? t(
+                        "Update configuration, schemas, or prompt instructions.",
+                      )
+                    : t(
+                        "Register a new system/user prompt template (POST /api/v1/admin/ai/prompt-templates).",
+                      )}
                 </p>
               </div>
             </div>
@@ -450,8 +489,10 @@ export function PromptTemplateCreateDialog({
           </button>
         </DialogHeader>
 
-
-        <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-1 flex-col overflow-hidden"
+        >
           <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8 space-y-5">
             {errorMsg && (
               <div className="flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 p-3.5 text-xs font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
@@ -497,7 +538,10 @@ export function PromptTemplateCreateDialog({
                     onChange={(e) => {
                       setTemplateName(e.target.value);
                       if (fieldErrors.templateName) {
-                        setFieldErrors((prev) => ({ ...prev, templateName: [] }));
+                        setFieldErrors((prev) => ({
+                          ...prev,
+                          templateName: [],
+                        }));
                       }
                     }}
                     placeholder={t("e.g. ជំនួយការហិរញ្ញវត្ថុ - វិភាគការចំណាយ")}
@@ -518,7 +562,8 @@ export function PromptTemplateCreateDialog({
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      {t("Template Key")} <span className="text-red-500">*</span>
+                      {t("Template Key")}{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <span className="font-mono text-[10px] text-slate-400">
                       a-z, 0-9, ., _, -
@@ -528,9 +573,16 @@ export function PromptTemplateCreateDialog({
                     type="text"
                     value={templateKey}
                     onChange={(e) => {
-                      setTemplateKey(e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, "-"));
+                      setTemplateKey(
+                        e.target.value
+                          .toLowerCase()
+                          .replace(/[^a-z0-9._-]/g, "-"),
+                      );
                       if (fieldErrors.templateKey) {
-                        setFieldErrors((prev) => ({ ...prev, templateKey: [] }));
+                        setFieldErrors((prev) => ({
+                          ...prev,
+                          templateKey: [],
+                        }));
                       }
                     }}
                     placeholder="financial-assistant-spending"
@@ -547,7 +599,9 @@ export function PromptTemplateCreateDialog({
                     </p>
                   ) : (
                     <p className="text-[10px] text-slate-400 dark:text-slate-500">
-                      {t("Lowercase letters, numbers, '.', '_' and '-' only (e.g. istash-intent-v1)")}
+                      {t(
+                        "Lowercase letters, numbers, '.', '_' and '-' only (e.g. istash-intent-v1)",
+                      )}
                     </p>
                   )}
                 </div>
@@ -562,7 +616,9 @@ export function PromptTemplateCreateDialog({
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder={t("Brief description of this template's purpose and behavioral guidelines...")}
+                  placeholder={t(
+                    "Brief description of this template's purpose and behavioral guidelines...",
+                  )}
                   className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
                 />
               </div>
@@ -575,7 +631,9 @@ export function PromptTemplateCreateDialog({
                   onChange={(e) => setIsDefault(e.target.checked)}
                   className="h-4 w-4 rounded border-slate-300 text-[#003377] focus:ring-[#003377] dark:border-slate-700 dark:bg-slate-800"
                 />
-                <span className="font-semibold">{t("Set as default template for this task and scope")}</span>
+                <span className="font-semibold">
+                  {t("Set as default template for this task and scope")}
+                </span>
               </label>
             </div>
 
@@ -591,15 +649,26 @@ export function PromptTemplateCreateDialog({
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     {t("Task Type")}
                   </label>
-                  <Select value={taskType} onValueChange={(val) => setTaskType(val as TaskType)}>
+                  <Select
+                    value={taskType}
+                    onValueChange={(val) => setTaskType(val as TaskType)}
+                  >
                     <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl">
-                      <SelectItem value="CATEGORY_PREDICTION">{t("Category Prediction")}</SelectItem>
-                      <SelectItem value="FINANCIAL_ASSISTANT">{t("Financial Assistant")}</SelectItem>
-                      <SelectItem value="SAVINGS_GOAL_ANALYSIS">{t("Savings Goal Analysis")}</SelectItem>
-                      <SelectItem value="BUDGET_ADVICE">{t("Budget Advice")}</SelectItem>
+                      <SelectItem value="CATEGORY_PREDICTION">
+                        {t("Category Prediction")}
+                      </SelectItem>
+                      <SelectItem value="FINANCIAL_ASSISTANT">
+                        {t("Financial Assistant")}
+                      </SelectItem>
+                      <SelectItem value="SAVINGS_GOAL_ANALYSIS">
+                        {t("Savings Goal Analysis")}
+                      </SelectItem>
+                      <SelectItem value="BUDGET_ADVICE">
+                        {t("Budget Advice")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -608,18 +677,37 @@ export function PromptTemplateCreateDialog({
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     {t("Scope")}
                   </label>
-                  <Select value={templateScope} onValueChange={(val) => setTemplateScope(val as TemplateScope)}>
+                  <Select
+                    value={templateScope}
+                    onValueChange={(val) =>
+                      setTemplateScope(val as TemplateScope)
+                    }
+                  >
                     <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl">
-                      <SelectItem value="GENERAL_CONVERSATION">{t("General Conversation")}</SelectItem>
-                      <SelectItem value="SPENDING_ANALYSIS">{t("Spending Analysis")}</SelectItem>
-                      <SelectItem value="SAVINGS_ANALYSIS">{t("Savings Analysis")}</SelectItem>
-                      <SelectItem value="INCOME_ANALYSIS">{t("Income Analysis")}</SelectItem>
-                      <SelectItem value="BUDGET_ANALYSIS">{t("Budget Analysis")}</SelectItem>
-                      <SelectItem value="GENERAL_QUESTION">{t("General Question")}</SelectItem>
-                      <SelectItem value="MONTHLY_SUMMARY">{t("Monthly Summary")}</SelectItem>
+                      <SelectItem value="GENERAL_CONVERSATION">
+                        {t("General Conversation")}
+                      </SelectItem>
+                      <SelectItem value="SPENDING_ANALYSIS">
+                        {t("Spending Analysis")}
+                      </SelectItem>
+                      <SelectItem value="SAVINGS_ANALYSIS">
+                        {t("Savings Analysis")}
+                      </SelectItem>
+                      <SelectItem value="INCOME_ANALYSIS">
+                        {t("Income Analysis")}
+                      </SelectItem>
+                      <SelectItem value="BUDGET_ANALYSIS">
+                        {t("Budget Analysis")}
+                      </SelectItem>
+                      <SelectItem value="GENERAL_QUESTION">
+                        {t("General Question")}
+                      </SelectItem>
+                      <SelectItem value="MONTHLY_SUMMARY">
+                        {t("Monthly Summary")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -628,7 +716,12 @@ export function PromptTemplateCreateDialog({
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     {t("Language")}
                   </label>
-                  <Select value={languageCode} onValueChange={(val) => setLanguageCode(val as LanguageCode)}>
+                  <Select
+                    value={languageCode}
+                    onValueChange={(val) =>
+                      setLanguageCode(val as LanguageCode)
+                    }
+                  >
                     <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
                       <SelectValue />
                     </SelectTrigger>
@@ -653,7 +746,12 @@ export function PromptTemplateCreateDialog({
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     {t("Status")}
                   </label>
-                  <Select value={templateStatus} onValueChange={(val) => setTemplateStatus(val as PromptTemplateStatus)}>
+                  <Select
+                    value={templateStatus}
+                    onValueChange={(val) =>
+                      setTemplateStatus(val as PromptTemplateStatus)
+                    }
+                  >
                     <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 data-[state=open]:border-[#FFC83D]">
                       <SelectValue />
                     </SelectTrigger>
@@ -727,7 +825,12 @@ export function PromptTemplateCreateDialog({
                       {t("Temperature")}
                     </label>
                     <span className="rounded-md bg-[#003377]/10 px-2 py-0.5 font-mono text-[11px] font-bold text-[#003377] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D]">
-                      {temperature.toFixed(1)} {temperature <= 0.2 ? `(${t("Precise")})` : temperature <= 0.7 ? `(${t("Balanced")})` : `(${t("Creative")})`}
+                      {temperature.toFixed(1)}{" "}
+                      {temperature <= 0.2
+                        ? `(${t("Precise")})`
+                        : temperature <= 0.7
+                          ? `(${t("Balanced")})`
+                          : `(${t("Creative")})`}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 pt-1">
@@ -746,7 +849,11 @@ export function PromptTemplateCreateDialog({
                       max={2}
                       step={0.1}
                       value={temperature}
-                      onChange={(e) => setTemperature(Math.max(0, Math.min(2, Number(e.target.value))))}
+                      onChange={(e) =>
+                        setTemperature(
+                          Math.max(0, Math.min(2, Number(e.target.value))),
+                        )
+                      }
                       className="h-9 w-16 rounded-xl border border-slate-200 bg-white px-2 text-center font-mono text-xs text-slate-800 shadow-sm focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-[#FFC83D]"
                     />
                   </div>
@@ -820,7 +927,9 @@ export function PromptTemplateCreateDialog({
                   </div>
                 </div>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  {t("Defines the AI assistant persona, rules, and output format.")}
+                  {t(
+                    "Defines the AI assistant persona, rules, and output format.",
+                  )}
                 </p>
                 <textarea
                   rows={6}
@@ -831,7 +940,9 @@ export function PromptTemplateCreateDialog({
                       setFieldErrors((prev) => ({ ...prev, systemPrompt: [] }));
                     }
                   }}
-                  placeholder={t("You are the iStash Financial Assistant...\n\nRules:\n1. Treat FINANCIAL_CONTEXT as authoritative.")}
+                  placeholder={t(
+                    "You are the iStash Financial Assistant...\n\nRules:\n1. Treat FINANCIAL_CONTEXT as authoritative.",
+                  )}
                   className={`w-full rounded-xl border bg-white p-3.5 font-mono text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
                     fieldErrors.systemPrompt?.length
                       ? "border-red-400 focus:border-red-500"
@@ -850,7 +961,8 @@ export function PromptTemplateCreateDialog({
               <div className="space-y-1.5">
                 <div className="flex flex-wrap items-center justify-between gap-1">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    {t("User Prompt Template")} <span className="text-red-500">*</span>
+                    {t("User Prompt Template")}{" "}
+                    <span className="text-red-500">*</span>
                   </label>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] text-slate-400">
@@ -859,7 +971,9 @@ export function PromptTemplateCreateDialog({
                     {userPromptTemplate && (
                       <button
                         type="button"
-                        onClick={() => copyToClipboard(userPromptTemplate, "usr")}
+                        onClick={() =>
+                          copyToClipboard(userPromptTemplate, "usr")
+                        }
                         className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-[#003377] dark:hover:text-[#FFC83D] transition"
                       >
                         {copiedPrompt === "usr" ? (
@@ -898,7 +1012,10 @@ export function PromptTemplateCreateDialog({
                   onChange={(e) => {
                     setUserPromptTemplate(e.target.value);
                     if (fieldErrors.userPromptTemplate) {
-                      setFieldErrors((prev) => ({ ...prev, userPromptTemplate: [] }));
+                      setFieldErrors((prev) => ({
+                        ...prev,
+                        userPromptTemplate: [],
+                      }));
                     }
                   }}
                   placeholder="សំណួររបស់អ្នកប្រើប្រាស់៖\n{{question}}\n\nFINANCIAL_CONTEXT:\n{{financialContext}}"
@@ -938,9 +1055,15 @@ export function PromptTemplateCreateDialog({
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-normal text-slate-400">
-                    {showAdvanced ? t("Hide Schemas") : t("Show / Edit Schemas")}
+                    {showAdvanced
+                      ? t("Hide Schemas")
+                      : t("Show / Edit Schemas")}
                   </span>
-                  {showAdvanced ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  {showAdvanced ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
                 </div>
               </button>
 
@@ -966,7 +1089,9 @@ export function PromptTemplateCreateDialog({
                             ) : (
                               <AlertCircle className="h-3 w-3" />
                             )}
-                            {inputJsonCheck.valid ? t("Valid JSON") : t("Invalid Syntax")}
+                            {inputJsonCheck.valid
+                              ? t("Valid JSON")
+                              : t("Invalid Syntax")}
                           </span>
                         )}
                         {inputSchemaJson.trim() && (
@@ -1023,7 +1148,9 @@ export function PromptTemplateCreateDialog({
                             ) : (
                               <AlertCircle className="h-3 w-3" />
                             )}
-                            {outputJsonCheck.valid ? t("Valid JSON") : t("Invalid Syntax")}
+                            {outputJsonCheck.valid
+                              ? t("Valid JSON")
+                              : t("Invalid Syntax")}
                           </span>
                         )}
                         {outputSchemaJson.trim() && (
@@ -1084,7 +1211,9 @@ export function PromptTemplateCreateDialog({
                   <span>{t("Saving...")}</span>
                 </>
               ) : (
-                <span>{isEditing ? t("Update Template") : t("Create Template")}</span>
+                <span>
+                  {isEditing ? t("Update Template") : t("Create Template")}
+                </span>
               )}
             </button>
           </div>

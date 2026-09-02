@@ -136,7 +136,7 @@ export function SelectItem({ value, children }: { value: string; children: React
       role="option"
       aria-selected={selected}
       className={cn(
-        "flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl px-3.5 py-2.5 text-left text-xs font-medium outline-none transition-all duration-150 hover:bg-slate-100 hover:text-[#003377] dark:hover:bg-slate-800 dark:hover:text-[#FFC83D] active:scale-[0.98]",
+        "flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium outline-none transition-all duration-150 hover:bg-slate-100 hover:text-[#003377] dark:hover:bg-slate-800 dark:hover:text-[#FFC83D] active:scale-[0.98]",
         selected && "bg-[#003377]/10 font-bold text-[#003377] dark:bg-[#FFC83D]/15 dark:text-[#FFC83D]"
       )}
       onClick={() => context.select(value)}

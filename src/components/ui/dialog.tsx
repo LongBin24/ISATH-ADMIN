@@ -15,17 +15,40 @@ export interface DialogProps {
 export function Dialog({ open, onOpenChange, children }: DialogProps) {
   useBodyScrollLock(Boolean(open));
 
+  React.useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onOpenChange?.(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open, onOpenChange]);
+
   if (!open || typeof document === "undefined") return null;
 
+  const handleDismiss = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onOpenChange?.(false);
+    }
+  };
+
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4 sm:p-6">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4 sm:p-6"
+      onClick={handleDismiss}
+    >
       {/* Backdrop Overlay */}
       <div
         className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
-        onClick={() => onOpenChange && onOpenChange(false)}
+        onClick={() => onOpenChange?.(false)}
       />
       {/* Centered Modal Container */}
-      <div className="relative z-50 my-auto flex w-full justify-center animate-in fade-in-90 zoom-in-95 duration-200">
+      <div
+        className="relative z-50 my-auto flex w-full justify-center animate-in fade-in-90 zoom-in-95 duration-200"
+        onClick={handleDismiss}
+      >
         {children}
       </div>
     </div>,

@@ -143,13 +143,22 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
       }}
     >
       <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto" onClose={() => onOpenChange(false)}>
-        <DialogHeader>
-          <DialogTitle>{form.mode === "BROADCAST" ? t("Broadcast Notification") : t("Send Notification")}</DialogTitle>
-          <DialogDescription>
-            {form.mode === "BROADCAST"
-              ? t("Broadcast a system notification to all iStash users.")
-              : t("Send a system notification to an iStash user.")}
-          </DialogDescription>
+        <DialogHeader className="border-b border-slate-200/80 pb-4 dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[#003377]/10 text-[#003377] dark:bg-[#FFC83D]/10 dark:text-[#FFC83D]">
+              <Send className="size-5.5" />
+            </span>
+            <div>
+              <DialogTitle className="text-xl font-bold text-[#003377] dark:text-[#FFC83D]">
+                {form.mode === "BROADCAST" ? t("Broadcast Notification") : t("Send Notification")}
+              </DialogTitle>
+              <DialogDescription className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+                {form.mode === "BROADCAST"
+                  ? t("Broadcast a system notification to all iStash users.")
+                  : t("Send a system notification to an iStash user.")}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
@@ -290,7 +299,7 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
                       type="checkbox"
                       checked={form.channels.includes(channel)}
                       onChange={() => toggleChannel(channel)}
-                      className="size-4 rounded border-input accent-[#003377]"
+                      className="size-4 rounded border-input accent-[#003377] dark:accent-[#FFC83D]"
                     />
                     {channel === "IN_APP" ? t("In-App") : t("Email")}
                   </label>
@@ -304,7 +313,7 @@ export default function SendNotificationDialog({ open, onOpenChange }: { open: b
             <button
               type="button"
               onClick={() => setAdvancedOpen((value) => !value)}
-              className="flex w-full items-center justify-between px-4 py-3 text-base font-semibold text-foreground"
+              className="flex w-full items-center justify-between px-4 py-3 text-base font-bold text-[#003377] hover:text-[#002255] dark:text-[#FFC83D] dark:hover:text-[#ffc83d]/80 transition"
             >
               {t("Advanced Options")}
               {advancedOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}

@@ -5,9 +5,7 @@ import { format } from "date-fns";
 import toast from "react-hot-toast";
 import {
   ArrowUpToLine,
-  Check,
   CheckCircle2,
-  ChevronDown,
   CircleDollarSign,
   Eye,
   EyeOff,
@@ -16,6 +14,9 @@ import {
   Move,
   Pencil,
   Plus,
+  RefreshCw,
+  RotateCcw,
+  Save,
   Search,
   ShieldCheck,
   Star,
@@ -63,11 +64,6 @@ import {
   PaginationPrevious,
   PaginationSummary,
 } from "@/components/ui/pagination";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -155,6 +151,16 @@ const COLORS = [
   "#06B6D4",
   "#64748B",
 ];
+const STATUS_COLORS: Record<string, string> = {
+  ACTIVE: "#22C55E",
+  INACTIVE: "#94A3B8",
+  DELETED: "#EF4444",
+};
+const TYPE_COLORS: Record<string, string> = {
+  INCOME: "#22C55E",
+  EXPENSE: "#F59E0B",
+  BOTH: "#3B82F6",
+};
 const EMPTY_FORM: FormState = {
   name: "",
   categoryType: "EXPENSE",
@@ -360,10 +366,10 @@ export default function CategoryManager() {
     <div className="space-y-7 font-google-sans">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-[32px]">
             {t("Category Management")}
           </h1>
-          <p className="mt-1 max-w-3xl text-sm text-muted-foreground font-normal">
+          <p className="mt-1 max-w-3xl text-[18px] leading-relaxed text-muted-foreground font-normal">
             {t(
               "Manage income, expense, system, default, and hierarchical categories used throughout iStash.",
             )}
@@ -372,9 +378,9 @@ export default function CategoryManager() {
         <Button
           size="lg"
           onClick={openCreate}
-          className="bg-[#FEDB55] text-base font-medium text-[#003377] hover:bg-[#f0ca43]"
+          className="bg-[#FEDB55] text-base font-bold text-[#003377] hover:bg-[#f0ca43] shadow-sm"
         >
-          <Plus className="mr-2 size-4" />
+          <Plus className="mr-2 size-5 shrink-0 text-[#003377]" />
           {t("Add Category")}
         </Button>
       </header>
@@ -459,6 +465,7 @@ export default function CategoryManager() {
               label="Type"
               value={type}
               toolbar
+              colors={TYPE_COLORS}
               options={{
                 ALL: t("All Types"),
                 INCOME: t("Income"),
@@ -474,6 +481,7 @@ export default function CategoryManager() {
               label="Status"
               value={status}
               toolbar
+              colors={STATUS_COLORS}
               options={{
                 ALL: t("All Statuses"),
                 ACTIVE: t("Active"),
@@ -713,6 +721,8 @@ function FilterSelect({
   onChange,
   compact = false,
   toolbar = false,
+  fullWidth = false,
+  colors,
 }: {
   label: string;
   value: string;
@@ -720,7 +730,10 @@ function FilterSelect({
   onChange: (value: string) => void;
   compact?: boolean;
   toolbar?: boolean;
+  fullWidth?: boolean;
+  colors?: Record<string, string>;
 }) {
+  const selectedColor = colors?.[value];
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
@@ -728,19 +741,44 @@ function FilterSelect({
         className={`h-11 rounded-xl text-sm ${
           compact
             ? "admin-page-size w-36"
-            : toolbar
-              ? "w-full bg-muted/60 px-3.5 shadow-sm"
-              : "w-auto min-w-[130px]"
+            : fullWidth
+              ? "w-full bg-background px-3.5 shadow-sm"
+              : toolbar
+                ? "w-full bg-muted/60 px-3.5 shadow-sm"
+                : "w-full bg-background px-3.5 shadow-sm"
         }`}
       >
-        <SelectValue value={options[value]} />
+        <span className="flex items-center gap-2 truncate">
+          {selectedColor && (
+            <span
+              className="size-2.5 rounded-full shrink-0"
+              style={{ backgroundColor: selectedColor }}
+            />
+          )}
+          <SelectValue value={options[value]} />
+        </span>
       </SelectTrigger>
-      <SelectContent value={value} onValueChange={onChange}>
-        {Object.entries(options).map(([key, text]) => (
-          <SelectItem key={key} value={key}>
-            {text}
-          </SelectItem>
-        ))}
+      <SelectContent
+        value={value}
+        onValueChange={onChange}
+        className="max-h-56 rounded-xl"
+      >
+        {Object.entries(options).map(([key, text]) => {
+          const color = colors?.[key];
+          return (
+            <SelectItem key={key} value={key}>
+              <span className="flex items-center gap-2 truncate">
+                {color && (
+                  <span
+                    className="size-2.5 rounded-full shrink-0"
+                    style={{ backgroundColor: color }}
+                  />
+                )}
+                <span className="truncate">{text}</span>
+              </span>
+            </SelectItem>
+          );
+        })}
       </SelectContent>
     </Select>
   );
@@ -969,7 +1007,9 @@ function CategoryDetailSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="max-w-xl" onClose={() => onOpenChange(false)}>
         <SheetHeader>
-          <SheetTitle>{t("Category Details")}</SheetTitle>
+          <SheetTitle className="text-[#003377] dark:text-[#FEDB55]">
+            {t("Category Details")}
+          </SheetTitle>
         </SheetHeader>
         <SheetBody>
           <div className="flex items-center gap-4">
@@ -1082,82 +1122,57 @@ function ParentSelector({
   value,
   onChange,
   excludedId,
+  categoryType,
 }: {
   value: string;
   onChange: (value: string) => void;
   excludedId?: string;
+  categoryType?: FormState["categoryType"];
 }) {
   const { t } = useAdminI18n();
-  const [search, setSearch] = useState("");
-  const deferredSearch = useDeferredValue(search);
   const rootsQuery = useGetAdminCategoriesQuery({
     rootOnly: true,
-    ...(deferredSearch ? { keyword: deferredSearch } : {}),
+    ...(categoryType && categoryType !== "BOTH" ? { type: categoryType } : {}),
     status: "ACTIVE",
     pageNumber: 0,
     pageSize: 100,
     sortBy: "name",
     sortDirection: "ASC",
   });
-  const options =
-    rootsQuery.data?.content.filter((category) => category.id !== excludedId) ??
-    [];
+  const allRoots = rootsQuery.data?.content ?? [];
+  const options = allRoots.filter((category) => {
+    if (category.id === excludedId) return false;
+    if (categoryType && categoryType !== "BOTH") {
+      const catType = (category.type ?? "").toUpperCase();
+      if (catType !== "BOTH" && catType !== categoryType) return false;
+    }
+    return true;
+  });
   const selectedName = options.find((category) => category.id === value)?.name;
 
   return (
-    <Popover>
-      <PopoverTrigger className="flex h-11 w-full items-center justify-between rounded-xl border border-input px-3 text-left text-base">
-        <span className="truncate">
-          {value
-            ? selectedName || t("Selected parent")
-            : t("None — Root Category")}
-        </span>
-        <ChevronDown className="size-4 text-muted-foreground" />
-      </PopoverTrigger>
-      <PopoverContent className="w-[min(24rem,calc(100vw-3rem))] space-y-2 p-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder={t("Search root categories...")}
-            className="pl-9 text-base"
-          />
-        </div>
-        <div className="max-h-56 overflow-y-auto">
-          <button
-            type="button"
-            onClick={() => onChange("")}
-            className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm hover:bg-accent"
-          >
-            <span>{t("None — Root Category")}</span>
-            {!value && <Check className="size-4" />}
-          </button>
-          {rootsQuery.isLoading ? (
-            <Skeleton className="m-2 h-24" />
-          ) : (
-            options.map((category) => (
-              <button
-                key={category.id}
-                type="button"
-                onClick={() => onChange(category.id)}
-                className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left hover:bg-accent"
-              >
-                <span>
-                  <span className="block text-sm font-medium">
-                    {category.name}
-                  </span>
-                  <span className="block text-xs text-muted-foreground">
-                    {category.categoryKey || t(friendlyType(category.type))}
-                  </span>
-                </span>
-                {value === category.id && <Check className="size-4" />}
-              </button>
-            ))
-          )}
-        </div>
-      </PopoverContent>
-    </Popover>
+    <Select
+      value={value || "ROOT"}
+      onValueChange={(val) => onChange(val === "ROOT" ? "" : val)}
+    >
+      <SelectTrigger className="h-11 w-full rounded-xl bg-background px-3.5 text-sm shadow-sm">
+        <SelectValue value={value ? selectedName : t("None — Root Category")} />
+      </SelectTrigger>
+      <SelectContent className="max-h-56 rounded-xl">
+        <SelectItem value="ROOT">{t("None — Root Category")}</SelectItem>
+        {options.map((category) => (
+          <SelectItem key={category.id} value={category.id}>
+            <span className="flex items-center gap-2 truncate">
+              <span
+                className="size-2.5 rounded-full shrink-0"
+                style={{ backgroundColor: category.color || "#F59E0B" }}
+              />
+              <span className="truncate">{category.name}</span>
+            </span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -1302,7 +1317,7 @@ function CategoryFormContents({
   return (
     <>
       <DialogHeader>
-        <DialogTitle>
+        <DialogTitle className="text-[#003377] dark:text-[#FEDB55]">
           {category ? t("Edit Category") : t("Add Category")}
         </DialogTitle>
         <DialogDescription className="text-base">
@@ -1342,6 +1357,8 @@ function CategoryFormContents({
               <FilterSelect
                 label="Type"
                 value={form.categoryType}
+                fullWidth
+                colors={TYPE_COLORS}
                 options={{
                   INCOME: t("Income"),
                   EXPENSE: t("Expense"),
@@ -1358,6 +1375,7 @@ function CategoryFormContents({
             <div className="mt-2">
               <ParentSelector
                 value={form.parentId}
+                categoryType={form.categoryType}
                 excludedId={category?.id}
                 onChange={(value) => update("parentId", value)}
               />
@@ -1421,9 +1439,9 @@ function CategoryFormContents({
               <button
                 key={color}
                 type="button"
-                aria-label={`Use ${color}`}
+                aria-label={`Select color ${color}`}
                 onClick={() => update("color", color)}
-                className={`size-9 rounded-full border-2 ${form.color.toUpperCase() === color ? "border-foreground" : "border-transparent"}`}
+                className={`size-9 rounded-full border-2 transition hover:scale-105 ${form.color === color ? "border-foreground" : "border-transparent"}`}
                 style={{ backgroundColor: color }}
               />
             ))}
@@ -1459,6 +1477,8 @@ function CategoryFormContents({
               <FilterSelect
                 label="Status"
                 value={form.status}
+                fullWidth
+                colors={STATUS_COLORS}
                 options={{ ACTIVE: t("Active"), INACTIVE: t("Inactive") }}
                 onChange={(value) =>
                   update("status", value as FormState["status"])
@@ -1479,8 +1499,15 @@ function CategoryFormContents({
           <Button
             type="submit"
             disabled={isLoading}
-            className="bg-[#FEDB55] text-[#003377] hover:bg-[#f0ca43]"
+            className="bg-[#FEDB55] text-[#003377] font-bold hover:bg-[#f0ca43]"
           >
+            {isLoading ? (
+              <RefreshCw className="mr-2 size-4 animate-spin shrink-0 text-[#003377]" />
+            ) : category ? (
+              <Save className="mr-2 size-4 shrink-0 text-[#003377]" />
+            ) : (
+              <Plus className="mr-2 size-4 shrink-0 text-[#003377]" />
+            )}
             {isLoading
               ? t("Saving...")
               : category
@@ -1632,7 +1659,15 @@ function EmptyState({
           ? t("Try changing your search or filters.")
           : t("Create the first category used by iStash.")}
       </p>
-      <Button onClick={filtered ? onReset : onCreate}>
+      <Button
+        onClick={filtered ? onReset : onCreate}
+        className="bg-[#FEDB55] text-[#003377] font-bold hover:bg-[#f0ca43] shadow-sm"
+      >
+        {filtered ? (
+          <RotateCcw className="mr-2 size-4 shrink-0 text-[#003377]" />
+        ) : (
+          <Plus className="mr-2 size-4 shrink-0 text-[#003377]" />
+        )}
         {filtered ? t("Reset Filters") : t("Add Category")}
       </Button>
     </div>

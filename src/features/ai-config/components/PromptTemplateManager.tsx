@@ -190,12 +190,12 @@ export function PromptTemplateManager() {
   return (
     <div className="space-y-6 font-google-sans">
       {/* Header bar */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] sm:text-2xl">
+          <h1 className="page-title text-[32px] font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] leading-tight">
             {t("Prompt Templates")}
-          </h2>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          </h1>
+          <p className="page-subtitle mt-1 text-[18px] leading-relaxed text-slate-500 dark:text-slate-400">
             {t("Configure and test structured prompt templates, variables, and model generation parameters.")}
           </p>
         </div>
@@ -220,7 +220,7 @@ export function PromptTemplateManager() {
             {t("Create Template")}
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Stats row */}
       <PromptTemplateStats
