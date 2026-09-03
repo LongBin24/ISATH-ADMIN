@@ -2,7 +2,7 @@
 
 <p align="center">
   <img
-    src="./public/istash-logo.png"
+    src="./public/iStash-logo (3).png"
     alt="iStash Logo"
     width="150"
   />
