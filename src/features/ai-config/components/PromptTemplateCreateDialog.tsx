@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogContent,
@@ -39,7 +41,7 @@ import {
   useCreatePromptTemplateMutation,
   useUpdatePromptTemplateMutation,
 } from "../api";
-import { promptTemplateSchema } from "../schemas";
+import { promptTemplateSchema, type PromptTemplateFormData } from "../schemas";
 import type {
   PromptTemplateItem,
   TaskType,
@@ -71,6 +73,24 @@ const TEMPLATE_VARIABLES = [
   "{{currencyCode}}",
 ];
 
+const defaultValues: PromptTemplateFormData = {
+  templateKey: "",
+  templateName: "",
+  description: "",
+  taskType: "CATEGORY_PREDICTION",
+  templateScope: "GENERAL_CONVERSATION",
+  languageCode: "en",
+  templateStatus: "DRAFT",
+  isDefault: false,
+  modelName: "gemini-2.5-flash",
+  temperature: 0.3,
+  responseMimeType: "application/json",
+  systemPrompt: "",
+  userPromptTemplate: "",
+  inputSchemaJson: "",
+  outputSchemaJson: "",
+};
+
 export function PromptTemplateCreateDialog({
   templateToEdit,
   isOpen,
@@ -80,30 +100,8 @@ export function PromptTemplateCreateDialog({
   const { t } = useAdminI18n();
   const isEditing = Boolean(templateToEdit);
 
-  const [templateKey, setTemplateKey] = useState("");
-  const [templateName, setTemplateName] = useState("");
-  const [description, setDescription] = useState("");
-  const [taskType, setTaskType] = useState<TaskType>("CATEGORY_PREDICTION");
-  const [templateScope, setTemplateScope] = useState<TemplateScope>(
-    "GENERAL_CONVERSATION",
-  );
-  const [languageCode, setLanguageCode] = useState<LanguageCode>("en");
-  const [templateStatus, setTemplateStatus] =
-    useState<PromptTemplateStatus>("DRAFT");
-  const [isDefault, setIsDefault] = useState(false);
-  const [modelName, setModelName] = useState("gemini-2.5-flash");
-  const [systemPrompt, setSystemPrompt] = useState("");
-  const [userPromptTemplate, setUserPromptTemplate] = useState("");
-  const [temperature, setTemperature] = useState(0.3);
-  const [responseMimeType, setResponseMimeType] = useState("application/json");
-
-  // Advanced JSON schemas
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [inputSchemaJson, setInputSchemaJson] = useState("");
-  const [outputSchemaJson, setOutputSchemaJson] = useState("");
-  const [schemaError, setSchemaError] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
 
   const [createTemplate, { isLoading: isCreating }] =
@@ -111,150 +109,128 @@ export function PromptTemplateCreateDialog({
   const [updateTemplate, { isLoading: isUpdating }] =
     useUpdatePromptTemplateMutation();
 
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<PromptTemplateFormData>({
+    resolver: zodResolver(promptTemplateSchema),
+    defaultValues,
+  });
+
+  const templateKey = useWatch({ control, name: "templateKey" }) ?? "";
+  const taskType = useWatch({ control, name: "taskType" }) ?? "CATEGORY_PREDICTION";
+  const templateScope = useWatch({ control, name: "templateScope" }) ?? "GENERAL_CONVERSATION";
+  const languageCode = useWatch({ control, name: "languageCode" }) ?? "en";
+  const templateStatus = useWatch({ control, name: "templateStatus" }) ?? "DRAFT";
+  const isDefault = useWatch({ control, name: "isDefault" }) ?? false;
+  const modelName = useWatch({ control, name: "modelName" }) ?? "gemini-2.5-flash";
+  const temperature = useWatch({ control, name: "temperature" }) ?? 0.3;
+  const responseMimeType = useWatch({ control, name: "responseMimeType" }) ?? "application/json";
+  const systemPrompt = useWatch({ control, name: "systemPrompt" }) ?? "";
+  const userPromptTemplate = useWatch({ control, name: "userPromptTemplate" }) ?? "";
+  const inputSchemaJson = (useWatch({ control, name: "inputSchemaJson" }) as string) ?? "";
+  const outputSchemaJson = (useWatch({ control, name: "outputSchemaJson" }) as string) ?? "";
+
   useEffect(() => {
     queueMicrotask(() => {
       if (templateToEdit) {
-        setTemplateKey(templateToEdit.templateKey || "");
-        setTemplateName(
-          templateToEdit.templateName || templateToEdit.name || "",
-        );
-        setDescription(templateToEdit.description || "");
-        setTaskType(templateToEdit.taskType || "CATEGORY_PREDICTION");
-        setTemplateScope(
-          templateToEdit.templateScope || "GENERAL_CONVERSATION",
-        );
-        setLanguageCode(templateToEdit.languageCode || "en");
-        setTemplateStatus(templateToEdit.templateStatus || "DRAFT");
-        setIsDefault(templateToEdit.isDefault ?? false);
-        setModelName(templateToEdit.modelName || "gemini-2.5-flash");
-        setSystemPrompt(templateToEdit.systemPrompt || "");
-        setUserPromptTemplate(
-          templateToEdit.userPromptTemplate || templateToEdit.template || "",
-        );
-
         const genConfig = templateToEdit.generationConfig as
           | { temperature?: number; responseMimeType?: string }
           | undefined;
-        setTemperature(genConfig?.temperature ?? 0.3);
-        setResponseMimeType(genConfig?.responseMimeType ?? "application/json");
 
-        setInputSchemaJson(
-          templateToEdit.inputSchema
-            ? JSON.stringify(templateToEdit.inputSchema, null, 2)
-            : "",
-        );
-        setOutputSchemaJson(
-          templateToEdit.outputSchema
-            ? JSON.stringify(templateToEdit.outputSchema, null, 2)
-            : "",
-        );
-        setShowAdvanced(
-          Boolean(templateToEdit.inputSchema || templateToEdit.outputSchema),
-        );
+        const inSchema = templateToEdit.inputSchema
+          ? JSON.stringify(templateToEdit.inputSchema, null, 2)
+          : "";
+        const outSchema = templateToEdit.outputSchema
+          ? JSON.stringify(templateToEdit.outputSchema, null, 2)
+          : "";
+
+        reset({
+          templateKey: templateToEdit.templateKey || "",
+          templateName: templateToEdit.templateName || templateToEdit.name || "",
+          description: templateToEdit.description || "",
+          taskType: (templateToEdit.taskType as TaskType) || "CATEGORY_PREDICTION",
+          templateScope:
+            (templateToEdit.templateScope as TemplateScope) || "GENERAL_CONVERSATION",
+          languageCode: (templateToEdit.languageCode as LanguageCode) || "en",
+          templateStatus:
+            (templateToEdit.templateStatus as PromptTemplateStatus) || "DRAFT",
+          isDefault: Boolean(templateToEdit.isDefault),
+          modelName: templateToEdit.modelName || "gemini-2.5-flash",
+          systemPrompt: templateToEdit.systemPrompt || "",
+          userPromptTemplate:
+            templateToEdit.userPromptTemplate || templateToEdit.template || "",
+          temperature: genConfig?.temperature ?? 0.3,
+          responseMimeType: genConfig?.responseMimeType ?? "application/json",
+          inputSchemaJson: inSchema,
+          outputSchemaJson: outSchema,
+        });
+        setShowAdvanced(Boolean(inSchema || outSchema));
       } else {
-        setTemplateKey("");
-        setTemplateName("");
-        setDescription("");
-        setTaskType("CATEGORY_PREDICTION");
-        setTemplateScope("GENERAL_CONVERSATION");
-        setLanguageCode("en");
-        setTemplateStatus("DRAFT");
-        setIsDefault(false);
-        setModelName("gemini-2.5-flash");
-        setTemperature(0.3);
-        setResponseMimeType("application/json");
-        setSystemPrompt("");
-        setUserPromptTemplate("");
-        setInputSchemaJson("");
-        setOutputSchemaJson("");
+        reset(defaultValues);
         setShowAdvanced(false);
       }
       setErrorMsg(null);
-      setSchemaError(null);
-      setFieldErrors({});
     });
-  }, [templateToEdit, isOpen]);
+  }, [templateToEdit, isOpen, reset]);
 
   function loadSampleTemplate() {
-    setTemplateKey("financial-assistant-spending");
-    setTemplateName("ជំនួយការហិរញ្ញវត្ថុ - វិភាគការចំណាយ");
-    setDescription(
-      "វិភាគការចំណាយតាមចំនួនសរុប ប្រភេទចំណាយ ការចំណាយកើតឡើងដដែលៗ និងការប្រែប្រួលពីរយៈពេលមុន។",
-    );
-    setTaskType("FINANCIAL_ASSISTANT");
-    setTemplateScope("SPENDING_ANALYSIS");
-    setLanguageCode("km");
-    setTemplateStatus("ACTIVE");
-    setIsDefault(false);
-    setModelName("gemini-2.5-flash");
-    setTemperature(0.3);
-    setResponseMimeType("application/json");
-    setSystemPrompt(
-      "You are the iStash Financial Assistant.\n\nFINANCIAL_CONTEXT contains trusted values calculated from the user's own financial records.\n\nRules:\n1. Treat FINANCIAL_CONTEXT as authoritative.\n2. Never modify financial values.\n3. Never recalculate values already supplied.\n4. Never invent transactions.\n5. Never invent categories.\n6. Never invent merchants.\n7. Never invent balances.\n8. Never invent budget or savings values.\n9. Base all personalized claims only on FINANCIAL_CONTEXT.\n10. If required information is missing, clearly state that it is unavailable.\n11. Preserve currency exactly as provided.\n12. Respond using the requested language.\n13. Keep explanations concise, useful, and factual.\n14. Return only the required structured JSON.\n15. Never mention internal implementation details such as Spring, Spring Boot, backend, database, prompt, JSON schema, AI model, language model, or provider. Present the financial facts naturally as the user's own information, never as data supplied by a system.",
-    );
-    setUserPromptTemplate(
-      "សំណួររបស់អ្នកប្រើប្រាស់៖\n{{question}}\n\nភាសាឆ្លើយតប៖ km\n\nFINANCIAL_CONTEXT (ទិន្នន័យហិរញ្ញវត្ថុដែលបានផ្ទៀងផ្ទាត់ និងគណនារបស់អ្នកប្រើប្រាស់)៖\n{{financialContext}}\n\nពន្យល់តែទិន្នន័យខាងលើដោយប្រើភាសាធម្មជាតិ ដូចជាព័ត៌មានផ្ទាល់ខ្លួនរបស់អ្នកប្រើប្រាស់។ កុំលើកឡើងពាក្យបច្ចេកទេសផ្ទៃក្នុងណាមួយឡើយ។ បើគ្មានទិន្នន័យចាំបាច់ សូមប្រាប់ថាមិនមានព័ត៌មាន។",
-    );
-    setInputSchemaJson(
-      JSON.stringify(
+    reset({
+      templateKey: "financial-assistant-spending",
+      templateName: "ជំនួយការហិរញ្ញវត្ថុ - វិភាគការចំណាយ",
+      description:
+        "វិភាគការចំណាយតាមចំនួនសរុប ប្រភេទចំណាយ ការចំណាយកើតឡើងដដែលៗ និងការប្រែប្រួលពីរយៈពេលមុន។",
+      taskType: "FINANCIAL_ASSISTANT",
+      templateScope: "SPENDING_ANALYSIS",
+      languageCode: "km",
+      templateStatus: "ACTIVE",
+      isDefault: false,
+      modelName: "gemini-2.5-flash",
+      temperature: 0.3,
+      responseMimeType: "application/json",
+      systemPrompt:
+        "You are the iStash Financial Assistant.\n\nFINANCIAL_CONTEXT contains trusted values calculated from the user's own financial records.\n\nRules:\n1. Treat FINANCIAL_CONTEXT as authoritative.\n2. Never modify financial values.\n3. Never recalculate values already supplied.\n4. Never invent transactions.\n5. Never invent categories.\n6. Never invent merchants.\n7. Never invent balances.\n8. Never invent budget or savings values.\n9. Base all personalized claims only on FINANCIAL_CONTEXT.\n10. If required information is missing, clearly state that it is unavailable.\n11. Preserve currency exactly as provided.\n12. Respond using the requested language.\n13. Keep explanations concise, useful, and factual.\n14. Return only the required structured JSON.\n15. Never mention internal implementation details such as Spring, Spring Boot, backend, database, prompt, JSON schema, AI model, language model, or provider. Present the financial facts naturally as the user's own information, never as data supplied by a system.",
+      userPromptTemplate:
+        "សំណួររបស់អ្នកប្រើប្រាស់៖\n{{question}}\n\nភាសាឆ្លើយតប៖ km\n\nFINANCIAL_CONTEXT (ទិន្នន័យហិរញ្ញវត្ថុដែលបានផ្ទៀងផ្ទាត់ និងគណនារបស់អ្នកប្រើប្រាស់)៖\n{{financialContext}}\n\nពន្យល់តែទិន្នន័យខាងលើដោយប្រើភាសាធម្មជាតិ ដូចជាព័ត៌មានផ្ទាល់ខ្លួនរបស់អ្នកប្រើប្រាស់។ កុំលើកឡើងពាក្យបច្ចេកទេសផ្ទៃក្នុងណាមួយឡើយ។ បើគ្មានទិន្នន័យចាំបាច់ សូមប្រាប់ថាមិនមានព័ត៌មាន។",
+      inputSchemaJson: JSON.stringify(
         {
           type: "object",
           required: ["question", "financialContext"],
           properties: {
-            question: {
-              type: "string",
-            },
-            financialContext: {
-              type: "object",
-            },
+            question: { type: "string" },
+            financialContext: { type: "object" },
           },
         },
         null,
         2,
       ),
-    );
-    setOutputSchemaJson(
-      JSON.stringify(
+      outputSchemaJson: JSON.stringify(
         {
           type: "object",
           required: ["summary", "insights", "followUpQuestions"],
           properties: {
-            summary: {
-              type: "string",
-              maxLength: 800,
-            },
+            summary: { type: "string", maxLength: 800 },
             insights: {
               type: "array",
               items: {
                 type: "object",
                 required: ["type", "title", "message", "priority"],
                 properties: {
-                  type: {
-                    type: "string",
-                    maxLength: 40,
-                  },
-                  title: {
-                    type: "string",
-                    maxLength: 120,
-                  },
-                  message: {
-                    type: "string",
-                    maxLength: 400,
-                  },
-                  priority: {
-                    enum: ["LOW", "MEDIUM", "HIGH"],
-                    type: "string",
-                  },
+                  type: { type: "string", maxLength: 40 },
+                  title: { type: "string", maxLength: 120 },
+                  message: { type: "string", maxLength: 400 },
+                  priority: { enum: ["LOW", "MEDIUM", "HIGH"], type: "string" },
                 },
               },
               maxItems: 5,
             },
             followUpQuestions: {
               type: "array",
-              items: {
-                type: "string",
-                maxLength: 150,
-              },
+              items: { type: "string", maxLength: 150 },
               maxItems: 4,
             },
           },
@@ -262,44 +238,36 @@ export function PromptTemplateCreateDialog({
         null,
         2,
       ),
-    );
+    });
     setShowAdvanced(true);
     setErrorMsg(null);
-    setSchemaError(null);
-    setFieldErrors({});
   }
 
   function formatInputSchema() {
-    if (!inputSchemaJson.trim()) return;
+    if (!inputSchemaJson || typeof inputSchemaJson !== "string" || !inputSchemaJson.trim()) return;
     try {
       const parsed = JSON.parse(inputSchemaJson);
-      setInputSchemaJson(JSON.stringify(parsed, null, 2));
-      setSchemaError(null);
+      setValue("inputSchemaJson", JSON.stringify(parsed, null, 2), { shouldValidate: true });
     } catch {
-      setSchemaError(t("Invalid JSON in Input Schema"));
+      // Handled by validation
     }
   }
 
   function formatOutputSchema() {
-    if (!outputSchemaJson.trim()) return;
+    if (!outputSchemaJson || typeof outputSchemaJson !== "string" || !outputSchemaJson.trim()) return;
     try {
       const parsed = JSON.parse(outputSchemaJson);
-      setOutputSchemaJson(JSON.stringify(parsed, null, 2));
-      setSchemaError(null);
+      setValue("outputSchemaJson", JSON.stringify(parsed, null, 2), { shouldValidate: true });
     } catch {
-      setSchemaError(t("Invalid JSON in Output Schema"));
+      // Handled by validation
     }
   }
 
   function insertVariable(variableName: string) {
-    setUserPromptTemplate((prev) => {
-      if (!prev) return variableName;
-      if (prev.includes(variableName)) return prev;
-      return `${prev}\n${variableName}`;
-    });
-    if (fieldErrors.userPromptTemplate) {
-      setFieldErrors((prev) => ({ ...prev, userPromptTemplate: [] }));
-    }
+    const current = userPromptTemplate || "";
+    if (current.includes(variableName)) return;
+    const updated = current ? `${current}\n${variableName}` : variableName;
+    setValue("userPromptTemplate", updated, { shouldValidate: true });
   }
 
   function copyToClipboard(text: string, key: string) {
@@ -308,11 +276,11 @@ export function PromptTemplateCreateDialog({
     setTimeout(() => setCopiedPrompt(null), 1800);
   }
 
-  function validateJsonSyntax(jsonStr: string): {
+  function validateJsonSyntax(jsonStr?: string | unknown): {
     valid: boolean;
     error?: string;
   } {
-    if (!jsonStr.trim()) return { valid: true };
+    if (!jsonStr || typeof jsonStr !== "string" || !jsonStr.trim()) return { valid: true };
     try {
       JSON.parse(jsonStr);
       return { valid: true };
@@ -327,78 +295,54 @@ export function PromptTemplateCreateDialog({
   const inputJsonCheck = validateJsonSyntax(inputSchemaJson);
   const outputJsonCheck = validateJsonSyntax(outputSchemaJson);
   const hasSchemasConfigured = Boolean(
-    inputSchemaJson.trim() || outputSchemaJson.trim(),
+    (typeof inputSchemaJson === "string" && inputSchemaJson.trim()) ||
+    (typeof outputSchemaJson === "string" && outputSchemaJson.trim()),
   );
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function onSubmit(formValues: PromptTemplateFormData) {
     setErrorMsg(null);
-    setSchemaError(null);
-    setFieldErrors({});
 
     let parsedInputSchema: JsonSchema | null = null;
     let parsedOutputSchema: JsonSchema | null = null;
 
-    if (inputSchemaJson.trim()) {
+    if (
+      typeof formValues.inputSchemaJson === "string" &&
+      formValues.inputSchemaJson.trim()
+    ) {
       try {
-        parsedInputSchema = JSON.parse(inputSchemaJson);
+        parsedInputSchema = JSON.parse(formValues.inputSchemaJson);
       } catch {
-        setSchemaError(t("Invalid JSON in Input Schema"));
         return;
       }
+    } else if (typeof formValues.inputSchemaJson === "object" && formValues.inputSchemaJson !== null) {
+      parsedInputSchema = formValues.inputSchemaJson as JsonSchema;
     }
 
-    if (outputSchemaJson.trim()) {
+    if (
+      typeof formValues.outputSchemaJson === "string" &&
+      formValues.outputSchemaJson.trim()
+    ) {
       try {
-        parsedOutputSchema = JSON.parse(outputSchemaJson);
+        parsedOutputSchema = JSON.parse(formValues.outputSchemaJson);
       } catch {
-        setSchemaError(t("Invalid JSON in Output Schema"));
         return;
       }
-    }
-
-    const formValues = {
-      templateKey: templateKey.trim().toLowerCase(),
-      templateName: templateName.trim(),
-      description: description?.trim() || null,
-      taskType,
-      templateScope: templateScope || null,
-      languageCode,
-      templateStatus,
-      isDefault,
-      modelName: modelName?.trim() || null,
-      systemPrompt: systemPrompt.trim(),
-      userPromptTemplate: userPromptTemplate.trim(),
-      temperature,
-      responseMimeType,
-      inputSchemaJson: inputSchemaJson.trim() || undefined,
-      outputSchemaJson: outputSchemaJson.trim() || undefined,
-    };
-
-    const zodResult = promptTemplateSchema.safeParse(formValues);
-
-    if (!zodResult.success) {
-      const flattened = zodResult.error.flatten();
-      setFieldErrors(flattened.fieldErrors as Record<string, string[]>);
-      const firstIssue =
-        zodResult.error.issues[0]?.message ||
-        t("Please correct the form errors.");
-      setErrorMsg(firstIssue);
-      return;
+    } else if (typeof formValues.outputSchemaJson === "object" && formValues.outputSchemaJson !== null) {
+      parsedOutputSchema = formValues.outputSchemaJson as JsonSchema;
     }
 
     const payload = {
-      templateKey: formValues.templateKey,
-      templateName: formValues.templateName,
-      description: formValues.description,
+      templateKey: formValues.templateKey.trim().toLowerCase(),
+      templateName: formValues.templateName.trim(),
+      description: formValues.description?.trim() || null,
       taskType: formValues.taskType,
-      templateScope: formValues.templateScope,
+      templateScope: formValues.templateScope || null,
       languageCode: formValues.languageCode,
       templateStatus: formValues.templateStatus,
       isDefault: formValues.isDefault,
-      modelName: formValues.modelName,
-      systemPrompt: formValues.systemPrompt,
-      userPromptTemplate: formValues.userPromptTemplate,
+      modelName: formValues.modelName?.trim() || null,
+      systemPrompt: formValues.systemPrompt.trim(),
+      userPromptTemplate: formValues.userPromptTemplate.trim(),
       inputSchema: parsedInputSchema,
       outputSchema: parsedOutputSchema,
       generationConfig: {
@@ -467,12 +411,8 @@ export function PromptTemplateCreateDialog({
                 </DialogTitle>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   {isEditing
-                    ? t(
-                        "Update configuration, schemas, or prompt instructions.",
-                      )
-                    : t(
-                        "Register a new system/user prompt template (POST /api/v1/admin/ai/prompt-templates).",
-                      )}
+                    ? t("Update configuration, schemas, or prompt instructions.")
+                    : t("Register a new system/user prompt template with Zod validation.")}
                 </p>
               </div>
             </div>
@@ -490,7 +430,7 @@ export function PromptTemplateCreateDialog({
         </DialogHeader>
 
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           className="flex flex-1 flex-col overflow-hidden"
         >
           <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8 space-y-5">
@@ -498,13 +438,6 @@ export function PromptTemplateCreateDialog({
               <div className="flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 p-3.5 text-xs font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
                 <AlertCircle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
                 <span>{errorMsg}</span>
-              </div>
-            )}
-
-            {schemaError && (
-              <div className="flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
-                <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
-                <span>{schemaError}</span>
               </div>
             )}
 
@@ -534,27 +467,17 @@ export function PromptTemplateCreateDialog({
                   </label>
                   <input
                     type="text"
-                    value={templateName}
-                    onChange={(e) => {
-                      setTemplateName(e.target.value);
-                      if (fieldErrors.templateName) {
-                        setFieldErrors((prev) => ({
-                          ...prev,
-                          templateName: [],
-                        }));
-                      }
-                    }}
+                    {...register("templateName")}
                     placeholder={t("e.g. ជំនួយការហិរញ្ញវត្ថុ - វិភាគការចំណាយ")}
                     className={`h-10 w-full rounded-xl border bg-white px-3.5 text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
-                      fieldErrors.templateName?.length
+                      errors.templateName
                         ? "border-red-400 focus:border-red-500"
                         : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                     }`}
-                    required
                   />
-                  {fieldErrors.templateName?.[0] && (
+                  {errors.templateName?.message && (
                     <p className="text-[11px] font-medium text-red-500">
-                      {fieldErrors.templateName[0]}
+                      {errors.templateName.message}
                     </p>
                   )}
                 </div>
@@ -562,8 +485,7 @@ export function PromptTemplateCreateDialog({
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      {t("Template Key")}{" "}
-                      <span className="text-red-500">*</span>
+                      {t("Template Key")} <span className="text-red-500">*</span>
                     </label>
                     <span className="font-mono text-[10px] text-slate-400">
                       a-z, 0-9, ., _, -
@@ -573,29 +495,21 @@ export function PromptTemplateCreateDialog({
                     type="text"
                     value={templateKey}
                     onChange={(e) => {
-                      setTemplateKey(
-                        e.target.value
-                          .toLowerCase()
-                          .replace(/[^a-z0-9._-]/g, "-"),
-                      );
-                      if (fieldErrors.templateKey) {
-                        setFieldErrors((prev) => ({
-                          ...prev,
-                          templateKey: [],
-                        }));
-                      }
+                      const cleaned = e.target.value
+                        .toLowerCase()
+                        .replace(/[^a-z0-9._-]/g, "-");
+                      setValue("templateKey", cleaned, { shouldValidate: true });
                     }}
                     placeholder="financial-assistant-spending"
                     className={`h-10 w-full rounded-xl border bg-white px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
-                      fieldErrors.templateKey?.length
+                      errors.templateKey
                         ? "border-red-400 focus:border-red-500"
                         : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                     }`}
-                    required
                   />
-                  {fieldErrors.templateKey?.[0] ? (
+                  {errors.templateKey?.message ? (
                     <p className="text-[11px] font-medium text-red-500">
-                      {fieldErrors.templateKey[0]}
+                      {errors.templateKey.message}
                     </p>
                   ) : (
                     <p className="text-[10px] text-slate-400 dark:text-slate-500">
@@ -614,13 +528,15 @@ export function PromptTemplateCreateDialog({
                 </label>
                 <textarea
                   rows={2}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  {...register("description")}
                   placeholder={t(
                     "Brief description of this template's purpose and behavioral guidelines...",
                   )}
                   className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
                 />
+                {errors.description?.message && (
+                  <p className="text-[11px] font-medium text-red-500">{errors.description.message}</p>
+                )}
               </div>
 
               {/* Default Template Checkbox */}
@@ -628,7 +544,7 @@ export function PromptTemplateCreateDialog({
                 <input
                   type="checkbox"
                   checked={isDefault}
-                  onChange={(e) => setIsDefault(e.target.checked)}
+                  onChange={(e) => setValue("isDefault", e.target.checked, { shouldValidate: true })}
                   className="h-4 w-4 rounded border-slate-300 text-[#003377] focus:ring-[#003377] dark:border-slate-700 dark:bg-slate-800"
                 />
                 <span className="font-semibold">
@@ -651,7 +567,7 @@ export function PromptTemplateCreateDialog({
                   </label>
                   <Select
                     value={taskType}
-                    onValueChange={(val) => setTaskType(val as TaskType)}
+                    onValueChange={(val) => setValue("taskType", val as TaskType, { shouldValidate: true })}
                   >
                     <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
                       <SelectValue />
@@ -671,6 +587,9 @@ export function PromptTemplateCreateDialog({
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.taskType?.message && (
+                    <p className="text-[11px] font-medium text-red-500">{errors.taskType.message}</p>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
@@ -678,9 +597,9 @@ export function PromptTemplateCreateDialog({
                     {t("Scope")}
                   </label>
                   <Select
-                    value={templateScope}
+                    value={templateScope ?? "GENERAL_CONVERSATION"}
                     onValueChange={(val) =>
-                      setTemplateScope(val as TemplateScope)
+                      setValue("templateScope", val as TemplateScope, { shouldValidate: true })
                     }
                   >
                     <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
@@ -710,6 +629,9 @@ export function PromptTemplateCreateDialog({
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.templateScope?.message && (
+                    <p className="text-[11px] font-medium text-red-500">{errors.templateScope.message}</p>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
@@ -719,7 +641,7 @@ export function PromptTemplateCreateDialog({
                   <Select
                     value={languageCode}
                     onValueChange={(val) =>
-                      setLanguageCode(val as LanguageCode)
+                      setValue("languageCode", val as LanguageCode, { shouldValidate: true })
                     }
                   >
                     <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 dark:data-[state=open]:border-[#FFC83D]">
@@ -740,6 +662,9 @@ export function PromptTemplateCreateDialog({
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.languageCode?.message && (
+                    <p className="text-[11px] font-medium text-red-500">{errors.languageCode.message}</p>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
@@ -749,7 +674,7 @@ export function PromptTemplateCreateDialog({
                   <Select
                     value={templateStatus}
                     onValueChange={(val) =>
-                      setTemplateStatus(val as PromptTemplateStatus)
+                      setValue("templateStatus", val as PromptTemplateStatus, { shouldValidate: true })
                     }
                   >
                     <SelectTrigger className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-[#003377] hover:bg-[#003377]/5 hover:text-[#003377] hover:[&>svg]:text-[#003377] active:scale-95 focus:bg-white focus:border-[#003377] focus:ring-4 focus:ring-[#003377]/10 data-[state=open]:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:hover:bg-[#FFC83D]/10 dark:hover:text-[#FFC83D] dark:hover:[&>svg]:text-[#FFC83D] dark:focus:bg-slate-950 dark:focus:border-[#FFC83D] dark:focus:ring-4 dark:focus:ring-[#FFC83D]/15 data-[state=open]:border-[#FFC83D]">
@@ -776,6 +701,9 @@ export function PromptTemplateCreateDialog({
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.templateStatus?.message && (
+                    <p className="text-[11px] font-medium text-red-500">{errors.templateStatus.message}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -795,8 +723,7 @@ export function PromptTemplateCreateDialog({
                   </label>
                   <input
                     type="text"
-                    value={modelName}
-                    onChange={(e) => setModelName(e.target.value)}
+                    {...register("modelName")}
                     placeholder="gemini-2.5-flash"
                     className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
                   />
@@ -805,7 +732,7 @@ export function PromptTemplateCreateDialog({
                       <button
                         key={preset}
                         type="button"
-                        onClick={() => setModelName(preset)}
+                        onClick={() => setValue("modelName", preset, { shouldValidate: true })}
                         className={`rounded-lg px-2 py-0.5 font-mono text-[10px] transition ${
                           modelName === preset
                             ? "bg-[#003377] text-white font-bold dark:bg-[#FFC83D] dark:text-[#003377]"
@@ -816,6 +743,9 @@ export function PromptTemplateCreateDialog({
                       </button>
                     ))}
                   </div>
+                  {errors.modelName?.message && (
+                    <p className="text-[11px] font-medium text-red-500">{errors.modelName.message}</p>
+                  )}
                 </div>
 
                 {/* Temperature Slider & Input */}
@@ -840,7 +770,9 @@ export function PromptTemplateCreateDialog({
                       max={2}
                       step={0.1}
                       value={temperature}
-                      onChange={(e) => setTemperature(Number(e.target.value))}
+                      onChange={(e) =>
+                        setValue("temperature", Number(e.target.value), { shouldValidate: true })
+                      }
                       className="h-2 w-full cursor-pointer accent-[#003377] dark:accent-[#FFC83D]"
                     />
                     <input
@@ -850,13 +782,18 @@ export function PromptTemplateCreateDialog({
                       step={0.1}
                       value={temperature}
                       onChange={(e) =>
-                        setTemperature(
+                        setValue(
+                          "temperature",
                           Math.max(0, Math.min(2, Number(e.target.value))),
+                          { shouldValidate: true },
                         )
                       }
                       className="h-9 w-16 rounded-xl border border-slate-200 bg-white px-2 text-center font-mono text-xs text-slate-800 shadow-sm focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-[#FFC83D]"
                     />
                   </div>
+                  {errors.temperature?.message && (
+                    <p className="text-[11px] font-medium text-red-500">{errors.temperature.message}</p>
+                  )}
                 </div>
 
                 {/* Response MIME Type */}
@@ -866,8 +803,7 @@ export function PromptTemplateCreateDialog({
                   </label>
                   <input
                     type="text"
-                    value={responseMimeType}
-                    onChange={(e) => setResponseMimeType(e.target.value)}
+                    {...register("responseMimeType")}
                     placeholder="application/json"
                     className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 font-mono text-xs text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
                   />
@@ -876,7 +812,7 @@ export function PromptTemplateCreateDialog({
                       <button
                         key={mime}
                         type="button"
-                        onClick={() => setResponseMimeType(mime)}
+                        onClick={() => setValue("responseMimeType", mime, { shouldValidate: true })}
                         className={`rounded-lg px-2 py-0.5 font-mono text-[10px] transition ${
                           responseMimeType === mime
                             ? "bg-[#003377] text-white font-bold dark:bg-[#FFC83D] dark:text-[#003377]"
@@ -887,6 +823,9 @@ export function PromptTemplateCreateDialog({
                       </button>
                     ))}
                   </div>
+                  {errors.responseMimeType?.message && (
+                    <p className="text-[11px] font-medium text-red-500">{errors.responseMimeType.message}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -933,26 +872,19 @@ export function PromptTemplateCreateDialog({
                 </p>
                 <textarea
                   rows={6}
-                  value={systemPrompt}
-                  onChange={(e) => {
-                    setSystemPrompt(e.target.value);
-                    if (fieldErrors.systemPrompt) {
-                      setFieldErrors((prev) => ({ ...prev, systemPrompt: [] }));
-                    }
-                  }}
+                  {...register("systemPrompt")}
                   placeholder={t(
                     "You are the iStash Financial Assistant...\n\nRules:\n1. Treat FINANCIAL_CONTEXT as authoritative.",
                   )}
                   className={`w-full rounded-xl border bg-white p-3.5 font-mono text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
-                    fieldErrors.systemPrompt?.length
+                    errors.systemPrompt
                       ? "border-red-400 focus:border-red-500"
                       : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                   }`}
-                  required
                 />
-                {fieldErrors.systemPrompt?.[0] && (
+                {errors.systemPrompt?.message && (
                   <p className="text-[11px] font-medium text-red-500">
-                    {fieldErrors.systemPrompt[0]}
+                    {errors.systemPrompt.message}
                   </p>
                 )}
               </div>
@@ -1008,27 +940,17 @@ export function PromptTemplateCreateDialog({
 
                 <textarea
                   rows={5}
-                  value={userPromptTemplate}
-                  onChange={(e) => {
-                    setUserPromptTemplate(e.target.value);
-                    if (fieldErrors.userPromptTemplate) {
-                      setFieldErrors((prev) => ({
-                        ...prev,
-                        userPromptTemplate: [],
-                      }));
-                    }
-                  }}
+                  {...register("userPromptTemplate")}
                   placeholder="សំណួររបស់អ្នកប្រើប្រាស់៖\n{{question}}\n\nFINANCIAL_CONTEXT:\n{{financialContext}}"
                   className={`w-full rounded-xl border bg-white p-3.5 font-mono text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
-                    fieldErrors.userPromptTemplate?.length
+                    errors.userPromptTemplate
                       ? "border-red-400 focus:border-red-500"
                       : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                   }`}
-                  required
                 />
-                {fieldErrors.userPromptTemplate?.[0] && (
+                {errors.userPromptTemplate?.message && (
                   <p className="text-[11px] font-medium text-red-500">
-                    {fieldErrors.userPromptTemplate[0]}
+                    {errors.userPromptTemplate.message}
                   </p>
                 )}
               </div>
@@ -1076,7 +998,7 @@ export function PromptTemplateCreateDialog({
                         {t("Input Schema (JSON)")}
                       </label>
                       <div className="flex items-center gap-2">
-                        {inputSchemaJson.trim() && (
+                        {typeof inputSchemaJson === "string" && inputSchemaJson.trim() && (
                           <span
                             className={`inline-flex items-center gap-1 text-[10px] font-semibold ${
                               inputJsonCheck.valid
@@ -1094,7 +1016,7 @@ export function PromptTemplateCreateDialog({
                               : t("Invalid Syntax")}
                           </span>
                         )}
-                        {inputSchemaJson.trim() && (
+                        {typeof inputSchemaJson === "string" && inputSchemaJson.trim() && (
                           <button
                             type="button"
                             onClick={formatInputSchema}
@@ -1109,19 +1031,20 @@ export function PromptTemplateCreateDialog({
                     </div>
                     <textarea
                       rows={8}
-                      value={inputSchemaJson}
-                      onChange={(e) => {
-                        setInputSchemaJson(e.target.value);
-                        setSchemaError(null);
-                      }}
+                      {...register("inputSchemaJson")}
                       placeholder='{\n  "type": "object",\n  "required": ["question", "financialContext"],\n  "properties": {\n    "question": { "type": "string" },\n    "financialContext": { "type": "object" }\n  }\n}'
                       className={`w-full rounded-xl border bg-white p-3 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-950 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
-                        !inputJsonCheck.valid && inputSchemaJson.trim()
+                        errors.inputSchemaJson || (!inputJsonCheck.valid && inputSchemaJson.trim())
                           ? "border-amber-400 focus:border-amber-500"
                           : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                       }`}
                     />
-                    {!inputJsonCheck.valid && inputSchemaJson.trim() && (
+                    {errors.inputSchemaJson?.message && (
+                      <p className="text-[10px] text-amber-600 dark:text-amber-400 font-mono">
+                        {errors.inputSchemaJson.message}
+                      </p>
+                    )}
+                    {!inputJsonCheck.valid && typeof inputSchemaJson === "string" && inputSchemaJson.trim() && !errors.inputSchemaJson && (
                       <p className="text-[10px] text-amber-600 dark:text-amber-400 font-mono">
                         {inputJsonCheck.error}
                       </p>
@@ -1135,7 +1058,7 @@ export function PromptTemplateCreateDialog({
                         {t("Output Schema (JSON)")}
                       </label>
                       <div className="flex items-center gap-2">
-                        {outputSchemaJson.trim() && (
+                        {typeof outputSchemaJson === "string" && outputSchemaJson.trim() && (
                           <span
                             className={`inline-flex items-center gap-1 text-[10px] font-semibold ${
                               outputJsonCheck.valid
@@ -1153,7 +1076,7 @@ export function PromptTemplateCreateDialog({
                               : t("Invalid Syntax")}
                           </span>
                         )}
-                        {outputSchemaJson.trim() && (
+                        {typeof outputSchemaJson === "string" && outputSchemaJson.trim() && (
                           <button
                             type="button"
                             onClick={formatOutputSchema}
@@ -1168,19 +1091,20 @@ export function PromptTemplateCreateDialog({
                     </div>
                     <textarea
                       rows={8}
-                      value={outputSchemaJson}
-                      onChange={(e) => {
-                        setOutputSchemaJson(e.target.value);
-                        setSchemaError(null);
-                      }}
+                      {...register("outputSchemaJson")}
                       placeholder='{\n  "type": "object",\n  "required": ["summary", "insights"],\n  "properties": {\n    "summary": { "type": "string" },\n    "insights": { "type": "array" }\n  }\n}'
                       className={`w-full rounded-xl border bg-white p-3 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-950 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
-                        !outputJsonCheck.valid && outputSchemaJson.trim()
+                        errors.outputSchemaJson || (!outputJsonCheck.valid && outputSchemaJson.trim())
                           ? "border-amber-400 focus:border-amber-500"
                           : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
                       }`}
                     />
-                    {!outputJsonCheck.valid && outputSchemaJson.trim() && (
+                    {errors.outputSchemaJson?.message && (
+                      <p className="text-[10px] text-amber-600 dark:text-amber-400 font-mono">
+                        {errors.outputSchemaJson.message}
+                      </p>
+                    )}
+                    {!outputJsonCheck.valid && typeof outputSchemaJson === "string" && outputSchemaJson.trim() && !errors.outputSchemaJson && (
                       <p className="text-[10px] text-amber-600 dark:text-amber-400 font-mono">
                         {outputJsonCheck.error}
                       </p>

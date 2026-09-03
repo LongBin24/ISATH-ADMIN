@@ -3,18 +3,19 @@ export type PromptTemplateStatus = "ACTIVE" | "INACTIVE" | "ARCHIVED" | "DRAFT";
 export type TaskType =
   | "CATEGORY_PREDICTION"
   | "FINANCIAL_ASSISTANT"
-  | (string & {});
+  | "SAVINGS_GOAL_ANALYSIS"
+  | "BUDGET_ADVICE";
 
 export type TemplateScope =
   | "GENERAL_CONVERSATION"
   | "SAVINGS_ANALYSIS"
   | "SPENDING_ANALYSIS"
   | "INCOME_ANALYSIS"
+  | "BUDGET_ANALYSIS"
   | "GENERAL_QUESTION"
-  | "MONTHLY_SUMMARY"
-  | (string & {});
+  | "MONTHLY_SUMMARY";
 
-export type LanguageCode = "en" | "km" | (string & {});
+export type LanguageCode = "en" | "km";
 
 export interface GenerationConfig {
   temperature?: number;
@@ -108,9 +109,9 @@ export interface PromptTemplateQueryParams {
   templateKey?: string;
   templateName?: string;
   name?: string;
-  taskType?: TaskType;
-  templateScope?: TemplateScope;
-  languageCode?: LanguageCode;
+  taskType?: TaskType | string;
+  templateScope?: TemplateScope | string;
+  languageCode?: LanguageCode | string;
   templateStatus?: PromptTemplateStatus | string;
   status?: PromptTemplateStatus | string;
   isDefault?: boolean;
