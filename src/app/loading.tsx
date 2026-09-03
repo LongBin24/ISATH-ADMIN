@@ -106,7 +106,7 @@ export function AppLoading({ complete, onComplete }: AppLoadingProps) {
             <span className="min-w-[3ch] text-right text-6xl font-black tabular-nums tracking-[-0.06em] sm:text-7xl">
               {progress}
             </span>
-            <span className="ml-1 text-xl font-black text-[#FFC83D] sm:text-2xl">
+            <span className="text-6xl font-black tabular-nums tracking-[-0.06em] sm:text-7xl">
               %
             </span>
           </div>

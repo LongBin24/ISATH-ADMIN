@@ -58,7 +58,7 @@ data, and make better decisions**.
 ## Live Application
 
 🔗 **Admin Portal:**  
-[Open iStash Admin](https://isath-admin.vercel.app/)
+[Open iStash Admin](https://admin.istashkh.com/)
 
 > Access may require administrator authentication through the
 > configured identity provider.
@@ -233,7 +233,7 @@ modern **Fintech / Enterprise SaaS** experience.
 
 <p align="center">
   <img
-    src="./public/readme/dashboard.png"
+    src="./public/dashbord.png"
     alt="iStash Admin Dashboard"
     width="100%"
   />
@@ -246,7 +246,7 @@ users, alerts, reviews, notifications, and overall system health.
 
 <p align="center">
   <img
-    src="./public/readme/user-management.png"
+    src="./public/usermanager.png"
     alt="iStash User Management"
     width="100%"
   />
@@ -256,7 +256,7 @@ users, alerts, reviews, notifications, and overall system health.
 
 <p align="center">
   <img
-    src="./public/readme/ai-config.png"
+    src="./public/aiconfiguration.png"
     alt="iStash AI Configuration"
     width="100%"
   />
@@ -266,7 +266,7 @@ users, alerts, reviews, notifications, and overall system health.
 
 <p align="center">
   <img
-    src="./public/readme/currencies.png"
+    src="./public/Currency_Management.png"
     alt="iStash Currency Management"
     width="100%"
   />
@@ -279,24 +279,24 @@ users, alerts, reviews, notifications, and overall system health.
 
 # Tech Stack
 
-| Category | Technology |
-|---|---|
-| Framework | Next.js 16 |
-| Frontend | React 19 |
-| Language | TypeScript |
-| Styling | Tailwind CSS 4 |
-| State Management | Redux Toolkit |
-| API Client | Axios |
-| Authentication | Better Auth + Keycloak |
-| Validation | Zod |
-| Forms | React Hook Form |
-| Charts | Recharts |
-| Animation | Framer Motion |
-| Icons | Lucide React + Iconify |
-| Notifications | Sonner + React Hot Toast |
-| Theme | next-themes |
-| Date Utilities | date-fns |
-| Code Quality | ESLint |
+| Category         | Technology               |
+| ---------------- | ------------------------ |
+| Framework        | Next.js 16               |
+| Frontend         | React 19                 |
+| Language         | TypeScript               |
+| Styling          | Tailwind CSS 4           |
+| State Management | Redux Toolkit            |
+| API Client       | Axios                    |
+| Authentication   | Better Auth + Keycloak   |
+| Validation       | Zod                      |
+| Forms            | React Hook Form          |
+| Charts           | Recharts                 |
+| Animation        | Framer Motion            |
+| Icons            | Lucide React + Iconify   |
+| Notifications    | Sonner + React Hot Toast |
+| Theme            | next-themes              |
+| Date Utilities   | date-fns                 |
+| Code Quality     | ESLint                   |
 
 ---
 
@@ -412,331 +412,4 @@ iStash Admin uses a **feature-based architecture** with the
 ├── package.json                 # Dependencies and scripts
 ├── tsconfig.json                # TypeScript configuration
 └── README.md
-
-Getting Started (Developers)
-Prerequisites
-Node.js
-npm
-Git
-
-Check your installed versions:
-
-node --version
-npm --version
-git --version
-
-Installation
-1. Clone the repository
-git clone <repository-url>
-cd istash
-2. Install dependencies
-npm install
-3. Configure environment variables
-
-Create a local environment file:
-
-cp .env.example .env.local
-
-Configure the required variables.
-
-4. Start the development server
-npm run dev
-
-Open:
-
-http://localhost:3000
-Environment Variables
-
-Create a .env.local file with the following configuration.
-
-Never commit real credentials, API keys, OAuth secrets, or
-authentication secrets to GitHub.
-
-Variable	Description
-NEXT_PUBLIC_API_URL	Frontend API base path
-BACKEND_URL	Backend API URL
-NEXT_PUBLIC_KEYCLOAK_ISSUER	Keycloak realm issuer
-KEYCLOAK_CLIENT_ID	Keycloak client ID
-KEYCLOAK_CLIENT_SECRET	Keycloak client secret
-KEYCLOAK_FRONTEND_CALLBACK_URL	Authentication callback URL
-BETTER_AUTH_URL	Better Auth application URL
-NEXT_PUBLIC_BETTER_AUTH_URL	Public Better Auth URL
-BETTER_AUTH_SECRET	Better Auth session secret
-GOOGLE_CLIENT_ID	Google OAuth client ID
-GOOGLE_CLIENT_SECRET	Google OAuth client secret
-FACEBOOK_CLIENT_ID	Facebook OAuth client ID
-FACEBOOK_CLIENT_SECRET	Facebook OAuth client secret
-KEYCLOAK_GOOGLE_IDP_ALIAS	Keycloak Google provider alias
-KEYCLOAK_FACEBOOK_IDP_ALIAS	Keycloak Facebook provider alias
-
-Example:
-
-NEXT_PUBLIC_API_URL=/api
-BACKEND_URL=<backend-api-url>
-
-NEXT_PUBLIC_KEYCLOAK_ISSUER=<keycloak-issuer>
-
-KEYCLOAK_CLIENT_ID=<client-id>
-KEYCLOAK_CLIENT_SECRET=<client-secret>
-
-KEYCLOAK_FRONTEND_CALLBACK_URL=<callback-url>
-
-BETTER_AUTH_URL=<application-url>
-NEXT_PUBLIC_BETTER_AUTH_URL=<application-url>
-
-BETTER_AUTH_SECRET=<secret>
-
-GOOGLE_CLIENT_ID=<google-client-id>
-GOOGLE_CLIENT_SECRET=<google-client-secret>
-
-FACEBOOK_CLIENT_ID=<facebook-client-id>
-FACEBOOK_CLIENT_SECRET=<facebook-client-secret>
-
-KEYCLOAK_GOOGLE_IDP_ALIAS=google
-KEYCLOAK_FACEBOOK_IDP_ALIAS=facebook
-Available Scripts
-# Development
-npm run dev
-
-# Production build
-npm run build
-
-# Start production server
-npm run start
-
-# Run ESLint
-npm run lint
-
-# Clean Next.js cache
-npm run clean
-Command	Description
-npm run dev	Start development server
-npm run build	Create production build
-npm run start	Start production server
-npm run lint	Run ESLint
-npm run clean	Remove .next cache
-Authentication
-
-iStash Admin uses a centralized authentication architecture.
-
-                         User
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │ iStash Admin │
-                    └──────┬───────┘
-                           │
-                           ▼
-                     ┌───────────┐
-                     │ Keycloak  │
-                     └─────┬─────┘
-                           │
-              ┌────────────┼────────────┐
-              ▼            ▼            ▼
-           Google       Facebook     Keycloak
-              │            │            │
-              └────────────┼────────────┘
-                           │
-                           ▼
-                       OIDC / OAuth
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │ Better Auth │
-                    └──────┬──────┘
-                           │
-                           ▼
-                    Secure Session
-                           │
-                           ▼
-                  Protected Dashboard
-API Architecture
-
-The frontend communicates with backend services through a structured
-API layer.
-
-UI Components
-      │
-      ▼
-Feature Modules
-      │
-      ▼
-API Layer
-      │
-      ▼
-Axios
-      │
-      ▼
-Next.js API Routes
-      │
-      ▼
-Backend API
-
-This approach keeps UI components separated from backend
-implementation details.
-
-Design System
-
-iStash Admin follows a modern Fintech / Enterprise SaaS design
-language.
-
-Visual Direction
-Clean
-Minimal
-Professional
-Data-focused
-Responsive
-Accessible
-Modern
-Enterprise-ready
-Brand Colors
-Role	Color
-Primary	#FFC83D
-Secondary	#003377
-Background	#F8F9FA
-Design Philosophy
-
-Trust + Intelligence + Financial Precision
-
-Security
-
-Security is a fundamental part of iStash Admin.
-
-Security practices
-Protected administrative routes
-Keycloak-based identity management
-Better Auth session management
-OAuth / OIDC authentication
-Input validation
-Server-side authorization
-Environment-based secrets
-No credentials stored in source code
-
-Important: If a real secret has ever been exposed in a public
-repository, revoke and regenerate it immediately.
-
-Troubleshooting
-Authentication problems
-
-Check:
-
-Keycloak issuer URL
-Client ID
-Client secret
-Redirect / callback URL
-Better Auth configuration
-Identity provider configuration
-API errors
-
-Check:
-
-BACKEND_URL
-API availability
-Authentication token
-Backend response
-Network connection
-Build errors
-
-Try:
-
-npm run clean
-npm install
-npm run build
-Lint errors
-
-Run:
-
-npm run lint
-
-and fix the reported ESLint issues.
-
-Development Workflow
-
-The project uses a feature-based Git workflow.
-
-develop
-   │
-   ├── feature/dashboard
-   ├── feature/user-management
-   ├── feature/notification
-   ├── feature/currency
-   └── feature/ai-config
-
-Create a feature branch:
-
-git switch develop
-git pull origin develop
-git switch -c feature/<feature-name>
-
-Commit changes:
-
-git add .
-git commit -m "feat: add <feature-name>"
-
-Push your branch:
-
-git push origin feature/<feature-name>
-
-Then create a Pull Request targeting develop.
-
-Roadmap
- Advanced analytics
- AI-powered financial insights
- Advanced role and permission management
- Real-time system monitoring
- Advanced notification automation
- Expanded financial reporting
- Additional localization
- Automated testing
- Performance monitoring
- System health monitoring
-Contributing
-
-Contributions are welcome.
-
-Fork the repository
-Create a feature branch
-Make your changes
-Run lint and build checks
-Commit your changes
-Push your branch
-Open a Pull Request
-
-Please follow the existing project architecture and coding conventions.
-
-Project Information
-	
-Project	iStash Admin
-Type	Financial Administration Platform
-Framework	Next.js
-Language	TypeScript
-Architecture	Feature-Based Architecture
-Authentication	Keycloak + Better Auth
-UI	React + Tailwind CSS
-State	Redux Toolkit
-Status	Private Project
-License
-
-This project is currently private and intended for authorized
-development and administration purposes.
-
-<p align="center"> <img src="./public/istash-logo.png" alt="iStash Logo" width="100" /> </p> <h3 align="center">iStash Admin</h3> <p align="center"> <strong>Manage Better. Understand Faster. Decide Smarter.</strong> </p> <p align="center"> Built with Next.js · TypeScript · Tailwind CSS · Redux Toolkit · Keycloak </p> <p align="center"> © iStash. All rights reserved. </p> ```
-Recommended GitHub layout
-
-To make it look close to the FluxiBiz README you showed, I recommend adding these files:
-
-istash/
-│
-├── public/
-│   ├── istash-logo.png
-│   │
-│   └── readme/
-│       ├── dashboard.png
-│       ├── user-management.png
-│       ├── ai-config.png
-│       └── currencies.png
-│
-├── src/
-├── .env.example
-├── package.json
-└── README.md
+```
