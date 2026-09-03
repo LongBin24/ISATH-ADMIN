@@ -13,12 +13,21 @@ import {
   PaginationPrevious,
   PaginationSummary,
 } from "@/components/ui/pagination";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useGetAdminPromptTemplatesQuery } from "../api";
 import type { PromptTemplateItem, PromptTemplateQueryParams } from "../types";
 
 import { PromptTemplateStats } from "./PromptTemplateStats";
-import { PromptTemplateFilters, type PromptTemplateFilterValues } from "./PromptTemplateFilters";
+import {
+  PromptTemplateFilters,
+  type PromptTemplateFilterValues,
+} from "./PromptTemplateFilters";
 import { PromptTemplateTable } from "./PromptTemplateTable";
 import { PromptTemplateDetailsDialog } from "./PromptTemplateDetailsDialog";
 import { PromptTemplateTestDialog } from "./PromptTemplateTestDialog";
@@ -37,15 +46,18 @@ export function PromptTemplateManager() {
 
   const [pageNumber, setPageNumber] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  const [filters, setFilters] = useState<PromptTemplateFilterValues>(defaultFilters);
+  const [filters, setFilters] =
+    useState<PromptTemplateFilterValues>(defaultFilters);
 
   // Dialog state
-  const [selectedTemplate, setSelectedTemplate] = useState<PromptTemplateItem | null>(null);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<PromptTemplateItem | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
-  const [templateToEdit, setTemplateToEdit] = useState<PromptTemplateItem | null>(null);
+  const [templateToEdit, setTemplateToEdit] =
+    useState<PromptTemplateItem | null>(null);
 
   // Build query params
   const queryParams = useMemo<PromptTemplateQueryParams>(() => {
@@ -58,8 +70,10 @@ export function PromptTemplateManager() {
 
     if (filters.search) params.search = filters.search;
     if (filters.taskType !== "ALL") params.taskType = filters.taskType;
-    if (filters.templateScope !== "ALL") params.templateScope = filters.templateScope;
-    if (filters.templateStatus !== "ALL") params.templateStatus = filters.templateStatus;
+    if (filters.templateScope !== "ALL")
+      params.templateScope = filters.templateScope;
+    if (filters.templateStatus !== "ALL")
+      params.templateStatus = filters.templateStatus;
 
     return params;
   }, [filters, pageNumber, pageSize]);
@@ -71,14 +85,17 @@ export function PromptTemplateManager() {
     refetch,
   } = useGetAdminPromptTemplatesQuery(queryParams);
 
-  const rawTemplates = useMemo(() => pageData?.content || [], [pageData?.content]);
+  const rawTemplates = useMemo(
+    () => pageData?.content || [],
+    [pageData?.content],
+  );
 
   // Check if any filters are active
   const hasActiveFilters = Boolean(
     (filters.search && filters.search.trim() !== "") ||
-      filters.taskType !== "ALL" ||
-      filters.templateScope !== "ALL" ||
-      filters.templateStatus !== "ALL"
+    filters.taskType !== "ALL" ||
+    filters.templateScope !== "ALL" ||
+    filters.templateStatus !== "ALL",
   );
 
   // Client-side filtering ensures filters always work immediately and reliably
@@ -93,7 +110,11 @@ export function PromptTemplateManager() {
         const key = (item.templateKey || "").toLowerCase();
         const desc = (item.description || "").toLowerCase();
         const sys = (item.systemPrompt || "").toLowerCase();
-        const usr = (item.userPromptTemplate || item.template || "").toLowerCase();
+        const usr = (
+          item.userPromptTemplate ||
+          item.template ||
+          ""
+        ).toLowerCase();
         const model = (item.modelName || "").toLowerCase();
 
         const match =
@@ -128,7 +149,9 @@ export function PromptTemplateManager() {
   }, [rawTemplates, filters, hasActiveFilters]);
 
   const templates = hasActiveFilters ? filteredTemplates : rawTemplates;
-  const totalElements = hasActiveFilters ? filteredTemplates.length : (pageData?.totalElements ?? rawTemplates.length);
+  const totalElements = hasActiveFilters
+    ? filteredTemplates.length
+    : (pageData?.totalElements ?? rawTemplates.length);
   const totalPages = Math.max(1, Math.ceil(totalElements / pageSize));
   const safePageNumber = Math.min(pageNumber, Math.max(0, totalPages - 1));
 
@@ -137,21 +160,37 @@ export function PromptTemplateManager() {
 
   const pageNumbers = useMemo(() => {
     const start = Math.max(0, Math.min(safePageNumber - 2, totalPages - 5));
-    return Array.from({ length: Math.min(5, totalPages) }, (_, index) => start + index);
+    return Array.from(
+      { length: Math.min(5, totalPages) },
+      (_, index) => start + index,
+    );
   }, [safePageNumber, totalPages]);
 
   // Slice templates for current page navigation
   const paginatedTemplates = useMemo(() => {
-    if (!hasActiveFilters && pageData && typeof pageData.totalPages === "number" && pageData.totalPages > 1 && rawTemplates.length <= pageSize) {
+    if (
+      !hasActiveFilters &&
+      pageData &&
+      typeof pageData.totalPages === "number" &&
+      pageData.totalPages > 1 &&
+      rawTemplates.length <= pageSize
+    ) {
       return rawTemplates;
     }
     const start = safePageNumber * pageSize;
     return templates.slice(start, start + pageSize);
-  }, [templates, safePageNumber, pageSize, hasActiveFilters, pageData, rawTemplates]);
+  }, [
+    templates,
+    safePageNumber,
+    pageSize,
+    hasActiveFilters,
+    pageData,
+    rawTemplates,
+  ]);
 
   function handleFilterChange<K extends keyof PromptTemplateFilterValues>(
     key: K,
-    val: PromptTemplateFilterValues[K]
+    val: PromptTemplateFilterValues[K],
   ) {
     setFilters((prev) => ({ ...prev, [key]: val }));
     setPageNumber(0);
@@ -196,7 +235,9 @@ export function PromptTemplateManager() {
             {t("Prompt Templates")}
           </h1>
           <p className="page-subtitle mt-1 text-[18px] leading-relaxed text-slate-500 dark:text-slate-400">
-            {t("Configure and test structured prompt templates, variables, and model generation parameters.")}
+            {t(
+              "Configure and test structured prompt templates, variables, and model generation parameters.",
+            )}
           </p>
         </div>
 
@@ -207,7 +248,9 @@ export function PromptTemplateManager() {
             disabled={isFetching}
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-semibold text-[#003377] shadow-sm transition-all duration-150 hover:bg-slate-50 hover:border-[#003377] hover:text-[#003377] active:scale-95 active:bg-[#FFC83D]/20 active:text-[#003377] active:border-[#FFC83D] disabled:opacity-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`}
+            />
             {t("Refresh")}
           </button>
 
@@ -304,7 +347,9 @@ export function PromptTemplateManager() {
                     <PaginationItem>
                       <PaginationNext
                         disabled={safePageNumber >= totalPages - 1}
-                        onClick={() => setPageNumber((p) => Math.min(totalPages - 1, p + 1))}
+                        onClick={() =>
+                          setPageNumber((p) => Math.min(totalPages - 1, p + 1))
+                        }
                       />
                     </PaginationItem>
                   </PaginationContent>

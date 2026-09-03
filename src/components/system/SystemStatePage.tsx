@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, FileQuestion, House, RefreshCw, WifiOff } from "lucide-react";
+import {
+  ArrowLeft,
+  FileQuestion,
+  House,
+  RefreshCw,
+  WifiOff,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAdminI18n } from "@/i18n/admin-i18n";
@@ -12,7 +18,10 @@ type SystemStatePageProps = {
   onRetry?: () => void;
 };
 
-export default function SystemStatePage({ kind, onRetry }: SystemStatePageProps) {
+export default function SystemStatePage({
+  kind,
+  onRetry,
+}: SystemStatePageProps) {
   const router = useRouter();
   const { t } = useAdminI18n();
   const notFound = kind === "not-found";
@@ -48,8 +57,12 @@ export default function SystemStatePage({ kind, onRetry }: SystemStatePageProps)
           </h1>
           <p className="mt-4 max-w-md text-base leading-7 text-muted-foreground">
             {notFound
-              ? t("The page may have moved, been removed, or the address may be incorrect.")
-              : t("Check your internet connection, then try loading this page again.")}
+              ? t(
+                  "The page may have moved, been removed, or the address may be incorrect.",
+                )
+              : t(
+                  "Check your internet connection, then try loading this page again.",
+                )}
           </p>
 
           <div className="mt-8 flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row">

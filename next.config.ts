@@ -30,14 +30,7 @@ const nextConfig: NextConfig = {
       "@reduxjs/toolkit",
     ],
   },
-  async rewrites() {
-    return [
-      {
-        source: "/api/v1/:path*",
-        destination: `${backendApiUrl}/v1/:path*`,
-      },
-    ];
-  },
+
 };
 
 export default nextConfig;
