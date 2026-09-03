@@ -4,7 +4,7 @@ import { API_TAGS } from "./tags";
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || "/api/v1",
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || "/api",
 
     prepareHeaders: (headers) => {
       let token: string | undefined | null;

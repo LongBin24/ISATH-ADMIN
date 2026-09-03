@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "/api",
 });
 
 axiosInstance.interceptors.request.use(
@@ -23,7 +23,7 @@ axiosInstance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 axiosInstance.interceptors.response.use(
@@ -38,11 +38,12 @@ axiosInstance.interceptors.response.use(
     } else if (status === 500) {
       toast.error("មានបញ្ហាបច្ចេកទេសនៅខាង Server");
     } else {
-      const message = error.response?.data?.message || "មានបញ្ហាអ្វីមួយបានកើតឡើង!";
+      const message =
+        error.response?.data?.message || "មានបញ្ហាអ្វីមួយបានកើតឡើង!";
       toast.error(message);
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;
