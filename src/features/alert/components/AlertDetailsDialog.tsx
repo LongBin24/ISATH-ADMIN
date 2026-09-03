@@ -107,9 +107,9 @@ export function AlertDetailsDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
         onClose={onClose}
-        className="max-h-[90vh] overflow-hidden rounded-3xl border-0 p-0 font-google-sans sm:max-w-[700px]"
+        className="flex max-h-[88vh] flex-col overflow-hidden rounded-3xl border-0 p-0 font-google-sans sm:max-w-[700px]"
       >
-        <DialogHeader className="relative mb-0 border-b border-[#FFC83D]/40 bg-gradient-to-br from-[#FFF8E1] via-white to-[#FFC83D]/20 px-6 py-5 pr-14 text-left dark:border-[#FFC83D]/20 dark:from-slate-900 dark:via-slate-900 dark:to-[#FFC83D]/10 sm:px-7 sm:py-6">
+        <DialogHeader className="relative mb-0 shrink-0 border-b border-[#FFC83D]/40 bg-gradient-to-br from-[#FFF8E1] via-white to-[#FFC83D]/20 px-6 py-5 pr-14 text-left dark:border-[#FFC83D]/20 dark:from-slate-900 dark:via-slate-900 dark:to-[#FFC83D]/10 sm:px-7 sm:py-6">
           <div className="flex items-center gap-3">
             <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[#FFC83D] text-[#003377] shadow-[0_8px_20px_-10px_rgba(255,200,61,0.9)]">
               <BellRing className="size-5" />
@@ -127,7 +127,7 @@ export function AlertDetailsDialog({
           </div>
         </DialogHeader>
 
-        <div className="max-h-[calc(90vh-190px)] overflow-y-auto px-5 py-5 sm:px-7">
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 py-5 sm:px-7">
           {isLoading || isFetching ? (
             <LoadingState />
           ) : isError ? (
@@ -214,13 +214,13 @@ export function AlertDetailsDialog({
                 />
               </div>
 
-              <div className="grid gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400 sm:grid-cols-2">
+              <div className="grid gap-2 rounded-2xl border border-slate-200/90 bg-slate-50/60 p-4 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300 sm:grid-cols-2">
                 <div>
-                  <span className="font-semibold">{t("Created")}:</span>{" "}
+                  <span className="font-semibold text-slate-500 dark:text-slate-400">{t("Created")}:</span>{" "}
                   {formatDate(alertRule.createdAt)}
                 </div>
                 <div className="sm:text-right">
-                  <span className="font-semibold">{t("Updated")}:</span>{" "}
+                  <span className="font-semibold text-slate-500 dark:text-slate-400">{t("Updated")}:</span>{" "}
                   {formatDate(alertRule.updatedAt)}
                 </div>
               </div>
@@ -232,7 +232,7 @@ export function AlertDetailsDialog({
           )}
         </div>
 
-        <DialogClose className="m-0 bg-slate-50 px-5 py-4 dark:bg-slate-900 sm:px-7">
+        <DialogClose className="m-0 shrink-0 border-t border-slate-200/80 bg-slate-50 px-5 py-4 dark:border-slate-800 dark:bg-slate-900 sm:px-7">
           <Button
             type="button"
             onClick={onClose}

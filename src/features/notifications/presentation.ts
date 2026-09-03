@@ -7,7 +7,8 @@ import {
   TriangleAlert,
   WalletCards,
 } from "lucide-react";
-import type { AdminNotificationType, AdminReferenceType } from "./types";
+import type { AdminUser } from "@/features/user-manager/types";
+import type { AdminNotificationItem, AdminNotificationType, AdminReferenceType } from "./types";
 
 export const NOTIFICATION_TYPE_UI: Record<
   AdminNotificationType,
@@ -56,3 +57,68 @@ export function notificationTypeLabel(type: AdminNotificationType) {
 export function referenceTypeLabel(type?: AdminReferenceType) {
   return type ? REFERENCE_TYPE_UI[type]?.label ?? type : "N/A";
 }
+
+export function getNotificationRecipientName(
+  notification: AdminNotificationItem,
+  user?: AdminUser,
+  fallback = "Unknown user"
+): string {
+  if (user) {
+    return (
+      user.displayName ||
+      `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() ||
+      user.username ||
+      user.email ||
+      fallback
+    );
+  }
+
+  const metadata = notification.metadata as Record<string, unknown> | undefined;
+  if (metadata) {
+    const metaName =
+      (typeof metadata.recipientName === "string" && metadata.recipientName) ||
+      (typeof metadata.userName === "string" && metadata.userName) ||
+      (typeof metadata.targetName === "string" && metadata.targetName) ||
+      (typeof metadata.fullName === "string" && metadata.fullName) ||
+      (typeof metadata.name === "string" && metadata.name);
+    if (metaName) return metaName;
+  }
+
+  return fallback;
+}
+
+export function getNotificationRecipientSubtext(
+  notification: AdminNotificationItem,
+  user?: AdminUser,
+  translate?: (key: string) => string
+): string {
+  const t = translate ?? ((k: string) => k);
+
+  if (user) {
+    if (user.email) return user.email;
+    if (user.username) return `@${user.username}`;
+    return t("User details unavailable");
+  }
+
+  const metadata = notification.metadata as Record<string, unknown> | undefined;
+  if (metadata) {
+    const metaEmail =
+      (typeof metadata.email === "string" && metadata.email) ||
+      (typeof metadata.recipientEmail === "string" && metadata.recipientEmail) ||
+      (typeof metadata.targetEmail === "string" && metadata.targetEmail);
+    if (metaEmail) return metaEmail;
+  }
+
+  if (notification.referenceType) {
+    return t(referenceTypeLabel(notification.referenceType));
+  }
+
+  if (notification.channels && notification.channels.length > 0) {
+    return notification.channels
+      .map((c) => (c === "IN_APP" ? t("In-App") : t("Email")))
+      .join(" • ");
+  }
+
+  return t("User details unavailable");
+}
+

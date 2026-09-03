@@ -52,10 +52,10 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8 font-google-sans">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
+        <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-[32px]">
           {t(greeting())}, {adminName}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground font-normal">
+        <p className="mt-1 text-[18px] leading-relaxed text-muted-foreground font-normal">
           {t("Here’s what’s happening across iStash today.")}
         </p>
       </header>

@@ -78,19 +78,24 @@ export default function NotificationDetailModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleClose();
+      }}
+    >
       <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900 dark:border dark:border-slate-800">
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800 dark:bg-slate-850">
+        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/70 px-6 py-4 dark:border-slate-800 dark:bg-slate-850">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#003377]/10 text-[#003377] dark:bg-[#FFC83D]/10 dark:text-[#FFC83D]">
               {getCategoryIcon(category || "")}
             </div>
             <div>
-              <span className="text-xs font-semibold text-[#003377] dark:text-[#FFC83D]">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#003377] dark:text-[#FFC83D]">
                 {config?.nameKh || selectedNotification.notificationType}
               </span>
-              <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 font-google-sans">
+              <h3 className="text-base font-bold text-[#003377] dark:text-[#FFC83D] font-google-sans">
                 ព័ត៌មានលម្អិតនៃការជូនដំណឹង
               </h3>
             </div>
@@ -151,7 +156,7 @@ export default function NotificationDetailModal() {
               </div>
 
               {/* Message Body */}
-              <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-sm text-slate-700 dark:bg-slate-800/60 dark:border-slate-750 dark:text-slate-300 leading-relaxed font-google-sans">
+              <div className="rounded-2xl border border-slate-200/80 border-l-4 border-l-[#003377] bg-slate-50/70 p-4 text-sm leading-relaxed text-slate-800 dark:border-slate-800 dark:border-l-[#FFC83D] dark:bg-slate-900/50 dark:text-slate-200 font-google-sans">
                 {adminNotificationDetail?.message || selectedNotification.messageKh || selectedNotification.message}
               </div>
 
@@ -202,7 +207,7 @@ export default function NotificationDetailModal() {
           <button
             type="button"
             onClick={handleClose}
-            className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:border-[#003377] hover:text-[#003377] dark:border-slate-700 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] transition"
           >
             បិទ
           </button>
@@ -211,7 +216,7 @@ export default function NotificationDetailModal() {
             <a
               href={selectedNotification.actionUrl}
               onClick={handleClose}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#003377] px-4 py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#002255] transition"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#FFC83D] px-4 py-2.5 text-xs font-bold text-[#003377] shadow-md hover:bg-[#f0ba33] transition"
             >
               <span>ទៅកាន់ទំព័រពាក់ព័ន្ធ</span>
               <ExternalLink size={14} />

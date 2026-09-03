@@ -28,8 +28,8 @@ export default function ProfilePage() {
       <KhmerToast type={toast.type} message={toast.message} onClose={() => setToast({ type: null, message: null })} />
       <header>
         <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground"><UserRound className="size-3.5" />{t("Account Settings")}</div>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">{t("My Profile")}</h1>
-        <p className="mt-1 text-sm text-muted-foreground font-normal">{t("Manage your personal information, profile photo, and account security.")}</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-[32px]">{t("My Profile")}</h1>
+        <p className="mt-1 text-[18px] leading-relaxed text-muted-foreground font-normal">{t("Manage your personal information, profile photo, and account security.")}</p>
       </header>
       <ProfileBanner profile={profile} onSuccess={(message) => setToast({ type: "success", message })} onError={(message) => setToast({ type: "error", message })} />
       <ProfileNavTabs activeTab={activeTab} onTabChange={setActiveTab} />

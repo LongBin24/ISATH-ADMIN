@@ -252,10 +252,10 @@ export function AuditLogManager() {
       {/* Header */}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-[32px]">
             {t("Audit Logs")}
           </h1>
-          <p className="mt-1 max-w-3xl text-sm text-muted-foreground font-normal">
+          <p className="mt-1 max-w-3xl text-[18px] leading-relaxed text-muted-foreground font-normal">
             {t(
               "Track, monitor, and review all administrative and system events, mutations, and security activities.",
             )}
@@ -838,7 +838,7 @@ function AuditDetailSheet({
               <Shield className="size-5.5" />
             </span>
             <div>
-              <SheetTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <SheetTitle className="text-xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D]">
                 {t("Audit Log Details")}
               </SheetTitle>
               <p className="mt-0.5 text-xs text-muted-foreground font-normal">

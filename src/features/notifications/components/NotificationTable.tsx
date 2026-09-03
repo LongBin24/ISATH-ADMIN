@@ -1,7 +1,7 @@
 "use client";
 
 import { format, formatDistanceToNow } from "date-fns";
-import { ArrowDown, ArrowUp, Eye, MoreHorizontal } from "lucide-react";
+import { ArrowDown, ArrowUp, Eye, MoreHorizontal, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,14 +11,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { AdminUser } from "@/features/user-manager/types";
 import type { AdminNotificationItem } from "../types";
-import { NOTIFICATION_TYPE_UI, notificationTypeLabel, referenceTypeLabel } from "../presentation";
+import {
+  NOTIFICATION_TYPE_UI,
+  notificationTypeLabel,
+  referenceTypeLabel,
+  getNotificationRecipientName,
+  getNotificationRecipientSubtext,
+} from "../presentation";
 import { useAdminI18n } from "@/i18n/admin-i18n";
-
-function userName(user?: AdminUser) {
-  return user
-    ? user.displayName || `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || user.username || user.email
-    : "Unknown user";
-}
 
 export default function NotificationTable({
   notifications,
@@ -70,7 +70,10 @@ export default function NotificationTable({
           ) : (
             notifications.map((notification) => {
               const user = usersById.get(notification.userId);
-              const name = userName(user);
+              const unknownLabel = t("Unknown user");
+              const name = getNotificationRecipientName(notification, user, unknownLabel);
+              const subtext = getNotificationRecipientSubtext(notification, user, t);
+              const isUnknown = !user && name === unknownLabel;
               const typeUi = NOTIFICATION_TYPE_UI[notification.notificationType];
               return (
                 <TableRow key={notification.id} className="cursor-pointer" onClick={() => onView(notification)}>
@@ -78,13 +81,15 @@ export default function NotificationTable({
                     <div className="flex items-center gap-3">
                       <Avatar className="size-10">
                         <AvatarImage src={user?.profileImageUrl ?? undefined} alt={name} />
-                        <AvatarFallback>{name.charAt(0).toUpperCase()}</AvatarFallback>
+                        <AvatarFallback className={isUnknown ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary font-semibold"}>
+                          {isUnknown ? <User className="size-4" /> : name.charAt(0).toUpperCase()}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="min-w-0">
                         <p className="truncate text-base font-medium text-foreground">{name}</p>
                         <Tooltip>
-                          <TooltipTrigger><span className="block max-w-44 truncate text-sm text-muted-foreground">{user?.email ?? notification.userId}</span></TooltipTrigger>
-                          <TooltipContent>{user?.email ?? notification.userId}</TooltipContent>
+                          <TooltipTrigger><span className="block max-w-44 truncate text-sm text-muted-foreground">{subtext}</span></TooltipTrigger>
+                          <TooltipContent>{subtext}</TooltipContent>
                         </Tooltip>
                       </div>
                     </div>

@@ -336,10 +336,10 @@ export default function ReviewManager() {
   return (
     <div className="space-y-7 font-google-sans">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">
+        <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-[32px]">
           {t("Reviews & Feedback")}
         </h1>
-        <p className="mt-1 max-w-3xl text-sm text-muted-foreground font-normal">
+        <p className="mt-1 max-w-3xl text-[18px] leading-relaxed text-muted-foreground font-normal">
           {t(
             "Review and manage user suggestions, bug reports, complaints, compliments, and general feedback.",
           )}
@@ -879,7 +879,9 @@ function ReviewDetailSheet({
         onClose={() => onOpenChange(false)}
       >
         <SheetHeader>
-          <SheetTitle>{t("Review Details")}</SheetTitle>
+          <SheetTitle className="text-[#003377] dark:text-[#FEDB55] ">
+            {t("Review Details")}
+          </SheetTitle>
         </SheetHeader>
         {detailQuery.isLoading ? (
           <SheetBody>

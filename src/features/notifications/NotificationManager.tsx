@@ -40,7 +40,7 @@ export default function NotificationManager() {
 
   const { data, isLoading, isFetching, isError, refetch } = useGetAdminNotificationsQuery(queryParams);
   const { data: recipientData } = useGetAdminUsersQuery({ pageNumber: 0, pageSize: 200 });
-  const notifications = data?.content ?? [];
+  const notifications = useMemo(() => data?.content ?? [], [data?.content]);
   const page = data?.page;
   const totalElements = page?.totalElements ?? 0;
   const totalPages = page?.totalPages ?? 0;
@@ -54,13 +54,27 @@ export default function NotificationManager() {
     const term = filters.search.toLowerCase().trim();
     return notifications.filter((item) => {
       const user = usersById.get(item.userId);
+      const metadata = item.metadata as Record<string, unknown> | undefined;
+      const metaName = (
+        (typeof metadata?.recipientName === "string" && metadata.recipientName) ||
+        (typeof metadata?.userName === "string" && metadata.userName) ||
+        (typeof metadata?.targetName === "string" && metadata.targetName) ||
+        (typeof metadata?.fullName === "string" && metadata.fullName) ||
+        ""
+      ).toLowerCase();
+      const metaEmail = (
+        (typeof metadata?.email === "string" && metadata.email) ||
+        (typeof metadata?.recipientEmail === "string" && metadata.recipientEmail) ||
+        (typeof metadata?.targetEmail === "string" && metadata.targetEmail) ||
+        ""
+      ).toLowerCase();
       const name = (
         user?.displayName ||
         `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() ||
         user?.username ||
-        ""
+        metaName
       ).toLowerCase();
-      const email = (user?.email || "").toLowerCase();
+      const email = (user?.email || metaEmail).toLowerCase();
       const title = (item.title || "").toLowerCase();
       const message = (item.message || "").toLowerCase();
       const notifType = (item.notificationType || "").toLowerCase();
@@ -112,8 +126,8 @@ export default function NotificationManager() {
     <div className="space-y-7 font-google-sans">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-3xl">{t("Notifications")}</h1>
-          <p className="mt-1 text-sm text-muted-foreground font-normal">{t("Monitor notification activity, delivery, and system messages.")}</p>
+          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-[32px]">{t("Notifications")}</h1>
+          <p className="mt-1 text-[18px] leading-relaxed text-muted-foreground font-normal">{t("Monitor notification activity, delivery, and system messages.")}</p>
         </div>
         <Button size="lg" onClick={() => setSendOpen(true)} className="bg-[#FFC83D] text-base font-medium text-[#003377] hover:bg-[#f0ba33]">
           <BellPlus className="mr-2 size-4" />

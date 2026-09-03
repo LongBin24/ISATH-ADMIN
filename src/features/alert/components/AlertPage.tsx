@@ -111,8 +111,8 @@ export function AlertPage() {
               <BellRing className="size-6" />
             </span>
             <div>
-              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">គ្រប់គ្រងការជូនដំណឹង</h1>
-              <p className="mt-1 max-w-2xl text-sm leading-6 text-white/70">
+              <h1 className="text-xl font-bold tracking-tight sm:text-2xl md:text-[32px]">គ្រប់គ្រងការជូនដំណឹង</h1>
+              <p className="mt-1 max-w-2xl text-[18px] leading-relaxed text-white/70">
                 តាមដាន និងពិនិត្យការរំឭកស្វ័យប្រវត្តិរបស់ប្រព័ន្ធទាំងអស់។
               </p>
             </div>
