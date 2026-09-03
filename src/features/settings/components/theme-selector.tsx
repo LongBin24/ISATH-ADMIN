@@ -25,7 +25,7 @@ export function ThemeSelector() {
       <div>
         <div className="flex items-center gap-2">
           <Shield className="size-5 text-[#003377] dark:text-[#FFC83D]" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+          <h2 className="text-lg font-bold text-[#003377] dark:text-[#FFC83D]">
             {t("Appearance & Theme Settings")}
           </h2>
         </div>

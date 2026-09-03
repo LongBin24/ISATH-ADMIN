@@ -14,7 +14,7 @@ export default function ProfileOverviewTab({ profile }: { profile: UserProfile }
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)] font-google-sans">
       <Card className="rounded-2xl shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-xl font-bold">
+          <CardTitle className="flex items-center gap-2 text-xl font-bold text-[#003377] dark:text-[#FFC83D]">
             <UserRound className="size-5 text-[#003377] dark:text-[#FEDB55]" />
             {t("Personal Information")}
           </CardTitle>
@@ -35,7 +35,7 @@ export default function ProfileOverviewTab({ profile }: { profile: UserProfile }
       <div className="space-y-5">
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl font-bold">
+            <CardTitle className="flex items-center gap-2 text-xl font-bold text-[#003377] dark:text-[#FFC83D]">
               <ShieldCheck className="size-5 text-[#003377] dark:text-[#FEDB55]" />
               {t("Account Status")}
             </CardTitle>
@@ -49,7 +49,7 @@ export default function ProfileOverviewTab({ profile }: { profile: UserProfile }
         </Card>
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl font-bold">
+            <CardTitle className="flex items-center gap-2 text-xl font-bold text-[#003377] dark:text-[#FFC83D]">
               <Globe2 className="size-5 text-[#003377] dark:text-[#FEDB55]" />
               {t("Preferences")}
             </CardTitle>

@@ -109,7 +109,7 @@ export default function UserManagerPage() {
       <UserStatCards />
 
       <div>
-        <h2 className="mb-4 text-xl md:text-2xl font-semibold text-foreground">{t("User Distribution")}</h2>
+        <h2 className="mb-4 text-xl md:text-2xl font-semibold text-[#003377] dark:text-[#FFC83D]">{t("User Distribution")}</h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <UserGenderChart />
           <UserAgeChart />
@@ -117,7 +117,7 @@ export default function UserManagerPage() {
       </div>
 
       <div>
-        <h2 className="mb-4 text-xl md:text-2xl font-semibold text-foreground">{t("Users")}</h2>
+        <h2 className="mb-4 text-xl md:text-2xl font-semibold text-[#003377] dark:text-[#FFC83D]">{t("Users")}</h2>
 
         <Card className="rounded-2xl border-border shadow-sm">
           <CardContent className="space-y-4 p-4 sm:p-6">

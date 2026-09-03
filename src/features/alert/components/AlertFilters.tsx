@@ -38,7 +38,7 @@ export function AlertFilters({
             <SlidersHorizontal className="size-4" />
           </span>
           <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-white">{t("Search and Filters")}</h2>
+            <h2 className="text-base font-bold text-[#003377] dark:text-[#FFC83D]">{t("Search and Filters")}</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">{t("Found")} {resultCount} {t("Alert Rules")}</p>
           </div>
         </div>

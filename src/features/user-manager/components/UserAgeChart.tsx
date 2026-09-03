@@ -73,7 +73,7 @@ export default function UserAgeChart() {
               <BarChart3 className="size-5" />
             </span>
             <div>
-              <CardTitle className="text-lg font-semibold md:text-xl">
+              <CardTitle className="text-lg font-semibold text-[#003377] dark:text-[#FFC83D] md:text-xl">
                 {t("Age Distribution")}
               </CardTitle>
               <CardDescription>

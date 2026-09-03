@@ -131,7 +131,7 @@ export default function NotificationPreferencesForm() {
             <Mail size={20} />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white font-google-sans">
+            <h2 className="text-lg font-bold text-[#003377] dark:text-[#FFC83D] font-google-sans">
               អាសយដ្ឋានអ៊ីមែលសម្រាប់ការជូនដំណឹង
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -185,7 +185,7 @@ export default function NotificationPreferencesForm() {
               <Bell size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white font-google-sans">
+              <h2 className="text-lg font-bold text-[#003377] dark:text-[#FFC83D] font-google-sans">
                 ការរៀបចំប៉ុស្តិ៍ជូនដំណឹងតាមប្រភេទ
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -213,7 +213,7 @@ export default function NotificationPreferencesForm() {
                     {getCategoryIcon(field.category)}
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white font-google-sans">
+                    <h3 className="text-sm font-bold text-[#003377] dark:text-[#FFC83D] font-google-sans">
                       {config?.nameKh || field.category}
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mt-0.5">
@@ -303,7 +303,7 @@ export default function NotificationPreferencesForm() {
               <Moon size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white font-google-sans">
+              <h2 className="text-lg font-bold text-[#003377] dark:text-[#FFC83D] font-google-sans">
                 ម៉ោងកុំរំខាន
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">

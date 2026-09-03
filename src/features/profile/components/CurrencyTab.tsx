@@ -75,7 +75,7 @@ export default function CurrencyTab({
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 font-google-sans">
       <div className="border-b border-slate-100 pb-4 dark:border-slate-800 mb-6">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+        <h2 className="text-lg font-bold text-[#003377] dark:text-[#FFC83D] flex items-center gap-2">
           <Coins className="h-5 w-5 text-[#003377] dark:text-[#FFC83D]" />
           ជ្រើសរើសរូបិយប័ណ្ណដែលពេញចិត្ត
         </h2>
@@ -110,7 +110,7 @@ export default function CurrencyTab({
                   {opt.symbol}
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                  <h4 className="text-sm font-bold text-[#003377] dark:text-[#FFC83D]">
                     {opt.code}
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400">

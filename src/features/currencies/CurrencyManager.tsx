@@ -207,7 +207,7 @@ function ProviderCard({
     <Card className="rounded-2xl border-border shadow-sm">
       <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
         <div>
-          <CardTitle className="text-lg font-semibold md:text-xl">
+          <CardTitle className="text-lg font-semibold text-[#003377] dark:text-[#FFC83D] md:text-xl">
             {t("Currency Provider")}
           </CardTitle>
           <p className="mt-1 text-sm text-muted-foreground font-normal">
@@ -557,7 +557,7 @@ export default function CurrencyManager() {
 
       <Card className="rounded-2xl border-border shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold md:text-xl">
+          <CardTitle className="text-lg font-semibold text-[#003377] dark:text-[#FFC83D] md:text-xl">
             {t("Supported Currencies")}
           </CardTitle>
           <p className="text-sm text-muted-foreground font-normal">
@@ -939,7 +939,7 @@ function CurrencyDetailSheet({
               {currency.symbol}
             </span>
             <div>
-              <h3 className="text-2xl font-semibold text-foreground">
+              <h3 className="text-2xl font-semibold text-[#003377] dark:text-[#FFC83D]">
                 {currency.code}
               </h3>
               <p className="text-base text-muted-foreground font-normal">

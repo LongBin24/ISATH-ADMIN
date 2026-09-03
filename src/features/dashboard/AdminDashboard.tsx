@@ -145,7 +145,7 @@ function KpiCard({ tone, icon: Icon, title, value, loading, error, description, 
 function SectionHeader({ title, description }: { title: string; description: string }) {
   return (
     <div className="mb-4">
-      <h2 className="text-xl font-semibold text-foreground md:text-2xl">{title}</h2>
+      <h2 className="text-xl font-semibold text-[#003377] dark:text-[#FFC83D] md:text-2xl">{title}</h2>
       <p className="mt-1 text-sm text-muted-foreground font-normal">{description}</p>
     </div>
   );
@@ -191,7 +191,7 @@ function UserOverview({ stats, loading, error, tab, setTab, retry }: { stats: Us
                 <Users className="size-5" />
               </span>
               <div>
-                <CardTitle className="text-lg font-semibold md:text-xl">{t("User Overview")}</CardTitle>
+                <CardTitle className="text-lg font-semibold text-[#003377] dark:text-[#FFC83D] md:text-xl">{t("User Overview")}</CardTitle>
                 <CardDescription>{t("Understand the current iStash user distribution.")}</CardDescription>
               </div>
             </div>
@@ -319,7 +319,7 @@ function SystemHealth({ data, loading, error, retry }: { data: Provider; loading
               <Activity className="size-5" />
             </span>
             <div>
-              <CardTitle className="text-lg font-semibold md:text-xl">{t("System Health")}</CardTitle>
+              <CardTitle className="text-lg font-semibold text-[#003377] dark:text-[#FFC83D] md:text-xl">{t("System Health")}</CardTitle>
               <CardDescription>{t("Currency provider availability and synchronization.")}</CardDescription>
             </div>
           </div>
@@ -552,7 +552,7 @@ function ActivityCard({ icon: Icon, title, description, href, footer, children }
             <Icon className="size-5" />
           </span>
           <div>
-            <CardTitle className="text-lg font-semibold md:text-xl">{title}</CardTitle>
+            <CardTitle className="text-lg font-semibold text-[#003377] dark:text-[#FFC83D] md:text-xl">{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
         </div>

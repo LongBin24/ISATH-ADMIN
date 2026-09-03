@@ -41,7 +41,7 @@ export default function UserGenderChart() {
               <Users className="size-5" />
             </span>
             <div>
-              <CardTitle className="text-lg font-semibold md:text-xl">
+              <CardTitle className="text-lg font-semibold text-[#003377] dark:text-[#FFC83D] md:text-xl">
                 {t("Gender Distribution")}
               </CardTitle>
               <CardDescription>

@@ -87,7 +87,7 @@ export function PromptTemplateTable({
         <span className="mb-3 grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500">
           <Sparkles className="h-7 w-7" />
         </span>
-        <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
+        <h3 className="text-base font-bold text-[#003377] dark:text-[#FFC83D]">
           {t("No prompt templates found")}
         </h3>
         <p className="mt-1 max-w-sm text-xs text-slate-500 dark:text-slate-400">

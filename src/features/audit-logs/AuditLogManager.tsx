@@ -302,7 +302,7 @@ export function AuditLogManager() {
       {/* Main Content Card */}
       <Card className="rounded-2xl border-border shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold md:text-xl">
+          <CardTitle className="text-lg font-semibold text-[#003377] dark:text-[#FFC83D] md:text-xl">
             {t("System Audit Trail")}
           </CardTitle>
           <p className="text-sm text-muted-foreground font-normal">

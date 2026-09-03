@@ -383,7 +383,7 @@ export default function ReviewManager() {
 
       <Card className="rounded-2xl shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold md:text-xl">
+          <CardTitle className="text-lg font-semibold text-[#003377] dark:text-[#FFC83D] md:text-xl">
             {t("Reviews")}
           </CardTitle>
           <p className="text-sm text-muted-foreground font-normal">

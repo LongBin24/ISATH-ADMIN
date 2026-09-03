@@ -124,7 +124,7 @@ export function ContactUsTable({
         <span className="mb-4 grid size-14 place-items-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500">
           <MessageSquareOff className="size-7" />
         </span>
-        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">
+        <h3 className="text-lg font-bold text-[#003377] dark:text-[#FFC83D]">
           {hasActiveFilters ? t("No messages found") : t("No contact messages yet")}
         </h3>
         <p className="mt-1 max-w-sm text-sm text-slate-500 dark:text-slate-400">
