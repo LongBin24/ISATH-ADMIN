@@ -232,14 +232,14 @@ function OrbitCard({
         className="group block"
       >
         <div
-          className={`flex items-center gap-3.5 ${isLeft ? "flex-row-reverse text-right" : "text-left"}`}
+          className={`flex items-center gap-2 ${isLeft ? "flex-row-reverse text-right" : "text-left"}`}
         >
           <span
             className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-[0_6px_16px_-6px_rgba(2,6,23,.35)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(254,219,85,.35)] ${feature.iconClass}`}
           >
             <Icon className="h-5 w-5" strokeWidth={2} />
           </span>
-          <div className="w-[200px] rounded-[20px] border border-slate-200/80 bg-white/95 px-4 py-3 shadow-[0_10px_28px_-20px_rgba(2,6,23,.2)] backdrop-blur-sm transition-all duration-300 group-hover:border-[#FEDB55]/60 group-hover:shadow-md dark:border-[#1D2B3D] dark:bg-[#0C1727]/95 dark:group-hover:border-[#FEDB55]/50">
+          <div className="w-[220px] rounded-[20px] border border-slate-200/80 bg-white/95 px-4 py-3 shadow-[0_10px_28px_-20px_rgba(2,6,23,.2)] backdrop-blur-sm transition-all duration-300 group-hover:border-[#FEDB55]/60 group-hover:shadow-md dark:border-[#1D2B3D] dark:bg-[#0C1727]/95 dark:group-hover:border-[#FEDB55]/50">
             <h3 className="text-[13.5px] font-semibold leading-5 text-[#0F172A] transition-colors group-hover:text-[#003377] dark:text-[#F8FAFC] dark:group-hover:text-[#FEDB55]">
               {feature.title[locale]}
             </h3>

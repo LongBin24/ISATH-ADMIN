@@ -117,7 +117,7 @@ const km: Record<string, string> = {
   "Prefer Not To Say": "មិនចង់បញ្ជាក់",
   "Prefer not to say": "មិនចង់បញ្ជាក់",
   Unspecified: "មិនបានបញ្ជាក់",
-  "Under 15": "ក្រោម ១៥",
+  "Under 15": "ក្រោម 15",
   Unknown: "មិនស្គាល់",
   "Breakdown of users by gender identity.":
     "ការវិភាគអ្នកប្រើប្រាស់តាមអត្តសញ្ញាណភេទ។",
