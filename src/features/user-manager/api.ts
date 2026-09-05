@@ -36,14 +36,6 @@ export function mapAdminUserToUser(u: AdminUser): User {
   };
 }
 
-// The backend doesn't reliably match the documented response shapes in
-// practice: GET /admin/users returns neither the {success, data, ...}
-// envelope nor a flat Spring Page — it returns {content, page: {number,
-// size, totalElements, totalPages}}, the same PagedModel nesting used by
-// notifications/alert-rules/AI-templates, contradicting its own OpenAPI doc.
-// These helpers normalize whatever shape actually comes back (enveloped or
-// not, flat pagination fields or nested under `page`) into one consistent
-// structure so the UI doesn't silently render an empty state.
 function unwrapPage(raw: unknown): AdminUserPageResponse {
   const obj = raw as Record<string, unknown> | null | undefined;
   const body = (obj?.data && typeof obj.data === "object" ? obj.data : obj) as Record<string, unknown> | undefined;
