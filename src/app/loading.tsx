@@ -9,7 +9,7 @@ type AppLoadingProps = {
   onComplete?: () => void;
 };
 
-export function AppLoading({ complete, onComplete }: AppLoadingProps) {
+export default function AppLoading({ complete, onComplete }: AppLoadingProps) {
   const [progress, setProgress] = useState(0);
   const onCompleteRef = useRef(onComplete);
 
@@ -128,3 +128,4 @@ export function AppLoading({ complete, onComplete }: AppLoadingProps) {
       </section>
     </main>
   );
+}
