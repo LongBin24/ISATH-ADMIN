@@ -118,7 +118,6 @@ export const profileApi = baseApi.injectEndpoints({
       async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
         const result = await baseQuery("users/me");
         if (result.error) {
-          console.error("[profile] GET users/me failed", result.error);
           return { error: result.error };
         }
         try {

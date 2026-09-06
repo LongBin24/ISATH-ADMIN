@@ -167,36 +167,6 @@ export const promptTemplateVersionSchema = z.object({
 export type PromptTemplateVersionFormData = z.infer<typeof promptTemplateVersionSchema>;
 
 /**
- * Zod Schema for Testing Prompt Templates
- * (POST /api/v1/admin/ai/prompt-templates/{templateId}/test)
- */
-export const testPromptTemplateSchema = z.object({
-  question: z
-    .string()
-    .min(1, { message: "User test question or message is required." }),
-
-  currencyCode: z
-    .string()
-    .min(1, { message: "Currency code is required." })
-    .max(10),
-
-  financialContextJson: jsonStringOrObjectSchema.optional(),
-
-  temperature: z
-    .number()
-    .min(0, { message: "Temperature must be between 0.0 and 2.0." })
-    .max(2, { message: "Temperature must be between 0.0 and 2.0." }),
-
-  maxTokens: z
-    .number()
-    .int()
-    .min(1, { message: "Max tokens must be at least 1." })
-    .max(32768, { message: "Max tokens cannot exceed 32,768." }),
-});
-
-export type TestPromptTemplateFormData = z.infer<typeof testPromptTemplateSchema>;
-
-/**
  * Zod Schema for AI Platform Configuration
  */
 export const aiConfigSchema = z.object({
