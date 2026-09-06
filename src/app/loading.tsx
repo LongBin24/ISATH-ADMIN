@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -127,6 +128,3 @@ export function AppLoading({ complete, onComplete }: AppLoadingProps) {
       </section>
     </main>
   );
-}
-
-export default AppLoading;

@@ -7,18 +7,20 @@ import Navbar from "@/components/layout/Navbar";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import PWAInstallPrompt from "@/components/pwa/PWAInstallPrompt";
 
-function checkAdminRole(): boolean {
-  if (typeof window === "undefined") return true;
+function hasAdminAccess(): boolean {
+  if (typeof window === "undefined") return false;
   const token =
     window.localStorage.getItem("accessToken") ||
     window.localStorage.getItem("token") ||
     window.sessionStorage.getItem("accessToken") ||
     window.sessionStorage.getItem("token");
 
-  if (!token) return true;
+  // Fail closed: no token, a malformed token, or a decode error all mean
+  // "not a verified admin session" -- never let the dashboard render.
+  if (!token) return false;
   try {
     const parts = token.split(".");
-    if (parts.length < 2) return true;
+    if (parts.length < 2) return false;
     const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const decoded = JSON.parse(window.atob(base64));
     const realmRoles = (decoded.realm_access?.roles || []).map((r: unknown) => String(r).toUpperCase());
@@ -35,7 +37,7 @@ function checkAdminRole(): boolean {
       allRoles.includes("MANAGE-USERS")
     );
   } catch {
-    return true;
+    return false;
   }
 }
 
@@ -47,9 +49,14 @@ export default function DashboardLayout({
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
-    if (!checkAdminRole()) {
+    queueMicrotask(() => {
+      if (hasAdminAccess()) {
+        setAuthorized(true);
+        return;
+      }
       window.localStorage.removeItem("accessToken");
       window.localStorage.removeItem("token");
       window.localStorage.removeItem("refreshToken");
@@ -58,7 +65,7 @@ export default function DashboardLayout({
       window.sessionStorage.removeItem("token");
       document.cookie = "accessToken=; Max-Age=0; path=/";
       router.replace("/login?authError=unauthorized&status=403");
-    }
+    });
   }, [router]);
 
   function toggleSidebar() {
@@ -67,6 +74,17 @@ export default function DashboardLayout({
     } else {
       setSidebarOpen((current) => !current);
     }
+  }
+
+  // Never paint the dashboard shell before the admin check above resolves --
+  // this covers both the unauthenticated case and the brief moment before a
+  // valid admin session is confirmed.
+  if (!authorized) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#003377] border-t-transparent dark:border-[#FFC83D]" />
+      </div>
+    );
   }
 
   return (

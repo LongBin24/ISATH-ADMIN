@@ -62,6 +62,7 @@ export const promptTemplateSchema = z.object({
       "SAVINGS_ANALYSIS",
       "SPENDING_ANALYSIS",
       "INCOME_ANALYSIS",
+      "BUDGET_ANALYSIS",
       "GENERAL_QUESTION",
       "MONTHLY_SUMMARY",
     ])
@@ -72,9 +73,9 @@ export const promptTemplateSchema = z.object({
     message: "Language must be either 'en' or 'km'.",
   }),
 
-  templateStatus: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "INACTIVE"]).default("DRAFT"),
+  templateStatus: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "INACTIVE"]),
 
-  isDefault: z.boolean().default(false),
+  isDefault: z.boolean(),
 
   modelName: z.string().max(100).optional().nullable(),
 
@@ -89,13 +90,12 @@ export const promptTemplateSchema = z.object({
   temperature: z
     .number()
     .min(0, { message: "Temperature must be >= 0." })
-    .max(2, { message: "Temperature must be <= 2." })
-    .default(0),
+    .max(2, { message: "Temperature must be <= 2." }),
 
-  responseMimeType: z.string().default("application/json"),
+  responseMimeType: z.string(),
 
-  inputSchemaJson: jsonStringOrObjectSchema,
-  outputSchemaJson: jsonStringOrObjectSchema,
+  inputSchemaJson: jsonStringOrObjectSchema.optional(),
+  outputSchemaJson: jsonStringOrObjectSchema.optional(),
 });
 
 export type PromptTemplateFormData = z.infer<typeof promptTemplateSchema>;
@@ -133,6 +133,7 @@ export const promptTemplateVersionSchema = z.object({
     "SAVINGS_ANALYSIS",
     "SPENDING_ANALYSIS",
     "INCOME_ANALYSIS",
+    "BUDGET_ANALYSIS",
     "GENERAL_QUESTION",
     "MONTHLY_SUMMARY",
   ]).optional().nullable(),
@@ -151,51 +152,19 @@ export const promptTemplateVersionSchema = z.object({
 
   modelName: z.string().max(100).optional().nullable(),
 
-  temperature: z.number().min(0).max(2).default(0),
+  temperature: z.number().min(0).max(2),
 
-  responseMimeType: z.string().default("application/json"),
+  responseMimeType: z.string(),
 
-  templateStatus: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "INACTIVE"]).default("DRAFT"),
+  templateStatus: z.enum(["ACTIVE", "DRAFT", "ARCHIVED", "INACTIVE"]),
 
-  isDefault: z.boolean().default(false),
+  isDefault: z.boolean(),
 
-  inputSchemaJson: jsonStringOrObjectSchema,
-  outputSchemaJson: jsonStringOrObjectSchema,
+  inputSchemaJson: jsonStringOrObjectSchema.optional(),
+  outputSchemaJson: jsonStringOrObjectSchema.optional(),
 });
 
 export type PromptTemplateVersionFormData = z.infer<typeof promptTemplateVersionSchema>;
-
-/**
- * Zod Schema for Testing Prompt Templates
- * (POST /api/v1/admin/ai/prompt-templates/{templateId}/test)
- */
-export const testPromptTemplateSchema = z.object({
-  question: z
-    .string()
-    .min(1, { message: "User test question or message is required." }),
-
-  currencyCode: z
-    .string()
-    .min(1, { message: "Currency code is required." })
-    .max(10),
-
-  financialContextJson: jsonStringOrObjectSchema,
-
-  temperature: z
-    .number()
-    .min(0, { message: "Temperature must be between 0.0 and 2.0." })
-    .max(2, { message: "Temperature must be between 0.0 and 2.0." })
-    .default(0.3),
-
-  maxTokens: z
-    .number()
-    .int()
-    .min(1, { message: "Max tokens must be at least 1." })
-    .max(32768, { message: "Max tokens cannot exceed 32,768." })
-    .default(800),
-});
-
-export type TestPromptTemplateFormData = z.infer<typeof testPromptTemplateSchema>;
 
 /**
  * Zod Schema for AI Platform Configuration
@@ -206,10 +175,10 @@ export const aiConfigSchema = z.object({
     .number()
     .min(0, { message: "Confidence must be at least 0%." })
     .max(100, { message: "Confidence cannot exceed 100%." }),
-  aiEnabled: z.boolean().default(true),
-  ocrEnabled: z.boolean().default(true),
-  voiceEnabled: z.boolean().default(true),
-  smartTagEnabled: z.boolean().default(true),
+  aiEnabled: z.boolean(),
+  ocrEnabled: z.boolean(),
+  voiceEnabled: z.boolean(),
+  smartTagEnabled: z.boolean(),
 });
 
 export type AIConfigFormData = z.infer<typeof aiConfigSchema>;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,16 +8,125 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Play, Sparkles, AlertCircle, Clock, Zap, X } from "lucide-react";
+import { Play, Sparkles, AlertCircle, Zap, X } from "lucide-react";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 import { useTestPromptTemplateMutation } from "../api";
-import { testPromptTemplateSchema } from "../schemas";
-import type { PromptTemplateItem, TestPromptTemplateResponse } from "../types";
+import type {
+  JsonSchema,
+  JsonSchemaProperty,
+  LanguageCode,
+  PromptTemplateItem,
+  TestPromptTemplatePayload,
+  TestPromptTemplateResponse,
+} from "../types";
 
 interface PromptTemplateTestDialogProps {
   template: PromptTemplateItem | null;
   isOpen: boolean;
   onClose: () => void;
+}
+
+type FieldKind = "string" | "number" | "boolean" | "enum" | "json";
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function getInputSchemaProperties(
+  template: PromptTemplateItem | null,
+): Record<string, JsonSchemaProperty> {
+  const schema = template?.inputSchema;
+  if (isRecord(schema) && isRecord(schema.properties)) {
+    return schema.properties as Record<string, JsonSchemaProperty>;
+  }
+  return {};
+}
+
+function getInputSchemaRequired(template: PromptTemplateItem | null): string[] {
+  const schema = template?.inputSchema as JsonSchema | null | undefined;
+  return Array.isArray(schema?.required) ? (schema!.required as string[]) : [];
+}
+
+function getFieldKind(prop: JsonSchemaProperty | undefined): FieldKind {
+  if (!prop) return "string";
+  if (Array.isArray(prop.enum) && prop.enum.length > 0) return "enum";
+  if (prop.type === "object" || prop.type === "array" || prop.properties || prop.items) {
+    return "json";
+  }
+  if (prop.type === "number" || prop.type === "integer") return "number";
+  if (prop.type === "boolean") return "boolean";
+  return "string";
+}
+
+const EXAMPLE_FINANCIAL_CONTEXT = {
+  walletBalance: 1250.0,
+  currency: "USD",
+  currentSavingsTotal: 450.0,
+  savingsGoalTarget: 1000.0,
+  goalProgressPercentage: 45.0,
+  monthlyIncome: 2000.0,
+  monthlyExpense: 850.0,
+};
+
+function defaultRawValue(
+  key: string,
+  prop: JsonSchemaProperty | undefined,
+  kind: FieldKind,
+  languageCode: LanguageCode | undefined,
+): string {
+  const lowerKey = key.toLowerCase();
+  if (lowerKey === "question") {
+    return languageCode === "km"
+      ? "តើខ្ញុំអាចសន្សំប្រាក់បានប៉ុន្មាននៅខែនេះ?"
+      : "How much savings progress have I made this month?";
+  }
+  if (lowerKey === "currencycode") return "USD";
+  if (kind === "json" && lowerKey.replace(/_/g, "").includes("financialcontext")) {
+    return JSON.stringify(EXAMPLE_FINANCIAL_CONTEXT, null, 2);
+  }
+  if (kind === "boolean") return "false";
+  if (kind === "enum" && Array.isArray(prop?.enum) && prop.enum.length > 0) {
+    return String(prop.enum[0]);
+  }
+  return "";
+}
+
+function humanizeKey(key: string): string {
+  return key
+    .replace(/_/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/^./, (c) => c.toUpperCase());
+}
+
+interface ApiErrorDetails {
+  message: string;
+  fieldErrors: Array<{ field?: string; message: string }>;
+}
+
+function extractApiErrorDetails(error: unknown): ApiErrorDetails {
+  if (isRecord(error) && "data" in error && isRecord(error.data)) {
+    const data = error.data;
+    if (Array.isArray(data.fieldErrors) && data.fieldErrors.length > 0) {
+      const fieldErrors = (data.fieldErrors as Array<{ field?: string; message?: string }>)
+        .filter((f) => typeof f?.message === "string")
+        .map((f) => ({ field: f.field, message: f.message as string }));
+      if (fieldErrors.length > 0) {
+        return {
+          message: fieldErrors
+            .map((f) => (f.field ? `${f.field} → ${f.message}` : f.message))
+            .join(" | "),
+          fieldErrors,
+        };
+      }
+    }
+    if (typeof data.message === "string") {
+      return { message: data.message, fieldErrors: [] };
+    }
+  }
+  if (isRecord(error) && typeof error.message === "string") {
+    return { message: error.message, fieldErrors: [] };
+  }
+  return { message: "Test execution failed.", fieldErrors: [] };
 }
 
 export function PromptTemplateTestDialog({
@@ -26,110 +135,187 @@ export function PromptTemplateTestDialog({
   onClose,
 }: PromptTemplateTestDialogProps) {
   const { t } = useAdminI18n();
-
-  const [question, setQuestion] = useState("");
-  const [currencyCode, setCurrencyCode] = useState("USD");
-  const [financialContextJson, setFinancialContextJson] = useState("");
-  const [temperature, setTemperature] = useState<number>(0.3);
-  const [maxTokens, setMaxTokens] = useState<number>(800);
   const [testResult, setTestResult] = useState<TestPromptTemplateResponse | null>(null);
-  const [jsonError, setJsonError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
   const [runTest, { isLoading, error: apiError }] = useTestPromptTemplateMutation();
 
+  const inputProperties = useMemo(() => getInputSchemaProperties(template), [template]);
+  const requiredFields = useMemo(() => getInputSchemaRequired(template), [template]);
+  const fieldKeys = useMemo(() => Object.keys(inputProperties), [inputProperties]);
+  const hasDeclaredSchema = fieldKeys.length > 0;
+
+  const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [rawInputJson, setRawInputJson] = useState("");
+  const [rawInputError, setRawInputError] = useState<string | null>(null);
+  const [sampleOutputRaw, setSampleOutputRaw] = useState("");
+  const [sampleOutputError, setSampleOutputError] = useState<string | null>(null);
+
   useEffect(() => {
-    if (template) {
-      queueMicrotask(() => {
-        setQuestion(
-          template.languageCode === "km"
-            ? "តើខ្ញុំអាចសន្សំប្រាក់បានប៉ុន្មាននៅខែនេះ?"
-            : "How much savings progress have I made this month?"
-        );
-        setCurrencyCode("USD");
-        setFinancialContextJson(
+    if (!template || !isOpen) return;
+    queueMicrotask(() => {
+      const properties = getInputSchemaProperties(template);
+      const keys = Object.keys(properties);
+      if (keys.length > 0) {
+        const seeded: Record<string, string> = {};
+        keys.forEach((key) => {
+          const kind = getFieldKind(properties[key]);
+          seeded[key] = defaultRawValue(key, properties[key], kind, template.languageCode);
+        });
+        setFieldValues(seeded);
+        setRawInputJson("");
+      } else {
+        setFieldValues({});
+        setRawInputJson(
           JSON.stringify(
             {
-              walletBalance: 1250.0,
-              currency: "USD",
-              currentSavingsTotal: 450.0,
-              savingsGoalTarget: 1000.0,
-              goalProgressPercentage: 45.0,
-              monthlyIncome: 2000.0,
-              monthlyExpense: 850.0,
+              question:
+                template.languageCode === "km"
+                  ? "តើខ្ញុំអាចសន្សំប្រាក់បានប៉ុន្មាននៅខែនេះ?"
+                  : "How much savings progress have I made this month?",
             },
             null,
-            2
-          )
+            2,
+          ),
         );
-        setTemperature(
-          (template.generationConfig as { temperature?: number })?.temperature ?? 0.3
-        );
-        setMaxTokens(
-          (template.generationConfig as { max_tokens?: number })?.max_tokens ?? 800
-        );
-        setTestResult(null);
-        setJsonError(null);
-        setFieldErrors({});
-      });
-    }
-  }, [template]);
+      }
+      setFieldErrors({});
+      setRawInputError(null);
+      setSampleOutputRaw("");
+      setSampleOutputError(null);
+      setTestResult(null);
+    });
+  }, [template, isOpen]);
 
   if (!template) return null;
 
-  async function handleRunTest(e: React.FormEvent) {
-    e.preventDefault();
-    if (!template) return;
-    setJsonError(null);
-    setTestResult(null);
-    setFieldErrors({});
+  function setFieldValue(key: string, value: string) {
+    setFieldValues((current) => ({ ...current, [key]: value }));
+    setFieldErrors((current) => ({ ...current, [key]: "" }));
+  }
 
-    const formValues = {
-      question: question.trim(),
-      currencyCode: currencyCode.trim(),
-      financialContextJson: financialContextJson.trim() || undefined,
-      temperature,
-      maxTokens,
-    };
+  function buildDynamicInput(): {
+    input?: Record<string, unknown>;
+    errors: Record<string, string>;
+  } {
+    const errors: Record<string, string> = {};
+    const input: Record<string, unknown> = {};
 
-    const zodResult = testPromptTemplateSchema.safeParse(formValues);
+    fieldKeys.forEach((key) => {
+      const prop = inputProperties[key];
+      const kind = getFieldKind(prop);
+      const raw = fieldValues[key] ?? "";
+      const isRequired = requiredFields.includes(key);
 
-    if (!zodResult.success) {
-      const flattened = zodResult.error.flatten();
-      setFieldErrors(flattened.fieldErrors as Record<string, string[]>);
-      if (flattened.fieldErrors.financialContextJson?.[0]) {
-        setJsonError(flattened.fieldErrors.financialContextJson[0]);
-      }
-      return;
-    }
-
-    let parsedContext: Record<string, unknown> = {};
-    if (financialContextJson.trim()) {
-      try {
-        parsedContext = JSON.parse(financialContextJson);
-      } catch {
-        setJsonError(t("Invalid JSON in Financial Context"));
+      if (kind === "boolean") {
+        input[key] = raw === "true";
         return;
       }
+
+      if (raw.trim() === "") {
+        if (isRequired) errors[key] = t("This field is required.");
+        return;
+      }
+
+      if (kind === "number") {
+        const num = Number(raw);
+        if (Number.isNaN(num)) {
+          errors[key] = t("Must be a valid number.");
+        } else {
+          input[key] = num;
+        }
+        return;
+      }
+
+      if (kind === "json") {
+        try {
+          input[key] = JSON.parse(raw);
+        } catch {
+          errors[key] = t("Must be valid JSON.");
+        }
+        return;
+      }
+
+      input[key] = raw;
+    });
+
+    return { input: Object.keys(errors).length === 0 ? input : undefined, errors };
+  }
+
+  function buildRawInput(): { input?: Record<string, unknown>; error?: string } {
+    if (!rawInputJson.trim()) {
+      return { error: t("Input is required.") };
+    }
+    try {
+      const parsed: unknown = JSON.parse(rawInputJson);
+      if (!isRecord(parsed)) {
+        return { error: t("Input must be a JSON object.") };
+      }
+      return { input: parsed };
+    } catch {
+      return { error: t("Must be valid JSON.") };
+    }
+  }
+
+  async function onSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!template) return;
+    setTestResult(null);
+
+    let input: Record<string, unknown> | undefined;
+
+    if (hasDeclaredSchema) {
+      const built = buildDynamicInput();
+      setFieldErrors(built.errors);
+      if (!built.input) return;
+      input = built.input;
+    } else {
+      const built = buildRawInput();
+      setRawInputError(built.error ?? null);
+      if (!built.input) return;
+      input = built.input;
+    }
+
+    let sampleOutput: Record<string, unknown> | undefined;
+    if (sampleOutputRaw.trim()) {
+      try {
+        const parsed: unknown = JSON.parse(sampleOutputRaw);
+        if (!isRecord(parsed)) {
+          setSampleOutputError(t("Sample output must be a JSON object."));
+          return;
+        }
+        sampleOutput = parsed;
+        setSampleOutputError(null);
+      } catch {
+        setSampleOutputError(t("Must be valid JSON."));
+        return;
+      }
+    } else {
+      setSampleOutputError(null);
+    }
+
+    const payload: TestPromptTemplatePayload = sampleOutput
+      ? { input, sampleOutput }
+      : { input };
+
+    if (process.env.NODE_ENV !== "production") {
+      console.assert(
+        payload.input !== null && typeof payload.input === "object",
+        "[PromptTemplateTest] payload.input must be a non-null object",
+        payload,
+      );
+      console.log("[PromptTemplateTest] request payload", payload);
     }
 
     try {
-      const response = await runTest({
-        templateId: template.id,
-        variables: {
-          question: formValues.question,
-          currencyCode: formValues.currencyCode,
-          financialContext: parsedContext,
-        },
-        temperature: formValues.temperature,
-        maxTokens: formValues.maxTokens,
-      }).unwrap();
-
+      const response = await runTest({ templateId: template.id, body: payload }).unwrap();
       setTestResult(response);
     } catch {
-      // Error handled by mutation state
+      // Surfaced below via apiError.
     }
   }
+
+  const errorDetails = apiError ? extractApiErrorDetails(apiError) : null;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -171,201 +357,297 @@ export function PromptTemplateTestDialog({
           </button>
         </DialogHeader>
 
-        <form onSubmit={handleRunTest} className="flex flex-1 flex-col overflow-hidden">
+        <form onSubmit={onSubmit} className="flex flex-1 flex-col overflow-hidden">
           {/* Scrollable Form Body */}
           <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8 space-y-6">
-          <div className="grid gap-4 lg:grid-cols-2">
-            {/* Left Column: Variables Form */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-bold text-[#003377] dark:text-[#FFC83D] uppercase tracking-wider">
-                {t("Input Variables")}
-              </h3>
+            <div className="grid gap-4 lg:grid-cols-2">
+              {/* Left Column: Variables Form */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-bold text-[#003377] dark:text-[#FFC83D] uppercase tracking-wider">
+                  {t("Input Variables")}
+                </h3>
 
-              {/* Question */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  {t("User Question")} (<code>{"{{question}}"}</code>)
-                </label>
-                <textarea
-                  rows={3}
-                  value={question}
-                  onChange={(e) => {
-                    setQuestion(e.target.value);
-                    if (fieldErrors.question) {
-                      setFieldErrors((prev) => ({ ...prev, question: [] }));
-                    }
-                  }}
-                  className={`w-full rounded-2xl border bg-slate-50/60 p-3 text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
-                    fieldErrors.question?.length
-                      ? "border-red-400 focus:border-red-500"
-                      : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
-                  }`}
-                  required
-                />
-                {fieldErrors.question?.[0] && (
-                  <p className="text-xs font-medium text-red-600">
-                    {fieldErrors.question[0]}
-                  </p>
-                )}
-              </div>
+                {hasDeclaredSchema ? (
+                  fieldKeys.map((key) => {
+                    const prop = inputProperties[key];
+                    const kind = getFieldKind(prop);
+                    const isRequired = requiredFields.includes(key);
+                    const value = fieldValues[key] ?? "";
+                    const error = fieldErrors[key];
+                    const fieldClassName = `w-full rounded-2xl border bg-slate-50/60 p-3 text-xs leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
+                      error
+                        ? "border-red-400 focus:border-red-500"
+                        : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
+                    }`;
 
-              {/* Currency Code */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  {t("Currency Code")} (<code>{"{{currencyCode}}"}</code>)
-                </label>
-                <div className="flex gap-2">
-                  {["USD", "KHR"].map((curr) => (
-                    <button
-                      key={curr}
-                      type="button"
-                      onClick={() => setCurrencyCode(curr)}
-                      className={`flex-1 rounded-xl py-2 text-xs font-semibold transition-all duration-150 active:scale-95 ${
-                        currencyCode === curr
-                          ? "bg-[#FFC83D] text-[#003377] font-bold shadow-sm active:bg-[#003377] active:text-[#FFC83D]"
-                          : "border border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:text-[#003377] active:bg-[#FFC83D]/20 active:text-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
-                      }`}
-                    >
-                      {curr}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                    return (
+                      <div key={key} className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          {humanizeKey(key)} (<code>{`{{${key}}}`}</code>){" "}
+                          {isRequired && <span className="text-red-500">*</span>}
+                        </label>
 
-              {/* Financial Context JSON */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    {t("Trusted Financial Context (JSON)")}
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFinancialContextJson(
-                        JSON.stringify(
-                          {
-                            walletBalance: 1250.0,
-                            currency: currencyCode,
-                            currentSavingsTotal: 450.0,
-                            savingsGoalTarget: 1000.0,
-                            goalProgressPercentage: 45.0,
-                            monthlyIncome: 2000.0,
-                            monthlyExpense: 850.0,
-                          },
-                          null,
-                          2
-                        )
-                      )
-                    }
-                    className="text-[11px] text-[#003377] hover:underline hover:text-[#002255] active:opacity-75 dark:text-[#FFC83D] dark:hover:text-[#f7c948]"
-                  >
-                    {t("Load Example")}
-                  </button>
-                </div>
-                <textarea
-                  rows={6}
-                  value={financialContextJson}
-                  onChange={(e) => {
-                    setFinancialContextJson(e.target.value);
-                    setJsonError(null);
-                  }}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/60 p-3 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] focus:border-[#003377] dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] dark:focus:border-[#FFC83D]"
-                />
-                {jsonError && (
-                  <p className="text-xs font-medium text-red-600">{jsonError}</p>
-                )}
-              </div>
+                        {key.toLowerCase() === "currencycode" ? (
+                          <div className="flex gap-2">
+                            {["USD", "KHR"].map((curr) => (
+                              <button
+                                key={curr}
+                                type="button"
+                                onClick={() => setFieldValue(key, curr)}
+                                className={`flex-1 rounded-xl py-2 text-xs font-semibold transition-all duration-150 active:scale-95 ${
+                                  value === curr
+                                    ? "bg-[#FFC83D] text-[#003377] font-bold shadow-sm active:bg-[#003377] active:text-[#FFC83D]"
+                                    : "border border-slate-200 bg-white text-slate-700 hover:border-[#003377] hover:text-[#003377] active:bg-[#FFC83D]/20 active:text-[#003377] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-[#FFC83D] dark:hover:text-[#FFC83D] dark:active:bg-[#FFC83D]/20 dark:active:text-[#FFC83D]"
+                                }`}
+                              >
+                                {curr}
+                              </button>
+                            ))}
+                          </div>
+                        ) : kind === "enum" ? (
+                          <select
+                            value={value}
+                            onChange={(e) => setFieldValue(key, e.target.value)}
+                            className={fieldClassName}
+                          >
+                            <option value="" disabled>
+                              {t("Select a value")}
+                            </option>
+                            {(prop?.enum ?? []).map((option) => (
+                              <option key={String(option)} value={String(option)}>
+                                {String(option)}
+                              </option>
+                            ))}
+                          </select>
+                        ) : kind === "boolean" ? (
+                          <div className="flex gap-2">
+                            {["true", "false"].map((boolValue) => (
+                              <button
+                                key={boolValue}
+                                type="button"
+                                onClick={() => setFieldValue(key, boolValue)}
+                                className={`flex-1 rounded-xl py-2 text-xs font-semibold transition-all duration-150 active:scale-95 ${
+                                  value === boolValue
+                                    ? "bg-[#FFC83D] text-[#003377] font-bold shadow-sm"
+                                    : "border border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+                                }`}
+                              >
+                                {boolValue === "true" ? t("True") : t("False")}
+                              </button>
+                            ))}
+                          </div>
+                        ) : kind === "number" ? (
+                          <input
+                            type="number"
+                            value={value}
+                            onChange={(e) => setFieldValue(key, e.target.value)}
+                            className={fieldClassName}
+                          />
+                        ) : kind === "json" ? (
+                          <textarea
+                            rows={6}
+                            value={value}
+                            onChange={(e) => setFieldValue(key, e.target.value)}
+                            className={`${fieldClassName} font-mono text-[11px]`}
+                          />
+                        ) : (
+                          <textarea
+                            rows={3}
+                            value={value}
+                            onChange={(e) => setFieldValue(key, e.target.value)}
+                            className={fieldClassName}
+                          />
+                        )}
 
-              {/* Parameters */}
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900">
-                  <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
-                    <span>{t("Temperature")}</span>
-                    <span className="font-semibold text-slate-900 dark:text-slate-100">{temperature}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    value={temperature}
-                    onChange={(e) => setTemperature(Number(e.target.value))}
-                    className="mt-2 w-full"
-                  />
-                </div>
-
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900">
-                  <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
-                    <span>{t("Max Tokens")}</span>
-                    <span className="font-semibold text-slate-900 dark:text-slate-100">{maxTokens}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={100}
-                    max={2000}
-                    step={100}
-                    value={maxTokens}
-                    onChange={(e) => setMaxTokens(Number(e.target.value))}
-                    className="mt-2 w-full"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Execution Output */}
-            <div className="flex flex-col space-y-4">
-              <h3 className="text-sm font-bold text-[#003377] dark:text-[#FFC83D] uppercase tracking-wider">
-                {t("Execution Output")}
-              </h3>
-
-              <div className="flex-1 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-950">
-                {isLoading ? (
-                  <div className="flex h-full min-h-64 flex-col items-center justify-center space-y-3 text-center">
-                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#003377] border-t-transparent dark:border-[#FFC83D]" />
-                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">
-                      {t("Executing prompt template with AI model...")}
-                    </p>
-                  </div>
-                ) : apiError ? (
-                  <div className="flex h-full min-h-64 flex-col items-center justify-center space-y-2 text-center text-red-600">
-                    <AlertCircle className="h-8 w-8" />
-                    <p className="text-xs font-semibold">{t("Test execution failed")}</p>
-                    <p className="text-[11px] text-slate-500">
-                      {JSON.stringify(apiError)}
-                    </p>
-                  </div>
-                ) : testResult ? (
-                  <div className="space-y-3">
-                    {/* Performance metrics */}
-                    <div className="flex flex-wrap gap-2 text-xs">
-                      {testResult.executionTimeMs !== undefined && (
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-100 px-2 py-0.5 font-medium text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                          <Clock className="h-3 w-3" /> {testResult.executionTimeMs}ms
-                        </span>
-                      )}
-                      {testResult.usage?.totalTokens && (
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-blue-100 px-2 py-0.5 font-medium text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
-                          <Zap className="h-3 w-3" /> {testResult.usage.totalTokens} {t("tokens")}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Result Content */}
-                    <div className="max-h-72 overflow-y-auto rounded-xl bg-white p-3 font-mono text-xs text-slate-800 dark:bg-slate-900 dark:text-slate-200">
-                      {testResult.output ||
-                        testResult.result ||
-                        JSON.stringify(testResult, null, 2)}
-                    </div>
-                  </div>
+                        {prop?.description && !error && (
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                            {prop.description}
+                          </p>
+                        )}
+                        {error && (
+                          <p className="text-xs font-medium text-red-600">{error}</p>
+                        )}
+                      </div>
+                    );
+                  })
                 ) : (
-                  <div className="flex h-full min-h-64 flex-col items-center justify-center text-center text-slate-400">
-                    <Sparkles className="mb-2 h-8 w-8 opacity-40" />
-                    <p className="text-xs">{t("Click 'Run Test' to generate and evaluate AI output.")}</p>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        {t("Input (JSON)")} <span className="text-red-500">*</span>
+                      </label>
+                      <p className="text-[11px] text-amber-600 dark:text-amber-400">
+                        {t("Template has no declared input schema")}
+                      </p>
+                    </div>
+                    <textarea
+                      rows={10}
+                      value={rawInputJson}
+                      onChange={(e) => {
+                        setRawInputJson(e.target.value);
+                        setRawInputError(null);
+                      }}
+                      className={`w-full rounded-2xl border bg-slate-50/60 p-3 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
+                        rawInputError
+                          ? "border-red-400 focus:border-red-500"
+                          : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
+                      }`}
+                    />
+                    {rawInputError && (
+                      <p className="text-xs font-medium text-red-600">{rawInputError}</p>
+                    )}
                   </div>
                 )}
+
+                {/* Sample Output (optional) */}
+                <div className="space-y-1.5 pt-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      {t("Sample Output (JSON, optional)")}
+                    </label>
+                    {sampleOutputRaw && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSampleOutputRaw("");
+                          setSampleOutputError(null);
+                        }}
+                        className="text-[11px] text-slate-500 hover:underline dark:text-slate-400"
+                      >
+                        {t("Clear")}
+                      </button>
+                    )}
+                  </div>
+                  <textarea
+                    rows={4}
+                    value={sampleOutputRaw}
+                    onChange={(e) => {
+                      setSampleOutputRaw(e.target.value);
+                      setSampleOutputError(null);
+                    }}
+                    placeholder={t("Leave empty to omit sampleOutput")}
+                    className={`w-full rounded-2xl border bg-slate-50/60 p-3 font-mono text-[11px] leading-relaxed text-slate-800 shadow-sm transition-all duration-200 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 hover:border-[#003377] dark:bg-slate-900/90 dark:text-slate-200 dark:hover:border-[#FFC83D] ${
+                      sampleOutputError
+                        ? "border-red-400 focus:border-red-500"
+                        : "border-slate-200 focus:border-[#003377] dark:border-slate-800 dark:focus:border-[#FFC83D]"
+                    }`}
+                  />
+                  {sampleOutputError && (
+                    <p className="text-xs font-medium text-red-600">{sampleOutputError}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column: Execution Output */}
+              <div className="flex flex-col space-y-4">
+                <h3 className="text-sm font-bold text-[#003377] dark:text-[#FFC83D] uppercase tracking-wider">
+                  {t("Execution Output")}
+                </h3>
+
+                <div className="flex-1 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-950">
+                  {isLoading ? (
+                    <div className="flex h-full min-h-64 flex-col items-center justify-center space-y-3 text-center">
+                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#003377] border-t-transparent dark:border-[#FFC83D]" />
+                      <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                        {t("Rendering and validating prompt template...")}
+                      </p>
+                    </div>
+                  ) : errorDetails ? (
+                    <div className="flex h-full min-h-64 flex-col items-center justify-center space-y-2 text-center text-red-600">
+                      <AlertCircle className="h-8 w-8" />
+                      <p className="text-xs font-semibold">{t("Test execution failed")}</p>
+                      {errorDetails.fieldErrors.length > 0 ? (
+                        <ul className="space-y-1 text-left text-[11px] text-slate-600 dark:text-slate-400">
+                          {errorDetails.fieldErrors.map((fieldError, index) => (
+                            <li key={`${fieldError.field ?? "error"}-${index}`}>
+                              {fieldError.field && (
+                                <code className="font-semibold text-red-600">
+                                  {fieldError.field}
+                                </code>
+                              )}{" "}
+                              {fieldError.field && "→"} {fieldError.message}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-[11px] text-slate-500">{errorDetails.message}</p>
+                      )}
+                    </div>
+                  ) : testResult ? (
+                    <div className="space-y-3">
+                      {/* Validation / model metadata */}
+                      <div className="flex flex-wrap gap-2 text-xs">
+                        {typeof testResult.inputValid === "boolean" && (
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 font-medium ${
+                              testResult.inputValid
+                                ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                                : "bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300"
+                            }`}
+                          >
+                            {testResult.inputValid ? t("Input valid") : t("Input invalid")}
+                          </span>
+                        )}
+                        {typeof testResult.outputValid === "boolean" && (
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 font-medium ${
+                              testResult.outputValid
+                                ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                                : "bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300"
+                            }`}
+                          >
+                            {testResult.outputValid
+                              ? t("Output schema valid")
+                              : t("Output schema invalid")}
+                          </span>
+                        )}
+                        {testResult.modelName && (
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-blue-100 px-2 py-0.5 font-medium text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
+                            <Zap className="h-3 w-3" /> {testResult.modelName}
+                          </span>
+                        )}
+                      </div>
+
+                      {testResult.renderedSystemPrompt && (
+                        <div className="space-y-1">
+                          <p className="text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400">
+                            {t("Rendered System Prompt")}
+                          </p>
+                          <div className="max-h-40 overflow-y-auto whitespace-pre-wrap rounded-xl bg-white p-3 font-mono text-xs text-slate-800 dark:bg-slate-900 dark:text-slate-200">
+                            {testResult.renderedSystemPrompt}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="space-y-1">
+                        <p className="text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400">
+                          {t("Rendered User Prompt")}
+                        </p>
+                        <div className="max-h-40 overflow-y-auto whitespace-pre-wrap rounded-xl bg-white p-3 font-mono text-xs text-slate-800 dark:bg-slate-900 dark:text-slate-200">
+                          {testResult.renderedUserPrompt || JSON.stringify(testResult, null, 2)}
+                        </div>
+                      </div>
+
+                      {testResult.generationConfig && (
+                        <div className="space-y-1">
+                          <p className="text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400">
+                            {t("Generation Config")}
+                          </p>
+                          <div className="max-h-32 overflow-y-auto rounded-xl bg-white p-3 font-mono text-[11px] text-slate-800 dark:bg-slate-900 dark:text-slate-200">
+                            {JSON.stringify(testResult.generationConfig, null, 2)}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex h-full min-h-64 flex-col items-center justify-center text-center text-slate-400">
+                      <Sparkles className="mb-2 h-8 w-8 opacity-40" />
+                      <p className="text-xs">{t("Click 'Run Test' to render and validate the template.")}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
           </div>
 
           {/* Fixed Action Footer */}

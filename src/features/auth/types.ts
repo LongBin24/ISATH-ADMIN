@@ -22,3 +22,12 @@ export interface LoginResponse {
 export interface LogoutPayload {
   refreshToken: string;
 }
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  timestamp: string;
+}
+
+export type LogoutResponse = ApiResponse<null>;

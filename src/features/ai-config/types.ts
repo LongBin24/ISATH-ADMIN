@@ -3,18 +3,19 @@ export type PromptTemplateStatus = "ACTIVE" | "INACTIVE" | "ARCHIVED" | "DRAFT";
 export type TaskType =
   | "CATEGORY_PREDICTION"
   | "FINANCIAL_ASSISTANT"
-  | (string & {});
+  | "SAVINGS_GOAL_ANALYSIS"
+  | "BUDGET_ADVICE";
 
 export type TemplateScope =
   | "GENERAL_CONVERSATION"
   | "SAVINGS_ANALYSIS"
   | "SPENDING_ANALYSIS"
   | "INCOME_ANALYSIS"
+  | "BUDGET_ANALYSIS"
   | "GENERAL_QUESTION"
-  | "MONTHLY_SUMMARY"
-  | (string & {});
+  | "MONTHLY_SUMMARY";
 
-export type LanguageCode = "en" | "km" | (string & {});
+export type LanguageCode = "en" | "km";
 
 export interface GenerationConfig {
   temperature?: number;
@@ -108,9 +109,9 @@ export interface PromptTemplateQueryParams {
   templateKey?: string;
   templateName?: string;
   name?: string;
-  taskType?: TaskType;
-  templateScope?: TemplateScope;
-  languageCode?: LanguageCode;
+  taskType?: TaskType | string;
+  templateScope?: TemplateScope | string;
+  languageCode?: LanguageCode | string;
   templateStatus?: PromptTemplateStatus | string;
   status?: PromptTemplateStatus | string;
   isDefault?: boolean;
@@ -253,31 +254,33 @@ export interface CreatePromptTemplateVersionPayload {
   [key: string]: unknown;
 }
 
+/**
+ * Body for POST /api/v1/admin/ai/prompt-templates/{templateId}/test.
+ * Backend contract (TestAiPromptTemplateRequest): `input` is required and
+ * must be a JSON object built from the template's declared inputSchema
+ * properties -- never flattened onto the request root, and never a string.
+ * `sampleOutput` is optional and must be omitted entirely when unset.
+ */
 export interface TestPromptTemplatePayload {
-  variables?: Record<string, unknown>;
-  input?: string;
-  model?: string;
-  modelName?: string;
-  versionId?: string;
-  versionNumber?: number;
-  generationConfig?: GenerationConfig;
-  temperature?: number;
-  maxTokens?: number;
-  [key: string]: unknown;
+  input: Record<string, unknown>;
+  sampleOutput?: Record<string, unknown>;
 }
 
+/**
+ * Response shape (AiPromptTemplateTestResponse): a rendering/validation
+ * dry-run, not an LLM execution -- there is no generated output/usage here.
+ */
 export interface TestPromptTemplateResponse {
-  result?: string;
-  output?: string;
-  renderedPrompt?: string;
-  usage?: {
-    promptTokens?: number;
-    completionTokens?: number;
-    totalTokens?: number;
-  };
-  executionTimeMs?: number;
-  success?: boolean;
-  error?: string;
+  templateId?: string;
+  templateKey?: string;
+  version?: number;
+  languageCode?: LanguageCode;
+  inputValid?: boolean;
+  outputValid?: boolean;
+  renderedSystemPrompt?: string;
+  renderedUserPrompt?: string;
+  modelName?: string;
+  generationConfig?: GenerationConfig | Record<string, unknown>;
   [key: string]: unknown;
 }
 

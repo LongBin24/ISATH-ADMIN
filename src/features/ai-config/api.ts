@@ -322,19 +322,13 @@ export const promptTemplatesApi = baseApi.injectEndpoints({
     // 5. POST /api/v1/admin/ai/prompt-templates/{templateId}/test
     testPromptTemplate: builder.mutation<
       TestPromptTemplateResponse,
-      | { templateId: string; body?: TestPromptTemplatePayload }
-      | (TestPromptTemplatePayload & { templateId: string })
+      { templateId: string; body: TestPromptTemplatePayload }
     >({
-      query: (arg) => {
-        const templateId = arg.templateId;
-        const body =
-          "body" in arg && arg.body ? arg.body : { ...arg, templateId: undefined };
-        return {
-          url: ENDPOINTS_PROMPT_TEMPLATE.PROMPT_TEMPLATE_TEST(templateId),
-          method: "POST",
-          body: body || {},
-        };
-      },
+      query: ({ templateId, body }) => ({
+        url: ENDPOINTS_PROMPT_TEMPLATE.PROMPT_TEMPLATE_TEST(templateId),
+        method: "POST",
+        body,
+      }),
       transformResponse: unwrapTestResponse,
     }),
 

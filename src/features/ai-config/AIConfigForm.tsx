@@ -1,22 +1,42 @@
 "use client";
 
 import { useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Bot, AlertCircle } from "lucide-react";
 import { useAdminI18n } from "@/i18n/admin-i18n";
-import { aiConfigSchema } from "./schemas";
+import { aiConfigSchema, type AIConfigFormData } from "./schemas";
 
 const models = ["claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-4-8"];
 
 export default function AIConfigForm() {
   const { t } = useAdminI18n();
-  const [model, setModel] = useState(models[0]);
-  const [confidence, setConfidence] = useState(90);
-  const [aiEnabled, setAiEnabled] = useState(true);
-  const [ocrEnabled, setOcrEnabled] = useState(true);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
-  const [smartTagEnabled, setSmartTagEnabled] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<AIConfigFormData>({
+    resolver: zodResolver(aiConfigSchema),
+    defaultValues: {
+      model: models[0],
+      confidence: 90,
+      aiEnabled: true,
+      ocrEnabled: true,
+      voiceEnabled: true,
+      smartTagEnabled: true,
+    },
+  });
+
+  const model = useWatch({ control, name: "model" });
+  const confidence = useWatch({ control, name: "confidence" }) ?? 90;
+  const aiEnabled = useWatch({ control, name: "aiEnabled" }) ?? true;
+  const ocrEnabled = useWatch({ control, name: "ocrEnabled" }) ?? true;
+  const voiceEnabled = useWatch({ control, name: "voiceEnabled" }) ?? true;
+  const smartTagEnabled = useWatch({ control, name: "smartTagEnabled" }) ?? true;
 
   const stats = [
     { label: t("Income"), value: `12,450 ${t("requests")}`, status: "98.2%" },
@@ -24,29 +44,17 @@ export default function AIConfigForm() {
     { label: t("Voice-to-Text"), value: `890 ${t("requests")}`, status: "91.7%" },
   ];
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setMessage(null);
+  function onSubmit() {
     setErrorMessage(null);
-
-    const validation = aiConfigSchema.safeParse({
-      model,
-      confidence,
-      aiEnabled,
-      ocrEnabled,
-      voiceEnabled,
-      smartTagEnabled,
-    });
-
-    if (!validation.success) {
-      setErrorMessage(
-        validation.error.issues[0]?.message ??
-          t("Failed to save AI configuration."),
-      );
-      return;
-    }
-
     setMessage(t("AI configuration saved successfully."));
+  }
+
+  function onError() {
+    setMessage(null);
+    const firstError = Object.values(errors)[0]?.message;
+    if (firstError) {
+      setErrorMessage(firstError);
+    }
   }
 
   return (
@@ -70,51 +78,56 @@ export default function AIConfigForm() {
         </div>
       )}
 
-      {errorMessage && (
+      {(errorMessage || Object.keys(errors).length > 0) && (
         <div className="flex items-center gap-2.5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-800 dark:border-red-900 dark:bg-red-950/50 dark:text-red-200">
           <AlertCircle className="h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
-          <span>{errorMessage}</span>
+          <span>
+            {errorMessage ||
+              errors.model?.message ||
+              errors.confidence?.message ||
+              t("Failed to save AI configuration.")}
+          </span>
         </div>
       )}
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit, onError)}
         className="grid gap-6 xl:grid-cols-[1.4fr_1fr]"
       >
         <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div className="space-y-4 mb-2 text-[#003377]">
             {[
               {
+                name: "aiEnabled" as const,
                 label: t("Active AI"),
                 description: t(
                   "Enable or disable AI output generation across the platform.",
                 ),
                 enabled: aiEnabled,
-                setEnabled: setAiEnabled,
               },
               {
+                name: "ocrEnabled" as const,
                 label: t("OCR Text Processing"),
                 description: t(
                   "Automatically extract and parse transaction data from receipt images.",
                 ),
                 enabled: ocrEnabled,
-                setEnabled: setOcrEnabled,
               },
               {
+                name: "voiceEnabled" as const,
                 label: t("Voice-to-Text"),
                 description: t(
                   "Convert voice memos and audio recordings into transactions.",
                 ),
                 enabled: voiceEnabled,
-                setEnabled: setVoiceEnabled,
               },
               {
+                name: "smartTagEnabled" as const,
                 label: t("Smart Tagging"),
                 description: t(
                   "Automatically categorize and tag transactions using AI intelligence.",
                 ),
                 enabled: smartTagEnabled,
-                setEnabled: setSmartTagEnabled,
               },
             ].map((feature) => (
               <div
@@ -131,7 +144,7 @@ export default function AIConfigForm() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => feature.setEnabled(!feature.enabled)}
+                  onClick={() => setValue(feature.name, !feature.enabled, { shouldValidate: true })}
                   className={`rounded-full px-4 py-2 text-sm font-semibold transition-all duration-150 active:scale-95 ${
                     feature.enabled
                       ? "bg-[#FFC83D] text-[#003377] hover:bg-[#f0ba33] active:bg-[#003377] active:text-[#FFC83D]"
@@ -166,7 +179,7 @@ export default function AIConfigForm() {
                 <button
                   key={option}
                   type="button"
-                  onClick={() => setModel(option)}
+                  onClick={() => setValue("model", option, { shouldValidate: true })}
                   className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-sm font-semibold transition-all duration-150 active:scale-95 ${
                     model === option
                       ? "border-[#FFC83D] bg-[#FFC83D]/15 text-[#003377] dark:text-[#FFC83D]"
@@ -179,6 +192,9 @@ export default function AIConfigForm() {
                   </span>
                 </button>
               ))}
+              {errors.model && (
+                <p className="text-xs font-medium text-red-500">{errors.model.message}</p>
+              )}
             </div>
 
             <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 dark:border-slate-800 dark:bg-slate-900">
@@ -191,9 +207,14 @@ export default function AIConfigForm() {
                 min={70}
                 max={99}
                 value={confidence}
-                onChange={(event) => setConfidence(Number(event.target.value))}
-                className="mt-4 w-full"
+                onChange={(event) =>
+                  setValue("confidence", Number(event.target.value), { shouldValidate: true })
+                }
+                className="mt-4 w-full cursor-pointer accent-[#003377] dark:accent-[#FFC83D]"
               />
+              {errors.confidence && (
+                <p className="mt-1 text-xs font-medium text-red-500">{errors.confidence.message}</p>
+              )}
             </div>
           </div>
 
