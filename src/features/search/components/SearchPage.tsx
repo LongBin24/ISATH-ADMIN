@@ -97,7 +97,7 @@ function SearchPageContent() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 md:text-[32px]">
+          <h1 className="text-2xl font-bold tracking-tight text-[#003377] dark:text-[#FFC83D] md:text-[32px]">
             {t("Global Search")}
           </h1>
           <p className="mt-1 text-[18px] leading-relaxed text-slate-500 dark:text-slate-400">

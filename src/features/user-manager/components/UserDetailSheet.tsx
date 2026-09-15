@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -60,7 +61,7 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-lg md:text-xl font-semibold text-foreground">
+    <h3 className="text-lg md:text-xl font-semibold text-[#003377] dark:text-[#FFC83D]">
       {children}
     </h3>
   );

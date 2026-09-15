@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ThemeSelector } from "@/features/settings/components/theme-selector";
+// import { ThemeSelector } from "@/features/settings/components/theme-selector";
 import { useAdminI18n } from "@/i18n/admin-i18n";
 import { Palette } from "lucide-react";
 
@@ -22,9 +22,9 @@ export default function AppearanceSettingsPage() {
         </p>
       </div>
 
-      <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-[#1e293b] dark:bg-[#0b1120] dark:shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+      {/* <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-[#1e293b] dark:bg-[#0b1120] dark:shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
         <ThemeSelector />
-      </div>
+      </div> */}
     </div>
   );
 }
