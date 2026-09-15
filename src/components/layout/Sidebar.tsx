@@ -115,7 +115,7 @@ export default function Sidebar({
             type="button"
             variant="outline"
             onClick={() => signOut()}
-            className="h-11 w-full justify-start gap-3 rounded-xl text-slate-600 hover:border-destructive/30 hover:bg-destructive/5 hover:text-destructive dark:text-slate-300"
+            className="h-11 w-full justify-start gap-3 rounded-xl border-destructive/30 text-destructive hover:border-destructive/40 hover:bg-destructive/5 hover:text-destructive"
             aria-label={t("Sign out")}
           >
             <LogOut size={20} />

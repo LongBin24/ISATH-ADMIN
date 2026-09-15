@@ -5,8 +5,8 @@ const BACKEND_BASE_URL = (
 ).replace(/\/$/, "");
 
 const BACKEND_API_BASE = BACKEND_BASE_URL.endsWith("/api")
-  ? `${BACKEND_BASE_URL}/v1`
-  : `${BACKEND_BASE_URL}/api/v1`;
+  ? BACKEND_BASE_URL
+  : `${BACKEND_BASE_URL}/api`;
 
 async function proxyHandler(
   request: NextRequest,
