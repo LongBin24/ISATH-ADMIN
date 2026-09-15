@@ -38,20 +38,9 @@ export function unwrapAuditLogPage(raw: unknown): AuditLogPage {
   const pageMeta = isRecord(body.page) ? body.page : body;
 
   const pageNumber =
-    typeof pageMeta.page === "number"
-      ? pageMeta.page
-      : typeof pageMeta.number === "number"
-      ? pageMeta.number
-      : typeof pageMeta.pageNumber === "number"
-      ? pageMeta.pageNumber
-      : 0;
+    typeof pageMeta.page === "number" ? pageMeta.page : 0;
 
-  const size =
-    typeof pageMeta.size === "number"
-      ? pageMeta.size
-      : typeof pageMeta.pageSize === "number"
-      ? pageMeta.pageSize
-      : 20;
+  const size = typeof pageMeta.size === "number" ? pageMeta.size : 20;
 
   const totalElements =
     typeof pageMeta.totalElements === "number"
@@ -95,19 +84,8 @@ export function buildAuditLogQueryParams(params?: AuditLogQueryParams): string {
   if (!params) return "";
   const query = new URLSearchParams();
 
-  const page = params.page ?? params.pageNumber ?? 0;
-  const size = params.size ?? params.pageSize ?? 20;
-
-  query.set("page", String(page));
-  query.set("pageNumber", String(page));
-  query.set("size", String(size));
-  query.set("pageSize", String(size));
-
-  const searchTerm = params.search || params.query;
-  if (searchTerm && searchTerm.trim()) {
-    query.set("query", searchTerm.trim());
-    query.set("search", searchTerm.trim());
-  }
+  query.set("page", String(params.page ?? 0));
+  query.set("size", String(params.size ?? 20));
 
   if (params.action && params.action !== "ALL") {
     query.set("action", params.action);
@@ -117,8 +95,20 @@ export function buildAuditLogQueryParams(params?: AuditLogQueryParams): string {
     query.set("entityType", params.entityType);
   }
 
+  if (params.entityId) {
+    query.set("entityId", params.entityId);
+  }
+
   if (params.userId) {
     query.set("userId", params.userId);
+  }
+
+  if (params.createdFrom) {
+    query.set("createdFrom", params.createdFrom);
+  }
+
+  if (params.createdTo) {
+    query.set("createdTo", params.createdTo);
   }
 
   if (params.sortBy) {
@@ -134,7 +124,7 @@ export function buildAuditLogQueryParams(params?: AuditLogQueryParams): string {
 
 export const auditLogsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // GET /api/v1/admin/audit-logs
+    // GET /api/admin/audit-logs
     getAuditLogs: builder.query<AuditLogPage, AuditLogQueryParams | void>({
       query: (params) => {
         const queryString = buildAuditLogQueryParams(params || undefined);
@@ -152,14 +142,14 @@ export const auditLogsApi = baseApi.injectEndpoints({
       ],
     }),
 
-    // GET /api/v1/admin/audit-logs/{auditLogId}
+    // GET /api/admin/audit-logs/{auditLogId}
     getAuditLogById: builder.query<AuditLog, string>({
       query: (auditLogId) => ENDPOINTS.ADMIN_AUDIT_LOGS_BY_ID(auditLogId),
       transformResponse: unwrapAuditLog,
       providesTags: (_result, _error, id) => [{ type: API_TAGS.AUDIT_LOG, id }],
     }),
 
-    // GET /api/v1/admin/audit-logs/users/{userId}
+    // GET /api/admin/audit-logs/users/{userId}
     getAuditLogsByUser: builder.query<
       AuditLogPage,
       { userId: string } & AuditLogQueryParams
@@ -180,7 +170,7 @@ export const auditLogsApi = baseApi.injectEndpoints({
       ],
     }),
 
-    // GET /api/v1/admin/audit-logs/entities/{entityType}/{entityId}
+    // GET /api/admin/audit-logs/entities/{entityType}/{entityId}
     getAuditLogsByEntity: builder.query<
       AuditLogPage,
       { entityType: string; entityId: string } & AuditLogQueryParams

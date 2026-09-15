@@ -6,23 +6,21 @@ import toast from "react-hot-toast";
 import {
   Activity,
   Calendar,
+  CalendarIcon,
   Clock3,
   Copy,
-  Database,
   Eye,
   FileCode,
   Globe,
   Hash,
-  Layers,
   MoreHorizontal,
   RefreshCw,
-  Search,
   Shield,
   ShieldAlert,
   ShieldCheck,
   Terminal,
+  Trash2,
   User,
-  UserCheck,
   UserX,
   X,
 } from "lucide-react";
@@ -34,10 +32,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarPicker, type DateRange } from "@/components/ui/calendar";
 import {
   Pagination,
   PaginationContent,
@@ -85,12 +84,12 @@ import {
   useGetAuditLogsByEntityQuery,
   useGetAuditLogsQuery,
 } from "./api";
-import type {
-  AuditActionFilter,
-  AuditEntityTypeFilter,
-  AuditLog,
-  AuditLogQueryParams,
+import {
+  AUDIT_ACTIONS,
+  AUDIT_ACTIONS_BY_ENTITY,
+  AUDIT_ENTITY_TYPES,
 } from "./types";
+import type { AuditEntityType, AuditLog, AuditLogQueryParams } from "./types";
 
 function displayName(user?: AdminUser) {
   if (!user) return "";
@@ -126,42 +125,105 @@ function dateText(value?: string | null, exact = false) {
     : formatDistanceToNow(date, { addSuffix: true });
 }
 
+type ActionCategory =
+  | "create"
+  | "update"
+  | "delete"
+  | "suspend"
+  | "reactivate"
+  | "failed"
+  | "other";
+
+// action is a free-form string (e.g. WALLET_CREATE, TRANSACTION_STATUS_CHANGE), not a
+// closed enum, and CONTACT_MESSAGE's only action is the bare "CREATE" — classify by
+// keyword rather than exact match so every known action still gets a sensible badge.
+function classifyAction(action: string): ActionCategory {
+  const act = action.toUpperCase();
+  if (act.includes("FAILED")) return "failed";
+  if (act.includes("SUSPEND")) return "suspend";
+  if (
+    act.includes("REACTIVATE") ||
+    act.includes("ACTIVATE") ||
+    act.includes("ACCEPT") ||
+    act.includes("RESTORE")
+  )
+    return "reactivate";
+  if (
+    act.includes("DELETE") ||
+    act.includes("REMOVE") ||
+    act.includes("CANCEL") ||
+    act.includes("DECLINE")
+  )
+    return "delete";
+  if (act === "CREATE" || act.includes("_CREATE") || act === "AUTH_REGISTER")
+    return "create";
+  if (
+    act.endsWith("_UPDATE") ||
+    act.includes("CHANGE") ||
+    act.includes("TRANSFER") ||
+    act.includes("MOVE") ||
+    act.includes("RESEND")
+  )
+    return "update";
+  return "other";
+}
+
+// Inclusive start / exclusive end of the selected day (createdTo is documented as exclusive).
+function toCreatedFrom(date: Date) {
+  return `${format(date, "yyyy-MM-dd")}T00:00:00.000Z`;
+}
+function toCreatedTo(date: Date) {
+  const nextDay = new Date(date);
+  nextDay.setDate(nextDay.getDate() + 1);
+  return `${format(nextDay, "yyyy-MM-dd")}T00:00:00.000Z`;
+}
+
 export function AuditLogManager() {
   const { t } = useAdminI18n();
-  const [search, setSearch] = useState("");
-  const [actionFilter, setActionFilter] = useState<AuditActionFilter>("ALL");
-  const [entityTypeFilter, setEntityTypeFilter] =
-    useState<AuditEntityTypeFilter>("ALL");
+  const [entityId, setEntityId] = useState("");
+  const [actionFilter, setActionFilter] = useState<string>("ALL");
+  const [entityTypeFilter, setEntityTypeFilter] = useState<
+    AuditEntityType | "ALL"
+  >("ALL");
+  const [createdFrom, setCreatedFrom] = useState<string | undefined>();
+  const [createdTo, setCreatedTo] = useState<string | undefined>();
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  const actionOptions =
+    entityTypeFilter === "ALL"
+      ? AUDIT_ACTIONS
+      : AUDIT_ACTIONS_BY_ENTITY[entityTypeFilter];
 
   const queryParams = useMemo<AuditLogQueryParams>(() => {
     const params: AuditLogQueryParams = {
       page,
       size,
     };
-    if (search.trim()) params.search = search.trim();
+    if (entityId.trim()) params.entityId = entityId.trim();
     if (actionFilter !== "ALL") params.action = actionFilter;
     if (entityTypeFilter !== "ALL") params.entityType = entityTypeFilter;
+    if (createdFrom) params.createdFrom = createdFrom;
+    if (createdTo) params.createdTo = createdTo;
     return params;
-  }, [page, size, search, actionFilter, entityTypeFilter]);
+  }, [page, size, entityId, actionFilter, entityTypeFilter, createdFrom, createdTo]);
 
   const auditQuery = useGetAuditLogsQuery(queryParams);
   const totalQuery = useGetAuditLogsQuery({ page: 0, size: 1 });
-  const createQuery = useGetAuditLogsQuery({
-    action: "CREATE",
-    page: 0,
-    size: 1,
-  });
-  const updateQuery = useGetAuditLogsQuery({
-    action: "UPDATE",
+  const loginQuery = useGetAuditLogsQuery({
+    action: "AUTH_LOGIN",
     page: 0,
     size: 1,
   });
   const suspendQuery = useGetAuditLogsQuery({
-    action: "SUSPEND",
+    action: "USER_SUSPEND",
+    page: 0,
+    size: 1,
+  });
+  const deleteQuery = useGetAuditLogsQuery({
+    action: "USER_ACCOUNT_DELETE",
     page: 0,
     size: 1,
   });
@@ -178,44 +240,12 @@ export function AuditLogManager() {
   const totalPages = auditQuery.data?.totalPages ?? 0;
   const safePage = Math.min(page, Math.max(0, totalPages - 1));
 
-  const filteredLogs = useMemo(() => {
-    let result = [...logs];
-    if (search.trim()) {
-      const term = search.toLowerCase().trim();
-      result = result.filter((item) => {
-        const user = item.userId ? usersById.get(item.userId) : undefined;
-        const name = displayName(user).toLowerCase();
-        const email = (user?.email || "").toLowerCase();
-        const username = (user?.username || "").toLowerCase();
-        return (
-          item.action.toLowerCase().includes(term) ||
-          item.entityType.toLowerCase().includes(term) ||
-          item.entityId.toLowerCase().includes(term) ||
-          (item.ipAddress && item.ipAddress.toLowerCase().includes(term)) ||
-          (item.userId && item.userId.toLowerCase().includes(term)) ||
-          name.includes(term) ||
-          email.includes(term) ||
-          username.includes(term) ||
-          item.id.toLowerCase().includes(term)
-        );
-      });
-    }
-    if (actionFilter !== "ALL") {
-      result = result.filter(
-        (item) => item.action.toUpperCase() === actionFilter.toUpperCase(),
-      );
-    }
-    if (entityTypeFilter !== "ALL") {
-      result = result.filter(
-        (item) =>
-          item.entityType.toUpperCase() === entityTypeFilter.toUpperCase(),
-      );
-    }
-    return result;
-  }, [logs, search, actionFilter, entityTypeFilter, usersById]);
-
   const hasFilters = Boolean(
-    search.trim() || actionFilter !== "ALL" || entityTypeFilter !== "ALL",
+    entityId.trim() ||
+      actionFilter !== "ALL" ||
+      entityTypeFilter !== "ALL" ||
+      createdFrom ||
+      createdTo,
   );
 
   const pageNumbers = useMemo(() => {
@@ -227,9 +257,11 @@ export function AuditLogManager() {
   }, [safePage, totalPages]);
 
   function resetFilters() {
-    setSearch("");
+    setEntityId("");
     setActionFilter("ALL");
     setEntityTypeFilter("ALL");
+    setCreatedFrom(undefined);
+    setCreatedTo(undefined);
     setPage(0);
   }
 
@@ -240,9 +272,9 @@ export function AuditLogManager() {
 
   const statsLoading =
     totalQuery.isLoading ||
-    createQuery.isLoading ||
-    updateQuery.isLoading ||
-    suspendQuery.isLoading;
+    loginQuery.isLoading ||
+    suspendQuery.isLoading ||
+    deleteQuery.isLoading;
 
   const first = totalElements ? safePage * size + 1 : 0;
   const last = Math.min((safePage + 1) * size, totalElements);
@@ -279,21 +311,21 @@ export function AuditLogManager() {
             />
             <StatCard
               icon={ShieldCheck}
-              label={t("Creation Events")}
-              value={createQuery.data?.totalElements ?? "N/A"}
-              helper={t("Create operations")}
-            />
-            <StatCard
-              icon={Layers}
-              label={t("Update Events")}
-              value={updateQuery.data?.totalElements ?? "N/A"}
-              helper={t("Modifications and updates")}
+              label={t("Login Events")}
+              value={loginQuery.data?.totalElements ?? "N/A"}
+              helper={t("AUTH_LOGIN events")}
             />
             <StatCard
               icon={ShieldAlert}
-              label={t("Security Actions")}
+              label={t("Suspensions")}
               value={suspendQuery.data?.totalElements ?? "N/A"}
-              helper={t("Suspensions & sensitive actions")}
+              helper={t("USER_SUSPEND events")}
+            />
+            <StatCard
+              icon={Trash2}
+              label={t("Account Deletions")}
+              value={deleteQuery.data?.totalElements ?? "N/A"}
+              helper={t("USER_ACCOUNT_DELETE events")}
             />
           </>
         )}
@@ -317,26 +349,26 @@ export function AuditLogManager() {
             className={cn(
               "grid gap-2 md:grid-cols-2 xl:items-center",
               hasFilters
-                ? "xl:grid-cols-[minmax(240px,3.5fr)_repeat(3,minmax(150px,1fr))]"
-                : "xl:grid-cols-[minmax(280px,4.5fr)_repeat(2,minmax(150px,1fr))]",
+                ? "xl:grid-cols-[minmax(220px,3fr)_repeat(4,minmax(150px,1fr))]"
+                : "xl:grid-cols-[minmax(260px,3.5fr)_repeat(3,minmax(150px,1fr))]",
             )}
           >
             <div className="relative md:col-span-2 xl:col-span-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Hash className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                value={search}
+                value={entityId}
                 onChange={(event) => {
-                  setSearch(event.target.value);
+                  setEntityId(event.target.value);
                   setPage(0);
                 }}
-                placeholder={t("Search by action, entity, user, or IP...")}
+                placeholder={t("Entity ID (exact match)...")}
                 className="h-11 rounded-xl bg-background pl-10 pr-9 text-sm shadow-sm"
               />
-              {search && (
+              {entityId && (
                 <button
                   type="button"
                   onClick={() => {
-                    setSearch("");
+                    setEntityId("");
                     setPage(0);
                   }}
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
@@ -348,42 +380,87 @@ export function AuditLogManager() {
 
             <div className="grid gap-2 sm:grid-cols-2 md:col-span-2 xl:contents">
               <FilterSelect
-                label={t("Action")}
-                value={actionFilter}
+                label={t("Entity Type")}
+                value={entityTypeFilter}
                 options={{
-                  ALL: t("All Actions"),
-                  CREATE: t("CREATE"),
-                  UPDATE: t("UPDATE"),
-                  DELETE: t("DELETE"),
-                  SUSPEND: t("SUSPEND"),
-                  REACTIVATE: t("REACTIVATE"),
-                  LOGIN: t("LOGIN"),
-                  LOGOUT: t("LOGOUT"),
+                  ALL: t("All Entity Types"),
+                  ...Object.fromEntries(
+                    AUDIT_ENTITY_TYPES.map((type) => [
+                      type,
+                      t(type.replace(/_/g, " ")),
+                    ]),
+                  ),
                 }}
                 onChange={(val) => {
-                  setActionFilter(val as AuditActionFilter);
+                  setEntityTypeFilter(val as AuditEntityType | "ALL");
+                  setActionFilter("ALL");
                   setPage(0);
                 }}
               />
 
               <FilterSelect
-                label={t("Entity Type")}
-                value={entityTypeFilter}
+                label={t("Action")}
+                value={actionFilter}
                 options={{
-                  ALL: t("All Entity Types"),
-                  CONTACT_MESSAGE: t("Contact Message"),
-                  USER: t("User Account"),
-                  CATEGORY: t("Category"),
-                  CURRENCY: t("Currency"),
-                  ALERT_RULE: t("Alert Rule"),
-                  PROMPT_TEMPLATE: t("Prompt Template"),
-                  SYSTEM: t("System / Auth"),
+                  ALL: t("All Actions"),
+                  ...Object.fromEntries(
+                    actionOptions.map((action) => [action, action]),
+                  ),
                 }}
                 onChange={(val) => {
-                  setEntityTypeFilter(val as AuditEntityTypeFilter);
+                  setActionFilter(val);
                   setPage(0);
                 }}
               />
+
+              <Popover>
+                <PopoverTrigger
+                  className={cn(
+                    "flex h-11 w-full min-w-[150px] items-center justify-between gap-2 rounded-xl border border-input bg-muted/60 px-3 text-sm font-medium shadow-sm transition hover:border-[#003377] dark:hover:border-[#FFC83D]",
+                    (createdFrom || createdTo) &&
+                      "border-[#003377] text-[#003377] font-semibold dark:border-[#FFC83D] dark:text-[#FFC83D]",
+                  )}
+                >
+                  <span className="flex min-w-0 items-center gap-2 truncate">
+                    <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
+                    {createdFrom
+                      ? createdTo
+                        ? `${format(new Date(createdFrom), "MMM d")} – ${format(new Date(new Date(createdTo).getTime() - 86400000), "MMM d, yyyy")}`
+                        : format(new Date(createdFrom), "MMM d, yyyy")
+                      : t("Date Range")}
+                  </span>
+                  {(createdFrom || createdTo) && (
+                    <X
+                      className="size-3.5 shrink-0 text-muted-foreground hover:text-foreground"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setCreatedFrom(undefined);
+                        setCreatedTo(undefined);
+                        setPage(0);
+                      }}
+                    />
+                  )}
+                </PopoverTrigger>
+                <PopoverContent align="end" className="rounded-2xl p-3">
+                  <CalendarPicker
+                    mode="range"
+                    selected={{
+                      from: createdFrom ? new Date(createdFrom) : undefined,
+                      to: createdTo
+                        ? new Date(new Date(createdTo).getTime() - 86400000)
+                        : undefined,
+                    }}
+                    onSelect={(value) => {
+                      const range = value as DateRange;
+                      setCreatedFrom(
+                        range.from ? toCreatedFrom(range.from) : undefined,
+                      );
+                      setCreatedTo(range.to ? toCreatedTo(range.to) : undefined);
+                      setPage(0);
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
 
               {hasFilters && (
                 <Button
@@ -402,7 +479,7 @@ export function AuditLogManager() {
             <ErrorState onRetry={() => auditQuery.refetch()} />
           ) : auditQuery.isLoading ? (
             <TableSkeleton />
-          ) : filteredLogs.length === 0 ? (
+          ) : logs.length === 0 ? (
             <EmptyState filtered={hasFilters} onReset={resetFilters} />
           ) : (
             <>
@@ -431,7 +508,7 @@ export function AuditLogManager() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredLogs.map((item) => (
+                    {logs.map((item) => (
                       <AuditLogRow
                         key={item.id}
                         item={item}
@@ -588,64 +665,33 @@ function FilterSelect({
   );
 }
 
+const ACTION_BADGE_STYLES: Record<ActionCategory, string> = {
+  create:
+    "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300",
+  update:
+    "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/60 dark:text-blue-300",
+  delete:
+    "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/60 dark:text-rose-300",
+  suspend:
+    "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300",
+  reactivate:
+    "border-teal-200 bg-teal-50 text-teal-700 dark:border-teal-900 dark:bg-teal-950/60 dark:text-teal-300",
+  failed:
+    "border-red-300 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/60 dark:text-red-300",
+  other:
+    "border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
+};
+
 function ActionBadge({ action }: { action: string }) {
-  const act = action.toUpperCase();
-  if (act === "CREATE") {
-    return (
-      <Badge
-        variant="outline"
-        className="gap-1 border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300 font-semibold"
-      >
-        CREATE
-      </Badge>
-    );
-  }
-  if (act === "UPDATE") {
-    return (
-      <Badge
-        variant="outline"
-        className="gap-1 border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/60 dark:text-blue-300 font-semibold"
-      >
-        UPDATE
-      </Badge>
-    );
-  }
-  if (act === "DELETE") {
-    return (
-      <Badge
-        variant="outline"
-        className="gap-1 border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/60 dark:text-rose-300 font-semibold"
-      >
-        DELETE
-      </Badge>
-    );
-  }
-  if (act === "SUSPEND") {
-    return (
-      <Badge
-        variant="outline"
-        className="gap-1 border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300 font-semibold"
-      >
-        SUSPEND
-      </Badge>
-    );
-  }
-  if (act === "REACTIVATE" || act === "ACTIVATE") {
-    return (
-      <Badge
-        variant="outline"
-        className="gap-1 border-teal-200 bg-teal-50 text-teal-700 dark:border-teal-900 dark:bg-teal-950/60 dark:text-teal-300 font-semibold"
-      >
-        {act}
-      </Badge>
-    );
-  }
   return (
     <Badge
       variant="outline"
-      className="border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 font-semibold"
+      className={cn(
+        "gap-1 font-mono text-[11px] font-semibold",
+        ACTION_BADGE_STYLES[classifyAction(action)],
+      )}
     >
-      {act}
+      {action.toUpperCase()}
     </Badge>
   );
 }
@@ -807,21 +853,29 @@ function AuditDetailSheet({
 
   if (!open) return null;
 
-  const copyAll = () => {
-    if (activeLog) {
-      navigator.clipboard.writeText(JSON.stringify(activeLog, null, 2));
-      toast.success(t("Audit event details copied!"));
+  const copyText = async (text: string, successMessage: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(successMessage);
+    } catch {
+      toast.error(t("Failed to copy to clipboard."));
     }
   };
 
-  const copyPayload = (payload: any, label: string) => {
+  const copyAll = () => {
+    if (activeLog) {
+      copyText(JSON.stringify(activeLog, null, 2), t("Audit event details copied!"));
+    }
+  };
+
+  const copyPayload = (payload: unknown, label: string) => {
     if (payload !== undefined && payload !== null) {
-      navigator.clipboard.writeText(
+      copyText(
         typeof payload === "string"
           ? payload
           : JSON.stringify(payload, null, 2),
+        `${label} ${t("Copied!")}`,
       );
-      toast.success(`${label} ${t("Copied!")}`);
     }
   };
 
@@ -940,10 +994,9 @@ function AuditDetailSheet({
                       {activeLog.ipAddress && (
                         <button
                           type="button"
-                          onClick={() => {
-                            navigator.clipboard.writeText(activeLog.ipAddress!);
-                            toast.success(t("IP Address copied!"));
-                          }}
+                          onClick={() =>
+                            copyText(activeLog.ipAddress!, t("IP Address copied!"))
+                          }
                           className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                         >
                           <Copy className="size-2.5" />
@@ -971,10 +1024,9 @@ function AuditDetailSheet({
                       </p>
                       <button
                         type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(activeLog.userAgent!);
-                          toast.success(t("Copied!"));
-                        }}
+                        onClick={() =>
+                          copyText(activeLog.userAgent!, t("Copied!"))
+                        }
                         className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                       >
                         <Copy className="size-2.5" />
